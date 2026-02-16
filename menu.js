@@ -201,6 +201,188 @@ var gMenuFile =    {
             "id": "caption"
           }
         },
+
+
+        {
+          "caption": "<b>s</b>harps",
+          "trigger": "s",
+          "action": "setSectionSharps"
+        },
+        {
+          "caption": "<b>f</b>lats",
+          "trigger": "f",
+          "action": "setSectionFlats"
+        },
+
+
+
+
+
+
+        {
+          "name": "key",
+          "caption": "<b>k</b>ey",
+          "trigger": "k",
+          "children": [
+            {
+            "caption": "<b>w</b>hite keys",
+            "trigger": "w",
+            "children": [
+              {
+              "caption": "<b>a</b>",
+              "trigger": "a",
+              "action": "setSectionKeyWhite"        
+              },
+              {
+              "caption": "<b>b</b>",
+              "trigger": "b",
+              "action": "setSectionKeyWhite"
+              },
+              {
+              "caption": "<b>c</b>",
+              "trigger": "c",
+              "action": "setSectionKeyWhite"
+              },
+              {
+              "caption": "<b>d</b>",
+              "trigger": "d",
+              "action": "setSectionKeyWhite"
+              },
+              {
+              "caption": "<b>e</b>",
+              "trigger": "e",
+              "action": "setSectionKeyWhite"
+              },
+              {
+              "caption": "<b>f</b>",
+              "trigger": "f",
+              "action": "setSectionKeyWhite"
+              },
+              {
+              "caption": "<b>g</b>",
+              "trigger": "g",
+              "action": "setSectionKeyWhite"
+              }
+            ]
+            },
+            {
+            "caption": "<b>b</b>lack keys",
+            "trigger": "b",
+            "children": [
+              {
+              "caption": "<b>a</b>&flat;",
+              "trigger": "a",
+              "action": "setSectionKeyBlack"    
+              },
+              {
+              "caption": "<b>b</b>&flat;",
+              "trigger": "b",
+              "action": "setSectionKeyBlack"
+              },
+              {
+              "caption": "<b>d</b>&flat;",
+              "trigger": "d",
+              "action": "setSectionKeyBlack"
+              },
+              {
+              "caption": "<b>e</b>&flat;",
+              "trigger": "e",
+              "action": "setSectionKeyBlack"
+              },
+              {
+              "caption": "<b>g</b>&flat;",
+              "trigger": "g",
+              "action": "setSectionKeyBlack"
+              }
+            ]
+            }
+
+
+          ] 
+        },
+        {
+          "name": "leadkey",
+          "caption": "L<b>e</b>adKey",
+          "trigger": "e",
+          "children": [
+            {
+            "caption": "<b>w</b>hite keys",
+            "trigger": "w",
+            "children": [
+              {
+              "caption": "<b>a</b>",
+              "trigger": "a",
+              "action": "setSectionLeadKeyWhite"        
+              },
+              {
+              "caption": "<b>b</b>",
+              "trigger": "b",
+              "action": "setSectionLeadKeyWhite"
+              },
+              {
+              "caption": "<b>c</b>",
+              "trigger": "c",
+              "action": "setSectionLeadKeyWhite"
+              },
+              {
+              "caption": "<b>d</b>",
+              "trigger": "d",
+              "action": "setSectionLeadKeyWhite"
+              },
+              {
+              "caption": "<b>e</b>",
+              "trigger": "e",
+              "action": "setSectionLeadKeyWhite"
+              },
+              {
+              "caption": "<b>f</b>",
+              "trigger": "f",
+              "action": "setSectionLeadKeyWhite"
+              },
+              {
+              "caption": "<b>g</b>",
+              "trigger": "g",
+              "action": "setSectionLeadKeyWhite"
+              }
+            ]
+            },
+            {
+            "caption": "<b>b</b>lack keys",
+            "trigger": "b",
+            "children": [
+              {
+              "caption": "<b>a</b>&flat;",
+              "trigger": "a",
+              "action": "setSectionLeadKeyBlack"    
+              },
+              {
+              "caption": "<b>b</b>&flat;",
+              "trigger": "b",
+              "action": "setSectionLeadKeyBlack"
+              },
+              {
+              "caption": "<b>d</b>&flat;",
+              "trigger": "d",
+              "action": "setSectionLeadKeyBlack"
+              },
+              {
+              "caption": "<b>e</b>&flat;",
+              "trigger": "e",
+              "action": "setSectionLeadKeyBlack"
+              },
+              {
+              "caption": "<b>g</b>&flat;",
+              "trigger": "g",
+              "action": "setSectionLeadKeyBlack"
+              }
+            ]
+            }
+
+
+          ] 
+        },
+
+
         {
           "caption": "<b>b</b>eats<small>[$currentBeat/$beats]</small>",
           "trigger": "b",

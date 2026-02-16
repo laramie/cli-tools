@@ -248,11 +248,52 @@ function performCmdAction(menuItem, args){
 				$("#txtFilename").val(argByInputID).change();
 			}
 			break;
-
 		case "setSectionCaption":
 			getCurrentFrame().caption = argByInputID;
 			updateFramesStatus();
 			break;
+
+		case "setSectionFlats":
+			setSectionKeysFlats();
+			break;
+		case "setSectionSharps":
+			setSectionKeysSharps();
+			break;
+		case "setSectionKeyWhite":
+			var keyIdx = ['a','x','b','c','x','d','x','e','f','x','g','x',].indexOf(menuItem.trigger);
+			if (keyIdx >= 0){
+				getCurrentFrame().rootID = keyIdx;
+				if (menuItem.trigger == 'f'){
+					setSectionKeysFlats();
+				} else {					
+					setSectionKeysSharps();
+				}
+				frameChanged();
+			}
+			break;
+		case "setSectionKeyBlack":
+			var keyIdx = ['x','b','x','x','d','x','e','x','x','g','x','a'].indexOf(menuItem.trigger);
+			if (keyIdx >= 0){
+				getCurrentFrame().rootID = keyIdx;
+				setSectionKeysFlats();
+				frameChanged();
+			}
+			break;
+        case "setSectionLeadKeyWhite":
+			var keyIdx = ['a','x','b','c','x','d','x','e','f','x','g','x',].indexOf(menuItem.trigger);
+			if (keyIdx >= 0){
+				getCurrentFrame().rootIDLead = keyIdx;
+				frameChanged();
+			}
+			break;
+		case "setSectionLeadKeyBlack":
+			var keyIdx = ['x','b','x','x','d','x','e','x','x','g','x','a'].indexOf(menuItem.trigger);
+			if (keyIdx >= 0){
+				getCurrentFrame().rootIDLead = keyIdx;
+				frameChanged();
+			}
+			break;
+
 		case "firstSection":
 			gSong.firstFrame();
             clearAndReplayFrame();
@@ -613,6 +654,20 @@ function getNoteFontSize(){
 function setNoteFontSize(newValue){
     gNoteFontSize = newValue;
     updateNoteFont();
+}
+
+function setSectionKeysFlats(){
+    gSharps = false;
+    getCurrentFrame().sharps = false;
+    resetNoteNames();
+    updateFramesStatus();
+}
+
+function setSectionKeysSharps(){
+    gSharps = true;
+    getCurrentFrame().sharps = true;
+    resetNoteNames();
+    updateFramesStatus();
 }
 
 

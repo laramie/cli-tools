@@ -1413,16 +1413,10 @@
 		});
 
 		$("#btnSharps").click(function() {
-	        gSharps = true;
-	        getCurrentFrame().sharps = true;
-	        resetNoteNames();
-			updateFramesStatus();
+	        setSectionKeysSharps();
 	    });
 	    $("#btnFlats").click(function() {
-	        gSharps = false;
-	        getCurrentFrame().sharps = false;
-	        resetNoteNames();
-			updateFramesStatus();
+	       setSectionKeysFlats();
 	    });
 
 		$("#btnTransposeDown").click(function() {
