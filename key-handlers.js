@@ -152,6 +152,11 @@ function document_keypress(e) {
                 updateCmdLineView();
                 event.preventDefault();
                 break;
+            case "o":
+				//the letter 'o' because '0' (zero) is for the nut width.
+                $("#rbFinger0").attr('checked', 'checked');
+                checkRB("#idRFinger0");
+                break;
             case "1":
                 //select radio button with value e.key, which will be one of 12345, with 5 representing "T".
                 $("#rbFinger1").attr('checked', 'checked');

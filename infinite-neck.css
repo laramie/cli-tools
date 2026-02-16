@@ -1446,6 +1446,10 @@ td.note.noteWhiteKey {
     color: cornflowerblue;
     background-color: black;
 }
+.Finger0 {
+    color: lime;
+    background-color: black;
+}
 .Finger1 {
     color: aqua;
     background-color: black;
@@ -1906,3 +1910,4 @@ However, don't use for Root or other things.
     /* container of .left and .right might should have this. */
     clear: both;
 }
+

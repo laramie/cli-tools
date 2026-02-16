@@ -1496,6 +1496,9 @@
 	        $("#rbBend").prop("checked", true);
 	    });
 
+		$("#rbFinger0").click(function(){
+            checkRB("#idRFinger0");
+        });
 		$("#rbFinger1").click(function(){
 			checkRB("#idRFinger1");
 		});
