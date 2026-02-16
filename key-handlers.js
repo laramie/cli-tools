@@ -370,6 +370,15 @@ function performCmdAction(menuItem, args){
 				}
 			}
 			break;
+		case "toggleLoopFrames":
+			toggleLoopFrames();
+			actionResult.result = framesLooping() ? "ON" : "OFF";
+			break;
+		case "toggleLoopBeats":
+			toggleLoopBeats();
+			actionResult.result = beatsLooping() ? "ON" : "OFF";
+			break;
+			
 		case "nextBeat":
 			gSong.nextBeat();
 			actionResult.result = ""+getCurrentFrame().currentBeat;

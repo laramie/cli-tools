@@ -800,6 +800,16 @@ var gMenuFile =    {
           "action": "toggleTransport"
         },
         {
+          "caption": "<b>l</b>oop",
+          "trigger": "l",
+          "action": "toggleLoopFrames"
+        },
+        {
+          "caption": "loop <b>b</b>eats",
+          "trigger": "b",
+          "action": "toggleLoopBeats"
+        },
+        {
           "caption": "<b>s</b>ection<small>[$currentFrameCardinal/$frameCount]</small>",
           "vars": [
             "currentFrameCardinal",
