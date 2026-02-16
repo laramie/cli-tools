@@ -151,11 +151,11 @@ var gDefault_CycleOfColors = {
             "caption": "I"
         },
         "note2": {
-            "colorClass": "notePink1",
+            "colorClass": "notePink5",
             "caption": "&tau;"
         },
         "note3": {
-            "colorClass": "notePink2",
+            "colorClass": "notePink1",
             "caption": "II"
         },
         "note4": {
@@ -163,7 +163,7 @@ var gDefault_CycleOfColors = {
             "caption": "m"
         },
         "note5": {
-            "colorClass": "noteGreen3",
+            "colorClass": "noteBlue4",
             "caption": "III"
         },
         "note6": {
@@ -179,19 +179,19 @@ var gDefault_CycleOfColors = {
             "caption": "V"
         },
         "note9": {
-            "colorClass": "noteGreen5",
+            "colorClass": "noteYellow3",
             "caption": "&sigma;"
         },
         "note10": {
-            "colorClass": "noteGreen7",
+            "colorClass": "noteYellow5",
             "caption": "6"
         },
         "note11": {
-            "colorClass": "noteBlue4",
+            "colorClass": "noteGreen3",
             "caption": "&delta;"
         },
         "note12": {
-            "colorClass": "notePink5",
+            "colorClass": "noteGreen7",
             "caption": "&Delta;"
         }
     }
