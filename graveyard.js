@@ -18,12 +18,14 @@ function makeGraveyard(flatObj){
         //METHODS:
             make: construct_graveyard,
             getRecords: getRecords,
+            getRecordCount: getRecordCount,
             addRecord: addRecord,
             makeRecord: makeRecord,
             dumpGraveyard: dumpGraveyard,
             buildTable: buildTable,
             bury: bury,
-            raise: raise
+            raise: raise,
+            clear: clear
     }
     obj.make(flatObj);
     return obj;
@@ -36,6 +38,10 @@ function makeGraveyard(flatObj){
 
     function getRecords(){
         return this.records;
+    }
+
+    function getRecordCount(){
+        return this.records.length;
     }
 
     function dumpGraveyard(){
@@ -112,6 +118,16 @@ function makeGraveyard(flatObj){
         record.lastRevived = Date.now();
         showMessages(gSong.graveyard.buildTable());
         fullRepaint();
+    }
+
+    /* Hose the records, emptying the graveyard.  
+       Useful for reducing file size and cleaning it up.
+       Be sure to call to download a backup in the UI first.
+    */
+    function clear(){
+        var removed = this.records.length;
+        this.records.length = 0;        // JS engine clears reference to the array (better than records=[]);
+        return removed;                 
     }
 
     function buildTable(){

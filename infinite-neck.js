@@ -483,6 +483,12 @@
 		gSong.theme = $('#selThemes').val();
 	}
 
+	function downloadBackupThenClearGraveyard(){
+		downloadPlayedNotes();
+		gSong.graveyard.clear();
+		showMessages(gSong.graveyard.buildTable());
+	}
+
     // file save / save file / saveFile event
 	function downloadPlayedNotes(){
 	    updateMemoryModelPreFileSave();

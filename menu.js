@@ -51,6 +51,27 @@ var gMenuFile =    {
           "action": "showGraveyard"
         },
         {
+          "caption": "<b>C</b>lear graveyard, with backup",
+          "trigger": "C",
+          "children": [
+                {
+                  "caption": "<b>Y</b>es: CLEAR $graveyardRecordCount graveyard records !",
+                  "trigger": "Y",
+                  "action": "downloadBackupThenClearGraveyard",
+                  "vars": [
+                    "graveyardRecordCount"
+                  ],
+                  "popOnBang": true
+                },
+                {
+                  "caption": "<b>n</b>o: keep graveyard.",
+                  "trigger": "n",
+                  "action": "noAction",
+                  "popOnBang": true
+                }
+              ]
+        },
+        {
           "name": "lock",
           "caption": "<b>l</b>ock",
           "trigger": "l",

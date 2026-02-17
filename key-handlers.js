@@ -248,6 +248,9 @@ function performCmdAction(menuItem, args){
 		case "downloadPlayedNotes":
 			downloadPlayedNotes();
 			break;
+		case "downloadBackupThenClearGraveyard":
+			downloadBackupThenClearGraveyard();
+			break;
 		case "setSongName":
 			if (argByInputID){
 				$("#txtFilename").val(argByInputID).change();
@@ -606,6 +609,11 @@ function performCmdAction(menuItem, args){
 			$("#selBend").val(menuItem.name);
 			$("#rbBend").prop("checked", true);
 			break;
+		case "noAction":
+			console.log("noAction=====!");
+			actionResult.result = "none";
+			break;
+		
 		default:
 			break;
 	}
@@ -698,6 +706,9 @@ function getValue(what){
 			return getFramesCurrentIndex()+1;
 		case "frameCount":
 			return getSong().frames.length;
+		case "graveyardRecordCount":
+			debugger
+			return gSong.graveyard.getRecordCount();
 		case "beats":
 		case "beatCount":
 			return getCurrentFrame().beats;
