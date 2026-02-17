@@ -157,11 +157,11 @@ var gDefault_CycleOfColors = {
             "caption": "I"
         },
         "note2": {
-            "colorClass": "notePink5",
+            "colorClass": "notePink3",
             "caption": "&tau;"
         },
         "note3": {
-            "colorClass": "notePink1",
+            "colorClass": "notePink5",
             "caption": "II"
         },
         "note4": {

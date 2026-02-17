@@ -1836,8 +1836,8 @@ However, don't use for Root or other things.
 
 .notePink1 { color: lightblue; background-color:indigo;  }
 .notePink2 { color: black; background-color:mediumslateblue;  }
-.notePink3 { color: yellow; background-color:purple;  }
-.notePink4 { color: black; background-color:mediumvioletred;  }
+.notePink3 { color: lightblue; background-color:#1D0075;  }
+.notePink4 { color: yellow; background-color:purple;  }
 .notePink5 { color: black; background-color:magenta;  }
 .notePink6 { color: black; background-color:pink;  }
 .notePink7 { color: black; background-color:RosyBrown;  }
