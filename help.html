@@ -267,7 +267,10 @@
         Or, you can download the project from source in Github: <a target="_blank" href="https://github.com/laramie/infinite-neck">github.com/laramie/infinite-neck</a>
         <br>&bull;&nbsp;&nbsp;Written in HTML, Javascript/jQuery, and CSS.
         <br>&bull;&nbsp;&nbsp;Creative Commons Attribution-NonCommercial-ShareAlike license.
-        <br>&bull;&nbsp;&nbsp;Serve it up from a localhost server such as <b>python -m SimpleHTTPServer</b>
+        <br>&bull;&nbsp;&nbsp;Serve it up from a localhost python &nbsp;server such as <b>python -m SimpleHTTPServer</b>
+        <br>&bull;&nbsp;&nbsp;Serve it up from a localhost python3 server such as <b>python3 -m http.server 8000</b>
+        
+
         <br>&bull;&nbsp;&nbsp;Point Chrome or Firefox at http://localhost:8000/, and enjoy!
         <br>
         <br>
@@ -1449,7 +1452,7 @@ to hide menus and the Command-Line.</p>
      <a href="#loop">l</a> 
     <a href="#loop">L</a></li>
      <a href="#showHideCommand">m</a> 
-    <a href="#showHidhighlight all eCommand">M</a></li>
+    <a href="#showHideCommand">M</a></li>
      <a href="#nextBeat">n</a> 
     <a href="#nextBeat">N</a></li>
      <a href="#useAFingeringOpen">o</a></li>
@@ -1513,7 +1516,7 @@ to hide menus and the Command-Line.</p>
             <tr id="showHideTransport">
                 <td><span class="key">t</span>
                 </td>
-                <td>T
+                <td>
                 </td>
                 <td>show/hide Transport
                 </td>
@@ -2167,6 +2170,11 @@ to hide menus and the Command-Line.</p>
             <td>Fingering
             </td>
             <td>Which finger you use to play each note: 1, 2, 3, 4, T correspond to Index finger, Middle finger, Ring finger, Pinkie, and Thumb.
+                The special finger "o" is reserved for marking a string <b>o</b>pen.  
+                It is customary to place this "fingering" on the cells behind the nut, 
+                since these cells represent the notes that sound when playing an open string.
+                It is the letter o, not the number zero, since 0 is used as the global 
+                keyboard shortcut to change the width of the nut.
                 Also, "Fingering" can means simply placing a finger on a string at a fret.
             </td>
         </tr>
