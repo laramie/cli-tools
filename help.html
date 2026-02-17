@@ -30,6 +30,9 @@
        P {
            padding-left: 4em;
        }
+       P.example {
+           padding-left: 10em;
+       }
        UL {
            padding-left: 8em;
            font-size: 12pt;
@@ -89,6 +92,12 @@
            font-weight: bold;
            padding: 1em;
 
+       }
+       .callout{
+            margin: 4em; 
+            background-color: rgb(244, 198, 82);
+            border: 3px solid gray; 
+            padding: 12pt; 
        }
        .LinkList {
            font-size: 9pt;
@@ -172,6 +181,34 @@
            box-shadow: 4pt 4pt 6pt 2pt gray;
 
        }
+       #alphaCheatSheetLinks {
+        padding-left: 4em;
+       }
+        #alphaCheatSheetLinks a {
+            display: inline-block; 
+            text-decoration: none;
+            color: #010321;
+            border: 1px solid gray;
+            padding: 0.3em;
+            margin: 0.2em;
+            background-color: orange;
+        }
+
+        #alphaCheatSheetLinks a:hover {
+            display: inline-block; 
+            text-decoration: underline;
+            color: #ffdd01;
+            border: 1px solid gray;
+            padding: 0.3em;
+            margin: 0.2em;
+            background-color: rgb(25, 6, 0);
+        }
+        #tblCheatSheet tr {
+            scroll-margin-top: 2.3em; 
+        }
+
+
+    
 
 
     </style>
@@ -184,6 +221,7 @@
       <a class="helpButton" href="#why">Why</a>
       <a class="helpButton" href="#videos">Videos</a>
       <a class="helpButton" href="#help">Help</a>
+      <a class="helpButton" href="#keymap">Keymap</a>
       <a class="helpButton" href="#glossary">Glossary</a>
     </div>
 
@@ -411,7 +449,7 @@
          <p>The point is that the instrument that
              got me started on this madness was the Strandberg Boden <b><i>8-string</i></b> guitar with <b>24 frets</b>!  It seemed infinite to me!  </p>
 
-        <p><img  width="40%" src="img/help/strandberg-boden.png"></p>
+        <p><img width="100%" src="img/help/strandberg-boden-8str-h.png"></p>
          <p>Also,
              deciding to play this beast meant that when switching to 8-string bass (or 5-string bass),
              I'd have to know different layouts than Standard guitar tuning.
@@ -499,7 +537,20 @@
                 <ul class="LinkList">
                     <li><a href="#divFileControls">File</a>
                     <li><a href="#divSectionControls">Section</a>
+                    <ul class="LinkList">
+
+                        <li><a href="#divSectionDestination">Section :: Destination</a>
+                        <li><a href="#divSectionTransposition">Section :: Transposition</a>
+                        <li><a href="#divSectionKeyChange">Section :: Key Change</a>
+                    </ul>
                     <li><a href="#divViewControls">View</a>
+                    <ul class="LinkList">
+
+                        <li><a href="#displayOptionsTopic">View :: Display Options</a>
+                        <li><a href="#subscriptViewOptionsTopic">View :: Subscript Options</a>
+                    </ul>
+
+
                     <li><a href="#divThemeControls">Theme</a>
                     <li><a href="#divFillNotes">Fill</a>
                     <li><a href="#divTunings">Tunings</a>
@@ -868,9 +919,10 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; loop over the beats in just one section as you add notes to the beats (different from Loop Song on the Transport)
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; save DisplayOptions, which include the Root Key and Lead Root Key, plus all the items on the View menu, plus Theme and Stylesheets
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; transpose all NamedNotes in the Section
-      <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; set the enharmonic choice of sharps or flats for the key of the Section.
+      <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; set the enharmonic choice of sharps or flats for the key of the Section. [See <a href="#divSectionKeyChange">Section :: Key Change</a> below]
  </p>
 
+ <a name="divSectionDestination"></a>
   <h4 style="margin-left: 4em;">Section :: Destination</h4>
 
  <p>When moving, creating or cloning Sections, pay attention to the dropdown called "Destination after &sect;".  This is where
@@ -878,6 +930,8 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
      "BEGIN" as the Destination creates or moves to Section 1, pushing the existing Section 1 to Section 2,
      and bumping all other Sections later as well.
  </p>
+
+ <a name="divSectionTransposition"></a>
  <h4 style="margin-left: 4em;">Section :: Transposition</h4>
  <p>If the "Allow transposition by keyboard shortcuts d, U, u, D,  j , & J" checkbox is checked, then these
      keyboard shortcuts work; otherwise they don't.
@@ -919,13 +973,17 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
      is still two strings up, but one fret back).
      You can see the new Root key in the caption bar of the instrument: a small, sunken box has a D-flat where before it had a C.
      You can also see that AutoColor has shown the Note Functions being the same in the new key, since AutoColor assigns colors
-     to Note Function, regardless of NoteName or Root Key.  In this AutoColor ColorScheme ("CycleOfColors"), the Root is black, the V is red,
-     and the III is a kelly green.  In this scheme, Dominant seven (&delta;) is a pool blue, while the 6 is a chartreuse green.
+     to Note Function, regardless of NoteName or Root Key.  In this AutoColor ColorScheme ("CycleOfColors2020"), the Root is black, the V is red,
+     and the III is a kelly green.  In this scheme, Dominant seven (&delta;) is a pool blue, while the 6 is a chartreuse green.  
+     [The updated default AutoColor scheme is "CycleOfColors" and is different than these examples.]
  </p>
+
+ <a name="divSectionKeyChange"></a>
 <h4 style="margin-left: 4em;">Section :: Key Change</h4>
 <p>
     If we had just wanted to change keys but leave all the notes, we would just change the key of
-    the Section with the dropdown "Key", which would look like this:
+    the Section with the dropdown "Key".  Mashing on the "Flats" or "Sharps" buttons first sets whether the "Key" and "LeadKey" dropdown
+    will show sharps or flats, and also always updates how the neck will display them.  The result would look like this:
 </p>
 <p>
    Before (Root = C):
@@ -945,11 +1003,114 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
     Since AutoColor is on, the notes automatically get new colors--AutoColor assigns a color per Note Function.
 </p>
 
+<p>The keyboard shortcut for changing the key is "k", 
+    which cycles through the keys in chromatic order, 
+    so that you can quickly try out different keys.
+    This allows you to see which key makes the most sense for the notes chosen.
+    You will see the function names (and auto-colors) change as you change keys, 
+    since the Note Functions are relative to the Root Key.  
+    "Shift-k" cycles through the keys in reverse chromatic order.
+    The new key root is shown in the caption bar of the Section 
+    and the caption bar of the instrument, 
+    and all the notes that match the key letter are highlighted until you do something else.
+</p>
+
+<p>The "Sharps" and "Flats" buttons in the Section menu let you choose whether to show the notes on the neck with sharps or flats.  
+    This is just a display option, and does not change the actual notes on the neck, which are always the same MIDI pitches.  
+    So if you have a C# note, it will be shown as C# if you choose "Sharps", and as D&flat; 
+    if you choose "Flats".  The command-line shortcut for doing this is 
+    <span class="menuExampleLine"><b><small>/ss</small></b></span>, for <b>s</b>ection | <b>s</b>harps, or 
+    <span class="menuExampleLine"><b><small>/sf</small></b></span>, for <b>s</b>ection | <b>f</b>lats.  
+    [<i>After any command-line command, hit <span class="key">ESC</span> to close the command-line.</i>] 
+</p>
+
+<p>Just like using the dropdown "Key" or "LeadKey" on the Section menu page, on the command-line you can also set the key of a Section with the command 
+    <span class="menuExampleLine"><b><small>/sk</small></b></span>.  This brings
+    you to the menus choices of <span class="menuExampleLine"><b><small>white keys</small></b></span>
+    where you can choose the keys: <span class="menuExampleLine"><b><small>a, b, c, d, e, f, g</small></b></span>, 
+        which sets the Root key, and sets Sharps to true for the major keys A,B,C,D,E and G which have sharps,
+    and sets Flats to true for the major key of F, which has a B&flat;.</p>
+    
+    <p>
+    At that <span class="menuExampleLine"><b><small>/sk</small></b></span> menu, you could also select <span class="menuExampleLine"><b><small>black keys</small></b></span>
+    where you can choose the keys: <span class="menuExampleLine"><b><small>a&flat;, b&flat;, d&flat;, e&flat;, g&flat;</small></b></span>, because these major keys have flats.
+    You can then override Sharps or Flats with <span class="menuExampleLine"><b><small>/ss</small></b></span>, 
+     or    <span class="menuExampleLine"><b><small>/sf</small></b></span>.  
+    </p><p>
+    So choosing "e&flat;" would set the Root key to E&flat; and Flats to true.
+    If you then chose Sharps, the Root key would be D&sharp; 
+    and all other black keys would be shown as sharps.
+</p>
+
+<p> LeadKey is only displayed on the neck using TinyNotes, and these show only the Note Function, not the Note Name. 
+    So just set the LeadKey dropdown to the pitch you will be playing, even though its enharmonic name may be incorrect, 
+    because whether Sharps or Flats are shown
+    in the LeadKey dropdown is chosen by the Section's Sharps/Flats buttons, which also set the choices displayed for the Key dropdown.  Similarly, using 
+    the command-line to set LeadKey, choose the correct pitch using the available "black keys" menu choice, e.g. D&flat; instead of C&sharp;, which is not available through the command-line.
+    </p>
+
+<p>Remember, this is just a display option, and does not change the actual notes on the neck.
+   Suppose you want to play in Gminor, which has two flats.  You would select G as the Root key, 
+   and select Flats.  <span class="productsmaller">infinite-neck</span> 
+   doesn't know about major and minor keys or key signatures.  
+   It just lets you display all the black keys with either Flats names or Sharps names. No mixed use of sharps and flats is displayed, there is no 
+   concept of accidentals,  
+   there are no double flats or double sharps, and there is no display of enharmonic names like C&flat; B&sharp; E&sharp; or F&flat;.
+
+    
+</p>
+
+<p>Remember, this is just a display option, and does not change the actual notes on the neck.  So it is possible to choose B as the key with Flats, 
+    and the neck will display the following notes: B&flat;, B, C, D&flat; D, etc., even though this may be enharmonically weird.  If you are playing 
+    in G, set Sharps to true, and if you are playing in Gminor, set Flats to true.
+</p>
+
+<p>To recap, here are some example command-lines.  To get these to work just start typing the 
+    command letters shown.  The initial forward-slash key <span class="menuExampleLine"><b><small>  /</small></b></span> pops up the command-line. (It's best to have any Button Menus closed by hitting <span class="key">ESC</span>  first.) Note that the Sharps and Flats change in the display of each cell, 
+    following the command-line choice.
+    To create these examples, we chose different notes that matched the scale we would be playing.</p>
+<p>Input notes for D&flat;major, then set the Root Key to D&flat;:</p>
+<p class="example">
+    <span class="menuExampleLine"><b><small>/skbd</small></b></span>  <span class="key">ESC</span>
+</p> 
+<p class="example">
+    <img class="floatingScreenshot" src="img/help/context/section-key-Dflat-major.png">
+</p>
+
+
+<p>Input notes for Gmajor, then set the Root Key to G, for playing Gmajor:</p>
+<p class="example">
+    <span class="menuExampleLine"><b><small>/skwg</small></b></span>  <span class="key">ESC</span>
+</p> 
+<p class="example">
+    <img class="floatingScreenshot"   src="img/help/context/section-key-Gmajor.png">
+</p>
+
+<p>Input the notes for G natural minor, then set the Root Key to G, 
+    then ENTER twice to go up two command-line levels, then f for flats for playing Gminor with Flats:</p>
+<p class="example">
+    <span class="menuExampleLine"><b><small>/skwg</small></b></span>&nbsp;&nbsp; <span class="key">ENTER</span> &nbsp; <span class="key">ENTER</span> &nbsp; <span class="menuExampleLine"><b><small>f</small></b></span> &nbsp; <span class="key">ESC</span>
+</p> 
+<p class="example">
+    <img class="floatingScreenshot"  src="img/help/context/section-key-Gminor.png">
+</p>
+
+
+<p>
+   Here is how it looks (and is enharmonically incorrect) if you chose G with Sharps, but were playing notes in Gminor:
+</p>
+<p class="example">
+    <img class="floatingScreenshot"  src="img/help/context/section-key-Gminor-sharps.png">
+</p>
+
 
 
 
 <a name="divViewControls"></a>
 <h3>View</h3>
+
+<a name="displayOptionsTopic"></a>
+<h4>Display Options</h4>
 
 <p>All the controls on this page update the fretboard display in real-time.
      All can be saved to the Section Display Options, such that
@@ -979,6 +1140,11 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
      Remember that if one of the controls traps the keyboard, click in some blank spot of the screen or hit <span class="key">ESC</span> and then V to
      come back to the View menu.
  </p>
+
+ <p>There's a bit more info in the <a href="#glossaryDisplayOptions">Glossary::Display Options</a> entry</p>
+
+<a name="subscriptViewOptionsTopic"></a>
+<h4>Subscript Options</h4>
 
 <p>You can play around with the following options:
 <br>&nbsp;&nbsp;Show Right Subscript
@@ -1064,11 +1230,11 @@ For all these examples, "Show Left Subscript" and "Show Right Subscript" are che
      (Except that we provide not just one but [Chord, Ch2, and Ch3],
      so that you can have three different chord colors to be assigned as you click.)
      If you just want a color for each note, that you'll assign, then click "More..." after the Major Seventh role color radio button.
-     You'll then see the full palette infinite-neck provides.  Whenever AutoColor is active, your color choices for individual colors chosen this
+     You'll then see the full palette <span class="productsmaller">infinite-neck</span>  provides.  Whenever AutoColor is active, your color choices for individual colors chosen this
      way will be ignored.
  </p>
 
- <p>AutoColor uses a ColorScheme.  infinite-neck comes with a Default ColorScheme, called "CycleOfColors", which is based
+ <p>AutoColor uses a ColorScheme.  <span class="productsmaller">infinite-neck</span>  comes with a Default ColorScheme, called "CycleOfColors", which is based
      on my whack theory that associating a color with each Note Function helps to learn and spot patterns of chords.  That is, a Major Seventh chord
      always looks the same, color-wise, so seeing an inversion of that chord on the neck should stimulate a memory, and help
      us navigate the pattern of that chord all around the neck.  If you find it weird or annoying, you have two options: 1) turn AutoColor off; 2) customize
@@ -1258,257 +1424,475 @@ Stylesheet order
  <a name="cheatsheet"></a>
  <hr>
  <h2>Cheatsheet</h2>
+ <a name="keymap"></a>
     <h3>Keymap:</h3>
     <p>These keys can be pressed at any time.  If you have other menus up,
     or the Command-Line, keystrokes may go to those.  Just hit <span class="key">ESC</span> first,
 to hide menus and the Command-Line.</p>
-    <table class="CheatSheet" cellspacing="0" border="1">
-        <tr>
-            <th>key
-            </th>
-            <th>also
-            </th>
-            <th>action
-            </th>
-        </tr>
-        <tr>
-            <td><span class="key">p</span>
-            </td>
-            <td><span class="key">P</span>
-            </td>
-            <td>show/hide Palette
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">t</span>
-            </td>
-            <td>
-            </td>
-            <td>show/hide Transport
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">s</span>
-            </td>
-            <td><span class="key">S</span>
-            </td>
-            <td>show/hide Section menu
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">v</span>
-            </td>
-            <td>
-            </td>
-            <td>show/hide View menu
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">i</span>
-            </td>
-            <td>
-            </td>
-            <td>show/hide Fill menu
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">l</span>
-            </td>
-            <td><span class="key">L</span>
-            </td>
-            <td>Loop
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">b</span>
-            </td>
-            <td><span class="key">B</span>
-            </td>
-            <td>previous Beat
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">n</span>
-            </td>
-            <td><span class="key">N</span>
-            </td>
-            <td>Next beat
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">,</span>
-            </td>
-            <td><span class="key">&lt;</span>
-            </td>
-            <td>previous Section
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">.</span>
-            </td>
-            <td><span class="key">&gt;</span>
-            </td>
-            <td>next Section
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">k</span>
-            </td>
-            <td>
-            </td>
-            <td>raise root Key
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">K</span>
-            </td>
-            <td>
-            </td>
-            <td>lower root Key
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">j</span>
-            </td>
-            <td>
-            </td>
-            <td>Transpose named-notes up a perfect fourth -- Jump one string on a P4 instrument.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">J</span>
-            </td>
-            <td>
-            </td>
-            <td>Transpose named-notes down a perfect fourth -- Jump one string on a P4 instrument.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">u</span>
-            </td>
-            <td><span class="key">D</span>
-            </td>
-            <td>raise root key and Transpose named-notes up one semitone. [Must have "Allow transposition..."
-                checkbox checked in "Section" menu page]
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">d</span>
-            </td>
-            <td><span class="key">U</span>
-            </td>
-            <td>lower root key and Transpose named-notes down one semitone. [Must have "Allow transposition..."
-                checkbox checked in "Section" menu page, or use Command-line:
-                <span class="menuExampleLine"><b>/fu</b> (<b>f</b>ile <b>u</b>nlock)</span>]
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">w</span>
-            </td>
-            <td><span class="key">W</span>
-            </td>
-            <td>change width of cells: <span class="key">w</span> increases, and cycles back to smallest again if you go past the widest;
-                <span class="key">W</span> decreases and stops at minimum.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">h</span>
-            </td>
-            <td><span class="key">H</span>
-            </td>
-            <td>change height of cells: <span class="key">h</span> increases, and cycles back to smallest again if you go past the widest;
-                <span class="key">H</span> decreases and stops at minimum.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">a</span>
-            </td>
-            <td>
-            </td>
-            <td>Show/hide Song title and caption
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">A</span>
-            </td>
-            <td>
-            </td>
-            <td>Show/hide Instrument captions
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">c</span>
-            </td>
-            <td>
-            </td>
-            <td>Toggle Auto-color
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">ESC</span>
-            </td>
-            <td>
-            </td>
-            <td>Hide menus, blur focus so keypresses do the action, rather than being captured by a textbox, e.g. the SongName.
-            </td>
-        </tr>
+<div id="alphaCheatSheetLinks">
+     <a href="#showHideSongTitle">a</a> 
+    <a href="#showHideSongTitle">A</a></li>
+     <a href="#previousBeat">b</a> 
+    <a href="#previousBeat">B</a></li>
+     <a href="#toggleAutoColor">c</a></li>
+     <a href="#lowerRootKeyAnd">d</a> 
+    <a href="#raiseRootKeyAnd">D</a></li>
+     <a href="#toggleFullscreenMode">f</a> 
+    <a href="#toggleFullscreenMode">F</a></li>
+     <a href="#changeHeightOfCells">h</a> 
+    <a href="#changeHeightOfCells">H</a></li>
+     <a href="#showHideFill">i</a></li>
+     <a href="#transposeNamedNotesUp">j</a></li>
+     <a href="#transposeNamedNotesDown">J</a></li>
+     <a href="#raiseRootKey">k</a></li>
+     <a href="#lowerRootKey">K</a></li>
+     <a href="#loop">l</a> 
+    <a href="#loop">L</a></li>
+     <a href="#showHideCommand">m</a> 
+    <a href="#showHidhighlight all eCommand">M</a></li>
+     <a href="#nextBeat">n</a> 
+    <a href="#nextBeat">N</a></li>
+     <a href="#useAFingeringOpen">o</a></li>
+     <a href="#showHidePalette">p</a> 
+    <a href="#showHidePalette">P</a></li>
+     <a href="#showHideQuick">q</a></li>
+     <a href="#showHideSection">s</a> 
+    <a href="#showHideSection">S</a></li>
+     <a href="#showHideTransport">t</a></li>
+     <a href="#raiseRootKeyAnd">u</a> 
+     <a href="#lowerRootKeyAnd">U</a></li>
+     <a href="#showHideView">v</a></li>
+     <a href="#changeWidthOfCells">w</a> 
+    <a href="#changeWidthOfCells">W</a></li>
 
-        <tr>
-            <td><span class="key">0</span>
-            </td>
-            <td>
-            </td>
-            <td>[the zero key] Cycle through display options of the Nut: {none, small, ...., wide}.  (First hit is "none" so Nut disappears.)  Super-wide Nut settings
-                are for when you are zoomed way out in the browser (and want the instrument to look like a Koto).
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">-</span>
-            </td>
-            <td>
-            </td>
-            <td>Decrease User-Interface font size.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">=</span>
-            </td>
-            <td>
-            </td>
-            <td>Increase User-Interface font size.
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">_</span>
-            </td>
-            <td>
-            </td>
-            <td>Decrease Cell/Note font size to tweek your Note display.  (Note: moves in small increments)
-            </td>
-        </tr>
-        <tr>
-            <td><span class="key">+</span>
-            </td>
-            <td>
-            </td>
-            <td>Increase Cell/Note font size. (Note: moves in small increments)
-            </td>
-        </tr>
+    <br />
+     <a href="#cycleThroughDisplay">0</a></li>
+     <a href="#useAFingeringIndex">1</a></li>
+     <a href="#useAFingeringMiddle">2</a></li>
+     <a href="#usesAFingeringRing">3</a></li>
+     <a href="#useFingeringNoteFourth">4</a></li>
+     <a href="#userFingeringNoteThumb">5</a></li>
+     <a href="#useNamedNotes">6</a></li>
+     <a href="#useSingleNotes">7</a></li>
+     <a href="#useTinyNotes">8</a></li>
+     <a href="#useBendNotes">9</a></li>
+    <br />
+     <a href="#previousSection">,</a> 
+     <a href="#nextSection">.</a> 
+     <a href="#launchCommandLine">/</a></li>
+    
+    <a href="#previousSection">&lt;</a></li>
+    <a href="#nextSection">&gt;</a></li>
 
+     <a href="#usethePitchHighlighter">[</a></li>
+     <a href="#usetheMultiHighlighter">]</a></li>
+     <a href="#resetCellNoteFont">)</a></li>
+     <a href="#decreaseCellNoteFont">_</a></li>
+     <a href="#decreaseUserInterfaceFont">-</a></li>
+     <a href="#increaseCellNoteFont">+</a></li>
+     <a href="#increaseUserInterfaceFont">=</a></li>
+    <br />
+     <a href="#hideMenusBlurFocus">ESC</a></li>
+     <a href="#learnHowToBrowser">Cmd -/+</a> 
+    <a href="#learnHowToBrowser">Ctrl -/+</a></li>
+    
+</div>
+       
 
-        <tr>
-            <td><span class="key">Ctrl</span> <span class="key">-/+</span>
-            </td>
-            <td><span class="key">Cmd</span> <span class="key">-/+</span>
-            </td>
-            <td>Learn how to do this in your browser: it resizes the elements of the page up and down.
-                On Mac, it will be <span class="key">Cmd</span> instead of <span class="key">Ctrl</span>.
-                This is a great feature of any browser app, and you can use it to scale the neck(s) to your liking.
-                Use <span class="key">Cmd</span>-<span class="key">0</span> or <span class="key">Ctrl</span>-<span class="key">0</span>
-                to reset to default so you can see the buttons and controls.
-            </td>
-        </tr>
+        <!-- new table -->
+        <table id="tblCheatSheet" class="CheatSheet" cellspacing="0" border="1">
+            <tr>
+                <th id="colKey">key
+                </th>
+                <th id="colAlso">also
+                </th>
+                <th id="colAction">action
+                </th>
+            </tr>
+        
+            <tr id="showHideTransport">
+                <td><span class="key">t</span>
+                </td>
+                <td>T
+                </td>
+                <td>show/hide Transport
+                </td>
+            </tr>
+            <tr id="showHidePalette">
+                <td><span class="key">p</span>
+                </td>
+                <td><span class="key">P</span>
+                </td>
+                <td>show/hide Palette
+                </td>
+            </tr>
+            
+            <tr id="showHideSection">
+                <td><span class="key">s</span>
+                </td>
+                <td><span class="key">S</span>
+                </td>
+                <td>show/hide Section menu
+                </td>
+            </tr>
+            <tr id="showHideView">
+                <td><span class="key">v</span>
+                </td>
+                <td>
+                </td>
+                <td>show/hide View menu
+                </td>
+            </tr>
+            <tr id="showHideFill">
+                <td><span class="key">i</span>
+                </td>
+                <td>
+                </td>
+                <td>show/hide Fill menu
+                </td>
+            </tr>
+            <tr id="showHideQuick">
+                <td><span class="key">q</span>
+                </td>
+                <td>
+                </td>
+                <td>show/hide Quick menu button row
+                </td>
+            </tr>
+            <tr id="showHideCommand">
+                <td><span class="key">m</span>
+                </td>
+                <td><span class="key">M</span>
+                </td>
+                <td>show/hide command-line
+                </td>
+            </tr>
+            <tr id="launchCommandLine">
+                <td><span class="key">/</span>
+                </td>
+                <td>
+                </td>
+                <td>launch command-line
+                </td>
+            </tr>
+            
+            <tr id="toggleFullscreenMode">
+                <td><span class="key">f</span>
+                </td>
+                <td><span class="key">F</span>
+                </td>
+                <td>toggle Fullscreen mode
+                </td>
+            </tr>
+            
+            <tr id="loop">
+                <td><span class="key">l</span>
+                </td>
+                <td><span class="key">L</span>
+                </td>
+                <td>Loop
+                </td>
+            </tr>
+            <tr id="previousBeat">
+                <td><span class="key">b</span>
+                </td>
+                <td><span class="key">B</span>
+                </td>
+                <td>previous Beat
+                </td>
+            </tr>
+            <tr id="nextBeat">
+                <td><span class="key">n</span>
+                </td>
+                <td><span class="key">N</span>
+                </td>
+                <td>Next beat
+                </td>
+            </tr>
+            <tr id="previousSection">
+                <td><span class="key">,</span>
+                </td>
+                <td><span class="key">&lt;</span>
+                </td>
+                <td>previous Section
+                </td>
+            </tr>
+            <tr id="nextSection">
+                <td><span class="key">.</span>
+                </td>
+                <td><span class="key">&gt;</span>
+                </td>
+                <td>next Section
+                </td>
+            </tr>
+            <tr id="raiseRootKey">
+                <td><span class="key">k</span>
+                </td>
+                <td>
+                </td>
+                <td>raise root Key
+                </td>
+            </tr>
+            <tr id="lowerRootKey">
+                <td><span class="key">K</span>
+                </td>
+                <td>
+                </td>
+                <td>lower root Key
+                </td>
+            </tr>
+            <tr id="transposeNamedNotesUp">
+                <td><span class="key">j</span>
+                </td>
+                <td>
+                </td>
+                <td>Transpose named-notes up a perfect fourth -- Jump one string on a P4 instrument.
+                </td>
+            </tr>
+            <tr id="transposeNamedNotesDown">
+                <td><span class="key">J</span>
+                </td>
+                <td>
+                </td>
+                <td>Transpose named-notes down a perfect fourth -- Jump one string on a P4 instrument.
+                </td>
+            </tr>
+            <tr id="raiseRootKeyAnd">
+                <td><span class="key">u</span>
+                </td>
+                <td><span class="key">D</span>
+                </td>
+                <td>raise root key and Transpose named-notes up one semitone. [Must have "Allow transposition..."
+                    checkbox checked in "Section" menu page]
+                </td>
+            </tr>
+            <tr id="lowerRootKeyAnd">
+                <td><span class="key">d</span>
+                </td>
+                <td><span class="key">U</span>
+                </td>
+                <td>lower root key and Transpose named-notes down one semitone. [Must have "Allow transposition..."
+                    checkbox checked in "Section" menu page, or use Command-line:
+                    <span class="menuExampleLine"><b>/fu</b> (<b>f</b>ile <b>u</b>nlock)</span>]
+                </td>
+            </tr>
+            <tr id="changeWidthOfCells">
+                <td><span class="key">w</span>
+                </td>
+                <td><span class="key">W</span>
+                </td>
+                <td>change width of cells: <span class="key">w</span> increases, and cycles back to smallest again if you go past the widest;
+                    <span class="key">W</span> decreases and stops at minimum.
+                </td>
+            </tr>
+            <tr id="changeHeightOfCells">
+                <td><span class="key">h</span>
+                </td>
+                <td><span class="key">H</span>
+                </td>
+                <td>change height of cells: <span class="key">h</span> increases, and cycles back to smallest again if you go past the widest;
+                    <span class="key">H</span> decreases and stops at minimum.
+                </td>
+            </tr>
+            <tr id="showHideSongTitle">
+                <td><span class="key">a</span>
+                </td>
+                <td>
+                </td>
+                <td>Show/hide Song title and caption
+                </td>
+            </tr>
+            <tr id="showHideInstrumentCaptions">
+                <td><span class="key">A</span>
+                </td>
+                <td>
+                </td>
+                <td>Show/hide Instrument captions
+                </td>
+            </tr>
+            <tr id="toggleAutoColor">
+                <td><span class="key">c</span>
+                </td>
+                <td>
+                </td>
+                <td>Toggle Auto-color
+                </td>
+            </tr>
+            
+            <tr id="cycleThroughDisplay">
+                <td><span class="key">0</span>
+                </td>
+                <td>
+                </td>
+                <td>[the zero key] Cycle through display options of the Nut: {none, small, ...., wide}.  (First hit is "none" so Nut disappears.)  Super-wide Nut settings
+                    are for when you are zoomed way out in the browser (and want the instrument to look like a Koto).
+                </td>
+            </tr>
+            <tr id="useAFingeringOpen">
+                <td><span class="key">o</span>
+                </td>
+                <td>
+                </td>
+                <td>[letter o as in '<b>o</b>pen'] Use a fingering note implying an open string
+                </td>
+            </tr>
+            <tr id="useAFingeringIndex">
+                <td><span class="key">1</span>
+                </td>
+                <td>
+                </td>
+                <td>Use a fingering note for the first (index) finger
+                </td>
+            </tr>
+            <tr id="useAFingeringMiddle">
+                <td><span class="key">2</span>
+                </td>
+                <td>
+                </td>
+                <td>Use a fingering note for the second (middle) finger
+                </td>
+            </tr>
+            <tr id="usesAFingeringRing">
+                <td><span class="key">3</span>
+                </td>
+                <td>
+                </td>
+                <td>Uses a fingering note for the third (ring) finger
+                </td>
+            </tr>
+            <tr id="useFingeringNoteFourth">
+                <td><span class="key">4</span>
+                </td>
+                <td>
+                </td>
+                <td>Use fingering note for the fourth finger (pinky)
+                </td>
+            </tr>
+            <tr id="userFingeringNoteThumb">
+                <td><span class="key">5</span>
+                </td>
+                <td>
+                </td>
+                <td>User fingering note for the thumb
+                </td>
+            </tr>
+            <tr id="useNamedNotes">
+                <td><span class="key">6</span>
+                </td>
+                <td>
+                </td>
+                <td>Use Named Notes
+                </td>
+            </tr>
+            <tr id="useSingleNotes">
+                <td><span class="key">7</span>
+                </td>
+                <td>
+                </td>
+                <td>Use Single Notes
+                </td>
+            </tr>
+            <tr id="useTinyNotes">
+                <td><span class="key">8</span>
+                </td>
+                <td>
+                </td>
+                <td>Use Tiny Notes
+                </td>
+            </tr>
+            <tr id="useBendNotes">
+                <td><span class="key">9</span>
+                </td>
+                <td>
+                </td>
+                <td>Use Bend Notes
+                </td>
+            </tr>
+            <tr id="usethePitchHighlighter">
+                <td><span class="key">[</span>
+                </td>
+                <td>
+                </td>
+                <td>Use the <b>Pitch</b> Highlighter to show cells with same MIDI Pitch number as the cell you clicked
+                </td>
+            </tr>
+            <tr id="usetheMultiHighlighter">
+                <td><span class="key">]</span>
+                </td>
+                <td>
+                </td>
+                <td>Use the <b>Multi</b> Highlighter for highlighting multiple cells at once
+                </td>
+            </tr>
+        
+            <tr id="decreaseUserInterfaceFont">
+                <td><span class="key">-</span>
+                </td>
+                <td>
+                </td>
+                <td>Decrease User-Interface font size.
+                </td>
+            </tr>
+            <tr id="increaseUserInterfaceFont">
+                <td><span class="key">=</span>
+                </td>
+                <td>
+                </td>
+                <td>Increase User-Interface font size.
+                </td>
+            </tr>
+            <tr id="decreaseCellNoteFont">
+                <td><span class="key">_</span>
+                </td>
+                <td>
+                </td>
+                <td>Decrease Cell/Note font size to tweek your Note display.  (Note: moves in small increments)
+                </td>
+            </tr>
+            <tr id="increaseCellNoteFont">
+                <td><span class="key">+</span>
+                </td>
+                <td>
+                </td>
+                <td>Increase Cell/Note font size. (Note: moves in small increments)
+                </td>
+            </tr>
+            <tr id="resetCellNoteFont">
+                <td><span class="key">)</span>
+                </td>
+                <td>
+                </td>
+                <td>Reset Cell/Note font size to Default
+                </td>
+            </tr>
+        
+            <tr id="learnHowToBrowser">
+                <td><span class="key">Ctrl</span> <span class="key">-/+</span>
+                </td>
+                <td><span class="key">Cmd</span> <span class="key">-/+</span>
+                </td>
+                <td>Learn how to do this in your browser: it resizes the elements of the page up and down.
+                    On Mac, it will be <span class="key">Cmd</span> instead of <span class="key">Ctrl</span>.
+                    This is a great feature of any browser app, built into the browser itself, and you can use it to scale the neck(s) to your liking.
+                    Use <span class="key">Cmd</span>-<span class="key">0</span> or <span class="key">Ctrl</span>-<span class="key">0</span>
+                    to reset to default so you can see the buttons and controls.
+                </td>
+            </tr>
+        
+            <tr id="hideMenusBlurFocus">
+                <td><span class="key">ESC</span>
+                </td>
+                <td>
+                </td>
+                <td>Hide menus, blur focus so keypresses do the action, rather than being captured by a textbox, e.g. the SongName.
+                </td>
+            </tr>
+        
         </table>
+
+        <!-- end new table -->
+          
+
         <p>
             Note: <span class="key">TAB</span> order works in this application, and <span class="key">SPACE</span>
             key and arrow keys are not overriden,
@@ -1631,7 +2015,13 @@ to hide menus and the Command-Line.</p>
             </tr>
         </table>
 
+<div class="callout">
 
+    Note: using the command-line <span class="menuExampleLine"><b><small>/vdm</small></b></span> calls <b>v</b>iew <b>d</b>iagnostics <b>m</b>enu-dump which
+    will dump out a plaintext listing of the entire command-line heirarchy. 
+    It appears at the bottom of the page, after any instruments, 
+    so hit <span class="key">ESC</span> to get rid of the command-line, then scroll down.
+</div>
 
 <a name="techie"></a>
 <hr>
@@ -1896,7 +2286,7 @@ to hide menus and the Command-Line.</p>
             <td>Highlight style that lets you highlight multiple notes on one Beat.
             </td>
         </tr>
-        <tr>
+        <tr id="glossaryDisplayOptions">
             <td>Display Options
             </td>
             <td>Each Section can remember the options set on the View menu,
@@ -1918,6 +2308,9 @@ to hide menus and the Command-Line.</p>
                 watch the controls change while you hit the Transport next section buttons, or the keyboard shortcuts ( &lt; and &gt; ).
                 Remember that if one of the controls traps the keyboard, click in some blank spot of the screen or hit <span class="key">ESC</span> and then V to
                 come back to the View menu.
+                <br>
+                <br>
+                See more info in the <a href="#displayOptionsTopic">Display Options</a> context help topic.
             </td>
         </tr>
         <tr>

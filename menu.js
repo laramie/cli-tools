@@ -754,6 +754,10 @@ var gMenuFile =    {
           "action": "selectFingering",
           "children": [
             {
+              "caption": "<b>o</b>",
+              "trigger": "o"
+            },
+            {
               "caption": "<b>1</b>",
               "trigger": "1"
             },

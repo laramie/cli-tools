@@ -532,6 +532,10 @@ function performCmdAction(menuItem, args){
 		case "selectFingering":
 			if (args){
 				switch (args["key"]){
+					case "o":  //the letter o, for the Finger0, since 0 is used for the nut width keymap.
+						checkRB("#rbFinger0");
+						checkRB("#idRFinger0");
+						break;
 					case "1":
 					    checkRB("#rbFinger1");
 						checkRB("#idRFinger1");

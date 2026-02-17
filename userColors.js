@@ -111,6 +111,12 @@ var gUserColorDictFingeringsDefault = {
     computed: false,
     checked: true,
     dict: {
+        "noteFinger0":{
+            "colorClass": "Finger0",
+            "caption": "Finger0",
+            "tiny": "F0"
+
+        },
         "noteFinger1":{
             "colorClass": "Finger1",
             "caption": "Finger1",
@@ -333,6 +339,11 @@ var gAllClear = {
           "colorClass": "noteWhite",
           "caption": "Lead 2",
           "tiny": "L2"
+        },
+        "noteFinger0": {
+          "colorClass": "noteWhite",
+          "caption": "Finger0",
+          "tiny": "F0"
         },
         "noteFinger1": {
           "colorClass": "noteWhite",
