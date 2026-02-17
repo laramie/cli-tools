@@ -173,11 +173,11 @@ var gDefault_CycleOfColors = {
             "caption": "III"
         },
         "note6": {
-            "colorClass": "noteBrown1",
+            "colorClass": "noteBrown2",
             "caption": "IV"
         },
         "note7": {
-            "colorClass": "noteBrown3",
+            "colorClass": "noteRed3",
             "caption": "&Theta;"
         },
         "note8": {
@@ -185,15 +185,15 @@ var gDefault_CycleOfColors = {
             "caption": "V"
         },
         "note9": {
-            "colorClass": "noteYellow3",
+            "colorClass": "noteYellow2",
             "caption": "&sigma;"
         },
         "note10": {
-            "colorClass": "noteYellow5",
+            "colorClass": "noteYellow4",
             "caption": "6"
         },
         "note11": {
-            "colorClass": "noteGreen3",
+            "colorClass": "noteGreen1",
             "caption": "&delta;"
         },
         "note12": {

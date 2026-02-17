@@ -1813,7 +1813,7 @@ However, don't use for Root or other things.
 */
 .noteRed1 { color: orange; background-color:#4d0000;  }
 .noteRed2 { color: orange; background-color:maroon;  }
-.noteRed3 { color: orange; background-color:chocolate;  }
+.noteRed3 { color: yellow; background-color:chocolate;  }
 .noteRed4 { color: orange; background-color:firebrick;  }
 .noteRed5 { color: yellow; background-color:crimson;  }
 .noteRed6 { color: orange; background-color:orangered;  }
@@ -1822,9 +1822,9 @@ However, don't use for Root or other things.
 
 
 
-.noteBrown1 { color: darkorange; background-color:#321414; }
-.noteBrown2 { color: yellow; background-color:sienna; }
-.noteBrown3 { color: yellow; background-color:chocolate; }
+.noteBrown1 { color: orange; background-color: #160000; }
+.noteBrown2 { color: darkorange; background-color:#321414; }
+.noteBrown3 { color: yellow; background-color:sienna; }
 .noteBrown4 { color: yellow; background-color:coral; }
 .noteBrown5 { color: yellow; background-color:darkorange; }
 .noteBrown6 { color: yellow; background-color:darkgoldenrod; }
@@ -1854,29 +1854,30 @@ However, don't use for Root or other things.
 
 
 
-.noteGreen1 { color: black; background-color:lightseagreen;  }
-.noteGreen2 { color: black; background-color:teal;  }
+.noteGreen1 { color: white; background-color: #002d04;  }
+.noteGreen2 { color: white; background-color:#06402B;  }
 .noteGreen3 { color: black;  background-color: green;}
 .noteGreen4 { color: black; background-color:darkolivegreen;  }
-.noteGreen5 { color: black; background-color:darkseagreen;  }
-.noteGreen6 { color: black; background-color:lightgreen;  }
+.noteGreen5 { color: black; background-color:darkgreen;  }
+.noteGreen6 { color: black; background-color:greenyellow;  }
 .noteGreen7 { color: black; background-color:chartreuse;  }
 
-.noteYellow1 { color: black; background-color:GreenYellow; }
-.noteYellow2 { color: black; background-color: DarkKhaki; }
-.noteYellow3 { color: black; background-color:GoldenRod;  }
-.noteYellow4 { color: black; background-color:Gold;  }
-.noteYellow5 { color: black; background-color:Yellow;  }
-.noteYellow6 { color: black; background-color:Khaki;  }
-.noteYellow7 { color: black; color: black; background-color:lightyellow;  }
-
+.noteYellow1 { color: black; background-color: #737000; }
+.noteYellow2 { color: black; background-color:GoldenRod;  }
+.noteYellow3 { color: black; background-color:Gold;  }
+.noteYellow4 { color: black; background-color:Yellow;  }
+.noteYellow5 { color: black; background-color: #ffff33;  }
+.noteYellow6 { color: black; background-color: #ffff66;  }
+.noteYellow7 { color: black; background-color: #ffff99; }
 
 
 
 .noteLightBlue1 { color: black; background-color:#aaf; }
 .noteLightGreen1 { color: black; background-color:Blue; }
 .noteGray { color: black; background-color:#ddd; }
-.noteDarkGray { background-color:#999; }
+.noteDarkGray { color: black; background-color:#999; }
+.noteAnthraciteBlue { background-color: #293133;  color: white; }
+.noteAnthracite     { background-color: #191919;  color: lightblue; }
 .noteBlack {
     background-color: black;
     color: darkorange;

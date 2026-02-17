@@ -56,10 +56,11 @@ var gColorPickerColors = {
         "noteYellow7"
     ],
     [
-        "noteLightBlue1",
-        "noteLightGreen1",
         "noteGray",
+        "noteLightBlue1",
         "noteDarkGray",
+        "noteAnthraciteBlue",
+        "noteAnthracite",
         "noteBlack",
         "noteWhite"
     ],
