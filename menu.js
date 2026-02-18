@@ -158,8 +158,8 @@ var gMenuFile =    {
           ]
         },
         {
-          "caption": "<b>l</b>ist<small>[$currentFrameCardinal/$frameCount]</small>",
-          "trigger": "l",
+          "caption": "<b>e</b>dit<small>[$currentFrameCardinal/$frameCount]</small>",
+          "trigger": "e",
           "vars": [
             "currentFrameCardinal",
             "frameCount"
@@ -201,11 +201,6 @@ var gMenuFile =    {
               "caption": "<b>c</b>lone",
               "trigger": "c",
               "action": "sectionAddDeepClone"
-            },
-            {
-              "caption": "<b>p</b>rint",
-              "trigger": "p",
-              "action": "printSections"
             }
           ]
         },
@@ -323,8 +318,8 @@ var gMenuFile =    {
         },
         {
           "name": "leadkey",
-          "caption": "L<b>e</b>adKey",
-          "trigger": "e",
+          "caption": "<b>l</b>eadKey",
+          "trigger": "l",
           "children": [
             {
             "caption": "<b>w</b>hite keys",
@@ -440,6 +435,11 @@ var gMenuFile =    {
           ]
         },
         {
+          "caption": "<b>p</b>rint",
+          "trigger": "p",
+          "action": "printSections"
+        },
+        {
           "caption": "<b>;</b>&nbsp;dialog",
           "trigger": ";",
           "action": "showDialog-section"
@@ -450,6 +450,21 @@ var gMenuFile =    {
       "caption": "<b>v</b>iew",
       "trigger": "v",
       "children": [
+        {
+          "caption": "<b>m</b>enu prefs",
+          "trigger": "m",
+          "action": "setMenuPrefs",
+          "children": [
+            {
+              "caption": "<b>s</b>hort",
+              "trigger": "s"
+            },
+            {
+              "caption": "<b>t</b>all",
+              "trigger": "t"
+            }
+          ]
+        },
         {
           "caption": "<b>h</b>ide",
           "trigger": "h",
@@ -580,21 +595,6 @@ var gMenuFile =    {
               "caption": "<b>h</b>ide",
               "trigger": "h",
               "action": "hideViewMessages"
-            }
-          ]
-        },
-        {
-          "caption": "<b>m</b>enu prefs",
-          "trigger": "m",
-          "action": "setMenuPrefs",
-          "children": [
-            {
-              "caption": "<b>s</b>hort",
-              "trigger": "s"
-            },
-            {
-              "caption": "<b>t</b>all",
-              "trigger": "t"
             }
           ]
         },

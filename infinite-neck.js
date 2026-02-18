@@ -850,7 +850,7 @@
 		function printSections(){
 			var frames = getFrames();
 			var B = "<br />" ;
-			var result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>Caption</th><th>Details</th>";
+			var result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>&sharp;/&flat;</th><th>Caption</th><th>Details</th>";
 			var namedNotes, specialNotes;
 			for (idx in frames){
 				var frame = frames[idx];
@@ -862,7 +862,8 @@
 				       +"<a href=\"javascript:linkToSection('"+idx+"');\">"+(toInt(idx,0)+1)+"</a>"+SEP
 					   +frame.beats+SEP
 					   +"<B style='font-size: 130%;'>"+noteIDToNoteName(frame.rootID) +(frame.rootIDLead!=-1?"/"+noteIDToNoteName(frame.rootIDLead):"")+"</B>"+SEP
-				       +"<b style='font-size: 130%;'>"+frame.caption+"</b>"+SEP
+				       +( frame.sharps ? " &sharp; " : " &flat; " )+SEP
+					   +"<b style='font-size: 130%;'>"+frame.caption+"</b>"+SEP
 					   +namedNotes
 					   +specialNotes
 					   "</td></tr>";

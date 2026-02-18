@@ -73,19 +73,21 @@
        .product {
            font-size: 32pt;
            color: darkorange;
-           font-family: "Verdana";
+           font-family: "Kode Mono", monospace;
+           -webkit-text-stroke: 1px black;
+
        }
        .productsmall {
-           font-size: 130%;
-           ffcolor: darkorange;
-           color: black;
-           font-family: "Verdana";
-           -webkit-text-stroke: 1px #ffaa00;
+            font-size: 150%;
+            color: darkorange;
+            font-family: "Kode Mono", monospace;
+            -webkit-text-stroke: 0.6px black;
        }
        .productsmaller {
-           font-size: 80%;
-           color: darkorange;
-           font-family: "Verdana";
+            font-size: 100%;
+            color: darkorange;
+            font-family: "Kode Mono", monospace;
+            -webkit-text-stroke: 0.7px black;
        }
        .bigpoint {
            background-color: buttercup;
@@ -150,13 +152,18 @@
            background-color: darkgreen;
        }
        .menuExampleLine {
-           border: 1px solid black;
-           background-color: darkgreen;
+            font-family: "Kode Mono", monospace;
+            display: inline-block;
+            padding: 0.3em;
+            border: 1px solid black;
+            background-color: darkgreen;
+            color: #ffaa00;
        }
        .menuExampleLine  b {
-           color: #ffaa00;
-           font-weight: normal;
-           font-size: 130%;
+            font-family: "Kode Mono", monospace;
+            color: #ffaa00;
+            font-weight: normal;
+            font-size: 130%;
        }
        .helpButton {
            background-color: orange;
@@ -208,14 +215,28 @@
             scroll-margin-top: 2.3em; 
         }
         #tblCommandLineUsefulMenuItems td:first-child {
+            font-family: "Kode Mono", monospace;
             font-size: 120%;
             font-weight: bold;
-           background-color: darkgreen;
-           color: orange;
-           padding-left: 1.5em;
-           padding-right: 0.8em;
+            background-color: darkgreen;
+            color: orange;
+            padding-left: 1.5em;
+            padding-right: 0.8em;
+        }
+        #tblCommandLineUsefulMenuItems td:nth-child(2) {
+            font-family: "Kode Mono", monospace;
+            font-weight: normal;
+            background-color: lightgreen;
+            color: black;
+            padding-left: 1em;
+        }
+        #tblCommandLineUsefulMenuItems td:nth-child(2) b {
+            font-weight: bold;
+            color: #ffaa00;
+            -webkit-text-stroke: 1px black;
         }
 
+            
 
     
 
@@ -244,7 +265,7 @@
         <li><a href="#walkthrough">Walkthrough</a>
     </ul>
 
-    <p class="bigpoint">This tool, <span class="productsmall">infinite-neck</span>, helps you visualize notes across the neck of your instrument.
+    <p class="bigpoint">This tool, <span class="productsmaller">infinite-neck</span>, helps you visualize notes across the neck of your instrument.
         </p>
 
         <p><img src="img/help/infinite-neck-visualization.png" width="80%"></p>
@@ -257,7 +278,7 @@
         highlight all legal notes in G Mixolydian, for example, with separate sets of colors for
         chord notes, root, scale notes, passing-tones, and blue-notes.
     </p>
-    <p><span class="productsmall">infinite-neck</span> has the following uses for practice and sharing:
+    <p><span class="productsmaller">infinite-neck</span> has the following uses for practice and sharing:
         <br>&check;&nbsp;writing down new-to-you and interesting chord fingerings.
         <br>&check;&nbsp;capturing a concrete way to play a song.
         <br>&check;&nbsp;communicating the fabric of a sound: the possible notes and their moods.
@@ -574,7 +595,7 @@
                 <li><a href="#themes">Themes</a>
                 <li><a href="#cheatsheet">Cheatsheet/Keymap</a>
                 <li><a href="#commandline">Command-Line Menu</a>
-                <ul>
+                <ul class="LinkList">
                     <li><a href="#keysInCommandLine">Keys</a>
                     <li><a href="#commandLineUsefulCommands">Useful Commands</a>
                 </ul>
@@ -770,7 +791,7 @@
 
       <br>
       <p>Early in the design phase, I tried extending the Classical notation to use chord function names as note function names.
-          I find it confusing, being all too similar.  So this scheme is <b><i>not</i></b> available in <span class="productsmall">infinite-neck</span>.
+          I find it confusing, being all too similar.  So this scheme is <b><i>not</i></b> available in <span class="productsmaller">infinite-neck</span>.
           <a href="http://LaramieCrocker.com/contact.html">Drop me a note</a> if you have a better idea, but here is what that would look like:</p>
       <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["I","ii","II","iii","III","IV","v","V","vi","VI","vii","VII"]</div>
       <p>
@@ -783,7 +804,7 @@
 <p>The neck is shown as a table of cells, like a spreadsheet.
     A cell is one of the squares on the neck, and represents one fret on one string. </p>
 
-<p><span class="productsmall">infinite-neck</span> allows you to mark the notes on your Instrument with various types of notes, shown below.  Otherwise,
+<p><span class="productsmaller">infinite-neck</span> allows you to mark the notes on your Instrument with various types of notes, shown below.  Otherwise,
     a cell is empty. (You can also choose to show all the note names in all cells, but these won't have an inner border
     or backglow behind them as notes do.)  When a cell has one or more notes or highlights, it is called "Active".</p>
 
@@ -793,7 +814,7 @@
 </p>
 
 <p>To help you visualize
-  the neck, <span class="productsmall">infinite-neck</span> shows where the piano keys would lie on your tuning.
+  the neck, <span class="productsmaller">infinite-neck</span> shows where the piano keys would lie on your tuning.
   In most Themes, cells have a white background for white keys on the piano, and a gray background for black keys on the piano.
 </p>
 
@@ -1149,7 +1170,7 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
 <p>These buttons also appear in the Section menu, and apply to the current Section.
 </p>
 
-<p>You can audit all the Display Options for all Sections that have them set with the Command-Line <span class="menuExampleLine"><b><small>/vdd</small></b></span>
+<p>You can audit all the Display Options for all Sections that have them set with the command-line <span class="menuExampleLine"><b><small>/vdd</small></b></span>
      Scroll down to see the audit
      of all Sections with Display Options.  The options that change are highlighted.  You can also sit on the View page and
      watch the controls change while you hit the Transport next section buttons, or the keyboard shortcuts ( &lt; and &gt; ).
@@ -1385,7 +1406,7 @@ Stylesheet order
 (in <span class="GUIReferenceInline" >Palette | <span style="border: 1px solid gray; background-color: lightgreen;">Stylesheets</span></span> ) after reviving them.</p>
 
 
-<p>The Graveyard can be found under the File menu, and in the Command-Line under <span class="menuExampleLine"><b>/fg</b> (<b>f</b>ile <b>g</b>raveyard)</span>.</p>
+<p>The Graveyard can be found under the File menu, and in the command-line under <span class="menuExampleLine"><b>/fg</b> (<b>f</b>ile <b>g</b>raveyard)</span>.</p>
 
 <p class="GUIReference">Menu :: File :: View Graveyard</p>
 
@@ -1443,8 +1464,8 @@ Stylesheet order
  <a name="keymap"></a>
     <h3>Keymap:</h3>
     <p>These keys can be pressed at any time.  If you have other menus up,
-    or the Command-Line, keystrokes may go to those.  Just hit <span class="key">ESC</span> first,
-to hide menus and the Command-Line.</p>
+    or the command-line, keystrokes may go to those.  Just hit <span class="key">ESC</span> first,
+to hide menus and the command-line.</p>
 <div id="alphaCheatSheetLinks">
      <a href="#showHideSongTitle">a</a> 
     <a href="#showHideSongTitle">A</a></li>
@@ -1914,7 +1935,7 @@ to hide menus and the Command-Line.</p>
             key and arrow keys are not overriden,
                 so all keyboard navigation
             should work.  <i>(However, we remove all the transport buttons from TAB order,
-                and other controls you can reach by the Command-Line
+                and other controls you can reach by the command-line
             or keyboard shortcuts.)</i>  So tabbing to the hamburger button means
             <span class="key">SPACE</span> will click the hamburger, as usual.  Tabbing to radiobuttons
             lets you then use arrow keys to select different colors, for example.  There is one radio group for all the Note types, and one
@@ -1925,7 +1946,7 @@ to hide menus and the Command-Line.</p>
 
 <a name="commandline"></a>
 <hr>
-        <h3>Command Line Menu:</h3>
+        <h3>Command-Line Menu:</h3>
 
         <p>Here is the command-line interface, so you can type commands one-handed while balancing your guitar on your knee.
             <br>
@@ -1936,7 +1957,7 @@ to hide menus and the Command-Line.</p>
         <p>The menu is structured to give unique, quick access to many of the things
                 you can do with the mouse.  Many quick functions are available via the global 
                 keyboard shortcuts.  The global keyboard shortcuts plus the command-line commands
-                together give you access to the options of infinite-neck you need when working in a flow
+                together give you access to the options of <span class="productsmaller">infinite-neck</span> you need when working in a flow
                 and don't want to be digging around in menus.  
         </p>
         <p>        
@@ -1950,7 +1971,7 @@ to hide menus and the Command-Line.</p>
          </p><p>
                 There are also some advanced or diagnostic
                 items that don't belong in the Graphical User Interface (GUI).  As you get 
-                more familiar with using infinite-neck, please check this reference,
+                more familiar with using <span class="productsmaller">infinite-neck</span>, please check this reference,
                 or poke around in the command-line menu to learn some of these advanced features.
                 A few, like the Display Options dump, or the Sections dump, are essential, and can't 
                 be launched from the GUI.  Output from these commands often appears at the bottom of 
@@ -1967,8 +1988,15 @@ to hide menus and the Command-Line.</p>
         </p>
          <p>   <img  width="600px" src="img/help/command-line-tall.png"></p>
         </p>
-        <p>Note that in the upper left you can see the command items you have typed so far.  That plus the letter you type for the current menu
-         item makes the command.
+        <p>Note that in the upper left you can see the command items you have typed so far.  
+        That plus the letter you type for the current menu
+         item forms the full command-line you would type later 
+         if you want to execute this current menu item again. So in this image, you can 
+         see <span class="menuExampleLine">/s</span> and the current menu item could be
+        <span class="menuExampleLine">f</span> to set the Section to use Flats.  Thus the 
+        full command-line command would be <span class="menuExampleLine">/sf</span> which you can 
+        type any time to set the current Section to use Flats.  
+
         </p>
 
         <a name="keysInCommandLine"></a>
@@ -1983,11 +2011,24 @@ to hide menus and the Command-Line.</p>
             <tr>
                 <td><span class="key"><b>/</b></span>
                 </td>
-                <td>The <span class="key"><b>/</b></span> key pops up the Command-Line Menu.  Any highlighted letter selects the next menu.
-                    Instead of starting at the root like this, you can also use the global keyboard shortcut <b>m</b> to re-open the command-line 
-                    at the last place in the menu you used it.
+                <td>The <span class="key"><b>/</b></span> key pops up the command-line Menu.  Any highlighted letter selects the next menu.
+                    Instead of starting at the root like this, you can also use the global keyboard shortcut <span class="key">m</span> to re-open the command-line 
+                    at the last menu depth you left by hitting C or <span class="key">m</span>.
                 </td>
             </tr>
+            <tr>
+                <td><span class="key"><b>m</b></span>
+                </td>
+                <td>
+                    The global keyboard shortcut <span class="key">m</span> pops up the command-line at the menu depth you left off last time.  
+                </td>
+            </tr>
+
+
+            
+
+
+
             <tr>
                 <td><span class="key"><b>!</b></span>
                 </td>
@@ -2006,10 +2047,10 @@ to hide menus and the Command-Line.</p>
             <tr>
                 <td><span class="key"><b>ESC</b></span>
                 </td>
-                <td>The <span class="key">ESC</span> key (Escape) closes up the Command-Line Menu, and also closes any
+                <td>The <span class="key">ESC</span> key (Escape) closes up the command-line Menu, and also closes any
                     popped up dialogs.  It leaves you at the top level so that global keyboard shortcuts work.
-                    If you are at the top level, you can use any global keyboard shortcut, and you can enter Command-Line
-                    commands, and then <b>x</b> or <b>ESC</b>
+                    If you are at the top level, you can use any global keyboard shortcut, and you can enter command-line
+                    commands, and then <span class="key">ESC</span> or <span class="key">m</span>
                     to get back to the top level.
                         So the following sequence:
                     <div class="menuExampleBox"><b>ESC w w p</b></div>
@@ -2041,8 +2082,8 @@ to hide menus and the Command-Line.</p>
             <tr>
                 <td><span class="key"><b>x</b></span>
                 </td>
-                <td>[lower-case x] Most menus present the last menu item as e<b>x</b>it, which exits the Command-Line menu.  You can
-                    jump back into the Command-Line by pressing <span class="key"><b>m</b></span>, or you can start a new Command-line
+                <td>[lower-case x] Most menus present the last menu item as e<b>x</b>it, which exits the command-line menu.  You can
+                    jump back into the command-line by pressing <span class="key"><b>m</b></span>, or you can start a new Command-line
                     at the root of the menu by typing <span class="key"><b>/</b></span>
                 </td>
             </tr>
@@ -2058,92 +2099,89 @@ to hide menus and the Command-Line.</p>
         </table>
         
         <a name="commandLineUsefulCommands"></a>
-            <h4>Useful Menu Items</h4>
+            <h4>Useful Commands</h4>
             <p>Most of the command-line menu items are self-explanatory.  Here are some notes for ones that aren't.
             </p>
-            <table id="tblCommandLineUsefulMenuItems" class="CheatSheet" cellspacing="0" border="1">
+            <p>Any command that "prints" out a result does it on the main page, below any instruments.
+                Close the command-line with <span class="key">ESC</span> and scroll down to see it.  You can leave them
+                down there, or use <span class="menuExampleLine"><b><small>/vdh</small></b></span> to get them out of your way.
+            </p>
+            <p> 
+                NOTE: <i>The global keyboard shortcut <span class="key">m</span> pops up the command-line at the menu depth you left off last time.  Whereas the keyboard shortcut <span class="key">/</span> pops up the command-line menu at the root of the menu every time.</i>
+            </p>
+
+            
+        <table id="tblCommandLineUsefulMenuItems" class="CheatSheet" cellspacing="0" border="1">
                 <tr>
                     <th>Command</th>
                     <th>Items</th>
                     <th>Action</th>
                 </tr>
                 <tr>
-                    <td>m</td>
-                    <td></td>
-                    <td>The global keyboard shortcut <b>m</b> pops up the command-line at the menu depth you left off last time.  Whereas the keyboard shortcut <b>/</b> pops up the command-line menu at the root of the menu every time.</td>
-                </tr>
-                <tr>
                     <td>/fl</td>
-                    <td>file | lock</td>
+                    <td><b>f</b>ile | <b>l</b>ock</td>
                     <td>locks (prevents) the keyboard shortcuts for transposition.</td>
                 </tr>
                <tr>
                     <td>/fu</td>
-                    <td>file | unlock</td>
+                    <td><b>f</b>ile | <b>u</b>nlock</td>
                     <td>unlocks (allows) the keyboard shortcuts for transposition.</td>
                 </tr>
                 <tr>
                     <td>/sp</td>
-                    <td>section | print</td>
-                    <td>prints out a handy table of Sections, with hyperlinks to jump to the Section, and summary information, such as Key, Sharps/Flats, number of beats, caption, and count of notes.</td>
+                    <td><b>s</b>ection | <b>p</b>rint</td>
+                    <td>Prints out a handy table of Sections, with hyperlinks to jump to the Section, and summary information, such as Key, Sharps/Flats, number of beats, caption, and count of notes.
+                        Since the links jump you to the Sections, this is a very handy way to navigate large songs with many Sections.
+                    </td>
                 </tr>
                 <tr>
                     <td>/fg</td>
-                    <td>file | graveyard</td>
-                    <td>shows the graveyard</td>
+                    <td><b>f</b>ile | <b>g</b>raveyard</td>
+                    <td>Shows the graveyard</td>
                 </tr>
                 <tr>
                     <td>/fC</td>
-                    <td>file | Clear graveyard</td>
-                    <td>[note the captial 'C'] Clears the graveyard, but first downloads a copy of the song to your machine.  If you delete a bunch of Sections, and you don't want them anymore, and you want to share the file with someone, cleaning the graveyard can make for a cleaner file, and reduces file size.  The capital C means you have to intentionally hit this menu item, and the confirmation prompt which follows also asks Y/n so that a capital Y must be typed to confirm.</td>
+                    <td><b>f</b>ile | <b>C</b>lear graveyard</td>
+                    <td><i>[note the captial 'C']</i> Clears the graveyard, but first downloads a copy of the song to your machine.  If you delete a bunch of Sections, and you don't want them anymore, and you want to share the file with someone, cleaning the graveyard can make for a cleaner file, and reduces file size.  The capital C means you have to intentionally hit this menu item, and the confirmation prompt which follows also asks Y/n so that a capital Y must be typed to confirm.</td>
                 </tr>
                 <tr>
                     <td>/fb</td>
-                    <td>file | bpm</td>
-                    <td>sets the file BPM and then automatically starts looping after you hit ENTER.</td>
+                    <td><b>f</b>ile | <b>b</b>pm</td>
+                    <td>Sets the file BPM and then automatically starts looping after you hit ENTER.</td>
                 </tr>
                 <tr>
                     <td>/vd</td>
-                    <td>view | diagnostics</td>
-                    <td>is the  menu, which has a bunch of techie info about the song in memory in the browser, but can be useful.  Feel free to poke around.  None of the diagnostics do anything other than spit out a report at the bottom of the page below any instruments.</td>
+                    <td><b>v</b>iew | <b>d</b>iagnostics</td>
+                    <td>Has a bunch of techie info about the song in memory in the browser, but can be useful.  Feel free to poke around.  None of the diagnostics do anything other than spit out a report at the bottom of the page below any instruments.</td>
                 </tr>
                 <tr>
                     <td>/vdh</td>
-                    <td>view | diagnostics | hide </td>
-                    <td>hides any of these reports again.</td>
+                    <td><b>v</b>iew | <b>d</b>iagnostics | <b>h</b>ide </td>
+                    <td>Hides any of these reports again.</td>
                 </tr>
                 <tr>
                     <td>/vdd</td>
-                    <td>view | diagnostics | display options</td>
-                    <td>dumps out a table of Display options, which is useful for figuring out which options are saved in which Sections. The table will be empty of data rows until you save Display options in at least one Section.</td>
+                    <td><b>v</b>iew | <b>d</b>iagnostics | <b>d</b>isplay options</td>
+                    <td>Prints out a table of Display options, which is useful for figuring out which options are saved in which Sections. The table will be empty of data rows until you save Display options in at least one Section.</td>
                 </tr>
                 <tr>
                     <td>/vm</td>
-                    <td>view | menu options</td>
+                    <td><b>v</b>iew | <b>m</b>enu options</td>
                     <td>Choose short or tall menus.  Short menus have all items on one row, tall menus have each item on one line.</td>
                 </tr>
                 <tr>
                     <td>/vmt</td>
-                    <td>view | menu options</td>
+                    <td><b>v</b>iew | <b>m</b>enu options</td>
                     <td>Without looking at the menu, you can just enter /vmt to make it tall, so that menu items apear over each other in a skinnier window.</td>
                 </tr>
                 <tr>
                     <td>/vdm</td>
-                    <td>view | diagnostics | menu dump</td>
-                    <td>calls <b>v</b>iew <b>d</b>iagnostics <b>m</b>enu-dump which
-                        will dump out a plaintext listing of the entire command-line heirarchy. 
-                        It appears at the bottom of the page, after any instruments, 
-                        so hit <span class="key">ESC</span> to get rid of the command-line, then scroll down.</td>
+                    <td><b>v</b>iew | <b>d</b>iagnostics | <b>m</b>enu dump</td>
+                    <td>Prints out a plaintext listing of the entire command-line heirarchy. 
                 </tr>
-            </table>
-
-            
+            </table>  
         
 
-<div class="callout">
-
-    Note: using the command-line <span class="menuExampleLine"><b><small></small></b></span> 
-</div>
 
 <a name="techie"></a>
 <hr>
@@ -2151,18 +2189,33 @@ to hide menus and the Command-Line.</p>
 <p>
 <div style="border: 2px solid green">
 <pre>
-        Using the Command-Line Menu, you can view Diagnostics:  /vd
-                song model:   /vds
+        Using the command-line Menu, you can view Diagnostics:  <span class="menuExampleLine">/vd</span>
+                song model:   <span class="menuExampleLine">/vds</span>
                     the model of the entire Song
-                in-memory model:  /vdi
+                in-memory model:  <span class="menuExampleLine">/vdi</span>
                     the model of just one Section
-                menu dump:
+                menu dump:   <span class="menuExampleLine">/vdm</span>
                     condensed, simple printout all the menu items in menu.js
-                user colors:
+                user colors: <span class="menuExampleLine">/vdc</span>
                     full display of colors in userColors.js
                     This is better seen graphically in Palette | Stylesheets
-                displayOptions:
+                displayOptions: <span class="menuExampleLine">/vdd</span>
                     all the DisplayOptions stored for each Section
+
+        In the object model, and therefore the file format, here are the objects:
+            frames - An array of frame objects in song order.
+            frame - An object in the frames array that represents one Section.
+            namedNotes - A dictionary of note objects that apply to all instruments 
+                              in that Section.
+                         Named Notes appear at every cell on the neck 
+                              that corresponds to that note name, e.g. "B".
+            frame :: tables - a dictionary of arrays that store all played notes in that Section 
+                              on one instrument instance. 
+                         Played notes are all notes that are not namedNotes: 
+                              they have a single spot in a note cell. 
+            visibleTables - An array of instrument instance names, 
+                              that corresponds to the keys used to store frame :: table objects.
+                            Save the file makes the memory model reports this correctly.           
 
         In Chrome::Inspect you can use Developer tools Console
            to directly access the ObjectModel of the Song:
@@ -2430,7 +2483,7 @@ to hide menus and the Command-Line.</p>
                 to advance through the example.
                 <br>
                 <br>
-                When these get out of control or confusing, audit them with the keyboard Command-Line <span class="menuExampleLine"><b><small>/vdd</small></b></span>  Scroll down to see the audit
+                When these get out of control or confusing, audit them with the keyboard command-line <span class="menuExampleLine"><b><small>/vdd</small></b></span>  Scroll down to see the audit
                 of all Sections with Display Options.  The options that change are highlighted.  You can also sit on the View page and
                 watch the controls change while you hit the Transport next section buttons, or the keyboard shortcuts ( &lt; and &gt; ).
                 Remember that if one of the controls traps the keyboard, click in some blank spot of the screen or hit <span class="key">ESC</span> and then V to
