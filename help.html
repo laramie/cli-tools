@@ -564,7 +564,7 @@
                 <li><a href="#graveyard">The Graveyard</a>
                 <li><a href="#themes">Themes</a>
                 <li><a href="#cheatsheet">Cheatsheet/Keymap</a>
-                <li><a href="#commandline">Command Line Menu</a>
+                <li><a href="#commandline">Command-Line Menu</a>
                 <li><a href="#techie">Techie bits</a>
                 <li><a href="#glossary">Glossary</a>
         </ul>
@@ -1914,10 +1914,19 @@ to hide menus and the Command-Line.</p>
 <hr>
         <h3>Command Line Menu:</h3>
 
-        <p>Here is the command line interface, so you can type commands one-handed while balancing your guitar on your knee.<br>
+        <p>Here is the command-line interface, so you can type commands one-handed while balancing your guitar on your knee.<br>
+            <br>
+            The menu is structured to give unique, quick access to many of the things
+                you can do with the mouse.  There are also some advanced or diagnostic
+                items that don't belong in the Graphical User Interface (GUI).  As you get 
+                more familiar with using infinite-neck, please check this reference,
+                or poke around in the command-line menu to learn some of these advanced features.
+                A few, like the Display options dump, or the Sections dump, are essential, and can't 
+                be launched from the GUI.
+            <br>
             <img width="1000px" src="img/help/cmd-line.png"></p>
 
-        <p>Here is the whole app with the command line showing.  Just press <span class="key">/</span> to pop it up.<br>
+        <p>Here is the whole app with the command-line showing.  Just press <span class="key">/</span> to pop it up.<br>
             <img  width="600px" src="img/help/cmd-line-w-app.png"></p>
 
         <table class="CheatSheet menuExample" cellspacing="0" border="1">
@@ -1935,6 +1944,8 @@ to hide menus and the Command-Line.</p>
                 <td>
                 </td>
                 <td>The <span class="key"><b>/</b></span> key pops up the Command-Line Menu.  Any highlighted letter selects the next menu.
+                    Instead of starting at the root like this, you can also use the global keyboard shortcut <b>m</b> to re-open the command-line 
+                    at the last place in the menu you used it.
                 </td>
             </tr>
             <tr>
@@ -2017,6 +2028,108 @@ to hide menus and the Command-Line.</p>
                 </td>
             </tr>
         </table>
+        <div id="commandLineUsefulCommands">
+        <p>/m The keyboard shortcut <b>m</b> pops up the command-line at the menu depth you left off last time.  Whereas the 
+            keyboard shortcut <b>/</b> pops up the command-line menu at the root of the menu every time.
+        </p>
+        <p>/fl (file | lock) and /fu lock/unlock the keyboard shortcuts for transposition.</p>
+        <p>/sp ( section | print ) prints out a handy table of Sections, with hyperlinks to jump to the Section, and summary information,
+            such as Key, Sharps/Flats, number of beats, caption, and count of notes.
+        </p>
+        <p>/fg shows the graveyard</p>
+        <p>/fC [note the captial 'C'] Clears the graveyard, but first downloads a copy of the song to your machine.  If you delete a bunch of Sections, 
+            and you don't want them anymore, and you want to share the file with someone, cleaning the graveyard can make for a cleaner file,
+            and reduces file size.  The capital C means you have to intentionally hit this menu item, and the confirmation prompt which 
+            follows also asks Y/n so that a capital Y must be typed to confirm.
+        </p>
+        <p>/fb sets file | bpm and then automatically starts looping after you hit ENTER.
+        </p>
+        <p>/vd is the view | diagnostics menu, which has a bunch of techie info about the song in memory in the browser,
+            but can be useful.  Feel free to poke around.  None of the diagnostics do anything other than spit out a report
+            at the bottom of the page below any instruments.
+            <br>/vdh hides any of these reports again.
+        </p>
+        <p>/vdd dumps out a table of Display options, which is useful for figuring out which options are saved in which Sections.
+            The table will be empty of data rows until you save Display options in at least one Section.
+        </p>
+        <p>/vm open view | menu prefs where you can choose short or tall.  If your browser is too narrow, 
+            choose tall, otherwise the menu options scroll off the right.  Without looking at the menu, you can just enter
+            /vmt to make it tall, so that menu items apear over each other in a skinnier window.
+        </p>
+        </div>
+
+        <div id="commandLineUsefulCommands">
+            <h4>Useful Menu Items</h4>
+            <p>
+            </p>
+            <table class="CheatSheet menuExample" cellspacing="0" border="1">
+                <tr>
+                    <th>Command</th>
+                    <th>Items</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>m</td>
+                    <td></td>
+                    <td>The global keyboard shortcut <b>m</b> pops up the command-line at the menu depth you left off last time.  Whereas the keyboard shortcut <b>/</b> pops up the command-line menu at the root of the menu every time.</td>
+                </tr>
+                <tr>
+                    <td>/fl</td>
+                    <td>file | lock</td>
+                    <td>locks (prevents) the keyboard shortcuts for transposition.</td>
+                </tr>
+               <tr>
+                    <td>/fu</td>
+                    <td>file | unlock</td>
+                    <td>unlocks (allows) the keyboard shortcuts for transposition.</td>
+                </tr>
+                <tr>
+                    <td>/sp</td>
+                    <td>section | print</td>
+                    <td>prints out a handy table of Sections, with hyperlinks to jump to the Section, and summary information, such as Key, Sharps/Flats, number of beats, caption, and count of notes.</td>
+                </tr>
+                <tr>
+                    <td>/fg</td>
+                    <td>file | graveyard</td>
+                    <td>shows the graveyard</td>
+                </tr>
+                <tr>
+                    <td>/fC</td>
+                    <td>file | Clear graveyard</td>
+                    <td>[note the captial 'C'] Clears the graveyard, but first downloads a copy of the song to your machine.  If you delete a bunch of Sections, and you don't want them anymore, and you want to share the file with someone, cleaning the graveyard can make for a cleaner file, and reduces file size.  The capital C means you have to intentionally hit this menu item, and the confirmation prompt which follows also asks Y/n so that a capital Y must be typed to confirm.</td>
+                </tr>
+                <tr>
+                    <td>/fb</td>
+                    <td>file | bpm</td>
+                    <td>sets the file BPM and then automatically starts looping after you hit ENTER.</td>
+                </tr>
+                <tr>
+                    <td>/vd</td>
+                    <td>view | diagnostics</td>
+                    <td>is the  menu, which has a bunch of techie info about the song in memory in the browser, but can be useful.  Feel free to poke around.  None of the diagnostics do anything other than spit out a report at the bottom of the page below any instruments.</td>
+                </tr>
+                <tr>
+                    <td>/vdh</td>
+                    <td>view | diagnostics | hide </td>
+                    <td>hides any of these reports again.</td>
+                </tr>
+                <tr>
+                    <td>/vdd</td>
+                    <td>view | diagnostics | display options</td>
+                    <td>dumps out a table of Display options, which is useful for figuring out which options are saved in which Sections. The table will be empty of data rows until you save Display options in at least one Section.</td>
+                </tr>
+                <tr>
+                    <td>/vm</td>
+                    <td>view | menu options</td>
+                    <td>Choose short or tall menus.  Short menus have all items on one row, tall menus have each item on one line.</td>
+                </tr>
+                <tr>
+                    <td>/vmt</td>
+                    <td>view | menu options</td>
+                    <td>Without looking at the menu, you can just enter /vmt to make it tall, so that menu items apear over each other in a skinnier window.</td>
+                </tr>
+            </table>
+        </div>
 
 <div class="callout">
 
