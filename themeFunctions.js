@@ -204,10 +204,12 @@
 						 +" .noteWhiteKey {"
 							     +rule("background-color", "noteWhiteKeyColor")
 							     +rule("color", "noteWhiteKeyFontColor")
+								 +rule("box-shadow", "noteWhiteKeyShadowColor")
 								 +"}"
 						 +" .noteBlackKey {"
 							     +rule("background-color", "noteBlackKeyColor")
 							     +rule("color", "noteBlackKeyFontColor")
+							     +rule("box-shadow", "noteBlackKeyShadowColor")
 								 +"}"
 						 +" :root { "
 									+rule("--nut-gradient-color", "nutColor")
