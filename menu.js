@@ -830,8 +830,8 @@ var gMenuFile =    {
           "action": "toggleLoopFrames"
         },
         {
-          "caption": "loop <b>b</b>eats",
-          "trigger": "b",
+          "caption": "loop b<b>e</b>ats",
+          "trigger": "e",
           "action": "toggleLoopBeats"
         },
         {

@@ -707,7 +707,6 @@ function getValue(what){
 		case "frameCount":
 			return getSong().frames.length;
 		case "graveyardRecordCount":
-			debugger
 			return gSong.graveyard.getRecordCount();
 		case "beats":
 		case "beatCount":
