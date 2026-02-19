@@ -1174,7 +1174,48 @@
                         <br>
 
                         <!-- Theme Controls -->
+                       
                         <table id="themeTableControls" border="1" cellpadding='3' cellspacing='0'>
+                            <tr>
+                                <td>
+                                    Cell/Note Radius (outer):
+                                </td>
+                                <td>
+                                    <select id="dropDownNoteRadius">
+                                        <option value="0">0</option>
+                                        <option value="1%">1%</option>
+                                        <option value="2%">2%</option>
+                                        <option value="4%">4%</option>
+                                        <option value="8%" selected>8%</option>
+                                        <option value="12%">12%</option>
+                                        <option value="20%">20%</option>
+                                        <option value="25%">25%</option>
+                                        <option value="35%">35%</option>
+                                        <option value="45%">45%</option>
+                                        <option value="50%">50%</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Named Note Radius (inner):
+                                </td>
+                                <td>
+                                    <select id="dropDownNamedNoteRadius">
+                                        <option value="0">0</option>
+                                        <option value="1%">1%</option>
+                                        <option value="2%">2%</option>
+                                        <option value="4%">4%</option>
+                                        <option value="8%" selected>8%</option>
+                                        <option value="10%">10%</option>
+                                        <option value="12%">12%</option>
+                                        <option value="14%">14%</option>
+                                        <option value="16%">16%</option>
+                                        <option value="18%">18%</option>
+                                        <option value="20%">20%</option>
+                                    </select>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>
                                     IvoryEbony spacing:
@@ -1224,46 +1265,6 @@
                             </tr>
                             <tr>
                                 <td>
-                                    Named Note Radius (inner):
-                                </td>
-                                <td>
-                                    <select id="dropDownNamedNoteRadius">
-                                        <option value="0">0</option>
-                                        <option value="1%">1%</option>
-                                        <option value="2%">2%</option>
-                                        <option value="4%">4%</option>
-                                        <option value="8%" selected>8%</option>
-                                        <option value="10%">10%</option>
-                                        <option value="12%">12%</option>
-                                        <option value="14%">14%</option>
-                                        <option value="16%">16%</option>
-                                        <option value="18%">18%</option>
-                                        <option value="20%">20%</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Cell/Note Radius (outer):
-                                </td>
-                                <td>
-                                    <select id="dropDownNoteRadius">
-                                        <option value="0">0</option>
-                                        <option value="1%">1%</option>
-                                        <option value="2%">2%</option>
-                                        <option value="4%">4%</option>
-                                        <option value="8%" selected>8%</option>
-                                        <option value="12%">12%</option>
-                                        <option value="20%">20%</option>
-                                        <option value="25%">25%</option>
-                                        <option value="35%">35%</option>
-                                        <option value="45%">45%</option>
-                                        <option value="50%">50%</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
                                     Instrument Background:
                                 </td>
                                 <td>
@@ -1290,6 +1291,27 @@
                             </tr>
                             <tr>
                                 <td>
+                                    Instrument Margins:
+                                </td>
+                                <td>
+                                    <select id="dropDownInstrumentMargins">
+                                        <option value="0">0</option>
+                                        <option value="1em">1em</option>
+                                        <option value="2em">2em</option>
+                                        <option value="4em">4em</option>
+                                        <option value="6em">6em</option>
+                                        <option value="8em">8em</option>
+                                        <option value="12em">12em</option>
+                                        <option value="20em">20em</option>
+                                        <option value="40em">40em</option>
+                                        <option value="60em">60em</option>
+                                        <option value="80em">80em</option>
+                                    </select>
+                                    <a href="javascript:hideAllMenuDivs();"<small>live</small></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
                                     Nut Color:
                                 </td>
                                 <td>
@@ -1308,6 +1330,33 @@
                                         <option value="lightgray">lightgray</option>
                                         <option value="white">white</option>
                                         <option value="black">black</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Diamonds Size:
+                                </td>
+                                <td>
+                                    <select id="dropDownDiamondsSize">
+                                        <option value="0.4em">0.4em</option>
+                                        <option value="0.5em">0.5em</option>
+                                        <option value="0.6em">0.6em</option>
+                                        <option value="0.7em">0.7em</option>
+                                        <option value="0.8em">0.8em</option>
+                                        <option value="0.9em">0.9em</option>
+                                        <option value="1.0em" selected>1.0em</option>
+                                        <option value="1.2em">1.2em</option>
+                                        <option value="1.4em">1.4em</option>
+                                        <option value="1.5em">1.5em</option>
+                                        <option value="1.6em">1.6em</option>
+                                        <option value="1.8em">1.8em</option>
+                                        <option value="2em">2em</option>
+                                        <option value="3em">3em</option>
+                                        <option value="4em">4em</option>
+                                        <option value="6em">6em</option>
+                                        <option value="9em">9em</option>
+                                        <option value="20em">20em</option>
                                     </select>
                                 </td>
                             </tr>
@@ -1377,97 +1426,6 @@
                                     </select>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    Diamonds Size:
-                                </td>
-                                <td>
-                                    <select id="dropDownDiamondsSize">
-                                        <option value="0.4em">0.4em</option>
-                                        <option value="0.5em">0.5em</option>
-                                        <option value="0.6em">0.6em</option>
-                                        <option value="0.7em">0.7em</option>
-                                        <option value="0.8em">0.8em</option>
-                                        <option value="0.9em">0.9em</option>
-                                        <option value="1.0em" selected>1.0em</option>
-                                        <option value="1.2em">1.2em</option>
-                                        <option value="1.4em">1.4em</option>
-                                        <option value="1.5em">1.5em</option>
-                                        <option value="1.6em">1.6em</option>
-                                        <option value="1.8em">1.8em</option>
-                                        <option value="2em">2em</option>
-                                        <option value="3em">3em</option>
-                                        <option value="4em">4em</option>
-                                        <option value="6em">6em</option>
-                                        <option value="9em">9em</option>
-                                        <option value="20em">20em</option>
-                                    </select>
-                                </td>
-                            </tr>
-
-
-
-                            <tr>
-                                <td>
-                                    WhiteKey Background:
-                                </td>
-                                <td>
-                                    <select id="dropDownBorderImageWhiteKey">
-                                        <option selected value="none">none</option>
-                                        <option value="url('img/celtic-background-white.png')">celtic-white</option>
-                                        <option value="url('img/celtic-background-2.png')">celtic-macrame</option>
-                                        <option value="url('img/celtic-knot-black.png')">celtic-knot-black</option>
-                                        <option value="url('img/blade.png')">blade</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    BlackKey Background:
-                                </td>
-                                <td>
-                                    <select id="dropDownBorderImageBlackKey">
-                                        <option selected value="none">none</option>
-                                        <option value="url('img/celtic-background-black.png')">celtic-black</option>
-                                        <option value="url('img/celtic-background-2.png')">celtic-macrame</option>
-                                        <option value="url('img/celtic-knot-black.png')">celtic-knot-black</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Instrument Border:
-                                </td>
-                                <td>
-                                    <select id="dropDownInstrumentBorderImage">
-                                        <option selected value="none">none</option>
-                                        <option value="url('img/celtic-background-black.png')">celtic-black</option>
-                                    </select>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    Instrument Margins:
-                                </td>
-                                <td>
-                                    <select id="dropDownInstrumentMargins">
-                                        <option value="0">0</option>
-                                        <option value="1em">1em</option>
-                                        <option value="2em">2em</option>
-                                        <option value="4em">4em</option>
-                                        <option value="6em">6em</option>
-                                        <option value="8em">8em</option>
-                                        <option value="12em">12em</option>
-                                        <option value="20em">20em</option>
-                                        <option value="40em">40em</option>
-                                        <option value="60em">60em</option>
-                                        <option value="80em">80em</option>
-                                    </select>
-                                    <a href="javascript:hideAllMenuDivs();"<small>live</small></a>
-                                </td>
-                            </tr>
-
                             <tr>
                                 <td>
                                     Note White Shadow Color:
@@ -1585,11 +1543,50 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>
+                                    WhiteKey Background:
+                                </td>
+                                <td>
+                                    <select id="dropDownBorderImageWhiteKey">
+                                        <option selected value="none">none</option>
+                                        <option value="url('img/celtic-background-white.png')">celtic-white</option>
+                                        <option value="url('img/celtic-background-2.png')">celtic-macrame</option>
+                                        <option value="url('img/celtic-knot-black.png')">celtic-knot-black</option>
+                                        <option value="url('img/blade.png')">blade</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    BlackKey Background:
+                                </td>
+                                <td>
+                                    <select id="dropDownBorderImageBlackKey">
+                                        <option selected value="none">none</option>
+                                        <option value="url('img/celtic-background-black.png')">celtic-black</option>
+                                        <option value="url('img/celtic-background-2.png')">celtic-macrame</option>
+                                        <option value="url('img/celtic-knot-black.png')">celtic-knot-black</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Instrument Border:
+                                </td>
+                                <td>
+                                    <select id="dropDownInstrumentBorderImage">
+                                        <option selected value="none">none</option>
+                                        <option value="url('img/celtic-background-black.png')">celtic-black</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td colspan="2" style="text-align: center;">
                                     <button id="btnTheme" class="safeButton" type="button" >Theme</button>
                                 </td>
                             </tr>
                         </table>
+                       
                         <!-- END Theme Controls -->
                         <table id="themeTableResults">
                             <tr>
