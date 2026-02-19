@@ -293,8 +293,6 @@
 	        getCurrentFrame().rootIDLead = options.rootIDLead;
 	    }
 	    options.showCellNotes = $("#cbShowCellNotes").prop("checked");
-	    options.subscripts = $("#cbSubscripts").prop("checked");
-	    options.showSubscriptPitches = $("#cbShowSubscriptPitches").prop("checked");
 	    options.showSubscriptFunctions = $("#cbShowSubscriptFunctions").prop("checked");
 	    options.cellIsFunction = ($('input[name="rbnFunctionNotename"]:checked').val() == "showFunction");
 	    options.showMidiNum = $("#cbMidiNum").prop("checked");
@@ -1057,8 +1055,6 @@
 			$('input[name=rbnFunctionNotename][value=showNotename]').prop('checked', true);
 		}
 
-	    $("#cbSubscripts").prop("checked", options.subscripts);
-	    $("#cbShowSubscriptPitches").prop("checked", options.showSubscriptPitches);
 	    $("#cbShowSubscriptFunctions").prop("checked", options.showSubscriptFunctions);
 	    $("#cbMidiNum").prop("checked", options.showMidiNum);
 
@@ -1087,14 +1083,23 @@
 		}
 
 		$("#cbAutomaticColor").prop("checked", options.autoColor);
+
+		//ignore #cbPresentationMode because it is Song-scope, not Section-scope.
+		$("#selNaturaFontScaling").val(options.naturalFontScaling);
+		$("#selNoteFont").val(options.noteFont);
+		$("#selLeftSubscriptFontSize").val(options.leftSubscriptFontSize);
+		$("#selRightSubscriptFontSize").val(options.rightSubscriptFontSize);
+		$("#selMidiFontSize").val(options.midiFontSize);
+		$("#selFingeringFontSize").val(options.fingeringFontSize);
+		$("#selFingeringPosition").val(options.fingeringPosition);
+		$("#selTinyNoteFontSize").val(options.tinyNoteFontSize);
+		$("#selTinyNoteMaxHeight").val(options.tinyNoteMaxHeight);
 	}
 
 	function controlsToDisplayOptions(){
 		var options = {};
 		options.autoColor = $("#cbAutomaticColor").prop("checked");
 		options.showCellNotes = $("#cbShowCellNotes").prop("checked");
-	    options.subscripts = $("#cbSubscripts").prop("checked");
-	    options.showSubscriptPitches = $("#cbShowSubscriptPitches").prop("checked");
 	    options.showSubscriptFunctions = $("#cbShowSubscriptFunctions").prop("checked");
 	    options.cellIsFunction = ($('input[name="rbnFunctionNotename"]:checked').val() == "showFunction");
 	    options.showMidiNum = $("#cbMidiNum").prop("checked");
@@ -1591,12 +1596,6 @@
 	        resetNoteNames();
 	    });
 
-	    $('#cbSubscripts').change(function() {
-	        resetNoteNames();
-	    });
-	    $('#cbShowSubscriptPitches').change(function() {
-	        resetNoteNames();
-	    });
 	    $('#cbShowSubscriptFunctions').change(function() {
 	        resetNoteNames();
 	    });
