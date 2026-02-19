@@ -115,24 +115,6 @@
 			Object.assign(defOptions, themeOptions);
 		}
 		//this applies current controls to default options.
-		function overwriteDefaultWithControlValueOld(options){
-			options.id = options.id + "-"+$('#selThemes option:selected').val();
-			options.caption = options.caption + "+"+$('#selThemes option:selected').text();
-			options.noteRadius           = $('#dropDownNoteRadius option:selected').val(); //  1%-50%
-			options.namedNoteRadius      = $('#dropDownNamedNoteRadius option:selected').val();  //  1%-50%
-			options.notePadding          = $('#dropDownIvoryEbony option:selected').val();  //padding is 0.5-1.5em
-			options.cellSpacing          = $('#dropDownCellSpacing option:selected').val();  //border-spacing is 0.1-1.0em
-			options.instrumentBackground = $('#dropDownInstrumentBackground option:selected').val();
-			options.nutColor             = $('#dropDownNutColor option:selected').val();
-			options.diamondsColor        = $('#dropDownDiamondsColor option:selected').val();
-			options.doubleDiamondsColor  = $('#dropDownDoubleDiamondsColor option:selected').val();
-			options.diamondsBackgroundColor= $('#dropDownDiamondsBackgroundColor option:selected').val();
-			options.diamondsSize         = $('#dropDownDiamondsSize option:selected').val();
-			options.instrumentMargins    = $('#dropDownInstrumentMargins option:selected').val();
-			options.borderImageWhiteKey    = $('#dropDownBorderImageWhiteKey option:selected').val();
-			options.borderImageBlackKey    = $('#dropDownBorderImageBlackKey option:selected').val();
-			options.instrumentBorderImage  = $('#dropDownInstrumentBorderImage option:selected').val();
-		}
 		function overwriteDefaultWithControlValue(options){
 			options.id = options.id + "-"+$('#selThemes option:selected').val();
 			options.caption = options.caption + "+"+$('#selThemes option:selected').text();
@@ -299,19 +281,31 @@
 			//sends a boatload of warning messages, one for each theme value not found in a select.
 		}
 		//Now show what's in all those SELECT dropdowns.
-		showOptions('#dropDownNoteRadius', 'noteRadius'); //  1%-50%
-		showOptions('#dropDownNamedNoteRadius', 'namedNoteRadius');  //  1%-50%
-		showOptions('#dropDownIvoryEbony', 'notePadding');  //padding is 0.5-1.5em
-		showOptions('#dropDownCellSpacing', 'cellSpacing');  //border-spacing is 0.1-1.0em
-		showOptions('#dropDownInstrumentBackground', 'instrumentBackground');
-		showOptions('#dropDownNutColor', 'nutColor');
-		showOptions('#dropDownDiamondsColor', 'diamondsColor');
-		showOptions('#dropDownDoubleDiamondsColor', 'doubleDiamondsColor');
-		showOptions('#dropDownDiamondsBackgroundColor', 'diamondsBackgroundColor');
-		showOptions('#dropDownDiamondsSize', 'diamondsSize');
-		showOptions('#dropDownBorderImageWhiteKey', 'borderImageWhiteKey');
-		showOptions('#dropDownBorderImageBlackKey', 'borderImageBlackKey');
-		showOptions('#dropDownInstrumentBorderImage', 'instrumentBorderImage');
+		function auditThemesShowOptions(){
+			showOptions('#dropDownNoteRadius', 'noteRadius');
+			showOptions('#dropDownNamedNoteRadius', 'namedNoteRadius');
+			showOptions('#dropDownIvoryEbony', 'notePadding');
+			showOptions('#dropDownCellSpacing', 'cellSpacing');
+			showOptions('#dropDownInstrumentBackground', 'instrumentBackground');
+			showOptions('#dropDownInstrumentMargins', 'instrumentMargins');
+			showOptions('#dropDownNutColor', 'nutColor');
+			showOptions('#dropDownDiamondsSize', 'diamondsSize');
+			showOptions('#dropDownDiamondsColor', 'diamondsColor');
+			showOptions('#dropDownDoubleDiamondsColor', 'doubleDiamondsColor');
+			showOptions('#dropDownDiamondsBackgroundColor', 'diamondsBackgroundColor');
+			showOptions('#dropDownNoteWhiteShadowColor', 'noteWhiteShadowColor');
+			showOptions('#dropDownNoteBlackShadowColor', 'noteBlackShadowColor');
+			showOptions('#dropDownNoteWhiteKeyShadowColor', 'noteWhiteKeyShadowColor');
+			showOptions('#dropDownNoteBlackKeyShadowColor', 'noteBlackKeyShadowColor');
+			showOptions('#dropDownNoteWhiteKeyColor', 'noteWhiteKeyColor');
+			showOptions('#dropDownNoteBlackKeyColor', 'noteBlackKeyColor');
+			showOptions('#dropDownNoteWhiteKeyFontColor', 'noteWhiteKeyFontColor');
+			showOptions('#dropDownNoteBlackKeyFontColor', 'noteBlackKeyFontColor');
+			showOptions('#dropDownBorderImageWhiteKey', 'borderImageWhiteKey');
+			showOptions('#dropDownBorderImageBlackKey', 'borderImageBlackKey');
+			showOptions('#dropDownInstrumentBorderImage', 'instrumentBorderImage');
+		}	
+		auditThemesShowOptions();
 
 		INFO("auditThemes result <br>"+table[0].outerHTML);
 	}
