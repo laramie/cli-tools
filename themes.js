@@ -32,7 +32,6 @@ var gThemes = {
         "namedNoteRadius": "8%",
         "notePadding": "8pt",
         "cellSpacing": "0.5pt",
-        "cellSpacingFOO": "0.1em",
         "instrumentBackground": "DarkGreen",
         "nutColor": "lightgreen",
         "diamondsColor": "red",
@@ -45,7 +44,7 @@ var gThemes = {
         "noteBlackKeyColor": "#555",
         "noteWhiteKeyFontColor": "transparent",
         "noteBlackKeyFontColor": "transparent",
-         "instrumentBorderImage": "url('img/celtic-background-black.png')"
+        "instrumentBorderImage": "url('img/celtic-background-black.png')"
     },
     "Zinfandel" : {
         "id": "Zinfandel",
@@ -157,7 +156,6 @@ var gThemes = {
         "noteWhiteKeyFontColor": "#f5e0c4",
         "noteBlackKeyFontColor": "#331e01",
         "borderImageWhiteKey": "none"
-        /*"borderImageBlackKey":  "url('img/landau-chrome-h.png')"*/
     },
     "CoffeeBrown" : {
         "id": "CoffeeBrown",
@@ -203,7 +201,7 @@ var gThemes = {
         "notePadding": "12pt",
         "cellSpacing": "7pt",
         "instrumentBackground": "black",
-        "nutColor": "#black",
+        "nutColor": "black",
         "noteWhiteKeyColor": "white",
         "noteBlackKeyColor": "black",
         "noteWhiteKeyFontColor": "white",
@@ -334,7 +332,6 @@ var gThemes = {
         "namedNoteRadius": "8%",
         "notePadding": "12pt",
         "cellSpacing": "10pt",
-        "cellSpacingFOO": "0.1em",
         "instrumentBackground": "#333",
         "nutColor": "lightgray",
         "diamondsColor": "red",

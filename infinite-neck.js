@@ -1653,6 +1653,7 @@
 			var val =  this.value;
 			var selectedTheme = getThemes()[val];
 			theme(selectedTheme);
+			themeToControls(getDefaultTheme());  //Not all themes have all values, so reset all the dropdowns with theme "Default" first.
 			themeToControls(selectedTheme);
 			clearThemeDiffResults();
 		});

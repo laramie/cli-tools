@@ -1479,9 +1479,9 @@ td.note.noteWhiteKey {
 
 
 .noteBlackKey {
-    box-shadow: 0 0 2pt 1pt cornflowerblue;
-    background-color: green; foo: #555;
+    background-color: green;
     color: green;
+    box-shadow: 0 0 2pt 1pt cornflowerblue;
 }
 .noteWhiteKey {
     background-color:white;
@@ -1493,6 +1493,7 @@ td.note.noteWhiteKey {
     color: black;
     box-shadow: 0 0 2pt 1pt cornflowerblue;
 }
+
 .namesRowCell .noteBlackKey   {
     color: white;
     text-align: center;
