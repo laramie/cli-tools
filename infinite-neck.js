@@ -495,14 +495,18 @@
 	    var text = JSON.stringify(getSong(), null, 2); // Create element. (with 2 spaces indentation)
 	    //console.log("saved file:\r\n"+text);
 		var a = document.createElement('a'); // Attach href attribute with value of your file.
-	    a.setAttribute("href", "data:application/xml;charset=utf-8," + text);
-	    // HTML5 property, to force browser to download it.
+	    //a.setAttribute("href", "data:application/xml;charset=utf-8," + text);
 	    var fname = "";
 	    fname = $("#txtFilename").val().trim();
 	    if (fname==""){
 	        fname = "untitled";
 	    }
-	    a.setAttribute("download", fname+".json");
+
+		const blob = new Blob([text], {type: "application/json"});
+		console.log("saved Blob:\r\n"+blob);
+		const url = URL.createObjectURL(blob);
+		a.setAttribute("href", url)
+	    a.setAttribute("download", fname+".json");   // HTML5 property, to force browser to download it.
 	    a.click();
 	    hideAllMenuDivs();
 	}
@@ -594,6 +598,15 @@
 		}
 		gSong.addFrames(jsonObj);
 		gSong.graveyard = makeGraveyard(gSong.graveyard);
+
+		var userTheme = gSong.userTheme;
+		if (userTheme){
+			userTheme["id"] = "USER";
+			getThemes()["USER"] = userTheme;
+			gSong.theme = "USER";
+		}
+		rebuildThemesDropdown();
+
 		updateAfterOpenSong();
 	}
 	function updateAfterOpenSong(){
@@ -1110,8 +1123,17 @@
 										"caption":	$("#dropDownFunctionSymbols option:selected").text(),
 										"value":  $("#dropDownFunctionSymbols").val()
 									};
-
-
+		options.naturalFontScaling = $("#selNaturaFontScaling").val();
+		options.noteFont = $("#selNoteFont").val();
+		options.leftSubscriptFontSize = $("#selLeftSubscriptFontSize").val();
+		options.rightSubscriptFontSize = $("#selRightSubscriptFontSize").val();
+		options.midiFontSize = $("#selMidiFontSize").val();
+		options.fingeringFontSize = $("#selFingeringFontSize").val();
+		options.fingeringPosition = $("#selFingeringPosition").val();
+		options.tinyNoteFontSize = $("#selTinyNoteFontSize").val();
+		options.tinyNoteMaxHeight = $("#selTinyNoteMaxHeight").val();
+		//Ignore #cbPresentationMode because it really is Song-scope and not per Section.
+		
 		return options;
 	}
 
@@ -1644,6 +1666,8 @@
 		$('#btnTheme').click(function() {
 			var newTheme = controlsToTheme();
 			theme(newTheme);
+			gSong.userTheme = newTheme;
+			getThemes()["USER"] = newTheme;
 		});
 		$('#btnToggleThemeTableResults').click(function() {
 			$('#themeTableResults').toggle();
@@ -1707,6 +1731,15 @@
 		$("#divScalingPrefs").html("ScalingPrefs: "+JSON.stringify(localStorage.getItem(SCALING_PREFS)));
 	}
 
+	/** After calling this, choose a theme either by default or by looking in song you just opened for USER theme. */
+	function rebuildThemesDropdown(){
+		$('#SelectThemesDest').html(getWidget_SelectThemes());  //must come before bindThemeEvents()
+		bindThemeEvents();
+		auditThemes();//sends WARN messages, so hide after.
+		$('#warny').hide();
+		$('#themeTableResults').hide();
+	}
+
 	//=============== document.ready ===========================================
 
 	$(document).ready(function() {
@@ -1741,11 +1774,7 @@
 		bindDesktopEvents();
 		applyScalingPrefs(true);
 
-		$('#SelectThemesDest').html(getWidget_SelectThemes());  //must come before bindThemeEvents()
-		bindThemeEvents();
-		auditThemes();//sends WARN messages, so hide after.
-		$('#warny').hide();
-		$('#themeTableResults').hide();
+		rebuildThemesDropdown();
 		$('#selThemes').val("Autobahn").change();
 		//will get picked up in open file, but here is the default theme,
 		//    which isn't "Default", although it should be.

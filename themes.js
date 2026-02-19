@@ -355,5 +355,9 @@ var gThemes = {
         "instrumentBackground": "brown",
         "nutColor": "yellow",
         "diamondsSize": "4em"
+    },
+    "USER" : {
+        "id": "USER",
+        "caption": "USER"
     }
 }
