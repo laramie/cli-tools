@@ -1623,11 +1623,13 @@
 			}
 			fullRepaint();
 		});
+		// CODE-EXAMPLE("TextAreaWButtonWidget", "FunctionSymbols")
 		$("#btnFunctionSymbolsReset").click(function() {
 			noteNamesFuncArr = noteNamesFuncArrDEFAULT;
 			$('#textareaFunctionSymbols').val(JSON.stringify(noteNamesFuncArr));
 			fullRepaint();
 		});
+		// END-CODE-EXAMPLE("TextAreaWButtonWidget") 
 		$('#dropDownFunctionSymbols').change(function() {
             var value = $('#dropDownFunctionSymbols').val();
 			noteNamesFuncArr = JSON.parse(value);  //this one is safe--comes from our built SELECT.
