@@ -550,6 +550,16 @@ table.controls2 select {
 #divTunings {
     display: none;
 }
+.userInstrumentControlsGroup {
+    background-color: cornsilk;
+    padding: 1em;
+    margin: 0;
+    margin-left: 4em;
+    width: 65%;
+}
+#tblUserInstrumentEditor{
+    border-spacing: 20px; 
+}
 
 
 #palette {

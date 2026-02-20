@@ -6,6 +6,7 @@ function makeSong(){
             frames: null,
         	gFramesCurrentIndex: 0,
             gFirstBeatSeen: false,
+            userInstrumentTuning: null,
             gSongModelListener: null,
             constructing: false,
         //METHODS:

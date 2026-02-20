@@ -4,6 +4,7 @@
 const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
+//the "table" is the instrument table, i.e. the neck, not the tunings html table on the Tunings page.
 function buildTable(options){
 	if (options.visible==false){
 		//console.log("NOT building invisible table: "+options.caption);
@@ -269,7 +270,7 @@ function dumpTuningsToTable(tuningsInMemoryHash){
       var table = $("<table class='tuningsTable'>");
       var trh = $("<tr>");
       trh.html("<th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
-              +"<th>Right/Left</th><th>PianoNames</th><th>Frets</th><th>Divider</th><th>InMem</th>");
+              +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>");
       table.append(trh);
       var sval = "";
       var rows = allTunings.tunings.length;
@@ -292,7 +293,20 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 	        var checkboxPN = '<label for="cbPN'+tun.baseID+'"><nobr>'
 	                    +'<input class="checkboxPN"   id="cbPN'+tun.baseID+'" '
 	                    +' type="checkbox" name="cbnPN'+tun.baseID+'" value="'
-	                    +tun.baseID+'" '+checkedPN+'>PianoNamesRow</nobr></label>';
+	                    +tun.baseID+'" '+checkedPN+'></nobr></label>';
+			
+
+			var checkedNut = tun.nut ? " checked " : "";
+	        var checkboxNut = '<label for="cbNut'+tun.baseID+'"><nobr>'
+	                    +'<input class="checkboxNut"   id="cbNut'+tun.baseID+'" '
+	                    +' type="checkbox" name="cbnNut'+tun.baseID+'" value="'
+	                    +tun.baseID+'" '+checkedNut+'></nobr></label>';
+			var BN = tun.banjoNut?JSON.stringify(tun.banjoNut):"";
+			if (BN)	{
+				BN = BN.replaceAll(",", ",<br>");
+			}		
+
+
 
 			var selectBlock = generateSelect(tun.baseID, tun.frets);
 			var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
@@ -304,9 +318,11 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 	        tr.append($("<td>").html(tun.baseInstrument));
 	        tr.append($("<td>").html(rowRangeToNoteNames(tun.rowRange, tun)));
 	        tr.append($("<td>").html(""+tun.rowRange));
+	        tr.append($("<td>").html(""+BN));
 	        tr.append($("<td>").html(checkboxLH));
 	        tr.append($("<td>").html(checkboxPN));
-	        tr.append($("<td>").html(selectBlock));
+	        tr.append($("<td>").html(checkboxNut));
+	        tr.append($("<td>").html(selectBlock)); //numFrets
 	        tr.append($("<td>").html(selectStringDividerHt));
 	        sval = "";
 	        if (tuningsInMemoryHash[tun.baseID]){
@@ -405,8 +421,8 @@ function getTunings(tableNamesArr){
       //if none, then show for newbies or browsers that clear checkboxes:
 	    var numShowing = showhideTunings();
 	    if (numShowing==0){
-	        $("#cbP4").prop("checked", true);
-	        showHideTuning(true, "P4");
+			console.log("================== showDefaultTuning showing P46 ===========");
+	        showHideTuning(true, "P46");
 	    }
 	    return numShowing;
 	 }
@@ -440,11 +456,13 @@ function getTunings(tableNamesArr){
 	    var jdiv = $(divKey);
 	    jcb.prop("checked", show);
 		//jcb.click();
-	    if (show){
-	        jdiv.show();
+	    if (show){   //change the checkbox in the GUI
+	        jdiv.show();  
 	    } else {
 	        jdiv.hide();
 	    }
+		var tuning = findTuningForID(basekey);
+        tuning.visible =show;  //change it in the in-memory model.
 	}
 
 	function showTuningsForTablesInFile(){
@@ -482,6 +500,43 @@ function getTunings(tableNamesArr){
 	        hideTuning(allTunings.tunings[i].baseID);
 	    }
 	}
+
+/**
+ * Converts a comma-separated string to an array of integers, with validation.
+ * @param {string} inputString The string to convert.
+ * @returns {number[]} The array of integers.
+ * @throws {Error} If any element is not a valid integer.
+ */
+function convertStringToIntArray(inputString) {
+  // 1. Split the string by the comma separator
+  const stringArray = inputString.split(',');
+
+  // 2. Map each string element to an integer and validate
+  const intArray = stringArray.map(str => {
+    // Trim whitespace from the string
+    const trimmedStr = str.trim();
+
+    // Use parseInt with base 10 (decimal) for robust conversion
+    const num = Number.parseInt(trimmedStr, 10);
+
+    // 3. Check if the result is a valid integer and not NaN
+    // The `Number.isNaN()` check is crucial for safety
+    if (Number.isNaN(num) || trimmedStr === '') {
+      throw new Error(`Invalid input: "${str}" is not a valid integer.`);
+    }
+
+    // 4. Additionally, check if the original string was an actual number (prevents '1a' being parsed as '1')
+    // This is the safest way to ensure the whole string was an integer representation
+    if (String(num) !== trimmedStr) {
+        throw new Error(`Invalid input: "${str}" contains non-integer characters.`);
+    }
+
+    return num;
+  });
+
+  return intArray;
+}
+
 
 //===================== event binding =======================================
 	//One dependency: the existence of a form called "#frmTunings" with our tuningstable.
@@ -521,7 +576,51 @@ function bindFormTuningsEvents(){
 	$('#frmTunings .checkboxPN').change(function() {
         var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
-        tuning.pianoNamesRow = this.checked;//TODO
+        tuning.pianoNamesRow = this.checked;
         resinstallAllTuningsTables();
     });
+	$('#frmTunings .checkboxNut').change(function() {
+        var tuningID = this.value;
+		var tuning = findTuningForID(tuningID);
+        tuning.nut = this.checked;
+        resinstallAllTuningsTables();
+    });
+	$('#btnShowHideEditUserTuning').off('click').click(function() {
+		$('#divEditUserTuning').toggle();
+	});
+	$('#btnSaveUserTuning').off('click').click(function() {
+        var tun = findTuningForID("USER");
+		if (tun){
+			var text = $('#textareaRowRange').val();
+			if (text){
+				if (text.trim()){
+					try {
+						var arr = convertStringToIntArray(text.trim());
+						tun.rowRange = arr;
+						tun.nStrings = tun.rowRange.length;
+					} catch (e){
+						alert("User instrument RowRange invalid: "+text);
+						return;
+					}
+				}
+			}
+			
+
+			var sBanjoNut = $('#textareaBanjoNut').val();
+			if (sBanjoNut && sBanjoNut.trim()){
+				tun.banjoNut = JSON.parse(sBanjoNut);
+			}
+
+			var sCaption = $('#txtUserInstrumentCaption').val();
+			if (sCaption && sCaption.trim()){
+				tun.caption = sCaption.trim();
+			}
+
+			tun.baseInstrument = $('#dropDownBaseInstrument  option:selected').val();
+			
+			reloadAllTuningsDisplay();
+			resinstallAllTuningsTables();
+		}
+	});
+	
 }

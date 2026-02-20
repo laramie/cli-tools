@@ -490,15 +490,18 @@
                         </div>
 
                         <div class="sectionPageControlsGroup">
+                            <!-- WIDGET-EXAMPLE("TextWButtonWidget", "Caption") -->
                             <nobr>
                                 <label for="txtCaption">Caption:
                             <nobr><input type="text" name="txtCaption" id="txtCaption" value="" size="64"><button type="button">&check;</button></nobr>
                             </label>
                             </nobr>
+                            <!-- END-WIDGET-EXAMPLE("TextWButtonWidget") -->
                         </div>
 
                         <div class="sectionPageControlsGroup">
                             <nobr>
+                                 <!-- WIDGET-EXAMPLE("SelectWidget", "Root") -->
                                 <label for="dropDownRoot">
                                     <nobr><u><b>K</b></u>ey:</nobr>
                                     <select id="dropDownRoot">
@@ -516,6 +519,7 @@
                                         <option class="ddnAb" value="11">Ab</option>
                                     </select>
                                 </label>
+                                <!-- END-WIDGET-EXAMPLE("SelectWidget") -->
         						&nbsp;&nbsp;
         						<label for="dropDownRootLead">
         							LeadKey:
@@ -1609,7 +1613,7 @@
 
 
         <!-- divTunings -->
-        <div id="divTunings">
+        <div id="divTunings" >
             <form id="frmTunings">
                 <table class="menuTable">
                     <tr>
@@ -1622,6 +1626,75 @@
                     </tr>
                 </table>
                 <!--end menuTable-->
+                <div class="userInstrumentControlsGroup" class="paletteRBBackground">
+                <button id="btnShowHideEditUserTuning" type="button" class="MainMenuTabBtn BtnPunchedOut">Customize USER Tuning</button>
+                <div id="divEditUserTuning" class="paletteRBBackground" style="display: none;">                   
+                <table id="tblUserInstrumentEditor" class="menuTable">
+                    <tr>
+                        <td>
+                            <b>You can customize the instrument with ID: USER</b>
+                        </td>
+                    </tr>   
+                    <tr>
+                        <td>
+                            <label for="textareaRowRange"><b>MIDI:</b><br />
+                                <textarea id="textareaRowRange" name="txtnRowRange" rows="1" cols="80" class="scalingTextarea"></textarea>
+                                <br>Comma-separate list of MIDI numbers for the note at the nut (open string), from first string to nth string.
+                                <br>Example for Standard Guitar: 64,59,55,50,45,40
+                        </td>
+                    </tr>   
+                    <tr>
+                        <td>     
+                            <label for="textareaBanjoNut"><b>BN (Banjo Nut):</b><br />
+                                <textarea id="textareaBanjoNut" name="txtnBanjoNut" rows="1" cols="80" class="scalingTextarea"></textarea>
+                            </label>
+                            <br>Examples: {"5":5} makes a BanjoNut/Capo at the fifth fret on the fifth string.
+                                <br>          {"1":2, "2":4, } makes a BanjoNut at the second fret on the first string, and one on the fourth fret of the second string.  
+                                <br>          {"1":2, "2":2, "3": 2, "4": 2, "5":2} makes a Drop-D style capo at the second fret covering the first five strings.  
+                        
+                        </td>
+                    </tr>   
+                    <tr>
+                        <td>  
+                            <label for="dropDownBaseInstrument">
+                                <nobr><b>Instrument:</b></nobr>
+                                <select id="dropDownBaseInstrument">
+                                    <option value="Guitar">Guitar</option>
+                                    <option value="Bass">Bass</option>
+                                    <option value="Cello">Cello</option>
+                                    <option value="Ukulele">Ukulele</option>
+                                    <option value="Mandolin">Mandolin</option>
+                                    <option value="Banjo">Banjo</option>
+                                    <option value="ChampmanStick">ChampmanStick</option>
+                                    <option value="MIDI">MIDI</option>
+                                    <option value="Piano">Piano</option>
+                                </select>
+                            </label>
+                        </td>
+                    </tr>   
+                    <tr>
+                        <td>     
+                            <nobr>
+                                <label for="txtUserInstrumentCaption"><b>Tuning:</b>
+                                    <input type="text" name="txtUserInstrumentCaption" id="txtUserInstrumentCaption" value="" size="64">
+                                </label>
+                            </nobr>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>  
+                            <br>   
+                            <button id="btnSaveUserTuning" class="safeButton" type="button" >Save User Instrument</button>
+                        </td>
+                    </tr>
+
+                               
+
+
+                </table>
+                </div>
+                </div>
             </form>
         </div>
 

@@ -479,6 +479,10 @@
 	    gSong.songName = $("#txtFilename").val();  //TODO: move this to a more obvious function.
 		gSong.userColors = gUserColorDict.dict;
 		gSong.theme = $('#selThemes').val();
+		var theUSERTuning = findTuningForID("USER");
+		if (theUSERTuning){
+			gSong.userInstrumentTuning = theUSERTuning;  //This is just persistence.  The allTunings.tunings with id="USER" is the live object that is consulted for building tables at runtime.
+		}
 	}
 
 	function downloadBackupThenClearGraveyard(){
@@ -529,48 +533,6 @@
         });
 	}
 
-	function openSong_ORIGINAL(str){
-		var numFoundBeforeFileLoad = showTuningsForTablesInFile();
-		//in current "file" which is in-memory obj of anything user was noodling with before opening a file.
-		if (numFoundBeforeFileLoad==0){
-		  hideAllTunings();
-		  //console.log("hiding all tunings on file load");
-		}
-		var jsonObj = JSON.parse(str);
-		var frs = [];
-		for (var k in jsonObj.frames){
-			var frame = jsonObj.frames[k];
-			var replacementFrame = gSong.constructFrame();
-			frame = Object.assign(replacementFrame, frame);
-			frs.push(frame);
-		}
-		jsonObj.frames = frs;
-		if (!gSong.isEmpty(gSong.getCurrentFrame())){
-			var yes = confirm("Keep previous Song Sections? \n( 'Cancel' deletes !! \nOtherwise, 'OK' adds new Song Sections at end of current Song Sections.)");
-			if (!yes){
-				gSong.removeAllFrames();
-			}
-		}
-		gSong.addFrames(jsonObj);
-		//todo: this means we are manually adding all things from file jsonObj individually,
-		//      rather than having JSON fill in our whole song object then doing fixup(). Uggg.
-		hideGraveyard();
-		Object.assign(gSong.graveyard, jsonObj.graveyard);
-		Object.assign(gSong.colorDicts, jsonObj.colorDicts);
-		installDefaultColorDicts();
-
-		readOptionsFromFile(jsonObj);
-		applyStylesheetsTo_gUserColorDict();
-		buildColorDicts();
-		resetNoteNames();
-		updateFramesStatus();
-		replay();
-		var tuningsShowing = showTuningsForTablesInFile();
-		if (tuningsShowing == 0){
-			console.log("showDefaultTuning because file load found none");
-			showDefaultTuning();
-		}
-	}
 	function openSong(str){
 		var numFoundBeforeFileLoad = showTuningsForTablesInFile();
 		if (numFoundBeforeFileLoad==0){
@@ -578,6 +540,15 @@
 		}
 		var jsonObj = JSON.parse(str);
 		Object.assign(gSong, jsonObj)
+
+		if (gSong.userInstrumentTuning){
+			var theUSERTuning = findTuningForID("USER");
+			if (theUSERTuning){
+				hideAllTunings();
+				Object.assign(theUSERTuning, gSong.userInstrumentTuning);  //the version in the song model is just used for persistence. allTunings.tunings array keeps the USER tuning that is used at runtime.
+			}
+		}
+		
 		var frs = [];
 		for (var k in jsonObj.frames){
 			var frame = jsonObj.frames[k];
@@ -604,6 +575,8 @@
 			gSong.theme = "USER";
 		}
 		rebuildThemesDropdown();
+
+		
 
 		updateAfterOpenSong();
 	}
@@ -694,7 +667,7 @@
 	}
 
 	function installTDNoteClick(){
-	    $('td.note').click(function() {
+	    $('td.note').off('click').click(function() {
 	        colorNote($(this));
 	        event.stopPropagation();
 	    });
@@ -1171,7 +1144,7 @@
 	function bindDesktopEvents(){
 
 		$("#btnPalette").click(function() {
-		    showOneMenu("#palette");
+			showOneMenu("#palette");
 		});
 		$("#btnDesktop").click(function() {
 		    showOneMenu("#divDesktop");
@@ -1466,16 +1439,29 @@
 			 transpose(5);
 	    });
 
+		// CODE-EXAMPLE("SelectWidget", "Root")
 	    $('#dropDownRoot').change(function() {
 	        getCurrentFrame().rootID = $(this).val();
 	        fullRepaint();
 	        updateFramesStatus();
 	    });
+		// END CODE-EXAMPLE("SelectWidget", "Root")
 		$('#dropDownRootLead').change(function() {
             getCurrentFrame().rootIDLead = $('#dropDownRootLead').val();
             fullRepaint();
 	        updateFramesStatus();
 	    });
+
+		$("#btnRowRangeReset").click(function() {
+			//$('#textareaRowRange').val(JSON.stringify(noteNamesRowRangeArr));
+			fullRepaint();
+		});
+
+		$('#dropDownBaseInstrument').change(function() {
+			var baseInstrumentID = $(this).val();
+			fullRepaint();
+			updateFramesStatus();
+		});
 
 		$('#dropDownCellHeight').change(function() {
 			fullRepaint();
