@@ -40,10 +40,12 @@
 }
 
 body {
-    aabackground-color: #1f3330;
-    GGbackground-color: #381d00;
+    /*
+        background-color: #1f3330;
+        background-color: #381d00;
+        definitely-background-color: cornsilk;
+    */
     background-color: #1a0e03;
-    definitely-background-color: cornsilk;
     font-size: 10pt;
     font-family: Helvetica;
     margin: 0;
@@ -211,10 +213,13 @@ body {
 .paletteRBBackground {
     margin-bottom: 0.4em;
 }
-.fingeringRBBackground {
-    ddmargin-top: 0.5em;
-    ddmargin-left: 0.5em;
-}
+/* 
+        .fingeringRBBackground {
+            
+            margin-top: 0.5em;
+            margin-left: 0.5em;
+        }
+*/
 .sectionPageControlsGroup,
 .sectionPageControlsGroupResize {
     background-color: cornsilk;
@@ -227,8 +232,6 @@ body {
     overflow: scroll;
 }
 #divPaletteDraggable {
-   //display: inline-block;
-   ffposition: absolute;
    padding: 3em;
    position: fixed;
 }
@@ -285,14 +288,13 @@ button {
 }
 
 table {
-    FRRRRRRRmargin: 0.1em;
     border: 0;
 }
 table.organizer td {
     margin:0;
     padding: 0;
     vertical-align: top;
-    text-align: left;"
+    text-align: left;
 }
 
 table.controls {
@@ -325,9 +327,11 @@ table.controls2 select {
 .tblDisplayOptions {
     border: 2px solid black;
 }
-.tblDisplayOptions tr {
-}
-.tblDisplayOptions td {
+/*
+    .tblDisplayOptions tr {
+    }
+*/
+.ActiveStylesheets td {
     border: 1px solid gray;
 }
 .tblDisplayOptions th {
@@ -364,6 +368,7 @@ table.controls2 select {
 
 .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 95%;
   height: 15px;
   background: #000;
@@ -451,7 +456,6 @@ table.controls2 select {
 }
 .tuningsTable tr:nth-child(odd) {
   background-color: lightgreen;
-  ffcolor: #fff;
 }
 .tuningsTable select {
     font-size: 80%;
@@ -507,14 +511,8 @@ table.controls2 select {
     font-size: 1pt;  /*just so I don't have to delete the html right now.*/
     font-weight: bold;
     color: transparent;/*just so I don't have to delete the html right now.  */
-    ffpadding:0.2em;
     text-align: center;
     vertical-align: middle;
-}
-.menuPage {
-    ffpadding-top: 1em;
-    ffpadding-left: 1em;
-    ggborder: 1px solid black;
 }
 .productsmall {
     font-size:  70%;
@@ -524,7 +522,6 @@ table.controls2 select {
 }
 .product {
     font-size: 200%;
-    ffcolor: darkorange;
     color: black;
     font-family: "Verdana";
     -webkit-text-stroke: 1px #ffaa00;
@@ -536,7 +533,7 @@ table.controls2 select {
     display: inline-block;
     border: 1px solid gray;
     border-radius: 20%;
-    background-color: white; was: buttercup;
+    background-color: white; 
     box-shadow: 1pt 1pt 2pt 0.5pt gray;
 }
 
@@ -581,20 +578,22 @@ table.controls2 select {
 
 
 #palette {
-  display: none
-  FOR-DRAG-position: absolute;
+  display: none;
   position: relative;
   z-index: 9;
   text-align: center;
-  FOR-DRAG-width: 400px;
   padding: 0; /*.1em;*/
-  FOR-DRAG-padding-top: 0.4em;
-  FOR-DRAG-background-color: #dfd;
-  FOR-DRAG-box-shadow: inset 0 0 10pt 2pt  black;
-  FOR-DRAG-border-radius: 4pt;
-  FOR-DRAG-left: 5%;
-  FOR-DRAG-width: 90%;
-  FOR-DRAG-height: 20em;
+  /*
+    FOR-DRAG position: absolute;
+    FOR-DRAG width: 400px;
+    FOR-DRAG padding-top: 0.4em;
+    FOR-DRAG background-color: #dfd;
+    FOR-DRAG box-shadow: inset 0 0 10pt 2pt  black;
+    FOR-DRAG border-radius: 4pt;
+    FOR-DRAG left: 5%;
+    FOR-DRAG width: 90%;
+    FOR-DRAG height: 20em;
+  */
   width: 100%;
   left: 0;
 }
@@ -605,7 +604,6 @@ table.controls2 select {
   cursor: move;
   z-index: 10;
   background-color: lightgreen;
-  ffcolor: #fff;
 }
 
 #palette label {
@@ -647,7 +645,6 @@ table.controls2 select {
     width: 8em;
     margin-right: 0.5em;
     margin-bottom: 0.5em;
-    ffffbackground-color: white;
     color: black;
     font-weight: bold;
     border: 1px solid gray;
@@ -655,11 +652,12 @@ table.controls2 select {
     box-shadow: 2pt 2pt  2pt 0.01pt gray;
 }
 
-#palette label.chooseKeep:checked,
-#palette label.chooseClear:checked {
-   FFFFbox-shadow: 1pt 1pt  3pt 0.01pt cyan;
-}
-
+/*
+    #palette label.chooseKeep:checked,
+    #palette label.chooseClear:checked {
+    box-shadow: 1pt 1pt  3pt 0.01pt cyan;
+    }
+*/
 label.chooseHighlight#idMidiPitchesLbl {
     outline: 6px solid yellow ;
     outline-offset: -8px;
@@ -683,7 +681,6 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
   font-size: 100%;
   font-family: sans-serif;
   border: 1px solid gray;
-  ffbox-shadow: 1.5pt 0.5pt 2pt 1pt gray;
   box-shadow: 2pt 2pt  2pt 0.01pt gray;
 }
 
@@ -763,8 +760,10 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
     font-size:  100%;
     background-color: lightgreen;
 }
-#btnPrevBeatTransport, #btnNextBeatTransport {
-}
+/*
+    #btnPrevBeatTransport, #btnNextBeatTransport {
+    }
+*/
 .ArmedButton {
   background-color: green;
   border-radius: 10%;
@@ -811,8 +810,10 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
     display: inline-block;
     padding: 2px;
 }
-#divControls button {
-}
+/*
+    #divControls button {
+    }
+*/
 
 .MainMenuTabBtn, .MenuButton {
     padding: 0.4em;
@@ -906,19 +907,20 @@ P {
 }
 .instrumentBackground {
     color: gold;
-    japan-cool-background-color: brown;
-    everyone-into-the-pool-foo: 1;
-    ddbackground-color: #381d00;/* Zinfandel deep brown works with body background-color: #1a0e03  */
+    /*    
+        japan-cool-background-color: brown;   
+        everyone-into-the-pool-foo: 1;
+        background-color: #381d00;/* Zinfandel deep brown works with body background-color: #1a0e03  
+    */
     background-color: #0aa; /*working default greenish*/
     margin: 1em;
-    FFmargin-top: var(--instrument-margin-tb);
     margin-bottom: var(--instrument-margin-tb);
     margin-left: 1.5em;
     border: 1px solid black;
     box-shadow: 0 0 6pt 3pt maroon;
     border-radius: 0.3em;
     padding: 8pt;
-    //background-image: url('img/celtic-background-2.png');
+    /*background-image: url('img/celtic-background-2.png');*/
     background-repeat: no-repeat;
     background-size: 100% 100%;
     border-image: var(--instrument-border-image) 30 / 19px round;
@@ -953,7 +955,6 @@ P {
 }
 
 #topControlsCaptions {
-    ffmargin-top: 1em;
     font-size:  120%;
     text-align: left;
     width: 100%;
@@ -1013,11 +1014,9 @@ P {
     border: 1px solid black;
     padding: 0.5em;
     margin: 0;
-    NNNNNmargin-left: 4em;
     margin-top: 0em;
     background-color: #dfd;
     font-size:  100%;
-    ddvertical-align: middle;
     box-shadow: inset 0 0 10pt 4pt  black;
 }
 
@@ -1136,9 +1135,6 @@ input:read-only,textarea:read-only {
 }
 
 
-.diamondRow {
-
-}
 .diamondsRow td {
     background-color: var(--diamonds-background-color);
     font-size: var(--diamonds-size);
@@ -1166,7 +1162,7 @@ input:read-only,textarea:read-only {
     vertical-align: middle;
     background-color: transparent;
     color: var(--double-diamonds-color);
-    WORKEDfont-size: calc( var(--diamonds-size) * 10);
+    /*   WORKED font-size: calc( var(--diamonds-size) * 10);  */
     font-size: 60% !important;  /* because a doubleDiamonds td contains another table which has td.doubleDiamonds */
     border: 0;
     padding: 0;
@@ -1211,7 +1207,6 @@ small {
     margin-left: 110px; /* same as td.note */
 }
 
-#EXAMPLECmdMenuOptionsTable  td:first-child {}
 #EXAMPLECmdMenuOptionsTable  td:nth-child(2) {width: 100pt;}
 
 
@@ -1234,14 +1229,12 @@ td.note small {
     border: 2px solid brown;
     border-right: 20px double brown;
     margin: 4px;
-    FFopacity: 50%;
     background-image: repeating-linear-gradient( 45deg, transparent, transparent 20px, var(--nut-gradient-color) 20.5px, var(--nut-gradient-color) 21px );
 }
 .nutR {
     border: 2px solid brown;
     border-left: 20px double brown;
     margin: 4px;
-    FFopacity: 50%;
     background-image: repeating-linear-gradient( 45deg, transparent, transparent 20px, var(--nut-gradient-color) 20px, var(--nut-gradient-color) 21px );
 }
 .noteHatched {
@@ -1285,7 +1278,6 @@ td.note {
     text-align: right;
     vertical-align: middle;
     font-family: var(--td-note-font-family), sans-serif;
-        was: "Dosis", sans-serif;
     position: relative;
       /* below 3 highlight is mushed.
                     * this is a driver of space for IvoryEbony display of noteWhiteKey and noteBlackKey.*/
@@ -1350,7 +1342,7 @@ td.note.noteWhiteKey {
 }
 
 .tinyscriptL {
-    font-size: var(--left-subscript-font-size); was: 0.6em;
+    font-size: var(--left-subscript-font-size); 
     position: absolute;
     left: calc(var(--named-note-radius) * 0.5);
     bottom: -0.5ex;
@@ -1416,10 +1408,8 @@ td.note.noteWhiteKey {
     z-index: 6;
     border: 1px solid orange;
     text-align: left;
-    vertical-align: center;
+    /* doesn't work with display:block  vertical-align: center;  */
     font-size: 0.6em;
-    ffftop: 0.5em;
-    fffleft: 0.5em;
     height:30%;
 }
 
@@ -1435,7 +1425,6 @@ td.note.noteWhiteKey {
 
 
 .NoteActive {
-    LIKE-KEYbackground-color: transparent;
     background-color: transparent;
     width: 100%;
     height: 100%;
@@ -1452,9 +1441,7 @@ td.note.noteWhiteKey {
  *     </div>
  */
 #boxme {
-    ddbox-shadow: 15pt 15pt 4pt 4pt aqua, 25pt 25pt 2pt 8pt black;
     box-shadow: 0 0 6pt 1pt aqua, 0 0 1pt 1pt black;
-    hhborder: 1px solid blue;
     border-radius: 5pt;
     background-color: transparent;
 }
@@ -1646,7 +1633,7 @@ However, don't use for Root or other things.
     border: 1px solid orange;
     border-radius: 6px;
     text-align: center;
-    vertcal-align: middle;
+    vertical-align: middle;
 }
 .semitone1, .semitone2, .semitone3, .prebend1, .prebend2, .prebend3, .updown1, .updown2, .updown3 {
    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
