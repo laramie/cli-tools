@@ -1119,6 +1119,9 @@
 		$(".showsubcaption").click(function() {
 			$(".subcaption").toggle();
 		});
+		$(".showcolordict").click(function() {
+			$(".currentColorDict").toggle();
+		});
 	}
 
 	function transportResize(){

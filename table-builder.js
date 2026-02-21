@@ -139,8 +139,9 @@ function buildTable(options){
     var div = $('<div>');
     div.addClass("instrumentBackground");
     div.attr("id", TABLEDIV_ID_PREFIX+options.baseID);
-    var exportButton = "&nbsp;&nbsp;<button class='exportButton' tabindex='-1' onclick='exportFromTable(\""+TABLE_ID_PREFIX+options.baseID+"\")'>Export Highlights</button>";
-	var hamburger = "<button id='btnHamburger"+options.baseID+"' class='HamburgerInstrumentClass showsubcaption' type='button' tabindex='-1'>&equiv;</button>";
+    var exportButton = "&nbsp;&nbsp;<button class='exportButton moveyButton' tabindex='-1' onclick='exportFromTable(\""+TABLE_ID_PREFIX+options.baseID+"\")'>Export Highlights</button>";
+	var hamburger = "<button id='btnHamburger"+options.baseID+"' class='HamburgerInstrumentClass showsubcaption moveyButton' type='button' tabindex='-1'>&equiv;</button>";
+	var hamburgerColorDict = "<button id='btnHamburgerColorDict"+options.baseID+"' class='showcolordict moveyButton' type='button' tabindex='-1'><img src='img/colordictThumbnail.png' style='width:35px;height:15px;'></button>";
 
 	var spanLeadDifferentFromRoot = "&nbsp;<span class='spanLeadDifferentFromRoot'></span>";
 	var spanRootID = "&nbsp;&nbsp;&nbsp;<span class='lblRootID'></span>";
@@ -160,9 +161,11 @@ function buildTable(options){
 				+spanRootID
 				+spanLeadDifferentFromRoot+S
 				+noteClickedCaption
-				+"<span class='currentColorDict'></span>"+S
+				+hamburgerColorDict+S+S
 				+'</span>'
-			    +hamburger+S+S
+				+hamburger+S+S
+				+"<div class='currentColorDict''></div>"+S
+			    
 			);
 	div.append(p);
     div.append(table);
