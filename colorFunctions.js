@@ -167,6 +167,7 @@
 
 		$('#divColorDictsDest').empty().append(tbl);
 		$('#divColorDicts').show();
+
 		var activeStylesheets = calculateActiveStylesheets();
 		$('.ActiveStylesheets').html("Active Stylesheets: "+activeStylesheets);
 		gSong.activeStylesheets = activeStylesheets;
@@ -247,12 +248,13 @@
 			if (!note.colorClass){
 				caption = "";
 			}
-			row.append($('<td>').html(caption).addClass(note.colorClass+borderClass));
+			row.append($('<td>').addClass('colorDictLinkTD').attr('noteRole', notekeyTempl).html(caption).addClass(note.colorClass+borderClass));
 		}
 
 		if (doChuseLink){
 			eventSelectors.push('#cbWhichColorDict'+dictkey);
 		}
+		
 
 		return row;
 	}

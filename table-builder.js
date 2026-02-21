@@ -4,7 +4,7 @@
 const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
-//the "table" is the instrument table, i.e. the neck, not the tunings html table on the Tunings page.
+//the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
 function buildNoteTable(options){
 	if (options.visible==false){
 		//console.log("NOT building invisible table: "+options.caption);

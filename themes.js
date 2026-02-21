@@ -157,9 +157,9 @@ var gThemes = {
         "noteBlackKeyFontColor": "#331e01",
         "borderImageWhiteKey": "none"
     },
-    "CoffeeBrown" : {
-        "id": "CoffeeBrown",
-        "caption":"Coffee Brown",
+    "CoffyBrown" : {
+        "id": "CoffyBrown",
+        "caption":"Coffy Brown",
         "noteRadius": "12%",
         "namedNoteRadius": "10%",
         "notePadding": "12pt",

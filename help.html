@@ -6,21 +6,35 @@
        body {
            font-size: 14pt;
            margin: 2em;
-           fffont-family: "Andale Mono", AndaleMono, Georgia
-           font-family: "Georgia";
            font-weight: normal;
+       }
+       a {
+        scroll-margin-top: 2em;
        }
        #helpBody {
            padding-top: 3em;
        }
-       h1, h2 {
+       h1, h2, h3, h4, h5 {
            color: orange;
            font-family: "Verdana";
+           margin-top: 1em;
        }
-       h3, h4, h5 {
-           color: orange;
-           font-family: "Verdana";
-           margin-top: 4em;
+       h1 {
+           margin-left: 0;
+       }
+       h2 {
+           margin-left: 0.5em;
+       }
+       h3 {
+           margin-left: 1em;
+       }
+       h4 {
+           margin-top: 1.5em;
+           margin-left: 2em;
+       }
+       h5 {
+            margin-top: 2em;
+           margin-left: 3em;
        }
        hr {
             border: 4px solid orange;
@@ -118,9 +132,6 @@
            background-color: lightgray;
            box-shadow: 0 0 1pt 1pt gray;
        }
-       #maincontents {
-
-       }
        .GUIReference {
            font-weight: bold;
            padding: 1em;
@@ -128,13 +139,26 @@
            background-color: #dfd;
        }
        .GUIReferenceInline {
+           display: inline-block;
            font-size: 90%;
            font-weight: bold;
            padding: 0.3em;
            padding-left: 1em;
            padding-right: 1em;
            background-color: #dfd;
+           border: 1px solid gray;
        }
+       div.GUIReferenceInline {
+            margin-left: 4em;
+            margin-top: 3em;
+            margin-bottom: 0;
+       }
+       .GUIReferenceInline .guiBox {
+            padding: 0.1em;
+            border: 1px solid gray; 
+            background-color: lightgreen;
+       }
+
        .menuExample  b {
            color: #ffaa00;
            font-weight: normal;
@@ -162,7 +186,7 @@
        .menuExampleLine  b {
             font-family: "Kode Mono", monospace;
             color: #ffaa00;
-            font-weight: normal;
+            font-weight: bold;
             font-size: 130%;
        }
        .helpButton {
@@ -190,7 +214,7 @@
 
        }
        #alphaCheatSheetLinks {
-        padding-left: 4em;
+            padding-left: 4em;
        }
         #alphaCheatSheetLinks a {
             display: inline-block; 
@@ -235,7 +259,7 @@
             color: #ffaa00;
             -webkit-text-stroke: 1px black;
         }
-        #menuDump{
+        .menuDump{
             font-family: "Kode Mono", monospace;
             background-color: rgb(249, 245, 139);
             border: 1px solid black;
@@ -260,17 +284,19 @@
       <a class="helpButton" href="#videos">Videos</a>
       <a class="helpButton" href="#help">Help</a>
       <a class="helpButton" href="#keymap">Keymap</a>
+      <a class="helpButton" href="#commandline">Command-Line</a>
       <a class="helpButton" href="#glossary">Glossary</a>
     </div>
 
 <div id="helpBody">
-<a name="about"></a>
+
 <hr>
-    <h2>About</h2>
+<a name="about"></a>
+    <h1>About</h1>
     <ul class="LinkList">
-        <li><a href="#instruments">Instruments</a>
-        <li><a href="#instrumentsInAction">Instruments in Action</a>
-        <li><a href="#walkthrough">Walkthrough</a>
+        <li><a href="#instruments">Instruments</a></li>
+        <li><a href="#instrumentsInAction">Instruments in Action</a></li>
+        <li><a href="#walkthrough">infinite-neck Walk-through</a></li>
     </ul>
 
     <p class="bigpoint">This tool, <span class="productsmaller">infinite-neck</span>, helps you visualize notes across the neck of your instrument.
@@ -472,9 +498,9 @@
 
     <p>That is, <i>ahem,</i> a Song has one or more Sections, and each Section has one or more Beats.</p>
 
-<a name="why"></a>
 <hr>
-<h2>Why</h2>
+<a name="why"></a>
+<h1>Why</h1>
 
          <p>Obviously, the neck is NOT infinite,
              since we play instruments with a fixed number of strings, and a playable number of frets,
@@ -545,8 +571,8 @@
 
 
 
-<a name="videos"></a>
 <hr>
+<a name="videos"></a>
 <h1>Help Videos</h1>
 <p>
     <ul class="LinkList">
@@ -557,64 +583,113 @@
 </p>
 
 
-<a name="help"></a>
 <hr>
+<a name="help"></a>
 <h1>Help File</h1>
 <p>
-    <!-- update this list with
+    <!-- Manually:
+       update this list with
         cd ~/laramie/infinite-neck/src-dev
         grep 'a name' help.html
 
         search for:    .*"(.*)"\>\</a\>
         replace with:  <li><a href="#$1">$1</a>
     -->
+    <!-- Regenerate by Chat:
+            Are there any header elements (h1, h2, h3, h4, h5) in this page that are *not* included 
+                in the <ul class="LinkList"> ?
+            Then can you please regenerate the <ul class="LinkList"> table of contents following the format already there, 
+                to include all the header elements?  
+                Please go ahead and generate unique <a name=""> anchor tags for any header elements that don't have them,
+                    and insert the anchor tags just above the header tags for all instances.  
+                    The name attribute should be unique for the whole document.   
+    -->
+    <ul class="LinkList">
+        <li><a href="#about">About</a>
         <ul class="LinkList">
-                <li><a href="#functions">Laramie's system of scale note/function naming</a>
-                <ul class="LinkList">
-                    <li><a href="#alternatives">Alternatives</a>
-                </ul>
-                <li><a href="#usage">Usage</a>
-                <li><a href="#contextHelp">Context Help Topics</a>
-                <ul class="LinkList">
-                    <li><a href="#divFileControls">File</a>
-                    <li><a href="#divSectionControls">Section</a>
-                    <ul class="LinkList">
-
-                        <li><a href="#divSectionDestination">Section :: Destination</a>
-                        <li><a href="#divSectionTransposition">Section :: Transposition</a>
-                        <li><a href="#divSectionKeyChange">Section :: Key Change</a>
-                    </ul>
-                    <li><a href="#divViewControls">View</a>
-                    <ul class="LinkList">
-
-                        <li><a href="#displayOptionsTopic">View :: Display Options</a>
-                        <li><a href="#subscriptViewOptionsTopic">View :: Subscript Options</a>
-                    </ul>
-
-
-                    <li><a href="#divThemeControls">Theme</a>
-                    <li><a href="#divFillNotes">Fill</a>
-                    <li><a href="#divTunings">Tunings</a>
-                    <li><a href="#palette">Palette</a>
-                </ul>
-
-                <li><a href="#options">Options</a>
-                <li><a href="#graveyard">The Graveyard</a>
-                <li><a href="#themes">Themes</a>
-                <li><a href="#cheatsheet">Cheatsheet/Keymap</a>
-                <li><a href="#commandline">Command-Line Menu</a>
-                <ul class="LinkList">
-                    <li><a href="#keysInCommandLine">Keys</a>
-                    <li><a href="#commandLineUsefulCommands">Useful Commands</a>
-                    <li><a href="#commandLineMenuDump">Full Menu Listing</a>
-                </ul>
-                <li><a href="#techie">Techie bits</a>
-                <li><a href="#glossary">Glossary</a>
+            <li><a href="#instruments">Instruments</a></li>
+            <li><a href="#instrumentsInAction">Instruments in Action</a></li>
+            <li><a href="#walkthrough">infinite-neck Walk-through</a></li>
         </ul>
+        <li><a href="#why">Why</a></li>
+        <li><a href="#videos">Help Videos</a></li>
+        <li><a href="#help">Help File</a>
+            <ul class="LinkList">
+                <li><a href="#functions">Laramie's system of scale note/function naming</a>
+                    <ul class="LinkList">
+                        <li><a href="#alternatives">Alternatives</a>
+                            <ul class="LinkList">
+                                <li><a href="#built-in-alternatives">Built-in alternatives</a></li>
+                                <li><a href="#user-added-alternatives">User-added alternatives</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#usage">Usage</a></li>
+                <li><a href="#note-types-special-handling">Note Types -- special handling</a></li>
+                <li><a href="#contextHelp">Context Help Topics</a>
+                    <ul class="LinkList">
+                        <li><a href="#divFileControls">File</a></li>
+                        <li><a href="#divSectionControls">Section</a>
+                            <ul class="LinkList">
+                                <li><a href="#divSectionDestination">Section Destination</a></li>
+                                <li><a href="#divSectionTransposition">Transposition</a>
+                                    <ul class="LinkList">
+                                        <li><a href="#allowTransposition">Allow Transposition</a></li>
+                                        <li><a href="#transposing">Transposing</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#divSectionKeyChange">Key Change</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#divViewControls">View</a>
+                            <ul class="LinkList">
+                                <li><a href="#displayOptionsTopic">Display Options</a></li>
+                                <li><a href="#subscriptViewOptionsTopic">Subscript Options</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#divThemeControls">Themes Menu</a></li>
+                        <li><a href="#divFillNotes">Fill</a></li>
+                        <li><a href="#divTunings">Tunings</a></li>
+                        <li><a href="#palette">Palette</a></li>
+                    </ul>
+                </li>
+                <li><a href="#options">Options</a></li>
+                <li><a href="#graveyard">The Graveyard</a></li>
+                <li><a href="#themesGallery">Themes Gallery</a>
+                    <ul class="LinkList">
+                        <li><a href="#adult-swim">Adult Swim</a></li>
+                        <li><a href="#everyone-into-the-pool">Everyone into the Pool</a></li>
+                        <li><a href="#zinfandel">Zinfandel</a></li>
+                        <li><a href="#autobahn">Autobahn</a></li>
+                        <li><a href="#late-nite">Late Nite</a></li>
+                        <li><a href="#big-in-japan">Big in Japan</a></li>
+                        <li><a href="#pool-shark">Pool Shark</a></li>
+                        <li><a href="#blade">Blade</a></li>
+                        <li><a href="#coffy-brown">Coffy Brown</a></li>
+                        <li><a href="#landau-top">Landau Top</a></li>
+                        <li><a href="#renfaire">Renfaire</a></li>
+                        <li><a href="#robin-hood">Robin Hood</a></li>
+                        <li><a href="#shire">Shire</a></li>
+                    </ul>
+                </li>
+                <li><a href="#keymap">Keymap</a></li>
+                <li><a href="#commandline">Command-Line Menu</a>
+                    <ul class="LinkList">
+                        <li><a href="#keysInCommandLine">Keys</a></li>
+                        <li><a href="#commandLineUsefulCommands">Useful Commands</a></li>
+                        <li><a href="#commandLineMenuDump">Full Menu Listing</a></li>
+                    </ul>
+                </li>
+                <li><a href="#techie">Techie Bits</a></li>
+                <li><a href="#glossary">Glossary</a></li>
+            </ul>
+        </li>
+    </ul>
 </p>
 
+<hr>
 <a name="functions"></a>
-    <hr>
     <h2>Laramie's system of scale note/function naming</h2>
         <p>All note functions with all note names (Key of C, P4 tuning):<br>
             <img src="img/help/function-and-notenames-all.png" width="800px"></p>
@@ -708,7 +783,7 @@
       <h3>Alternatives</h3>
       <p>Navigate to the Function Symbols in the View menu:
       </p>
-      <span class="GUIReferenceInline">View | Function Symbols</span>
+      <div class="GUIReferenceInline">View | Function Symbols</div>
       <p>
             NoteFunction symbols dropdown shown:
             <BR /><img style="border: 10px solid green;" src="img/help/FunctionSymbolsDropdownDefault.png">
@@ -718,6 +793,7 @@
 
       <p>There are built-in alternatives, and a way for you to define your own.</p>
 
+      <a name="built-in-alternatives"></a>
       <h4>Built-in alternatives</h4>
 
       <p>
@@ -755,13 +831,14 @@
             The Function Symbols get set to this:
         </p>
 
-        <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["1","2","3","4","5","6","7","8","9","10","11","12"]</div>
+        <div  class="menuDump">["1","2","3","4","5","6","7","8","9","10","11","12"]</div>
 
         <p>
             The notes display like this: <br />
             <img src="img/help/customNoteFunctionNums.png">
         </p>
 
+        <a name="user-added-alternatives"></a>
         <h4>User-added alternatives</h4>
         <p>
              You can change the NoteFunction symbols to any string or HTML Entity you choose.
@@ -778,14 +855,14 @@
 
       <br>
       <p>They default to this:</p>
-      <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["I","&amp;tau;","II","m","III","IV","&amp;Theta;","V","&amp;sigma;","6","&amp;delta;","&amp;Delta;"]</div>
+      <div class="menuDump">["I","&amp;tau;","II","m","III","IV","&amp;Theta;","V","&amp;sigma;","6","&amp;delta;","&amp;Delta;"]</div>
       <p>
           <img src="img/help/defaultNoteFunctionEntities.png">
       </p>
 
       <br>
       <p>Or you could go crazy and use lots of HTML Entities:</p>
-      <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["&amp;#x21BA;","&amp;tau;","&amp;empty;","&amp;nabla;","&amp;oplus;","&amp;int;","&amp;Theta;","&amp;otimes;","&amp;sigma;","&amp;prod;","&amp;infin;","&amp;ocirc;"]</div>
+      <div  class="menuDump">["&amp;#x21BA;","&amp;tau;","&amp;empty;","&amp;nabla;","&amp;oplus;","&amp;int;","&amp;Theta;","&amp;otimes;","&amp;sigma;","&amp;prod;","&amp;infin;","&amp;ocirc;"]</div>
       <br />
       <p>
           <img src="img/help/customNoteFunctionEntities.png">
@@ -793,7 +870,7 @@
 
       <br>
       <p>Or use regular strings, such as Solf&#232;ge:</p>
-      <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["Do","Ra","Re","Ma","Mi","Fa","Se","Sol","Le","La","Ta","Ti"]</div>
+      <div  class="menuDump">["Do","Ra","Re","Ma","Mi","Fa","Se","Sol","Le","La","Ta","Ti"]</div>
       <p>
           <img src="img/help/customNoteFunctionSolfage.png">
       </p>
@@ -802,13 +879,13 @@
       <p>Early in the design phase, I tried extending the Classical notation to use chord function names as note function names.
           I find it confusing, being all too similar.  So this scheme is <b><i>not</i></b> available in <span class="productsmaller">infinite-neck</span>.
           <a href="http://LaramieCrocker.com/contact.html">Drop me a note</a> if you have a better idea, but here is what that would look like:</p>
-      <div style="margin-left: 4em; border: 1px solid gray; padding: 12pt; ">["I","ii","II","iii","III","IV","v","V","vi","VI","vii","VII"]</div>
+      <div  class="menuDump">["I","ii","II","iii","III","IV","v","V","vi","VI","vii","VII"]</div>
       <p>
           <img src="img/help/customNoteFunctionRoman.png">
       </p>
 
-<a name="usage"></a>
 <hr>
+<a name="usage"></a>
 <h2>Usage</h2>
 <p>The neck is shown as a table of cells, like a spreadsheet.
     A cell is one of the squares on the neck, and represents one fret on one string. </p>
@@ -828,9 +905,9 @@
 </p>
 
 <p>Tunings may change on your guitar, such that a C may the the first fret on the second string, or it may be the open second string in P4.
-    But a C is always a white key, and a C&sharp; (or D&flat;) is always a black key, except for these themes:
+    But a C is always a white key, and a C&sharp; (or D&flat;) is always a black key, except for these Themes:
     <ul>
-        <li>"Coffee Brown" does not make a distinction between black and white.</li>
+        <li>"Coffy Brown" does not make a distinction between black and white.</li>
         <li>"Blade" has black for black keys and hexagons in the white keys.</li>
         <li>"Reverse" has white for the black keys, and black for the white keys.</li>
         <li>"Snow" has white for all keys, with subtle grey borders. </li>
@@ -914,6 +991,7 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
  <p><img src="img/help/clear.png"></p>
 
 
+<a name="note-types-special-handling"></a>
 <h3>Note Types -- special handling:</h3>
 <p><img style="border: 20px solid green;" src="img/help/REC-button.png"></p>
 <p>
@@ -937,8 +1015,8 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
     <br /><img style="border: 20px solid green;" src="img/help/single-note-v-named-note.png"></p>
 
 
-<a name="contextHelp"></a>
 <hr>
+<a name="contextHelp"></a>
 <h2>Context Help Topics</h2>
 
 <a name="divFileControls"></a>
@@ -975,11 +1053,13 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; loop over the beats in just one section as you add notes to the beats (different from Loop Song on the Transport)
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; save DisplayOptions, which include the Root Key and Lead Root Key, plus all the items on the View menu, plus Theme and Stylesheets
       <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; transpose all NamedNotes in the Section
-      <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; set the enharmonic choice of sharps or flats for the key of the Section. [See <a href="#divSectionKeyChange">Section :: Key Change</a> below]
- </p>
+      <br>&nbsp;&nbsp;&dot;&nbsp;&nbsp; set the enharmonic choice of sharps or flats for the key of the Section. [See <a href="#divSectionKeyChange">Key Change</a> below]
+ 
+    <img class="floatingScreenshot" width="60%" src="img/help/section-table.png">
+    </p>
 
  <a name="divSectionDestination"></a>
-  <h4 style="margin-left: 4em;">Section :: Destination</h4>
+<h4>Section Destination</h4>
 
  <p>When moving, creating or cloning Sections, pay attention to the dropdown called "Destination after &sect;".  This is where
      the new/moved Section ends up.  So chosing "Destination after &sect;" of 3 creates or moves to Section 4.  Chosing
@@ -988,7 +1068,9 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
  </p>
 
  <a name="divSectionTransposition"></a>
- <h4 style="margin-left: 4em;">Section :: Transposition</h4>
+<h4>Transposition</h4>
+ <a name="allowTransposition"></a>
+<h5>Allow Transposition</h5>
  <p>If the "Allow transposition by keyboard shortcuts d, U, u, D,  j , & J" checkbox is checked, then these
      keyboard shortcuts work; otherwise they don't.
      This prevents you from inadvertently transposing a Section, which is confusing if you don't notice the transposition hint.
@@ -996,6 +1078,15 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
      and a yellow highlight is placed around all the new Root notes
      (which only hangs out until you click a note or change sections).
 </p>
+<p>You can change this from the <a href="#commandline">command-line</a>:
+    <ul>
+    <li><b>u</b>nlock the song (<i>allow</i> transposition by keyboard shortcuts):<span class="menuExampleLine"><b>/fu</b> (<b>f</b>ile <b>u</b>nlock)</span></li>
+    <li><b>l</b>ock the song (<i>disallow</i> transposition by keyboard shortcuts):<span class="menuExampleLine"><b>/fl</b> (<b>f</b>ile <b>l</b>ock)</span></li>
+    </ul>
+</p>
+
+<a name="transposing"></a>
+<h5>Transposing</h5>
 <p>Transposing "Up" moves the notes and the Root Key up the scale one half-step.  Transposing with the "j" key ("Jump") moves the notes
     and the Root up a fourth, which is up one string on a P4 instrument.  Remember that Jumping up a fourth from the G string
     to the B string in Standard guitar tuning will not be on the same fret.
@@ -1035,7 +1126,7 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
  </p>
 
  <a name="divSectionKeyChange"></a>
-<h4 style="margin-left: 4em;">Section :: Key Change</h4>
+<h4>Key Change</h4>
 <p>
     If we had just wanted to change keys but leave all the notes, we would just change the key of
     the Section with the dropdown "Key".  Mashing on the "Flats" or "Sharps" buttons first sets whether the "Key" and "LeadKey" dropdown
@@ -1074,13 +1165,13 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
 <p>The "Sharps" and "Flats" buttons in the Section menu let you choose whether to show the notes on the neck with sharps or flats.  
     This is just a display option, and does not change the actual notes on the neck, which are always the same MIDI pitches.  
     So if you have a C# note, it will be shown as C# if you choose "Sharps", and as D&flat; 
-    if you choose "Flats".  The command-line shortcut for doing this is 
+    if you choose "Flats".  The <a href="#commandline">command-line</a> shortcut for doing this is 
     <span class="menuExampleLine"><b><small>/ss</small></b></span>, for <b>s</b>ection | <b>s</b>harps, or 
     <span class="menuExampleLine"><b><small>/sf</small></b></span>, for <b>s</b>ection | <b>f</b>lats.  
-    [<i>After any command-line command, hit <span class="key">ESC</span> to close the command-line.</i>] 
+    [<i>After any <a href="#commandline">command-line</a> command, hit <span class="key">ESC</span> to close the <a href="#commandline">command-line</a>.</i>] 
 </p>
 
-<p>Just like using the dropdown "Key" or "LeadKey" on the Section menu page, on the command-line you can also set the key of a Section with the command 
+<p>Just like using the dropdown "Key" or "LeadKey" on the Section menu page, on the <a href="#commandline">command-line</a> you can also set the key of a Section with the command 
     <span class="menuExampleLine"><b><small>/sk</small></b></span>.  This brings
     you to the menus choices of <span class="menuExampleLine"><b><small>white keys</small></b></span>
     where you can choose the keys: <span class="menuExampleLine"><b><small>a, b, c, d, e, f, g</small></b></span>, 
@@ -1102,7 +1193,7 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
     So just set the LeadKey dropdown to the pitch you will be playing, even though its enharmonic name may be incorrect, 
     because whether Sharps or Flats are shown
     in the LeadKey dropdown is chosen by the Section's Sharps/Flats buttons, which also set the choices displayed for the Key dropdown.  Similarly, using 
-    the command-line to set LeadKey, choose the correct pitch using the available "black keys" menu choice, e.g. D&flat; instead of C&sharp;, which is not available through the command-line.
+    the <a href="#commandline">command-line</a> to set LeadKey, choose the correct pitch using the available "black keys" menu choice, e.g. D&flat; instead of C&sharp;, which is not available through the <a href="#commandline">command-line</a>.
     </p>
 
 <p>Remember, this is just a display option, and does not change the actual notes on the neck.
@@ -1122,8 +1213,8 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
 </p>
 
 <p>To recap, here are some example command-lines.  To get these to work just start typing the 
-    command letters shown.  The initial forward-slash key <span class="menuExampleLine"><b><small>  /</small></b></span> pops up the command-line. (It's best to have any Button Menus closed by hitting <span class="key">ESC</span>  first.) Note that the Sharps and Flats change in the display of each cell, 
-    following the command-line choice.
+    command letters shown.  The initial forward-slash key <span class="menuExampleLine"><b><small>  /</small></b></span> pops up the <a href="#commandline">command-line</a>. (It's best to have any Button Menus closed by hitting <span class="key">ESC</span>  first.) Note that the Sharps and Flats change in the display of each cell, 
+    following the <a href="#commandline">command-line</a> choice.
     To create these examples, we chose different notes that matched the scale we would be playing.</p>
 <p>Input notes for D&flat;major, then set the Root Key to D&flat;:</p>
 <p class="example">
@@ -1143,7 +1234,7 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
 </p>
 
 <p>Input the notes for G natural minor, then set the Root Key to G, 
-    then ENTER twice to go up two command-line levels, then f for flats for playing Gminor with Flats:</p>
+    then ENTER twice to go up two <a href="#commandline">command-line</a> levels, then f for flats for playing Gminor with Flats:</p>
 <p class="example">
     <span class="menuExampleLine"><b><small>/skwg</small></b></span>&nbsp;&nbsp; <span class="key">ENTER</span> &nbsp; <span class="key">ENTER</span> &nbsp; <span class="menuExampleLine"><b><small>f</small></b></span> &nbsp; <span class="key">ESC</span>
 </p> 
@@ -1189,15 +1280,23 @@ With "Pitch" and "Multi" notes, you'll just highlight those notes:
 <p>These buttons also appear in the Section menu, and apply to the current Section.
 </p>
 
-<p>You can audit all the Display Options for all Sections that have them set with the command-line <span class="menuExampleLine"><b><small>/vdd</small></b></span>
+<p>You can audit all the Display Options for all Sections that have them set with the <a href="#commandline">command-line</a> <span class="menuExampleLine"><b><small>/vdd</small></b></span>
      Scroll down to see the audit
-     of all Sections with Display Options.  The options that change are highlighted.  You can also sit on the View page and
+     of all Sections with Display Options.  The options that change are highlighted.  
+ </p>
+<p>
+    <img style="border: 20px solid green; width: 60%;" src="img/help/display-options-printout.png">
+</p>
+<p>
+    You can also sit on the View page and
      watch the controls change while you hit the Transport next section buttons, or the keyboard shortcuts ( &lt; and &gt; ).
      Remember that if one of the controls traps the keyboard, click in some blank spot of the screen or hit <span class="key">ESC</span> and then V to
      come back to the View menu.
  </p>
 
  <p>There's a bit more info in the <a href="#glossaryDisplayOptions">Glossary::Display Options</a> entry</p>
+
+ 
 
 <a name="subscriptViewOptionsTopic"></a>
 <h4>Subscript Options</h4>
@@ -1236,8 +1335,9 @@ For all these examples, "Show Left Subscript" and "Show Right Subscript" are che
  </p>
 
 <a name="divThemeControls"></a>
-<h3>Themes</h3>
+<h3>Themes Menu</h3>
  <p>Normally, you can change Themes by just selecting one from the dropdown in the main menu button bar.
+    See screenshot of <a href="#themesGallery">Themes Gallery</a> in this helpfile.
  </p>
  <p>The Theme menu is for tweaking the current Theme, and for building new Themes.  It's a bit techie, so we'll
      explain it in a video at some point.
@@ -1386,14 +1486,14 @@ For all these examples, "Show Left Subscript" and "Show Right Subscript" are che
      because you are using color Roles, or are using Emboss.
  </p>
 
- <a name="options"></a>
 <hr>
+<a name="options"></a>
  <h2>Options</h2>
  <p>Beware that keyboard shortcuts may be captured by textboxes such as the song name or BPM, or even the
      radio buttons of colors on the Palette.  Hit <span class="key">ESC</span> to close up menus to ensure the keyboard shortcuts documented
      here behave as expected.</p>
 
- <p class="GUIReference">Menu :: View :: Natural fret widths</p>
+ <p><div class="GUIReferenceInline">Menu :: View :: <span class="guiBox">Natural fret widths</span></div></p>
  <p>When checked, pressing <span class="key">w</span> or <span class="key">W</span> while menus are closed will increase/decrease the
      width of the frets, but will use the natural mathematical proportion of frets, such that they
      get smaller up the neck. This is the default.  When not checked, the <span class="key">w</span> and <span class="key">W</span> keys still increase and decrease, but all frets have
@@ -1403,29 +1503,39 @@ For all these examples, "Show Left Subscript" and "Show Right Subscript" are che
      which scales the fixed width, and thus do not use Natural Fret Widths.
      <b>Piano Schroeder</b> is one of these.
  </p>
-
- <p class="GUIReference">Menu :: Section :: Allow transposition by keyboard shortcuts <span class="key">t</span>,
-     <span class="key">T</span>, <span class="key">j</span>, <span class="key">J</span> </p>
- <p>When checked, pressing <span class="key">t</span> or <span class="key">T</span> while menus are closed will transpose
- any named-notes, preserving their role colors/styles. Pressing <span class="key">j</span> or <span class="key">J</span>
+ <p>
+    <div class="GUIReferenceInline">Menu :: Section :: 
+    <span class="guiBox">
+            Allow transposition by keyboard shortcuts 
+            <b><u>d</u></b>, 
+            <b><u>U</u></b>, <b><u>u</u></b>, 
+            <b><u>D</u></b>, <b><u>&nbsp;j&nbsp;</u></b>, 
+            &amp; <b><u>J</u></b>
+    </span>
+    </div>
+</p>
+ <p>When checked, pressing <span class="key">u</span> or <span class="key">D</span> while menus are closed will transpose
+ any named-notes up chromatically, preserving their role colors/styles. 
+ <span class="key">d</span> or <span class="key">U</span> transposes down.
+ Pressing <span class="key">j</span> or <span class="key">J</span>
  will transpose by fourths,
  or <b><u>J</u></b>ump strings up or down.
 
  When not checked, these keys cannot
  trigger transposition, which is the safe default.</p>
 
- <a name="graveyard"></a>
 <hr>
+<a name="graveyard"></a>
 <h2>The Graveyard</h2>
 <p>Objects that are deleted are buried in the Graveyard.
     They can be revived, which will place them back into the song as though never deleted,
     except perhaps in a different order if things have been added or deleted in the meantime.  See the help sections
 on how to move Sections and Beats.  The order of Stylesheets is part of setting the Stylesheets for a Song, so check the
 Stylesheet order
-(in <span class="GUIReferenceInline" >Palette | <span style="border: 1px solid gray; background-color: lightgreen;">Stylesheets</span></span> ) after reviving them.</p>
+(in <span class="GUIReferenceInline" >Palette | <span class="guiBox">Stylesheets</span></span> ) after reviving them.</p>
 
 
-<p>The Graveyard can be found under the File menu, and in the command-line under <span class="menuExampleLine">/fg</span>.</p>
+<p>The Graveyard can be found under the File menu, and in the <a href="#commandline">command-line</a> under <span class="menuExampleLine">/fg</span>.</p>
 
 <p class="GUIReference">Menu :: File :: View Graveyard</p>
 
@@ -1443,52 +1553,70 @@ Stylesheet order
     For Sections, there are more detailed cloning buttons on the Section menu page: Clone, and Shallow Clone.</p>
 
 <p>You can delete all objects from the graveyard (and receive a download of the song just before the deletion) 
-    by using the command-line <span class="menuExampleLine">/fC</span></span> documented
+    by using the <a href="#commandline">command-line</a> <span class="menuExampleLine">/fC</span></span> documented
 in the <a href="#commandLineUsefulCommands">Useful Commands</a> table. </p>    
 
 
-<a name="themes"></a>
 <hr>
-<h2>Themes</h2>
- <p>Themes, we got themes, baby!  Just choose one from the dropdown (or edit them in super-geek mode under the Themes menu).</p>
+<a name="themesGallery"></a>
+<h2>Themes Gallery</h2>
+
+ <p>Themes, we got Themes, baby!  Just choose one from the dropdown (or edit them in super-geek mode under the <a href="#divThemeControls">Themes Menu</a>).</p>
 
  <p>
+    <a name="adult-swim"></a>
     <h3>Adult Swim</h3>
     <img width="80%" src="img/help/theme-adult-swim.png"><br><br>
+    <a name="everyone-into-the-pool"></a>
     <h3>Everyone into the Pool</h3>
     <img width="80%" src="img/help/theme-everyone-into-the-pool.png"><br><br>
+    <a name="zinfandel"></a>
     <h3>Zinfandel</h3>
     <img width="80%" src="img/help/theme-zinfandel.png"><br><br>
+    <a name="autobahn"></a>
     <h3>Autobahn</h3>
     <img width="80%" src="img/help/theme-autobahn.png"><br><br>
+    <a name="late-nite"></a>
     <h3>Late Nite</h3>
     <img width="80%" src="img/help/theme-late-nite.png"><br><br>
+    <a name="big-in-japan"></a>
     <h3>Big in Japan</h3>
     <img width="80%" src="img/help/theme-big-in-japan.png"><br><br>
+    <a name="pool-shark"></a>
     <h3>Pool Shark</h3>
     <img width="80%" src="img/help/theme-pool-shark.png"><br><br>
+    <a name="blade"></a>
     <h3>Blade</h3>
     <img width="80%" src="img/help/theme-blade.png"><br><br>
-    <h3>Coffee Brown</h3>
+    <a name="coffy-brown"></a>
+    <h3>Coffy Brown</h3>
     <img width="80%" src="img/help/theme-coffee-brown.png"><br><br>
+    <a name="landau-top"></a>
     <h3>Landau Top</h3>
+    <p>For those of you who didn't live through the 70's
+        a "Landau Top" was an interpretation of old carriage option from Laundau, Germany,
+         which was implemented in Pleather (Vinyl) in the stock 1978 Chevy Monte Carlo,
+        with these hip-daddy colors. 
+        <br><img src="img/help/monte-carlo-78.png" width="500"></li>
+    </p>
     <img width="80%" src="img/help/theme-landau-top.png"><br><br>
+    <a name="renfaire"></a>
     <h3>Renfaire</h3>
     <img width="80%" src="img/help/theme-renfaire.png"><br><br>
+    <a name="robin-hood"></a>
     <h3>Robin Hood</h3>
     <img width="80%" src="img/help/theme-robin-hood.png"><br><br>
+    <a name="shire"></a>
     <h3>Shire</h3>
     <img width="80%" src="img/help/theme-shire.png"><br><br>
  </p>
 
- <a name="cheatsheet"></a>
- <hr>
- <h2>Cheatsheet</h2>
- <a name="keymap"></a>
-    <h3>Keymap:</h3>
+<hr>
+<a name="keymap"></a>
+    <h1>Keymap</h1>
     <p>These keys can be pressed at any time.  If you have other menus up,
-    or the command-line, keystrokes may go to those.  Just hit <span class="key">ESC</span> first,
-to hide menus and the command-line.</p>
+    or the <a href="#commandline">command-line</a>, keystrokes may go to those.  Just hit <span class="key">ESC</span> first,
+to hide menus and the <a href="#commandline">command-line</a>.</p>
 <div id="alphaCheatSheetLinks">
      <a href="#showHideSongTitle">a</a> 
     <a href="#showHideSongTitle">A</a></li>
@@ -1624,7 +1752,7 @@ to hide menus and the command-line.</p>
                 </td>
                 <td><span class="key">M</span>
                 </td>
-                <td>show/hide command-line
+                <td>show/hide <a href="#commandline">command-line</a>
                 </td>
             </tr>
             <tr id="launchCommandLine">
@@ -1632,7 +1760,7 @@ to hide menus and the command-line.</p>
                 </td>
                 <td>
                 </td>
-                <td>launch command-line
+                <td>launch <a href="#commandline">command-line</a>
                 </td>
             </tr>
             
@@ -1706,7 +1834,12 @@ to hide menus and the command-line.</p>
                 </td>
                 <td>
                 </td>
-                <td>Transpose named-notes up a perfect fourth -- Jump one string on a P4 instrument.
+                <td><a href="#divSectionTransposition">Transpose</a> named-notes up a perfect fourth -- Jump one string on a P4 instrument. 
+                    <br>
+                    [Must have <a href="#allowTransposition">Allow Transposition</a>
+                     or use <a href="#commandline">command-line</a>:
+                    
+                    <span class="menuExampleLine"><b>/fu</b> (<b>f</b>ile <b>u</b>nlock)</span> ] 
                 </td>
             </tr>
             <tr id="transposeNamedNotesDown">
@@ -1714,7 +1847,8 @@ to hide menus and the command-line.</p>
                 </td>
                 <td>
                 </td>
-                <td>Transpose named-notes down a perfect fourth -- Jump one string on a P4 instrument.
+                <td><a href="#divSectionTransposition">Transpose</a> named-notes down a perfect fourth -- Jump one string on a P4 instrument. 
+                    [Must have <a href="#allowTransposition">Allow Transposition</a>]
                 </td>
             </tr>
             <tr id="raiseRootKeyAnd">
@@ -1722,8 +1856,8 @@ to hide menus and the command-line.</p>
                 </td>
                 <td><span class="key">D</span>
                 </td>
-                <td>raise root key and Transpose named-notes up one semitone. [Must have "Allow transposition..."
-                    checkbox checked in "Section" menu page]
+                <td>Raise root key and <a href="#divSectionTransposition">Transpose</a> named-notes up one semitone. 
+                    [Must have <a href="#allowTransposition">Allow Transposition</a>]
                 </td>
             </tr>
             <tr id="lowerRootKeyAnd">
@@ -1731,9 +1865,8 @@ to hide menus and the command-line.</p>
                 </td>
                 <td><span class="key">U</span>
                 </td>
-                <td>lower root key and Transpose named-notes down one semitone. [Must have "Allow transposition..."
-                    checkbox checked in "Section" menu page, or use Command-line:
-                    <span class="menuExampleLine"><b>/fu</b> (<b>f</b>ile <b>u</b>nlock)</span>]
+                <td>Lower root key and <a href="#divSectionTransposition">Transpose</a> named-notes down one semitone.  
+                    [Must have <a href="#allowTransposition">Allow Transposition</a>]
                 </td>
             </tr>
             <tr id="changeWidthOfCells">
@@ -1958,7 +2091,7 @@ to hide menus and the command-line.</p>
             key and arrow keys are not overriden,
                 so all keyboard navigation
             should work.  <i>(However, we remove all the transport buttons from TAB order,
-                and other controls you can reach by the command-line
+                and other controls you can reach by the <a href="#commandline">command-line</a>
             or keyboard shortcuts.)</i>  So tabbing to the hamburger button means
             <span class="key">SPACE</span> will click the hamburger, as usual.  Tabbing to radiobuttons
             lets you then use arrow keys to select different colors, for example.  There is one radio group for all the Note types, and one
@@ -1967,9 +2100,10 @@ to hide menus and the command-line.</p>
         </p>
 
 
-<a name="commandline"></a>
+
 <hr>
-        <h3>Command-Line Menu:</h3>
+<a name="commandline"></a>
+<h1>Command-Line Menu</h1>
 
         <p>Here is the command-line interface, so you can type commands one-handed while balancing your guitar on your knee.
             <br>
@@ -2106,7 +2240,7 @@ to hide menus and the command-line.</p>
                 <td><span class="key"><b>x</b></span>
                 </td>
                 <td>[lower-case x] Most menus present the last menu item as e<b>x</b>it, which exits the command-line menu.  You can
-                    jump back into the command-line by pressing <span class="key"><b>m</b></span>, or you can start a new Command-line
+                    jump back into the command-line by pressing <span class="key"><b>m</b></span>, or you can start a new command-line
                     at the root of the menu by typing <span class="key"><b>/</b></span>
                 </td>
             </tr>
@@ -2213,7 +2347,7 @@ to hide menus and the command-line.</p>
        <p><span class="menuExampleLine">/vdm</span> prints out a plaintext listing of the entire command-line heirarchy. </p> 
        <p>Here, for example, is the command-line menu structure as of 20260217:</p>
 
-<div id="menuDump">
+<div class="menuDump">
 <br>&nbsp;&nbsp;&nbsp;&nbsp;<b>/</b>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>f</b>ile
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>o</b>pen
@@ -2373,8 +2507,8 @@ to hide menus and the command-line.</p>
             
 
 
-<a name="techie"></a>
 <hr>
+<a name="techie"></a>
 <h2>Techie Bits</h2>
 <p>
 <div style="border: 2px solid green">
@@ -2404,7 +2538,7 @@ to hide menus and the command-line.</p>
                          Played notes are all notes that are not namedNotes: 
                               they have a single spot in a note cell. 
             visibleNoteTables - An array of instrument instance names, 
-                              that corresponds to the keys used to store section :: table objects.
+                              that corresponds to the keys used to store section :: noteTable objects.
                             Save the file makes the memory model reports this correctly.           
 
         In Chrome::Inspect you can use Developer tools Console
@@ -2430,9 +2564,9 @@ to hide menus and the command-line.</p>
 <br />
 
 
-<a name="glossary"></a>
 <hr>
-<h2>Glossary</h2>
+<a name="glossary"></a>
+<h1>Glossary</h1>
 <p>
 
     <table class="CheatSheet menuExample" cellspacing="0" border="1">
@@ -2630,10 +2764,10 @@ to hide menus and the command-line.</p>
         <tr>
             <td>Theme
             </td>
-            <td>A collection of styles, shapes, and sizes for the display of the instrument neck.  There are built-in Themes
+            <td>A collection of styles, shapes, and sizes for the display of the instrument neck.  There are built-in <a href="#themesGallery">Themes</a>
                 that you can select for a song using the dropdown in the main menu row of buttons.   (Or, you can select different Themes
                 for any Section if you save the DisplayOptions for that Section.)
-                You can tweak the Theme to your liking using the Theme menu.  Advanced users can define their own
+                You can tweak the Theme to your liking using the <a href="#divThemeControls">Themes Menu</a>.  Advanced users can define their own
                 by editing the JSON text file themes.js.
             </td>
         </tr>

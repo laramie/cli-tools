@@ -721,8 +721,8 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
 .currentColorDict {
     display: none;
     height: 1em;
-    padding: 0.2em;
-    padding-top: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.4em;
 }
 .currentColorDict a {
    pointer-events: none;
@@ -741,6 +741,12 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
 }
 .currentColorDict a:active {
   text-decoration: none;
+}
+.largeColorDict {
+    font-size: 130%;
+}
+.largeColorDict td {
+    padding: 0.2em;
 }
 
 
