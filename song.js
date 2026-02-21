@@ -81,7 +81,7 @@ function makeSong(){
 	function construct_gFrames(){
         this.constructing = true;
     	this.frames = [];
-    	this.visibleTables = [];
+    	this.visibleNoteTables = [];
         this.colorDicts = {};
     	this.defaultBPM = "80";
         this.rootID = "3";
@@ -118,7 +118,7 @@ function makeSong(){
         result.make();
         return result;
         function frame_constructor(){
-    	    this.tables = {};
+    	    this.noteTables = {};
     	    this.namedNotes = {};
     	    this.recordedNotes = {};
     		this.caption = "";
@@ -131,7 +131,7 @@ function makeSong(){
     	    this.sharps = gSharps;
     	}
         function cloneFrom(other){
-            this.tables = other.tables;
+            this.noteTables = other.noteTables;
             this.namedNotes = other.namedNotes ;
             this.recordedNotes = other.recordedNotes ;
             this.caption = other.caption ;
@@ -493,7 +493,7 @@ function makeSong(){
 	    aFrame.beats = this.getCurrentFrame().beats;
 	    aFrame.currentBeat = 1;
 	    if (deep){
-	        aFrame.tables = JSON.parse(JSON.stringify(this.getCurrentFrame().tables));
+	        aFrame.noteTables = JSON.parse(JSON.stringify(this.getCurrentFrame().noteTables));
      	    aFrame.recordedNotes = JSON.parse(JSON.stringify(this.getCurrentFrame().recordedNotes));
 	    }
         if (destIndex){
@@ -538,8 +538,8 @@ function makeSong(){
 	   for (const noteName in frame.namedNotes){
 	        namedNoteCount++;
 	    }
-	    for (const tablename in frame.tables){
-	        var tablearr = frame.tables[tablename];
+	    for (const tablename in frame.noteTables){
+	        var tablearr = frame.noteTables[tablename];
 	        tableCount += tablearr.length;
 	    }
 	    return ((tableCount + namedNoteCount) == 0);
@@ -580,10 +580,10 @@ function makeSong(){
 	}
 
 	function getTableArrInFrame(frame, tableID){
-	    var tableArr = frame.tables[tableID];
+	    var tableArr = frame.noteTables[tableID];
 	    if (!tableArr){
-	        frame.tables[tableID] = [];
-	        tableArr = frame.tables[tableID];
+	        frame.noteTables[tableID] = [];
+	        tableArr = frame.noteTables[tableID];
 	    }
 	    return tableArr;
 	}
@@ -593,26 +593,26 @@ function makeSong(){
 	  for (frameIdx in this.frames){     //for all frames...
 	    var frame = this.frames[frameIdx];
 	    var tempTables = {};
-	    for (const tablename in frame.tables){
-	        var tablearr = frame.tables[tablename];
+	    for (const tablename in frame.noteTables){
+	        var tablearr = frame.noteTables[tablename];
 	        if (tablearr && tablearr.length && tablearr.length>0){
 	            tempTables[tablename] = tablearr;
 	        }
 	    }
-	    frame.tables = tempTables;
+	    frame.noteTables = tempTables;
 	  }
 	}
 
     function markVisibleTablesForFileSave(){
-	    this.visibleTables = [];
+	    this.visibleNoteTables = [];
 	    for (i in allTunings.tunings){
 	         var baseID = allTunings.tunings[i].baseID;
 	         var divSelector = "#"+TABLEDIV_ID_PREFIX+baseID;
 	         if ($(divSelector).is(':visible')) {
-	             this.visibleTables.push(TABLE_ID_PREFIX+baseID);
+	             this.visibleNoteTables.push(TABLE_ID_PREFIX+baseID);
 	         }
 	    }
-	    var tunings = getTunings(this.visibleTables);
+	    var tunings = getTunings(this.visibleNoteTables);
 	    this.tunings = tunings;
 	}
 
@@ -621,8 +621,8 @@ function makeSong(){
    var frame;
    for (frameIdx in this.frames){     //for all frames...
 	    frame = this.frames[frameIdx];
-   	  for (const tablename in frame.tables){
-	        var tablearr = frame.tables[tablename];
+   	  for (const tablename in frame.noteTables){
+	        var tablearr = frame.noteTables[tablename];
 	        if (tablearr && tablearr.length && tablearr.length>0){
 	            var tuningID = tablename.substring(TABLE_ID_PREFIX.length);
 	            var val = hashTuningNames[tuningID];

@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "A": {
           "noteNameClass": ".noteA",
@@ -47,7 +47,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Bb": {
           "noteNameClass": ".noteBb",
@@ -93,7 +93,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "B": {
           "noteNameClass": ".noteB",
@@ -139,7 +139,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "C": {
           "noteNameClass": ".noteC",
@@ -185,7 +185,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Db": {
           "noteNameClass": ".noteDb",
@@ -231,7 +231,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "D": {
           "noteNameClass": ".noteD",
@@ -277,7 +277,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Eb": {
           "noteNameClass": ".noteEb",
@@ -323,7 +323,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "E": {
           "noteNameClass": ".noteE",
@@ -369,7 +369,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "F": {
           "noteNameClass": ".noteF",
@@ -415,7 +415,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Gb": {
           "noteNameClass": ".noteGb",
@@ -461,7 +461,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "G": {
           "noteNameClass": ".noteG",
@@ -507,7 +507,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Ab": {
           "noteNameClass": ".noteAb",
@@ -553,7 +553,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Eb": {
           "noteNameClass": ".noteEb",
@@ -599,7 +599,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Bb": {
           "noteNameClass": ".noteBb",
@@ -645,7 +645,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "F": {
           "noteNameClass": ".noteF",
@@ -691,7 +691,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "C": {
           "noteNameClass": ".noteC",
@@ -737,7 +737,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "G": {
           "noteNameClass": ".noteG",
@@ -783,7 +783,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "D": {
           "noteNameClass": ".noteD",
@@ -829,7 +829,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "A": {
           "noteNameClass": ".noteA",
@@ -875,7 +875,7 @@
       "currentBeat": 1
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "E": {
           "noteNameClass": ".noteE",
@@ -921,7 +921,7 @@
       "currentBeat": 1
     }
   ],
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblP46"
   ],
   "defaultBPM": "200",

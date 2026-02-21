@@ -635,7 +635,7 @@ function hideMessages(){
 }
 function showGraveyard(){
     hideAllMenuDivs();
-    showMessages(gSong.graveyard.buildTable());
+    showMessages(gSong.graveyard.buildNoteTable());
 }
 function hideGraveyard(){
     $("#divMessages").hide();

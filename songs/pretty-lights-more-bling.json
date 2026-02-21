@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Ab": {
           "noteNameClass": ".noteAb",
@@ -41,7 +41,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "60",
@@ -128,7 +128,7 @@
       "sharps": false
     }
   ],
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblP46"
   ],
   "defaultBPM": "80",

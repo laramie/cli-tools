@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "48",
@@ -58,7 +58,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "43",
@@ -118,7 +118,7 @@
       "sharps": false
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "C": {
           "noteName": "C",
@@ -151,7 +151,7 @@
   "gFramesCurrentIndex": 2,
   "gFirstBeatSeen": false,
   "gSongModelListener": null,
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblP46"
   ],
   "defaultBPM": "80",

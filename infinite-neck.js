@@ -397,8 +397,8 @@
 
 	function exportFromTable(tblSource){
 		gSong.markVisibleTablesForFileSave();
-		for (tableDestKey in getSong().visibleTables){
-			var tableDest = getSong().visibleTables[tableDestKey];
+		for (tableDestKey in getSong().visibleNoteTables){
+			var tableDest = getSong().visibleNoteTables[tableDestKey];
 			if (tblSource != tableDest){
 				//console.log("src:"+tblSource+", dest:"+tableDest);
 				exportPlayedNotesToOtherTable(tblSource, tableDest);
@@ -481,14 +481,14 @@
 		gSong.theme = $('#selThemes').val();
 		var theUSERTuning = findTuningForID("USER");
 		if (theUSERTuning){
-			gSong.userInstrumentTuning = theUSERTuning;  //This is just persistence.  The allTunings.tunings with id="USER" is the live object that is consulted for building tables at runtime.
+			gSong.userInstrumentTuning = theUSERTuning;  //This is just persistence.  The allTunings.tunings with id="USER" is the live object that is consulted for building noteTables at runtime.
 		}
 	}
 
 	function downloadBackupThenClearGraveyard(){
 		downloadPlayedNotes();
 		gSong.graveyard.clear();
-		showMessages(gSong.graveyard.buildTable());
+		showMessages(gSong.graveyard.buildNoteTable());
 	}
 
     // file save / save file / saveFile event
@@ -642,7 +642,7 @@
 	function installAllTuningsTables(){
 		var count = 0;
 	    for (i in allTunings.tunings){
-			var div = buildTable(allTunings.tunings[i]);
+			var div = buildNoteTable(allTunings.tunings[i]);
 			if (div){
 		        $('#tabledest').append(div);
 				count++;
@@ -821,11 +821,11 @@
 		showBeats();
 	}
 
-		function printTablesStats(tables){
+		function printTablesStats(noteTables){
 			var result = "";
 			var B = "<br />";
-			for (key in tables){
-				var tableArr = tables[key];
+			for (key in noteTables){
+				var tableArr = noteTables[key];
 				result = result + B + key + ":" + tableArr.length;
 			}
 			return result;
@@ -839,7 +839,7 @@
 			for (idx in frames){
 				var frame = frames[idx];
 				namedNotes = (Object.keys(frame.namedNotes).length>0) ? "namedNotes: "+JSON.stringify(Object.keys(frame.namedNotes)) : "";
-				specialNotes = (Object.keys(frame.tables).length>0) ? "<br />SpecialNotes: "+printTablesStats(frame.tables) : "";
+				specialNotes = (Object.keys(frame.noteTables).length>0) ? "<br />SpecialNotes: "+printTablesStats(frame.noteTables) : "";
 				var SEP = "</td><td>";
 				debugger
 				result = result+"<tr><td>"

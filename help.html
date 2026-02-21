@@ -2399,11 +2399,11 @@ to hide menus and the command-line.</p>
                               in that Section.
                          Named Notes appear at every cell on the neck 
                               that corresponds to that note name, e.g. "B".
-            frame :: tables - a dictionary of arrays that store all played notes in that Section 
+            frame :: noteTables - a dictionary of arrays that store all played notes in that Section 
                               on one instrument instance. 
                          Played notes are all notes that are not namedNotes: 
                               they have a single spot in a note cell. 
-            visibleTables - An array of instrument instance names, 
+            visibleNoteTables - An array of instrument instance names, 
                               that corresponds to the keys used to store frame :: table objects.
                             Save the file makes the memory model reports this correctly.           
 
@@ -2411,11 +2411,11 @@ to hide menus and the command-line.</p>
            to directly access the ObjectModel of the Song:
                 getSong()
 
-        Synopsize the "tables" collection:
-           getSong().frames.forEach(function(a){console.log("id"+JSON.stringify(a.tables))});
+        Synopsize the "noteTables" collection:
+           getSong().frames.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
 
-        Delete all played notes (tables) in a song, leaving Named and Recorded notes only :
-           getSong().frames.forEach(function(a){a.tables = {}; });
+        Delete all played notes (noteTables) in a song, leaving Named and Recorded notes only :
+           getSong().frames.forEach(function(a){a.noteTables = {}; });
 
         Delete all Recorded notes:
            getSong().frames.forEach(function(a){a.recordedNotes = {}; });
@@ -2624,7 +2624,7 @@ to hide menus and the command-line.</p>
         <tr>
             <td>Cell
             </td>
-            <td>One spot on the neck -- one string at one fret.  The term comes from spreadsheets, since we use HTML tables to model the fretboard.
+            <td>One spot on the neck -- one string at one fret.  The term comes from spreadsheets, since we use HTML noteTables to model the fretboard.
             </td>
         </tr>
         <tr>

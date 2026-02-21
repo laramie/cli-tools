@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Ab": {
           "noteNameClass": ".noteAb",
@@ -76,7 +76,7 @@
   "gFramesCurrentIndex": 0,
   "gFirstBeatSeen": false,
   "gSongModelListener": null,
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblPerfect4thsCalculator"
   ],
   "defaultBPM": "80",

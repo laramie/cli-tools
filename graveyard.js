@@ -22,7 +22,7 @@ function makeGraveyard(flatObj){
             addRecord: addRecord,
             makeRecord: makeRecord,
             dumpGraveyard: dumpGraveyard,
-            buildTable: buildTable,
+            buildNoteTable: buildNoteTable,
             bury: bury,
             raise: raise,
             clear: clear
@@ -116,7 +116,7 @@ function makeGraveyard(flatObj){
                  return;
         }
         record.lastRevived = Date.now();
-        showMessages(gSong.graveyard.buildTable());
+        showMessages(gSong.graveyard.buildNoteTable());
         fullRepaint();
     }
 
@@ -130,7 +130,7 @@ function makeGraveyard(flatObj){
         return removed;                 
     }
 
-    function buildTable(){
+    function buildNoteTable(){
         var result = [];
         var resultBody = [];
         var SEP = "</td><td>";

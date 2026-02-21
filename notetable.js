@@ -5,7 +5,7 @@
 *  Home of future:
 *      class NoteTable
 *   which manages the real engine of infinite-neck.js, the display of the main model: getSong().
-*   Output is all for the instrument tables built and inserted into index.html.
+*   Output is all for the instrument noteTables built and inserted into index.html.
 */
 
 function isRecording(){
@@ -364,7 +364,7 @@ function dropper(cell, cellcol, cellrow, styleNum, noteName){
     if (parentTable){
         var jParentTable =  $(parentTable);
         parentTableID = jParentTable.attr("id");
-        var foundColorClass = jsonPath(getCurrentFrame().tables, "$.."+parentTableID+"[?(@.col=="+cellcol+"  && @.row=="+cellrow+" && @.styleNum=="+styleNum+")].colorClass");
+        var foundColorClass = jsonPath(getCurrentFrame().noteTables, "$.."+parentTableID+"[?(@.col=="+cellcol+"  && @.row=="+cellrow+" && @.styleNum=="+styleNum+")].colorClass");
         if (foundColorClass){
             $("input[name=rbColor][value="+foundColorClass+"]")
                 .attr('checked', 'checked')
@@ -540,8 +540,8 @@ function replay(){
         $('.namedNote').hide();
     }
 
-    for (const tablename in currFrame.tables){
-        var tablearr = currFrame.tables[tablename];
+    for (const tablename in currFrame.noteTables){
+        var tablearr = currFrame.noteTables[tablename];
         for (const scriptIndex in tablearr){
             var script = tablearr[scriptIndex];
             var jtd = $("#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]");

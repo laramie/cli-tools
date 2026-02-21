@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "48",
@@ -81,7 +81,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "48",
@@ -161,7 +161,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "48",
@@ -248,7 +248,7 @@
       "sharps": false
     }
   ],
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblP46"
   ],
   "defaultBPM": "80",

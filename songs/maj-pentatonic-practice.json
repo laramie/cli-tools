@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "49",
@@ -86,7 +86,7 @@
       }
     },
     {
-      "tables": {
+      "noteTables": {
         "tblP46": [
           {
             "midinum": "49",
@@ -171,7 +171,7 @@
       }
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "E": {
           "noteNameClass": ".noteE",
@@ -232,7 +232,7 @@
       }
     }
   ],
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblP46"
   ],
   "defaultBPM": "333",

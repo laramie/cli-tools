@@ -438,11 +438,11 @@ Note:
     In Chrome::Inspect you can use Developer tools to directly access the ObjectModel of the Song.
     Currently through a global gSong, but more properly through getSong().
 
-    Synopsize the "tables" collection:
-    gSong.frames.forEach(function(a){console.log("id"+JSON.stringify(a.tables))});
+    Synopsize the "noteTables" collection:
+    gSong.frames.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
 
-    Delete all played notes (tables) in a song, leaving Named and Recorded notes only :
-    gSong.frames.forEach(function(a){a.tables = {}; });
+    Delete all played notes (noteTables) in a song, leaving Named and Recorded notes only :
+    gSong.frames.forEach(function(a){a.noteTables = {}; });
     gSong.frames.forEach(function(a){a.recordedNotes = {}; });
 
     gSong.frames.forEach(function(a){a.sharps = true; });

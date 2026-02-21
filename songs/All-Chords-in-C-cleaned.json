@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Db": {
           "noteName": "Db",
@@ -19,7 +19,7 @@
       "sharps": false
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "Ab": {
           "noteNameClass": ".noteAb",
@@ -91,7 +91,7 @@
       "sharps": false
     },
     {
-      "tables": {},
+      "noteTables": {},
       "namedNotes": {
         "G": {
           "noteNameClass": ".noteG",
@@ -135,7 +135,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -191,7 +191,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -243,7 +243,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -295,7 +295,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -370,7 +370,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -422,7 +422,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -474,7 +474,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -526,7 +526,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -578,7 +578,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -626,7 +626,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -674,7 +674,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -758,7 +758,7 @@
       "sharps": false
     },
     {
-      "tables": {
+      "noteTables": {
         "tblPiano": [
           {
             "midinum": "58",
@@ -845,7 +845,7 @@
   "gFramesCurrentIndex": 2,
   "gFirstBeatSeen": false,
   "gSongModelListener": null,
-  "visibleTables": [
+  "visibleNoteTables": [
     "tblPerfect4thsCalculator",
     "tblPiano"
   ],

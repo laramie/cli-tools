@@ -8,7 +8,7 @@ However, this looks like it has better query support.
     var result = jsonata('"Hello, " & name').evaluate(json);
     document.getElementById('greeting').innerHTML = result;
 
-    var result = jsonata('tblP46[midinum="66"][row="0"][styleNum=2].colorClass').evaluate(getCurrentFrame().tables);
+    var result = jsonata('tblP46[midinum="66"][row="0"][styleNum=2].colorClass').evaluate(getCurrentFrame().noteTables);
   }
 </script>
 

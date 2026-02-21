@@ -5,7 +5,7 @@ const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument table, i.e. the neck, not the tunings html table on the Tunings page.
-function buildTable(options){
+function buildNoteTable(options){
 	if (options.visible==false){
 		//console.log("NOT building invisible table: "+options.caption);
 		return null;
@@ -465,15 +465,25 @@ function getTunings(tableNamesArr){
 	        jdiv.hide();
 	    }
 		var tuning = findTuningForID(basekey);
-        tuning.visible =show;  //change it in the in-memory model.
+		if (tuning){
+        	tuning.visible =show;  //change it in the in-memory model.
+		} else {
+			var stacktrace = "";
+			try {
+				throw new Error(); 
+			} catch (e) {
+				stacktrace = ""+e.stack;
+			}
+			alert("Tuning not found for: "+basekey +" at: "+stacktrace);
+		}
 	}
 
 	function showTuningsForTablesInFile(){
 	     var numFound = 0;
 	     for (frame in getSong().frames){
-	         var tables = getSong().frames[frame].tables;
-	         for (tablekey in tables){
-	             var tablearr = tables[tablekey];
+	         var noteTables = getSong().frames[frame].noteTables;
+	         for (tablekey in noteTables){
+	             var tablearr = noteTables[tablekey];
 	             if (tablearr && tablearr.length>0) {
 	                  var basekey = tablekey.substring(TABLE_ID_PREFIX.length);
 	                  showTuning(basekey);
@@ -481,8 +491,8 @@ function getTunings(tableNamesArr){
 	             }
 	         }
 	     }
-	     for (visTableIdx in getSong().visibleTables){
-	         var visbasekey = getSong().visibleTables[visTableIdx].substring(TABLE_ID_PREFIX.length);
+	     for (visTableIdx in getSong().visibleNoteTables){
+	         var visbasekey = getSong().visibleNoteTables[visTableIdx].substring(TABLE_ID_PREFIX.length);
 
 			 var tuning = findTuning(visbasekey);
 	         if (tuning){
