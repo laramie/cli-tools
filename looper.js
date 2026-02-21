@@ -7,22 +7,22 @@
 	const LOOPING_BEATS_CAPTION         = "LOOPING...";
 	const NOT_LOOPING_BEATS_CAPTION     = "LOOP BEATS";
 
-	function clearBeatAndFrameLooping(){
+	function clearBeatAndSectionLooping(){
 		window.clearTimeout(showBeatsIntervalPointer);
 		showBeatsIntervalPointer = null;
-		$("#btnLoopFrames").html(NOT_LOOPING_FRAMES_CAPTION).removeClass("ButtonOn");    //css({"background": "white"});
+		$("#btnLoopSections").html(NOT_LOOPING_FRAMES_CAPTION).removeClass("ButtonOn");    //css({"background": "white"});
 		$("#btnLoopBeats").html(NOT_LOOPING_BEATS_CAPTION).removeClass("ButtonOn");      //.css({"background": "white"});
 		$("#btnLoopBeatsTransport").removeClass("ButtonOn");      //.css({"background": "white"});
 	}
 
-	function startLoopFrames(){
+	function startLoopSections(){
 		showBPM();
 		if (getSong().randomLoop){
 			CAPTION = LOOPING_FRAMES_CAPTION_RANDOM;
 		} else {
 			CAPTION = LOOPING_FRAMES_CAPTION;
 		}
-		$("#btnLoopFrames").html(CAPTION).addClass("ButtonOn");    //.css({"background": "magenta"});
+		$("#btnLoopSections").html(CAPTION).addClass("ButtonOn");    //.css({"background": "magenta"});
 		var millisNextBeat = getMillisForBeatClock();
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
@@ -34,39 +34,39 @@
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
 
-	function toggleLoopFrames(){
-		var framesLoopingBool = framesLooping();
+	function toggleLoopSections(){
+		var sectionsLoopingBool = sectionsLooping();
 	    if(showBeatsIntervalPointer){
-			clearBeatAndFrameLooping();
+			clearBeatAndSectionLooping();
 	    }
-		if (!framesLoopingBool){
-			startLoopFrames()
+		if (!sectionsLoopingBool){
+			startLoopSections()
 		}
 	}
 
-	function restartLoopFrames(){
-		if (framesLooping()){
-			clearBeatAndFrameLooping();
-			startLoopFrames();
+	function restartLoopSections(){
+		if (sectionsLooping()){
+			clearBeatAndSectionLooping();
+			startLoopSections();
 		} else {
-			startLoopFrames();
+			startLoopSections();
 		}
 	}
 
 	function toggleLoopBeats(){
 	    var beatsLoopingBool = beatsLooping();
 	    if(showBeatsIntervalPointer){
-			clearBeatAndFrameLooping();
+			clearBeatAndSectionLooping();
 	    }
 		if (!beatsLoopingBool){
 			startLoopBeats()
 		}
 	}
-	function framesLooping(){
+	function sectionsLooping(){
 		return (
-			$("#btnLoopFrames").text() === LOOPING_FRAMES_CAPTION
+			$("#btnLoopSections").text() === LOOPING_FRAMES_CAPTION
 		) || (
-			$("#btnLoopFrames").text() === LOOPING_FRAMES_CAPTION_RANDOM
+			$("#btnLoopSections").text() === LOOPING_FRAMES_CAPTION_RANDOM
 		);
 	}
 	function beatsLooping(){
@@ -77,8 +77,8 @@
 		var beat = gSong.getBeat();
 		var beats = gSong.getBeats();
 	    if (beat >= beats){
-			if (framesLooping()){
-				gSong.gotoNextFrame(true);  //calls showBeats()
+			if (sectionsLooping()){
+				gSong.gotoNextSection(true);  //calls showBeats()
 			} else {
 				gSong.incBeatLoop();
 				showBeats();

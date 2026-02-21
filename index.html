@@ -26,7 +26,7 @@
         <script src="key-handlers.js"></script>
         <script src="notetable.js"></script>
         <script src="command-line.js"></script>
-        <script src="frame-recorder.js"></script>
+        <script src="section-recorder.js"></script>
         <script src="looper.js"></script>
         <script src="note.js"></script>
         <script src="tunings.js"></script>
@@ -430,10 +430,10 @@
 
                         <div class="sectionPageControlsGroup">
                             <span id="sectionTransportButtons">
-                                <!--<button id="btnFirstFrame"  type="button" >&laquo;</button>-->
-                                <button id="btnPrevFrame"  type="button" tabindex="-1">&lt;</button>&nbsp;&nbsp;&nbsp;<span id="lblFramesStatus"></span>&nbsp;
-                                <button id="btnNextFrame"  type="button" tabindex="-1">&gt;</button>
-                                <!--<button id="btnLastFrame"  type="button" >&raquo;</button>-->
+                                <!--<button id="btnFirstSection"  type="button" >&laquo;</button>-->
+                                <button id="btnPrevSection"  type="button" tabindex="-1">&lt;</button>&nbsp;&nbsp;&nbsp;<span id="lblSectionsStatus"></span>&nbsp;
+                                <button id="btnNextSection"  type="button" tabindex="-1">&gt;</button>
+                                <!--<button id="btnLastSection"  type="button" >&raquo;</button>-->
                             </span>
 
                             <nobr>
@@ -466,16 +466,16 @@
                                 </span>
                             </div>
                             <div >
-                                <span id="sectionFrameButtons">
+                                <span id="sectionSectionButtons">
                                     <span style="float:left; ">
-                                        <button id="btnNewFrame"  type="button" >NEW SECTION<small><br>blank</small></button>
-                                        <button id="btnAddShallowCloneFrame"  type="button" >SHALLOW CLONE<small><br>namedNotes only</small></button>
-                                        <button id="btnAddDeepCloneFrame"  type="button" >CLONE<small><br>all notes/beats</small></button>
+                                        <button id="btnNewSection"  type="button" >NEW SECTION<small><br>blank</small></button>
+                                        <button id="btnAddShallowCloneSection"  type="button" >SHALLOW CLONE<small><br>namedNotes only</small></button>
+                                        <button id="btnAddDeepCloneSection"  type="button" >CLONE<small><br>all notes/beats</small></button>
                                         <button id="btnMoveSectionOrder" type="button" >Move Section</button>
                                     </span>
 
                                     <span style="float:left; ">
-                                        <button id="btnDeleteFrame" class="riskyButton" type="button" >DELETE CURRENT<small><br>This Section!</small></button>
+                                        <button id="btnDeleteSection" class="riskyButton" type="button" >DELETE CURRENT<small><br>This Section!</small></button>
                                     </span>
                                     <span style="float:left; ">
                                         <button id="btnControlsToDisplayOptions" class="riskyButton" type="button" >SAVE display options<small><br>this section forward</small></button>
@@ -1773,11 +1773,11 @@
                         <td id="tdRootLead"><span class="lblRootIDLead"></span></td>
                     </tr>
                 </table>
-                <button id="btnFirstFrame"  type="button" tabindex="-1" >&#x21E4;</button>
-                <button id="btnPrevFrame2"  type="button" tabindex="-1" >&laquo;</button>
-                <small style="margin-left: 0.6em; font-size: 50%">&sect;</small><span style="vertical-align: middle" id="lblFramesStatus2"></span>
-                <button id="btnNextFrame2"  type="button" tabindex="-1" >&raquo;</button>
-                <button id="btnLastFrame"  type="button" tabindex="-1" >&#x21E5;</button>
+                <button id="btnFirstSection"  type="button" tabindex="-1" >&#x21E4;</button>
+                <button id="btnPrevSection2"  type="button" tabindex="-1" >&laquo;</button>
+                <small style="margin-left: 0.6em; font-size: 50%">&sect;</small><span style="vertical-align: middle" id="lblSectionsStatus2"></span>
+                <button id="btnNextSection2"  type="button" tabindex="-1" >&raquo;</button>
+                <button id="btnLastSection"  type="button" tabindex="-1" >&#x21E5;</button>
                 &nbsp;
                 <span class="insetTransportBeat" style="border: 1px solid green; text-align: center;vertical-align: middle;">
                     <button class="redButton" id="btnPrevBeatTransport" type="button" tabindex="-1" >&laquo;</button>
@@ -1789,7 +1789,7 @@
             </span>
 
             <span class="bpm"></span>&nbsp;<button id="btnRecord" class="RecordButton ArmedButton" type="button" tabindex="-1" >REC</button>
-            <button id="btnLoopFrames"  class="ArmedButton" type="button" tabindex="-1" >LOOP</button>
+            <button id="btnLoopSections"  class="ArmedButton" type="button" tabindex="-1" >LOOP</button>
         </span>
     </span>
 
@@ -1799,7 +1799,7 @@
 			<nobr>
 				       <strong><span class="lblSongName" ></span></strong>
 				       <span class="SongTitleLeadSheet">
-						    <span class="lblSectionNumber"><span class="lblSectionmark">&sect;</span><span class="lblFramesStatusFrameNo"></span></span>
+						    <span class="lblSectionNumber"><span class="lblSectionmark">&sect;</span><span class="lblSectionsStatusSectionNo"></span></span>
                             <span class="lblRootID"></span><span class="lblRootIDLead"></span>&nbsp;&nbsp;
 				            <span class="lblSectionCaption" ></span>
 						</span>
@@ -1853,6 +1853,5 @@
         <button type="button" onclick="leaveFullscreen();">Exit Fullscreen</button>
     </div>
 
-    <!--iframe  id="myIframe"></iframe-->
 </body>
 </html>

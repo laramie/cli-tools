@@ -1,5 +1,5 @@
 {
-  "frames": [
+  "sections": [
     {
       "noteTables": {},
       "namedNotes": {
@@ -73,7 +73,7 @@
       "sharps": false
     }
   ],
-  "gFramesCurrentIndex": 0,
+  "gSectionsCurrentIndex": 0,
   "gFirstBeatSeen": false,
   "gSongModelListener": null,
   "visibleNoteTables": [

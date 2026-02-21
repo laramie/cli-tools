@@ -316,7 +316,7 @@ function colorNote(cell) {
 
 
 		if (theColorClass == "noteClear"){  //color "noteClear" is hardcoded to mean actually clear/delete the note.
-			getCurrentFrame().namedNotes[noteName] = {};
+			getCurrentSection().namedNotes[noteName] = {};
             clearNamedNoteDivs(namedNoteDiv);
             noteNameElements.find(".NoteDisplay").removeClass().addClass("NoteDisplay");;
 		} else {
@@ -330,13 +330,13 @@ function colorNote(cell) {
             var automaticColorClass = lookupUserColorClass(note);
             var noteAlreadyColoredWithCurrent  = namedNoteDiv.hasClass(automaticColorClass);
 
-            getCurrentFrame().namedNotes[noteName] = {};
+            getCurrentSection().namedNotes[noteName] = {};
             clearNamedNoteDivs(namedNoteDiv);
             noteNameElements.find(".NoteDisplay").removeClass().addClass("NoteDisplay");
 
             if ( ! noteAlreadyColoredWithCurrent){
                 styleNamedNote(noteNameElements, lookupUserColorClass(note), noteName);
-    		    getCurrentFrame().namedNotes[noteName] = note;
+    		    getCurrentSection().namedNotes[noteName] = note;
             }
 		}
         //console.log("  namedNoteDiv-->className:"+namedNoteDiv.prop("className"));
@@ -347,7 +347,7 @@ function colorNote(cell) {
 function dropper(cell, cellcol, cellrow, styleNum, noteName){
     var jCell = $(cell);
     if (noteName && styleNum == 0){ //namedNote
-        var note = getCurrentFrame().namedNotes[noteName];
+        var note = getCurrentSection().namedNotes[noteName];
         if (note){
             var foundColorClass = note.colorClass;
             $("input[name=rbColor][value="+foundColorClass+"]")
@@ -364,7 +364,7 @@ function dropper(cell, cellcol, cellrow, styleNum, noteName){
     if (parentTable){
         var jParentTable =  $(parentTable);
         parentTableID = jParentTable.attr("id");
-        var foundColorClass = jsonPath(getCurrentFrame().noteTables, "$.."+parentTableID+"[?(@.col=="+cellcol+"  && @.row=="+cellrow+" && @.styleNum=="+styleNum+")].colorClass");
+        var foundColorClass = jsonPath(getCurrentSection().noteTables, "$.."+parentTableID+"[?(@.col=="+cellcol+"  && @.row=="+cellrow+" && @.styleNum=="+styleNum+")].colorClass");
         if (foundColorClass){
             $("input[name=rbColor][value="+foundColorClass+"]")
                 .attr('checked', 'checked')
@@ -480,7 +480,7 @@ function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
              && !fingeringAlreadyPlayed
              && !bendAlreadyPlayed
            ){
-                var tableArr = gSong.getTableArrInCurrentFrame(parentTableID);
+                var tableArr = gSong.getTableArrInCurrentSection(parentTableID);
                 if (dontAddToTableArray){  //because recording has already added the note to beats in recordedNotes.
                     //console.log("Not adding note to tablearray:"+JSON.stringify(notePlayed));
                 } else {
@@ -513,7 +513,7 @@ function activityReplayDone(){
 
 function replay(){
     activityReplay();
-    var currFrame = getCurrentFrame();
+    var currSection = getCurrentSection();
     var hideNamedNotes  = $("#cbHideNamedNotes").prop("checked");
     var hideTinyNotes = $("#cbHideTinyNotes").prop("checked");
     var hideSingleNotes = $("#cbHideSingleNotes").prop("checked");
@@ -521,11 +521,11 @@ function replay(){
 
     if (!hideNamedNotes){
     	var clone = {};
-        for (const noteName in currFrame.namedNotes){
+        for (const noteName in currSection.namedNotes){
     			//   every G cell has a class "noteG" --> however, as stored,
                 //   namedNote.noteNameClass is ".noteG", to make it a selector
                 //       ==> Construct jQuery with ".noteG"
-    	        var namedNote = currFrame.namedNotes[noteName];
+    	        var namedNote = currSection.namedNotes[noteName];
                 var theSelect;
                 if (namedNote.noteName){
                     theSelect = ".note"+namedNote.noteName;
@@ -540,8 +540,8 @@ function replay(){
         $('.namedNote').hide();
     }
 
-    for (const tablename in currFrame.noteTables){
-        var tablearr = currFrame.noteTables[tablename];
+    for (const tablename in currSection.noteTables){
+        var tablearr = currSection.noteTables[tablename];
         for (const scriptIndex in tablearr){
             var script = tablearr[scriptIndex];
             var jtd = $("#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]");
@@ -604,7 +604,7 @@ function showMidiNotesInTable(tableID, midinum, preferredRow){
 
 
 function showHighlightsForBeat(nBeat){
-    var dict = getCurrentFrame().recordedNotes;
+    var dict = getCurrentSection().recordedNotes;
     if (dict){
 
         $("td.note").removeClass("noteHighlight");
@@ -825,20 +825,20 @@ function doFill(theClass, NoteNames, Color){
     if (Color == "noteKeep"){
         return;
     }
-    var currFrame = getCurrentFrame();
+    var currSection = getCurrentSection();
     if (Color != "noteClear") {
         //NO: let replay color the notes.  We are just adding them to the model here.
         //theClass.addClass(lookupUserColorClassByClass(Color))
 		//             .addClass("NoteActive");
         for (key in NoteNames){
             var noteName = NoteNames[key];
-            //currFrame.namedNotes[noteName] = {"noteNameClass": ".note"+noteName, "colorClass": Color, "noteName": noteName};
-            currFrame.namedNotes[noteName] = {"noteName": noteName, "colorClass": Color};
+            //currSection.namedNotes[noteName] = {"noteNameClass": ".note"+noteName, "colorClass": Color, "noteName": noteName};
+            currSection.namedNotes[noteName] = {"noteName": noteName, "colorClass": Color};
         }
     } else {
         eraseNamedNote(theClass);
         for (key in NoteNames){
-            currFrame.namedNotes[NoteNames[key]] = {};
+            currSection.namedNotes[NoteNames[key]] = {};
         }
     }
 }

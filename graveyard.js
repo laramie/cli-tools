@@ -90,7 +90,7 @@ function makeGraveyard(flatObj){
                 break;
             case GraveType.SECTION:
                 record.caption = record.caption + " raised from: "+record.context.SectionIndex +" at "+record.time;
-                gSong.addFrame(JSON.parse(record.json));
+                gSong.addSection(JSON.parse(record.json));
                 break;
             case GraveType.DISPLAY:
             case GraveType.BEAT:

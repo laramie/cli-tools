@@ -9,7 +9,7 @@ function displayOptionsTable(){
     var rowc = displayOptionsCaptionRow(optionsPrototype, displayOptions);
     res.push("<tr><td style='vertical-align: bottom;'>Section&nbsp;#</td>"+rowc+"</tr>");
 
-    var sections = getSong().getFrames();
+    var sections = getSong().getSections();
     for (var sectionIdx in sections){
         var section = sections[sectionIdx];
         var displayOptions = section.displayOptions;

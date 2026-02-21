@@ -3,24 +3,24 @@ function makeSong(){
     let obj = {
 
         //FIELDS:
-            frames: null,
-        	gFramesCurrentIndex: 0,
+            sections: null,
+        	gSectionsCurrentIndex: 0,
             gFirstBeatSeen: false,
             userInstrumentTuning: null,
             gSongModelListener: null,
             constructing: false,
         //METHODS:
-            make: construct_gFrames,
+            make: construct_gSections,
 
-            getCurrentFrame: getCurrentFrame,
-            getFramesCurrentIndex: getFramesCurrentIndex,
-            constructFrame: constructFrame,
+            getCurrentSection: getCurrentSection,
+            getSectionsCurrentIndex: getSectionsCurrentIndex,
+            constructSection: constructSection,
 
-            getFrames: getFrames,
-            addFrame: addFrame,
-            addFrames: addFrames,
-            addFrameAfterCurrent: addFrameAfterCurrent,
-            removeAllFrames: removeAllFrames,
+            getSections: getSections,
+            addSection: addSection,
+            addSections: addSections,
+            addSectionAfterCurrent: addSectionAfterCurrent,
+            removeAllSections: removeAllSections,
 
             getBeat: getBeat,
             incBeat: incBeat,
@@ -35,37 +35,37 @@ function makeSong(){
             gotoFirstBeat: gotoFirstBeat,
             moveBeatsLater: moveBeatsLater,
 
-            firstFrame: firstFrame,
-            lastFrame: lastFrame,
-            prevFrame: prevFrame,
-            nextFrame: nextFrame,
-            gotoFrame: gotoFrame,
-            gotoNextFrame: gotoNextFrame,
-            gotoPrevFrame: gotoPrevFrame,
+            firstSection: firstSection,
+            lastSection: lastSection,
+            prevSection: prevSection,
+            nextSection: nextSection,
+            gotoSection: gotoSection,
+            gotoNextSection: gotoNextSection,
+            gotoPrevSection: gotoPrevSection,
 
-            insertFrameAtDest: insertFrameAtDest,
-            newFrame: newFrame,
-            addShallowCloneFrame: addShallowCloneFrame,
-            addDeepCloneFrame: addDeepCloneFrame,
-            addCloneFrame: addCloneFrame,
-            deleteCurrentFrame: deleteCurrentFrame,
+            insertSectionAtDest: insertSectionAtDest,
+            newSection: newSection,
+            addShallowCloneSection: addShallowCloneSection,
+            addDeepCloneSection: addDeepCloneSection,
+            addCloneSection: addCloneSection,
+            deleteCurrentSection: deleteCurrentSection,
             isEmpty: isEmpty,
-            moveFrameToEND: moveFrameToEND,
-            moveFrameTo: moveFrameTo,
+            moveSectionToEND: moveSectionToEND,
+            moveSectionTo: moveSectionTo,
 
-            cycleThruKeysAllFrames: cycleThruKeysAllFrames,
+            cycleThruKeysAllSections: cycleThruKeysAllSections,
 
-            getTableArrInCurrentFrame: getTableArrInCurrentFrame,
-            getTableArrInFrame: getTableArrInFrame,
+            getTableArrInCurrentSection: getTableArrInCurrentSection,
+            getTableArrInSection: getTableArrInSection,
 
             removeUnusedTablesFromMemoryModel: removeUnusedTablesFromMemoryModel,
             markVisibleTablesForFileSave: markVisibleTablesForFileSave,
             getTuningHashInMemoryModel: getTuningHashInMemoryModel,
             removeNotePlayedFromTable: removeNotePlayedFromTable,
             exportFromTable: exportFromTable,
-            moveNamedNotesAllFrames: moveNamedNotesAllFrames,
+            moveNamedNotesAllSections: moveNamedNotesAllSections,
             moveNamedNotes: moveNamedNotes,
-            moveNamedNotesForFrame: moveNamedNotesForFrame,
+            moveNamedNotesForSection: moveNamedNotesForSection,
 
             getRootKey: song_getRootKey,
             getLeadKey: song_getRootKeyLead,
@@ -78,46 +78,46 @@ function makeSong(){
 
 
 
-	function construct_gFrames(){
+	function construct_gSections(){
         this.constructing = true;
-    	this.frames = [];
+    	this.sections = [];
     	this.visibleNoteTables = [];
         this.colorDicts = {};
     	this.defaultBPM = "80";
         this.rootID = "3";
-        this.gFramesCurrentIndex = this.addFrame(this.constructFrame());
+        this.gSectionsCurrentIndex = this.addSection(this.constructSection());
 	    this.namedNoteOpacity = "1.00";
 	    this.singleNoteOpacity = "1.00";
         this.constructing = false;
         delete this.constructing;
     }
 
-    function getCurrentFrame(){
-	    return this.frames[this.gFramesCurrentIndex];
+    function getCurrentSection(){
+	    return this.sections[this.gSectionsCurrentIndex];
 	}
 
-    function getFramesCurrentIndex(){
-        return this.gFramesCurrentIndex;
+    function getSectionsCurrentIndex(){
+        return this.gSectionsCurrentIndex;
     }
 
     function song_getRootKey(){
-        var rootIndex = toInt(this.getCurrentFrame().rootID, 0);
+        var rootIndex = toInt(this.getCurrentSection().rootID, 0);
         return noteIDToNoteName(rootIndex);
     }
 
-    // This all works with Frame objects, but JSON doesn't revive them. Working on the reviver, but for now, don't use.
-    function constructFrame(){
+    // This all works with Section objects, but JSON doesn't revive them. Working on the reviver, but for now, don't use.
+    function constructSection(){
 	    let result = {
-            getRootKey: frame_getRootKey,
-            getRootKeyLead: frame_getRootKeyLead,
-            getLeadNoteName: frame_getLeadNoteName,
-            getRootNoteName: frame_getRootNoteName,
+            getRootKey: section_getRootKey,
+            getRootKeyLead: section_getRootKeyLead,
+            getLeadNoteName: section_getLeadNoteName,
+            getRootNoteName: section_getRootNoteName,
             cloneFrom: cloneFrom,
-            make: frame_constructor
+            make: section_constructor
         };
         result.make();
         return result;
-        function frame_constructor(){
+        function section_constructor(){
     	    this.noteTables = {};
     	    this.namedNotes = {};
     	    this.recordedNotes = {};
@@ -144,11 +144,11 @@ function makeSong(){
         }
 
         //these two return an html string that is either sharps or flats, depending on section.
-        function frame_getRootKey(){
+        function section_getRootKey(){
             var rootIndex = toInt(this.rootID, 0);
     		return noteIDToNoteName(rootIndex);
         }
-        function frame_getRootKeyLead(){
+        function section_getRootKeyLead(){
     		var leadkey =  noteIDToNoteName(toInt(this.rootIDLead, 0));
             if (!leadkey){
                 return noteIDToNoteName(toInt(this.rootID, 0));
@@ -157,10 +157,10 @@ function makeSong(){
         }
 
         //these two return a simple noteName, one of [A, Bb, B, C, Db, ...etc.]
-        function frame_getRootNoteName(){
+        function section_getRootNoteName(){
             return noteIDToNoteNameRaw(toInt(this.rootID, 0));
         }
-        function frame_getLeadNoteName(){
+        function section_getLeadNoteName(){
             if (this.rootIDLead == "-1"){
                 return noteIDToNoteNameRaw(toInt(this.rootID, 0));
             }
@@ -168,72 +168,72 @@ function makeSong(){
         }
     }
 
-    function removeAllFrames(){
-        this.frames = [];
-        this.addFrame(this.constructFrame());
+    function removeAllSections(){
+        this.sections = [];
+        this.addSection(this.constructSection());
     }
 
-	function addFrame(frame){
-	    var newIndex = this.frames.push(frame) - 1;
-	    this.gFramesCurrentIndex = newIndex;
-	    if (!this.constructing) updateFramesStatus(this);
+	function addSection(section){
+	    var newIndex = this.sections.push(section) - 1;
+	    this.gSectionsCurrentIndex = newIndex;
+	    if (!this.constructing) updateSectionsStatus(this);
 	    return newIndex;
-	    // frames is an array of gNotesPlayed objects. push() returns length.
+	    // sections is an array of gNotesPlayed objects. push() returns length.
 	}
-	function addFrameAfterCurrent(frame){
-        if (this.frames.length == 0){
-            this.frames.push(frame);
-            this.gFramesCurrentIndex = 0;
+	function addSectionAfterCurrent(section){
+        if (this.sections.length == 0){
+            this.sections.push(section);
+            this.gSectionsCurrentIndex = 0;
         } else {
     		var deleteCount=0;
-    		var start = this.gFramesCurrentIndex+1;
-    	    var newIndex = this.frames.splice(start, deleteCount, frame);
-            this.gFramesCurrentIndex = this.gFramesCurrentIndex+1;
+    		var start = this.gSectionsCurrentIndex+1;
+    	    var newIndex = this.sections.splice(start, deleteCount, section);
+            this.gSectionsCurrentIndex = this.gSectionsCurrentIndex+1;
         }
         fullRepaint();
-	    updateFramesStatus();
-	    return this.gFramesCurrentIndex;
-	    // frames is an array of gNotesPlayed objects.
+	    updateSectionsStatus();
+	    return this.gSectionsCurrentIndex;
+	    // sections is an array of gNotesPlayed objects.
 	}
-	function getFrames(){
-	    return this.frames;
+	function getSections(){
+	    return this.sections;
 	}
-	function addFrames(fileObj){
-	    if (this.frames.length==1 && isEmpty(this.frames[0])){
-	        //special case: file open is adding frames, but default frame is empty, so delete it.
-	        this.frames = [];
+	function addSections(fileObj){
+	    if (this.sections.length==1 && isEmpty(this.sections[0])){
+	        //special case: file open is adding sections, but default section is empty, so delete it.
+	        this.sections = [];
 	    }
-	    var count = Array.prototype.push.apply(this.frames, fileObj.frames);
-        this.gFramesCurrentIndex = count - 1;
+	    var count = Array.prototype.push.apply(this.sections, fileObj.sections);
+        this.gSectionsCurrentIndex = count - 1;
 	}
 
     //these two return an html string that is either sharps or flats, depending on section.
     function song_getRootKey(){
-        var rootIndex = toInt(this.getCurrentFrame().rootID, 0);
+        var rootIndex = toInt(this.getCurrentSection().rootID, 0);
         return noteIDToNoteName(rootIndex);
     }
     function song_getRootKeyLead(){
-        var leadkey =  noteIDToNoteName(toInt(this.getCurrentFrame().rootIDLead, 0));
+        var leadkey =  noteIDToNoteName(toInt(this.getCurrentSection().rootIDLead, 0));
         if (!leadkey){
-            return noteIDToNoteName(toInt(this.getCurrentFrame().rootID, 0));
+            return noteIDToNoteName(toInt(this.getCurrentSection().rootID, 0));
         }
         return leadkey;
     }
 
     //these two return a simple noteName, one of [A, Bb, B, C, Db, ...etc.]
     function song_getRootNoteName(){
-        return noteIDToNoteNameRaw(toInt(this.getCurrentFrame().rootID, 0));
+        return noteIDToNoteNameRaw(toInt(this.getCurrentSection().rootID, 0));
     }
     function song_getLeadNoteName(){
-        if (this.getCurrentFrame().rootIDLead == "-1"){
-            return noteIDToNoteNameRaw(toInt(this.getCurrentFrame().rootID, 0));
+        if (this.getCurrentSection().rootIDLead == "-1"){
+            return noteIDToNoteNameRaw(toInt(this.getCurrentSection().rootID, 0));
         }
-        return noteIDToNoteNameRaw(toInt(this.getCurrentFrame().rootIDLead, 0));
+        return noteIDToNoteNameRaw(toInt(this.getCurrentSection().rootIDLead, 0));
     }
 
 	function getBeat(){
-	    var beat = toInt(this.getCurrentFrame().currentBeat, 1);
-	    this.getCurrentFrame().currentBeat = beat;
+	    var beat = toInt(this.getCurrentSection().currentBeat, 1);
+	    this.getCurrentSection().currentBeat = beat;
 	    return beat;
 	}
 	function incBeat(){
@@ -244,7 +244,7 @@ function makeSong(){
 	        return beat;
 	    }
 	    beat++;
-	    this.getCurrentFrame().currentBeat = beat;
+	    this.getCurrentSection().currentBeat = beat;
 	    return beat;
 	}
 	function incBeatLoop(){
@@ -254,7 +254,7 @@ function makeSong(){
 	    if (beat > beats){
 	        beat = 1;
 	    }
-	    this.getCurrentFrame().currentBeat = beat;
+	    this.getCurrentSection().currentBeat = beat;
 	    return beat;
 	}
 	function decBeat(){
@@ -265,45 +265,45 @@ function makeSong(){
 	        return beat;
 	    }
 	    beat--;
-	    this.getCurrentFrame().currentBeat = beat;
+	    this.getCurrentSection().currentBeat = beat;
 	    return beat;
 	}
 
 	function getBeats(){
-        var curr = this.getCurrentFrame();
+        var curr = this.getCurrentSection();
         if (!curr){
-            console.log("WARNING: this.getCurrentFrame() returned undefined in song.getBeats().");
+            console.log("WARNING: this.getCurrentSection() returned undefined in song.getBeats().");
             return DEFAULT_BEATS;
         }
 	    var beats = toInt(curr.beats, -1);
 	    if (beats < 1){
 	        beats = DEFAULT_BEATS;
-	        this.getCurrentFrame().beats = ""+beats;
+	        this.getCurrentSection().beats = ""+beats;
 	    }
 	    return beats;
 	}
 	function setBeats(newValue){
-		this.getCurrentFrame().beats = newValue;
+		this.getCurrentSection().beats = newValue;
 	}
 
 
 	function gotoFirstBeat(){
-	    this.getCurrentFrame().currentBeat = 1;
+	    this.getCurrentSection().currentBeat = 1;
 	    this.gFirstBeatSeen = false;
 	}
 
 	function moveBeatsLater(){
 		var result = {};
 		var beatCount = getBeats();
-		var notes = getRecordedNotesForFrame();
+		var notes = getRecordedNotesForSection();
 		for (var i=1; i<=beatCount; i++){
 			result[""+(i+1)] = notes[""+i];
 		}
 		result["1"] = [];
-		this.getCurrentFrame().recordedNotes = result;
+		this.getCurrentSection().recordedNotes = result;
 		this.setBeats(beatCount+1);
         gotoFirstBeat();
-		updateFramesStatus();
+		updateSectionsStatus();
         fullRepaint();
         showBeats();
 	}
@@ -327,14 +327,14 @@ function makeSong(){
         	 console.log("Can't delele beat #1. returning.");
         	 return;
          }
-         var recordedNotes = this.getCurrentFrame().recordedNotes;
+         var recordedNotes = this.getCurrentSection().recordedNotes;
          if (recordedNotes){
-        	 this.getCurrentFrame().recordedNotes = shuffleRecordedBeatsDown(recordedNotes, nBeats, nStartBeat);
+        	 this.getCurrentSection().recordedNotes = shuffleRecordedBeatsDown(recordedNotes, nBeats, nStartBeat);
          }
          this.setBeats(nBeats-1);
          var currBeat = nStartBeat > this.getBeats() ? this.getBeats() : nStartBeat;
-         this.getCurrentFrame().currentBeat = currBeat;
-         updateFramesStatus();
+         this.getCurrentSection().currentBeat = currBeat;
+         updateSectionsStatus();
          showBeats();
     }
 
@@ -371,235 +371,235 @@ function makeSong(){
   	        }
   	        //jLblCurrentBeat.text(gSong.getBeat());
   	        //$("#lblBeat").html(""+gSong.getBeat());
-            updateFramesStatus();
+            updateSectionsStatus();
   			showBeats();
     }
 
 
-    //============== Frame handling =====================================
+    //============== Section handling =====================================
 
-	function firstFrame(){
-	    this.gFramesCurrentIndex = 0;
-	    frameChanged();
+	function firstSection(){
+	    this.gSectionsCurrentIndex = 0;
+	    sectionChanged();
 	}
 
-	function lastFrame() {
-		 this.gFramesCurrentIndex = this.frames.length-1;
-		 frameChanged();
+	function lastSection() {
+		 this.gSectionsCurrentIndex = this.sections.length-1;
+		 sectionChanged();
 	}
 
-	function prevFrame(){
-	    if (this.gFramesCurrentIndex > 0){
-	        this.gFramesCurrentIndex--;
+	function prevSection(){
+	    if (this.gSectionsCurrentIndex > 0){
+	        this.gSectionsCurrentIndex--;
 	    }
-	    frameChanged();
+	    sectionChanged();
 	}
-	function nextFrame(){
-	    if (this.gFramesCurrentIndex < (this.frames.length-1)){
-	        this.gFramesCurrentIndex++;
+	function nextSection(){
+	    if (this.gSectionsCurrentIndex < (this.sections.length-1)){
+	        this.gSectionsCurrentIndex++;
 	    }
-	    frameChanged();
+	    sectionChanged();
 	}
-    function gotoFrame(idx){
-        var frameIdx = toInt(idx, -1);
-        if (frameIdx > -1 && frameIdx < this.frames.length){
-            this.gFramesCurrentIndex = frameIdx;
-            clearAndReplayFrame();
-            frameChanged();
+    function gotoSection(idx){
+        var sectionIdx = toInt(idx, -1);
+        if (sectionIdx > -1 && sectionIdx < this.sections.length){
+            this.gSectionsCurrentIndex = sectionIdx;
+            clearAndReplaySection();
+            sectionChanged();
         }
     }
 
-    function gotoNextFrame(orGotoFirst){
+    function gotoNextSection(orGotoFirst){
         var isRandom = this.randomLoop == true;
         if (isRandom) {
             var rand = Math.random();
-            var randFrame = Math.floor(rand*this.frames.length);
-            if (randFrame == this.gFramesCurrentIndex){
+            var randSection = Math.floor(rand*this.sections.length);
+            if (randSection == this.gSectionsCurrentIndex){
                 for (var r = 0; r<10; r++){
                     rand = Math.random();
-                    randFrame = Math.floor(rand*this.frames.length);
-                    if (randFrame != this.gFramesCurrentIndex){
+                    randSection = Math.floor(rand*this.sections.length);
+                    if (randSection != this.gSectionsCurrentIndex){
                         break;
                     }
                 }
             }
-            this.gFramesCurrentIndex = randFrame;
-            console.log("Random:"+(rand*this.frames.length)+" frame:"+randFrame);
-        } else if (this.getFramesCurrentIndex()+1 >= this.frames.length){
-            if( orGotoFirst ) this.firstFrame();
+            this.gSectionsCurrentIndex = randSection;
+            console.log("Random:"+(rand*this.sections.length)+" section:"+randSection);
+        } else if (this.getSectionsCurrentIndex()+1 >= this.sections.length){
+            if( orGotoFirst ) this.firstSection();
 		} else {
-			this.nextFrame();
+			this.nextSection();
 		}
-		clearAndReplayFrame();
+		clearAndReplaySection();
 	}
 
-	function gotoPrevFrame(orGotoLast){
-		if (this.getFramesCurrentIndex()==0){
-			if( orGotoLast ) this.lastFrame();
+	function gotoPrevSection(orGotoLast){
+		if (this.getSectionsCurrentIndex()==0){
+			if( orGotoLast ) this.lastSection();
 		} else {
-			this.prevFrame();
+			this.prevSection();
 		}
-		clearAndReplayFrame();
+		clearAndReplaySection();
 	}
 
-    function insertFrameAtDest(aFrame, destIndex){
+    function insertSectionAtDest(aSection, destIndex){
         if (destIndex == "END"){
-            this.frames.push(aFrame);
-            this.gFramesCurrentIndex = this.frames.length-1;
+            this.sections.push(aSection);
+            this.gSectionsCurrentIndex = this.sections.length-1;
         } else if (destIndex == "BEGIN"){
-            this.frames.splice(0, 0, aFrame);  //insert BEFORE first current.
-            this.gFramesCurrentIndex = 0;
+            this.sections.splice(0, 0, aSection);  //insert BEFORE first current.
+            this.gSectionsCurrentIndex = 0;
         } else {
             var iDest = toInt(destIndex, -1);
             if (iDest<=-1){
-                alert("bad index in addCloneFrame: "+destIndex);
-                this.addFrameAfterCurrent(aFrame);
+                alert("bad index in addCloneSection: "+destIndex);
+                this.addSectionAfterCurrent(aSection);
             } else {
-                iDest = iDest + 1; //insert AFTER named frame.
-                this.frames.splice(iDest, 0, aFrame);
-                if (iDest >= this.frames.length){
-                    this.gFramesCurrentIndex = this.frames.length - 1;
+                iDest = iDest + 1; //insert AFTER named section.
+                this.sections.splice(iDest, 0, aSection);
+                if (iDest >= this.sections.length){
+                    this.gSectionsCurrentIndex = this.sections.length - 1;
                 } else {
-                    this.gFramesCurrentIndex = iDest;
+                    this.gSectionsCurrentIndex = iDest;
                 }
             }
         }
     }
 
-	function newFrame(destIndex){
-	    var aFrame = this.constructFrame();  //populates rootID from dropDownRoot.
+	function newSection(destIndex){
+	    var aSection = this.constructSection();  //populates rootID from dropDownRoot.
 	    if (destIndex){
-            this.insertFrameAtDest(aFrame, destIndex);
+            this.insertSectionAtDest(aSection, destIndex);
         } else {
-            this.addFrameAfterCurrent(aFrame);
+            this.addSectionAfterCurrent(aSection);
         }
         clearAll();
 	    this.gotoFirstBeat();
-	    frameChanged();//updateFramesStatus();
+	    sectionChanged();//updateSectionsStatus();
 	}
 
-	function addShallowCloneFrame(destIndex){
-	    return this.addCloneFrame(false, destIndex);
+	function addShallowCloneSection(destIndex){
+	    return this.addCloneSection(false, destIndex);
 	}
-	function addDeepCloneFrame(destIndex){
-	    return this.addCloneFrame(true, destIndex);
+	function addDeepCloneSection(destIndex){
+	    return this.addCloneSection(true, destIndex);
 	}
-	function addCloneFrame(deep, destIndex){
-	    var aFrame = this.constructFrame();  //populates rootID from dropDownRoot.
-	    aFrame.namedNotes = JSON.parse(JSON.stringify(this.getCurrentFrame().namedNotes));
-	    aFrame.rootID = this.getCurrentFrame().rootID;          //$("#dropDownRoot").val();
-		aFrame.rootIDLead = this.getCurrentFrame().rootIDLead;  //$('#dropDownRootLead').val(); //foobar: or: use value from getCurren Frame...
-	    aFrame.caption = this.getCurrentFrame().caption;
-	    aFrame.beats = this.getCurrentFrame().beats;
-	    aFrame.currentBeat = 1;
+	function addCloneSection(deep, destIndex){
+	    var aSection = this.constructSection();  //populates rootID from dropDownRoot.
+	    aSection.namedNotes = JSON.parse(JSON.stringify(this.getCurrentSection().namedNotes));
+	    aSection.rootID = this.getCurrentSection().rootID;          //$("#dropDownRoot").val();
+		aSection.rootIDLead = this.getCurrentSection().rootIDLead;  //$('#dropDownRootLead').val(); //foobar: or: use value from getCurren Section...
+	    aSection.caption = this.getCurrentSection().caption;
+	    aSection.beats = this.getCurrentSection().beats;
+	    aSection.currentBeat = 1;
 	    if (deep){
-	        aFrame.noteTables = JSON.parse(JSON.stringify(this.getCurrentFrame().noteTables));
-     	    aFrame.recordedNotes = JSON.parse(JSON.stringify(this.getCurrentFrame().recordedNotes));
+	        aSection.noteTables = JSON.parse(JSON.stringify(this.getCurrentSection().noteTables));
+     	    aSection.recordedNotes = JSON.parse(JSON.stringify(this.getCurrentSection().recordedNotes));
 	    }
         if (destIndex){
-            this.insertFrameAtDest(aFrame, destIndex);
+            this.insertSectionAtDest(aSection, destIndex);
         } else {
-    		this.addFrameAfterCurrent(aFrame);
+    		this.addSectionAfterCurrent(aSection);
         }
 		clearAll();
 	    resetNoteNames();//calls replay
-	    //updateFramesStatus();
-	    frameChanged();//calls updateFramesStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
-	    return aFrame;
+	    //updateSectionsStatus();
+	    sectionChanged();//calls updateSectionsStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
+	    return aSection;
 	}
 
-	function deleteCurrentFrame(){
-	    var obj = this.getCurrentFrame();
-        var context = {"SectionIndex": this.getFrames().indexOf(obj),
+	function deleteCurrentSection(){
+	    var obj = this.getCurrentSection();
+        var context = {"SectionIndex": this.getSections().indexOf(obj),
                        "caption": obj.caption
                       };
         this.graveyard.bury(GraveType.SECTION, obj, context);
 
-        if (this.frames.length<=1){
-	        console.log("Can't remove only frame. Clearing instead.");
-	        this.frames = [];
-            this.gFramesCurrentIndex = 0;
-	        this.newFrame();
+        if (this.sections.length<=1){
+	        console.log("Can't remove only section. Clearing instead.");
+	        this.sections = [];
+            this.gSectionsCurrentIndex = 0;
+	        this.newSection();
 	        return false;
 	    }
 
-        this.frames.splice(this.gFramesCurrentIndex, 1);
-	    this.prevFrame();
+        this.sections.splice(this.gSectionsCurrentIndex, 1);
+	    this.prevSection();
 	    clearAll();
 	    replay();
-        frameChanged();
+        sectionChanged();
         //fullRepaint();
 		return true;
 	}
 
-	function isEmpty(frame){
+	function isEmpty(section){
 	   var namedNoteCount = 0;
 	   var tableCount = 0;
-	   for (const noteName in frame.namedNotes){
+	   for (const noteName in section.namedNotes){
 	        namedNoteCount++;
 	    }
-	    for (const tablename in frame.noteTables){
-	        var tablearr = frame.noteTables[tablename];
+	    for (const tablename in section.noteTables){
+	        var tablearr = section.noteTables[tablename];
 	        tableCount += tablearr.length;
 	    }
 	    return ((tableCount + namedNoteCount) == 0);
 	}
 
-    function moveFrameToEND(){
-		var frame = this.getCurrentFrame();
-        var arr = this.frames;
-	    arr.push(arr.splice(this.gFramesCurrentIndex, 1)[0]);
-        this.lastFrame(); //calls clear and update
+    function moveSectionToEND(){
+		var section = this.getCurrentSection();
+        var arr = this.sections;
+	    arr.push(arr.splice(this.gSectionsCurrentIndex, 1)[0]);
+        this.lastSection(); //calls clear and update
 	}
 
-	function moveFrameTo(newIndex){
-        if (newIndex > this.frames.length-1){
-            alert("moveFrameTo can't move to frame index: "+newIndex+" because frames.length = "+this.frames.length);
+	function moveSectionTo(newIndex){
+        if (newIndex > this.sections.length-1){
+            alert("moveSectionTo can't move to section index: "+newIndex+" because sections.length = "+this.sections.length);
             return;
         }
-        var oldIndex = this.gFramesCurrentIndex
-        this.frames.splice(newIndex, 0, this.frames.splice(oldIndex, 1)[0]);
-        this.gotoFrame(newIndex);  //calls clear and update
+        var oldIndex = this.gSectionsCurrentIndex
+        this.sections.splice(newIndex, 0, this.sections.splice(oldIndex, 1)[0]);
+        this.gotoSection(newIndex);  //calls clear and update
 	}
 
     //=============== Model Management/Cleanup Functions ==========================================
 
-    //This function works: it transposes every Frame in a Song by 'amount', but I haven't installed it in the menu yet.
-    function cycleThruKeysAllFrames(amount){
-        var frames = this.getFrames();
-		for (var idx in frames){
-            var frame = frames[idx];
-			var curr = toInt(frame.rootID, 0);
+    //This function works: it transposes every Section in a Song by 'amount', but I haven't installed it in the menu yet.
+    function cycleThruKeysAllSections(amount){
+        var sections = this.getSections();
+		for (var idx in sections){
+            var section = sections[idx];
+			var curr = toInt(section.rootID, 0);
 			curr=(12+curr + amount) % 12;
-			frame.rootID = curr;
+			section.rootID = curr;
 		}
 	}
 
-    function getTableArrInCurrentFrame(tableID){
-	    return getTableArrInFrame(this.getCurrentFrame(), tableID);
+    function getTableArrInCurrentSection(tableID){
+	    return getTableArrInSection(this.getCurrentSection(), tableID);
 	}
 
-	function getTableArrInFrame(frame, tableID){
-	    var tableArr = frame.noteTables[tableID];
+	function getTableArrInSection(section, tableID){
+	    var tableArr = section.noteTables[tableID];
 	    if (!tableArr){
-	        frame.noteTables[tableID] = [];
-	        tableArr = frame.noteTables[tableID];
+	        section.noteTables[tableID] = [];
+	        tableArr = section.noteTables[tableID];
 	    }
 	    return tableArr;
 	}
 
 
     function removeUnusedTablesFromMemoryModel(){
-	  for (frameIdx in this.frames){     //for all frames...
-	    var frame = this.frames[frameIdx];
+	  for (sectionIdx in this.sections){     //for all sections...
+	    var section = this.sections[sectionIdx];
 	    var tempTables = {};
-	    for (const tablename in frame.noteTables){
-	        var tablearr = frame.noteTables[tablename];
+	    for (const tablename in section.noteTables){
+	        var tablearr = section.noteTables[tablename];
 	        if (tablearr && tablearr.length && tablearr.length>0){
 	            tempTables[tablename] = tablearr;
 	        }
 	    }
-	    frame.noteTables = tempTables;
+	    section.noteTables = tempTables;
 	  }
 	}
 
@@ -618,22 +618,22 @@ function makeSong(){
 
   function getTuningHashInMemoryModel(){
    var hashTuningNames = {};
-   var frame;
-   for (frameIdx in this.frames){     //for all frames...
-	    frame = this.frames[frameIdx];
-   	  for (const tablename in frame.noteTables){
-	        var tablearr = frame.noteTables[tablename];
+   var section;
+   for (sectionIdx in this.sections){     //for all sections...
+	    section = this.sections[sectionIdx];
+   	  for (const tablename in section.noteTables){
+	        var tablearr = section.noteTables[tablename];
 	        if (tablearr && tablearr.length && tablearr.length>0){
 	            var tuningID = tablename.substring(TABLE_ID_PREFIX.length);
 	            var val = hashTuningNames[tuningID];
 	            if (!val){
 	                val = tablearr.length;
 	                hashTuningNames[tuningID] = val;
-	                //console.log("frame:"+frameIdx+" tuningID:"+tuningID
+	                //console.log("section:"+sectionIdx+" tuningID:"+tuningID
 	                //    +" val-len:"+val+" new: "+tablearr.length+" obj: "+JSON.stringify(hashTuningNames));
 	            } else {
 	                hashTuningNames[tuningID] = val + tablearr.length;
-	                //console.log("frame: "+frameIdx+" tuningID:"+tuningID
+	                //console.log("section: "+sectionIdx+" tuningID:"+tuningID
 	                //   +" val:"+val+" adding:"+tablearr.length+" obj:"+JSON.stringify(hashTuningNames));
 	            }
 	        }
@@ -644,7 +644,7 @@ function makeSong(){
 
 
     function removeNotePlayedFromTable(notePlayed, parentTableID){
-      var tableArr = this.getTableArrInCurrentFrame(parentTableID);
+      var tableArr = this.getTableArrInCurrentSection(parentTableID);
       for (key in tableArr){
             var itemNotePlayed = tableArr[key];
             if (   itemNotePlayed.col == notePlayed.col
@@ -658,21 +658,21 @@ function makeSong(){
         }
     }
 
-    function moveNamedNotesAllFrames(amount){
-        var frames = this.getFrames();
-		for (var idx in frames){
-            var frame = frames[idx];
-	        moveNamedNotesForFrame(amount, frame);
+    function moveNamedNotesAllSections(amount){
+        var sections = this.getSections();
+		for (var idx in sections){
+            var section = sections[idx];
+	        moveNamedNotesForSection(amount, section);
 		}
 	}
 
     function moveNamedNotes(amount){
-        return moveNamedNotesForFrame(amount, this.getCurrentFrame());
+        return moveNamedNotesForSection(amount, this.getCurrentSection());
 
     }
-    function moveNamedNotesForFrame(amount, frame){
+    function moveNamedNotesForSection(amount, section){
     	var namedNotesClone = {};
-    	var namedNotes = frame.namedNotes;
+    	var namedNotes = section.namedNotes;
         debugger
     	for (const noteName in namedNotes){
             var index = gNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
@@ -689,13 +689,13 @@ function makeSong(){
             }
 
     	}
-    	frame.namedNotes = namedNotesClone;
-        //console.log("original: "+JSON.stringify(namedNotes) + "\r\n new:"+JSON.stringify(this.getCurrentFrame().namedNotes));
-    	return getRootNoteName(frame);  //as we transpose, keep highlighting the rootID.
+    	section.namedNotes = namedNotesClone;
+        //console.log("original: "+JSON.stringify(namedNotes) + "\r\n new:"+JSON.stringify(this.getCurrentSection().namedNotes));
+    	return getRootNoteName(section);  //as we transpose, keep highlighting the rootID.
   	}
 
-  	function getRootNoteName(frame){
-  		var noteID = parseInt( frame.rootID );
+  	function getRootNoteName(section){
+  		var noteID = parseInt( section.rootID );
   		var noteName = gNoteNamesArr[noteID];
   		return noteName;
   	}

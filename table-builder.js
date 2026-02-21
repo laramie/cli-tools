@@ -480,8 +480,8 @@ function getTunings(tableNamesArr){
 
 	function showTuningsForTablesInFile(){
 	     var numFound = 0;
-	     for (frame in getSong().frames){
-	         var noteTables = getSong().frames[frame].noteTables;
+	     for (section in getSong().sections){
+	         var noteTables = getSong().sections[section].noteTables;
 	         for (tablekey in noteTables){
 	             var tablearr = noteTables[tablekey];
 	             if (tablearr && tablearr.length>0) {

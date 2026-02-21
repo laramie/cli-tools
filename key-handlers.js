@@ -5,7 +5,7 @@ function document_keyup(evt) {
         leaveFullscreen();
         hideCmdLine();
         hideAllMenuDivs();
-        $("#btnLoopFrames").focus();
+        $("#btnLoopSections").focus();
     }
 }
 
@@ -48,11 +48,11 @@ function document_keypress(e) {
                 break;
             case "<":
             case ",":
-                gSong.gotoPrevFrame(false);
+                gSong.gotoPrevSection(false);
                 break;
             case ">":
             case ".":
-                gSong.gotoNextFrame(false);
+                gSong.gotoNextSection(false);
                 break;
             case "[":
                 checkRB('#idMidiPitches');
@@ -70,7 +70,7 @@ function document_keypress(e) {
                 break;
             case "l":
             case "L":
-                toggleLoopFrames();
+                toggleLoopSections();
                 break;
             case "i":
                 showOneMenu("#divFillNotes");
@@ -257,8 +257,8 @@ function performCmdAction(menuItem, args){
 			}
 			break;
 		case "setSectionCaption":
-			getCurrentFrame().caption = argByInputID;
-			updateFramesStatus();
+			getCurrentSection().caption = argByInputID;
+			updateSectionsStatus();
 			break;
 
 		case "setSectionFlats":
@@ -270,55 +270,55 @@ function performCmdAction(menuItem, args){
 		case "setSectionKeyWhite":
 			var keyIdx = ['a','x','b','c','x','d','x','e','f','x','g','x',].indexOf(menuItem.trigger);
 			if (keyIdx >= 0){
-				getCurrentFrame().rootID = keyIdx;
+				getCurrentSection().rootID = keyIdx;
 				if (menuItem.trigger == 'f'){
 					setSectionKeysFlats();
 				} else {					
 					setSectionKeysSharps();
 				}
-				frameChanged();
+				sectionChanged();
 			}
 			break;
 		case "setSectionKeyBlack":
 			var keyIdx = ['x','b','x','x','d','x','e','x','x','g','x','a'].indexOf(menuItem.trigger);
 			if (keyIdx >= 0){
-				getCurrentFrame().rootID = keyIdx;
+				getCurrentSection().rootID = keyIdx;
 				setSectionKeysFlats();
-				frameChanged();
+				sectionChanged();
 			}
 			break;
         case "setSectionLeadKeyWhite":
 			var keyIdx = ['a','x','b','c','x','d','x','e','f','x','g','x',].indexOf(menuItem.trigger);
 			if (keyIdx >= 0){
-				getCurrentFrame().rootIDLead = keyIdx;
-				frameChanged();
+				getCurrentSection().rootIDLead = keyIdx;
+				sectionChanged();
 			}
 			break;
 		case "setSectionLeadKeyBlack":
 			var keyIdx = ['x','b','x','x','d','x','e','x','x','g','x','a'].indexOf(menuItem.trigger);
 			if (keyIdx >= 0){
-				getCurrentFrame().rootIDLead = keyIdx;
-				frameChanged();
+				getCurrentSection().rootIDLead = keyIdx;
+				sectionChanged();
 			}
 			break;
 
 		case "firstSection":
-			gSong.firstFrame();
-            clearAndReplayFrame();
-			actionResult.result = ""+(getFramesCurrentIndex()+1);
+			gSong.firstSection();
+            clearAndReplaySection();
+			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "prevSection":
-			gSong.gotoPrevFrame(false);  //calls clearAndReplayFrame();
-			actionResult.result = ""+(getFramesCurrentIndex()+1);
+			gSong.gotoPrevSection(false);  //calls clearAndReplaySection();
+			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "nextSection":
-			gSong.gotoNextFrame(false);  //calls clearAndReplayFrame();
-			actionResult.result = ""+(getFramesCurrentIndex()+1);
+			gSong.gotoNextSection(false);  //calls clearAndReplaySection();
+			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "lastSection":
-			gSong.lastFrame();
-            clearAndReplayFrame();
-			actionResult.result = ""+(getFramesCurrentIndex()+1);
+			gSong.lastSection();
+            clearAndReplaySection();
+			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
         case "transposeSong":
             if (argByInputID){
@@ -343,7 +343,7 @@ function performCmdAction(menuItem, args){
 				var bpm = toInt(argByInputID, 0);
 				if (bpm > 0){
 					setBPM(bpm);
-					restartLoopFrames();
+					restartLoopSections();
 				}
 			}
 			actionResult.result = getBPM();
@@ -378,9 +378,9 @@ function performCmdAction(menuItem, args){
 				}
 			}
 			break;
-		case "toggleLoopFrames":
-			toggleLoopFrames();
-			actionResult.result = framesLooping() ? "ON" : "OFF";
+		case "toggleLoopSections":
+			toggleLoopSections();
+			actionResult.result = sectionsLooping() ? "ON" : "OFF";
 			break;
 		case "toggleLoopBeats":
 			toggleLoopBeats();
@@ -389,23 +389,23 @@ function performCmdAction(menuItem, args){
 			
 		case "nextBeat":
 			gSong.nextBeat();
-			actionResult.result = ""+getCurrentFrame().currentBeat;
+			actionResult.result = ""+getCurrentSection().currentBeat;
 			break;
 		case "prevBeat":
 			gSong.prevBeat();
-			actionResult.result = ""+getCurrentFrame().currentBeat;
+			actionResult.result = ""+getCurrentSection().currentBeat;
 			break;
 		case "addBeat":
 			addBeat();
-			actionResult.result = ""+getCurrentFrame().beats;
+			actionResult.result = ""+getCurrentSection().beats;
 			break;
 		case "deleteBeat":
 			gSong.deleteBeat();
-			actionResult.result = ""+getCurrentFrame().beats;
+			actionResult.result = ""+getCurrentSection().beats;
 			break;
         case "moveBeatsLater":
 			gSong.moveBeatsLater();
-			actionResult.result = ""+getCurrentFrame().beats;
+			actionResult.result = ""+getCurrentSection().beats;
 			break;
 		case "showDialog-song":
 			showOneMenu("#divFileControls");//file==song now.
@@ -448,7 +448,7 @@ function performCmdAction(menuItem, args){
 			}
 			break;
 		case "showViewDiagnostics":
-			showMessages(JSON.stringify(getCurrentFrame(), null, 2));
+			showMessages(JSON.stringify(getCurrentSection(), null, 2));
 			break;
 		case "showViewDiagnosticsFullModel":
 			showMessages(JSON.stringify(getSong(), null, 2));
@@ -481,7 +481,7 @@ function performCmdAction(menuItem, args){
 			hideCmdLine();
 			break;
 		case "sectionDelete":
-			var deleted = gSong.deleteCurrentFrame();
+			var deleted = gSong.deleteCurrentSection();
 			if (deleted){
 				actionResult.result = "deleted";
 			} else {
@@ -490,15 +490,15 @@ function performCmdAction(menuItem, args){
 			break;
 		case "sectionAdd":
 			console.log("sectionAdd=====!!");
-			gSong.newFrame(); //don't call addFrame(frame), which is an internal call.
+			gSong.newSection(); //don't call addSection(section), which is an internal call.
 			actionResult.result = "added";
 			break;
 		case "sectionAddShallowClone":
-			addShallowCloneFrame();
+			addShallowCloneSection();
 			actionResult.result = "added-shallow";
 			break;
 		case "sectionAddDeepClone":
-			addDeepCloneFrame();
+			addDeepCloneSection();
 			actionResult.result = "added-deep";
 			break;
 		case "sectionKeep":
@@ -684,35 +684,35 @@ function setNoteFontSize(newValue){
 
 function setSectionKeysFlats(){
     gSharps = false;
-    getCurrentFrame().sharps = false;
+    getCurrentSection().sharps = false;
     resetNoteNames();
-    updateFramesStatus();
+    updateSectionsStatus();
 }
 
 function setSectionKeysSharps(){
     gSharps = true;
-    getCurrentFrame().sharps = true;
+    getCurrentSection().sharps = true;
     resetNoteNames();
-    updateFramesStatus();
+    updateSectionsStatus();
 }
 
 
 function getValue(what){
 	switch (what){
 		case "currentSectionNumber":
-		case "currentFrameIndex":
-			return getFramesCurrentIndex();
-		case "currentFrameCardinal":
-			return getFramesCurrentIndex()+1;
-		case "frameCount":
-			return getSong().frames.length;
+		case "currentSectionIndex":
+			return getSectionsCurrentIndex();
+		case "currentSectionCardinal":
+			return getSectionsCurrentIndex()+1;
+		case "sectionCount":
+			return getSong().sections.length;
 		case "graveyardRecordCount":
 			return gSong.graveyard.getRecordCount();
 		case "beats":
 		case "beatCount":
-			return getCurrentFrame().beats;
+			return getCurrentSection().beats;
 		case "currentBeat":
-			return getCurrentFrame().currentBeat;
+			return getCurrentSection().currentBeat;
 		case "getBPM":
 			return getBPM();
 		case "getNamedNoteOpacity":
@@ -736,7 +736,7 @@ function getValue(what){
 		case "getSongName":
 			return getSong().songName;
 		case "getSectionCaption":
-			return getCurrentFrame().caption;
+			return getCurrentSection().caption;
 		default:
             console.log("key-handler.js::getValue::no-value-found::default:"+what);
 			return what;

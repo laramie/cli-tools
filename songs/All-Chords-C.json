@@ -1,5 +1,5 @@
 {
-  "frames": [
+  "sections": [
     {
       "noteTables": {},
       "namedNotes": {
@@ -93,7 +93,7 @@
       "sharps": false
     },
     {
-       "type":"Frame",    
+       "type":"Section",    
       "noteTables": {
         "tblPiano": [
           {
@@ -505,7 +505,7 @@
       "sharps": false
     }
   ],
-  "gFramesCurrentIndex": 5,
+  "gSectionsCurrentIndex": 5,
   "gFirstBeatSeen": false,
   "gSongModelListener": null,
   "visibleNoteTables": [

@@ -8,7 +8,7 @@ However, this looks like it has better query support.
     var result = jsonata('"Hello, " & name').evaluate(json);
     document.getElementById('greeting').innerHTML = result;
 
-    var result = jsonata('tblP46[midinum="66"][row="0"][styleNum=2].colorClass').evaluate(getCurrentFrame().noteTables);
+    var result = jsonata('tblP46[midinum="66"][row="0"][styleNum=2].colorClass').evaluate(getCurrentSection().noteTables);
   }
 </script>
 
@@ -26,10 +26,10 @@ function recordy(){
         const captureStream = await navigator.mediaDevices.getDisplayMedia();
         video.srcObject = captureStream;
         context.drawImage(video, 0, 0, window.width, window.height);
-        const frame = canvas.toDataURL("image/png");
+        const section = canvas.toDataURL("image/png");
         captureStream.getTracks().forEach(track => track.stop());
-        document.getElementById("myIframe").src = frame;
-        //window.location.href = frame;
+        document.getElementById("myI_f_r_a_m_e").src = section;
+        //window.location.href = section;
       } catch (err) {
         console.error("Error: " + err);
       }

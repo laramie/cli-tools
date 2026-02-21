@@ -1,14 +1,14 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-//Static functions for handling recorded notes in a Frame.  Kept out of song.js to keep the recording logic in one place.
-//Of course, this picks up the gSong reference from infinite-neck.js via getCurrentFrame().
+//Static functions for handling recorded notes in a Section.  Kept out of song.js to keep the recording logic in one place.
+//Of course, this picks up the gSong reference from infinite-neck.js via getCurrentSection().
 
 
-	function getRecordedNotesForFrame(){
-	    if (!getCurrentFrame().recordedNotes){
-	       getCurrentFrame().recordedNotes = {}
+	function getRecordedNotesForSection(){
+	    if (!getCurrentSection().recordedNotes){
+	       getCurrentSection().recordedNotes = {}
 	    }
-	    return getCurrentFrame().recordedNotes;
+	    return getCurrentSection().recordedNotes;
 	}
 
 	function clearRecordedNotes(){
@@ -22,7 +22,7 @@
         recNote.styleNum = styleNum;
 		recNote.noteName = noteName; //automaticColorScheme
 
-        var recordedNotes = getRecordedNotesForFrame();
+        var recordedNotes = getRecordedNotesForSection();
         var notesInBeatArr = recordedNotes[sBeatNum];
         if (!notesInBeatArr){
           recordedNotes[sBeatNum] = [];
@@ -41,7 +41,7 @@
         recNote.styleNum = styleNum;
 		recNote.noteName = noteName; //automaticColorScheme
 
-        var recordedNotes = getRecordedNotesForFrame();
+        var recordedNotes = getRecordedNotesForSection();
         var notesInBeatArr = recordedNotes[sBeatNum];
         if (!notesInBeatArr){
             recordedNotes[sBeatNum] = [];
@@ -63,7 +63,7 @@
     }
 
     function recordPlayedNote(sBeatNum, recNote){
-        var recordedNotes = getRecordedNotesForFrame();
+        var recordedNotes = getRecordedNotesForSection();
         var notesInBeatArr = recordedNotes[sBeatNum];
         if (!notesInBeatArr){
             recordedNotes[sBeatNum] = [];
@@ -80,7 +80,7 @@
 			}
 			return false;
         }
-		var recordedNotes = getRecordedNotesForFrame();
+		var recordedNotes = getRecordedNotesForSection();
 		var notesInBeatArr = recordedNotes[sBeatNum];
 		if (!notesInBeatArr){
 			return false;
@@ -89,7 +89,7 @@
 	}
 
 	function unRecordPlayedNote(sBeatNum, recNote){
-		getRecordedNotesForFrame()[sBeatNum] = filterOutMidinumRowStyleNum(getRecordedNotesForFrame(), sBeatNum, recNote);
+		getRecordedNotesForSection()[sBeatNum] = filterOutMidinumRowStyleNum(getRecordedNotesForSection(), sBeatNum, recNote);
 	}
 
 	function filterOutMidinumRowStyleNum(recordedNotes, sBeatNum, recNote){

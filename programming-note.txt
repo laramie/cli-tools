@@ -4,7 +4,7 @@ Note: to get around any Cross-Domain stuff, serve up from localhost:
     python -m SimpleHTTPServer
     
 ============ 20240301 ===========
-Uncaught ReferenceError: currFrame is not defined
+Uncaught ReferenceError: currSection is not defined
     at fillChord2 (notetable.js:599)
     at fillChord (notetable.js:554)
     at HTMLButtonElement.<anonymous> (infinite-neck.js:1858)
@@ -13,14 +13,14 @@ Uncaught ReferenceError: currFrame is not defined
     ==>
     for (key in chordNoteNames){
             var noteName = chordNoteNames[key];
-            currFrame.namedNotes[noteName] = {"noteNameClass": ".note"+noteName, "colorClass": chordsColor};
+            currSection.namedNotes[noteName] = {"noteNameClass": ".note"+noteName, "colorClass": chordsColor};
         }
     }
     if (rootColor != "noteClear") {
         theRootClass.removeClass(gNOTE_COLORS);
         theRootClass.addClass(lookupUserColorClass(rootColor))
 		            .addClass("NoteActive");
-        currFrame.namedNotes[rootName] = {"noteNameClass": ".note"+rootName, "colorClass": rootColor};
+        currSection.namedNotes[rootName] = {"noteNameClass": ".note"+rootName, "colorClass": rootColor};
 
 
 

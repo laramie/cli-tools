@@ -158,11 +158,11 @@ var gMenuFile =    {
           ]
         },
         {
-          "caption": "<b>e</b>dit<small>[$currentFrameCardinal/$frameCount]</small>",
+          "caption": "<b>e</b>dit<small>[$currentSectionCardinal/$sectionCount]</small>",
           "trigger": "e",
           "vars": [
-            "currentFrameCardinal",
-            "frameCount"
+            "currentSectionCardinal",
+            "sectionCount"
           ],
           "children": [
             {
@@ -170,12 +170,12 @@ var gMenuFile =    {
               "trigger": "d",
               "children": [
                 {
-                  "caption": "<b>Y</b>es: DELETE section $currentFrameCardinal/$frameCount !",
+                  "caption": "<b>Y</b>es: DELETE section $currentSectionCardinal/$sectionCount !",
                   "trigger": "Y",
                   "action": "sectionDelete",
                   "vars": [
-                    "currentFrameCardinal",
-                    "frameCount"
+                    "currentSectionCardinal",
+                    "sectionCount"
                   ],
                   "popOnBang": true
                 },
@@ -827,7 +827,7 @@ var gMenuFile =    {
         {
           "caption": "<b>l</b>oop",
           "trigger": "l",
-          "action": "toggleLoopFrames"
+          "action": "toggleLoopSections"
         },
         {
           "caption": "loop b<b>e</b>ats",
@@ -835,10 +835,10 @@ var gMenuFile =    {
           "action": "toggleLoopBeats"
         },
         {
-          "caption": "<b>s</b>ection<small>[$currentFrameCardinal/$frameCount]</small>",
+          "caption": "<b>s</b>ection<small>[$currentSectionCardinal/$sectionCount]</small>",
           "vars": [
-            "currentFrameCardinal",
-            "frameCount"
+            "currentSectionCardinal",
+            "sectionCount"
           ],
           "trigger": "s",
           "children": [
@@ -1106,8 +1106,8 @@ function hasNoChildMenus(menu){
 }
 
 function expandCaption(menuItem){
-    //   "caption": "<b>Y</b>es: DELETE section $currentFrameIndex/$frameCount !"
-    //   "vars": ["currentFrameIndex","frameCount"]
+    //   "caption": "<b>Y</b>es: DELETE section $currentSectionIndex/$sectionCount !"
+    //   "vars": ["currentSectionIndex","sectionCount"]
     var caption = menuItem.caption;
     var vars = menuItem.vars;
     if (vars && caption){

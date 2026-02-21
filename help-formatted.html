@@ -439,13 +439,13 @@ Note:
     Currently through a global gSong, but more properly through getSong().
 
     Synopsize the "noteTables" collection:
-    gSong.frames.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
+    gSong.sections.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
 
     Delete all played notes (noteTables) in a song, leaving Named and Recorded notes only :
-    gSong.frames.forEach(function(a){a.noteTables = {}; });
-    gSong.frames.forEach(function(a){a.recordedNotes = {}; });
+    gSong.sections.forEach(function(a){a.noteTables = {}; });
+    gSong.sections.forEach(function(a){a.recordedNotes = {}; });
 
-    gSong.frames.forEach(function(a){a.sharps = true; });
+    gSong.sections.forEach(function(a){a.sharps = true; });
 
 </pre>
       <a name="usage"></a>
@@ -617,7 +617,7 @@ Note:
             </td>
             <td><span class="key">&lt;</span>
             </td>
-            <td>previous frame
+            <td>previous section
             </td>
          </tr>
          <tr>
@@ -625,7 +625,7 @@ Note:
             </td>
             <td><span class="key">&gt;</span>
             </td>
-            <td>next frame
+            <td>next section
             </td>
          </tr>
          <tr>

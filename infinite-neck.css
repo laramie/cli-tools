@@ -246,11 +246,11 @@ body {
     padding: 0.6em;
     box-sizing: border-box;
 }
-#sectionFrameButtons  {
+#sectionSectionButtons  {
     display: inline-block;
     padding: 0.2em;
 }
-#sectionFrameButtons button {
+#sectionSectionButtons button {
     margin: 0.2em;
     margin-left: 1.2em;
     background-color: lightgreen;
@@ -747,13 +747,13 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
 }
 
 
-#btnPrevFrame2, #btnNextFrame2, #btnFirstFrame, #btnLastFrame {
+#btnPrevSection2, #btnNextSection2, #btnFirstSection, #btnLastSection {
     font-size:  70%;
     background: #ffbf00;
     box-shadow:   inset -4px -4px 4px darkorange, 5px 2px 4px black;
     border-radius: 20%;
 }
-#btnPrevFrame, #btnNextFrame{
+#btnPrevSection, #btnNextSection{
     font-size:  150%;
     background: #ffbf00;
     box-shadow:   inset -4px -4px 4px darkorange, 5px 2px 4px black;
@@ -775,7 +775,7 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
 .ButtonOn {
     background-color: red !important;
 }
-#btnLoopFrames.ButtonOn {
+#btnLoopSections.ButtonOn {
     background-color: magenta !important;
 }
 
@@ -859,7 +859,7 @@ label.chooseHighlight#idMidiPitchesSingleLbl {
     padding-right: 0.3em;
     display: inline-block;
 }
-.lblFramesStatusFrameNo{
+.lblSectionsStatusSectionNo{
     color: green;
     font-size: 100%;
     font-weight: normal;
@@ -1039,13 +1039,13 @@ P {
     padding: 0.1em;
     display: inline-block;
 }
-#lblFramesStatus2 {
+#lblSectionsStatus2 {
     display: inline-block;
     width: 2.4em;
     text-align: left;
     color: black;
 }
-#lblFramesStatus {
+#lblSectionsStatus {
     font-size: 120%;
 }
 #sectionOrder{

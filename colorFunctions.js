@@ -31,11 +31,11 @@
 			flashLabel('#lblStylesheetName');
 		}
 
-		var rootIndex = toInt(getCurrentFrame().rootID, 0);
-	    var rootIndexLead = toInt(getCurrentFrame().rootIDLead, 0);
+		var rootIndex = toInt(getCurrentSection().rootID, 0);
+	    var rootIndexLead = toInt(getCurrentSection().rootIDLead, 0);
 
 		var colorDict = {};
-		var notes = getCurrentFrame().namedNotes;
+		var notes = getCurrentSection().namedNotes;
 		var keys = Object.keys(notes);
 
 		if (doSampleSection){
@@ -639,9 +639,9 @@
 		switch (note.styleNum){
 			case STYLENUM_BEND:
 			case STYLENUM_TINY:
-				theRootID = getCurrentFrame().rootIDLead;
+				theRootID = getCurrentSection().rootIDLead;
 				if (!theRootID || theRootID == "-1"){
-					theRootID = getCurrentFrame().rootID;
+					theRootID = getCurrentSection().rootID;
 				}
 				break;
 			case STYLENUM_NAMED:
@@ -649,10 +649,10 @@
 			case STYLENUM_MIDIPITCHES:
 			case STYLENUM_MIDIPITCHESSINGLE:
 			case STYLENUM_FINGERING:
-				theRootID = getCurrentFrame().rootID;
+				theRootID = getCurrentSection().rootID;
 				break;
 			default:
-				theRootID = getCurrentFrame().rootID;
+				theRootID = getCurrentSection().rootID;
 		}
 		if (!note.noteName){  //for older files. :(
 			if (note.midinum){

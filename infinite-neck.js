@@ -69,7 +69,7 @@
 
 	function noteIDToNoteName(noteIndex){
 		var noteName;
-		if (gSong.getCurrentFrame().sharps){
+		if (gSong.getCurrentSection().sharps){
 	        noteName = gNoteNamesArrSharps[noteIndex];
 	    } else {
 	        noteName = gNoteNamesArrFlats[noteIndex];
@@ -87,16 +87,16 @@
 
 	var gSong = null;  //constructed in document ready.
 
-	function getCurrentFrame(){
-	    return gSong.getCurrentFrame();
+	function getCurrentSection(){
+	    return gSong.getCurrentSection();
 	}
 
-	function getFramesCurrentIndex(){
-	    return gSong.getFramesCurrentIndex();
+	function getSectionsCurrentIndex(){
+	    return gSong.getSectionsCurrentIndex();
 	}
 
-	function getFrames(){
-	    return gSong.getFrames();
+	function getSections(){
+	    return gSong.getSections();
 	}
 	function getSong(){
 		return gSong;
@@ -105,8 +105,8 @@
 	//==========================================================================
 
 	function buildDropDownSectionOrderOptions(){
-		var len = gSong.getFrames().length;
-		var curr = gSong.getFramesCurrentIndex();
+		var len = gSong.getSections().length;
+		var curr = gSong.getSectionsCurrentIndex();
 		var result = "<option value='BEGIN'>BEGIN</option>";
 		for (var i=0; i<len; i++){
 			var iStr = ""+(i+1);
@@ -121,7 +121,7 @@
 	}
 
 	function showHideDisplayOptionsPresent(){
-		var options = getCurrentFrame().displayOptions;
+		var options = getCurrentSection().displayOptions;
 		if (options){
 			$('#btnDeleteDisplayOptions,#btnDeleteDisplayOptions2').prop("disabled",false);
 		} else {
@@ -129,25 +129,25 @@
 		}
 	}
 
-	function frameChanged(){
+	function sectionChanged(){
 		$('#dropDownSectionOrder').html(buildDropDownSectionOrderOptions());
-		$("#dropDownRoot").val(getCurrentFrame().rootID);
-	    $("#dropDownRootLead").val(getCurrentFrame().rootIDLead);
-		var options = getCurrentFrame().displayOptions;
+		$("#dropDownRoot").val(getCurrentSection().rootID);
+	    $("#dropDownRootLead").val(getCurrentSection().rootIDLead);
+		var options = getCurrentSection().displayOptions;
 		if (options){
 			displayOptionsToControls(options);
 		}
 		showHideDisplayOptionsPresent();
 	    gSong.gotoFirstBeat();
 	    showHighlightsForBeat(gSong.getBeat());
-	    updateFramesStatus();
+	    updateSectionsStatus();
 	}
 
-	function updateFramesStatus(){
-		$(".lblFramesStatusFrameNo").html(""+(gSong.getFramesCurrentIndex()+1));
-	    var txt = ""+(gSong.getFramesCurrentIndex()+1)+"/"+ gSong.frames.length;
-	    $("#lblFramesStatus").html(txt);
-	    $("#lblFramesStatus2").html(txt);
+	function updateSectionsStatus(){
+		$(".lblSectionsStatusSectionNo").html(""+(gSong.getSectionsCurrentIndex()+1));
+	    var txt = ""+(gSong.getSectionsCurrentIndex()+1)+"/"+ gSong.sections.length;
+	    $("#lblSectionsStatus").html(txt);
+	    $("#lblSectionsStatus2").html(txt);
 	    $("#txtBeatsPer" ).val(gSong.getBeats());
 		$("#lblBeats").html(gSong.getBeats());
 	    var jLblCurrentBeat = $("#lblCurrentBeat");
@@ -155,9 +155,9 @@
 	    $("#lblBeat").html("1");
 
 	    //clearRecordedNotes();
-	    $("#txtCaption").val(gSong.getCurrentFrame().caption);
-	    var key =  gSong.getCurrentFrame().rootID;
-	    var rawCaption = gSong.getCurrentFrame().caption;
+	    $("#txtCaption").val(gSong.getCurrentSection().caption);
+	    var key =  gSong.getCurrentSection().rootID;
+	    var rawCaption = gSong.getCurrentSection().caption;
 		var caption = eval("\`"+rawCaption+"\`");
 	    $(".lblSectionCaption").html(caption);
 
@@ -165,15 +165,15 @@
 	    $(".lblSongName").html(currentFilename);
 		//gSong.songName = currentFilename;
 
-		var rootIndex = toInt(gSong.getCurrentFrame().rootID, 0);
-	    var rootIndexLead = toInt(gSong.getCurrentFrame().rootIDLead, 0);
+		var rootIndex = toInt(gSong.getCurrentSection().rootID, 0);
+	    var rootIndexLead = toInt(gSong.getCurrentSection().rootIDLead, 0);
 		var keyname = noteIDToNoteName(rootIndex);
 		var keynameLead = noteIDToNoteName(rootIndexLead);
 
 	    $(".lblRootID").html(keyname);
 
 	    var spans = $(".spanLeadDifferentFromRoot");
-	    if (gSong.getCurrentFrame().rootIDLead != "-1"){
+	    if (gSong.getCurrentSection().rootIDLead != "-1"){
 	        spans.html("lead key: "+keynameLead);
 	        spans.show();
 	        $(".lblRootIDLead").html(keynameLead).show();
@@ -184,13 +184,13 @@
 		showHideDisplayOptionsPresent();
 	}
 
-	function clearAndReplayFrame(){
+	function clearAndReplaySection(){
 		gSong.gotoFirstBeat();
 		clearAll();
 		resetNoteNames(); //calls replay()
-		updateFramesStatus();
+		updateSectionsStatus();
 		showBeats();
-		//prevFrame calls this: updateFramesStatus();
+		//prevSection calls this: updateSectionsStatus();
 
 	}
 
@@ -201,9 +201,9 @@
 		showHighlightsForBeat(beat);
 	}
 
-	function getMillisForCurrentFrame(){
+	function getMillisForCurrentSection(){
 	    var beats = DEFAULT_BEATS_PER;
-	    var sBeats = getCurrentFrame().beats;
+	    var sBeats = getCurrentSection().beats;
 	    if (sBeats){
 	        beats = parseInt(sBeats);
 	    }
@@ -277,20 +277,20 @@
 
 	function resetNoteNames() {
 	    var options = {};
-	    var rootID = getCurrentFrame().rootID;
-	    gSharps = getCurrentFrame().sharps;
+	    var rootID = getCurrentSection().rootID;
+	    gSharps = getCurrentSection().sharps;
 	    if (rootID!=null && ((""+rootID).length>0)) {
 	        options.rootID = rootID;
-			options.rootIDLead = getCurrentFrame().rootIDLead;//20240423
-	        //console.log("=========Using rootID from getCurrentFrame(): "+rootID+" ");
+			options.rootIDLead = getCurrentSection().rootIDLead;//20240423
+	        //console.log("=========Using rootID from getCurrentSection(): "+rootID+" ");
 	    } else {
 	        var optVal = $('#dropDownRoot  option:selected').val();
 			var rootIDLead = $("#dropDownRootLead").val();
 	        options.rootID = parseInt(optVal);
 			options.rootIDLead = toInt(rootIDLead, -2);
 	        //console.log("==========NOT Using rootID:"+rootID+", using dropDownRoot value instead: "+optVal+" options.rootID: "+options.rootID);
-	        getCurrentFrame().rootID = options.rootID;
-	        getCurrentFrame().rootIDLead = options.rootIDLead;
+	        getCurrentSection().rootID = options.rootID;
+	        getCurrentSection().rootIDLead = options.rootIDLead;
 	    }
 	    options.showCellNotes = $("#cbShowCellNotes").prop("checked");
 	    options.showSubscriptFunctions = $("#cbShowSubscriptFunctions").prop("checked");
@@ -407,7 +407,7 @@
 	}
 
 	function exportPlayedNotesToOtherTable(tblSource, tblDest){
-	  var noteArr = gSong.getTableArrInCurrentFrame(tblSource);
+	  var noteArr = gSong.getTableArrInCurrentSection(tblSource);
 	  for (key in noteArr){
 	      var noteCell = noteArr[key];
 	      //console.log("exportPlayedNotesToOtherTable "+noteCell.midinum+","+noteCell.row);
@@ -550,22 +550,22 @@
 		}
 		
 		var frs = [];
-		for (var k in jsonObj.frames){
-			var frame = jsonObj.frames[k];
-			var replacementFrame = gSong.constructFrame();
-			frame = Object.assign(replacementFrame, frame);
-			frs.push(frame);
+		for (var k in jsonObj.sections){
+			var section = jsonObj.sections[k];
+			var replacementSection = gSong.constructSection();
+			section = Object.assign(replacementSection, section);
+			frs.push(section);
 		}
-		jsonObj.frames = frs;
-		if (!gSong.isEmpty(gSong.getCurrentFrame())){
+		jsonObj.sections = frs;
+		if (!gSong.isEmpty(gSong.getCurrentSection())){
 
 			var yes = $("#cbAppendSections").prop("checked");
 			//var yes = confirm("Keep previous Song Sections? \n( 'Cancel' deletes !! \nOtherwise, 'OK' adds new Song Sections at end of current Song Sections.)");
 			if (!yes){
-				gSong.removeAllFrames();
+				gSong.removeAllSections();
 			}
 		}
-		gSong.addFrames(jsonObj);
+		gSong.addSections(jsonObj);
 		gSong.graveyard = makeGraveyard(gSong.graveyard);
 
 		var userTheme = gSong.userTheme;
@@ -599,7 +599,7 @@
 		}
 
 		replay();
-		frameChanged();
+		sectionChanged();
 	}
 
 	function installDefaultColorDicts(){
@@ -613,10 +613,10 @@
 
 	function loadSong(songName){
 		$.get( "songs/"+songName, function( data ) {  //jQuery automatically calls something like JSON.parse and turns the result into a real javascript Object.
-			if (!gSong.isEmpty(gSong.getCurrentFrame())){
+			if (!gSong.isEmpty(gSong.getCurrentSection())){
 				var yes = confirm("Keep previous Song Sections? ( 'Cancel' deletes !! Otherwise, 'OK' adds new Song Sections at end of current Song Sections.)");
 				if (!yes){
-					gSong.removeAllFrames();
+					gSong.removeAllSections();
 				}
 			}
 			openSong(JSON.stringify(data));
@@ -717,20 +717,20 @@
 	                $("#txtBeatsPer").val(beats);
 					$("#lblBeats").html(beats);
 	        }
-			getCurrentFrame().beats = beats;
+			getCurrentSection().beats = beats;
 			$('#lblBeats').html(beats);
 			showBeats();
   }
 
-	// see also: song.js :: cycleThruKeysAllFrames()
+	// see also: song.js :: cycleThruKeysAllSections()
 	function cycleThruKeys(amount){
-		var curr = toInt(getCurrentFrame().rootID, 0);
+		var curr = toInt(getCurrentSection().rootID, 0);
 		curr=(12+curr + amount) % 12;
-		getCurrentFrame().rootID = curr;
-		$("#dropDownRoot").val(getCurrentFrame().rootID);
+		getCurrentSection().rootID = curr;
+		$("#dropDownRoot").val(getCurrentSection().rootID);
 		resetNoteNames();
-		clearRecordedNotes();//for some reason this clears highlights correctly, and used to be in updateFramesStatus, but didn't belong there.
-		updateFramesStatus();
+		clearRecordedNotes();//for some reason this clears highlights correctly, and used to be in updateSectionsStatus, but didn't belong there.
+		updateSectionsStatus();
 	}
 
 	function leaveFullscreen(){
@@ -804,8 +804,8 @@
 	}
 
 	function transposeSong(amount){
-		gSong.cycleThruKeysAllFrames(amount);
-		var namedNoteName = gSong.moveNamedNotesAllFrames(amount);
+		gSong.cycleThruKeysAllSections(amount);
+		var namedNoteName = gSong.moveNamedNotesAllSections(amount);
 		fullRepaint();
 		/*clearAll();
 		replay();
@@ -816,7 +816,7 @@
 	}
 
 	function transposeSongKeys(amount){
-		gSong.cycleThruKeysAllFrames(amount);
+		gSong.cycleThruKeysAllSections(amount);
 		fullRepaint();
 		showBeats();
 	}
@@ -832,22 +832,22 @@
 		}
 
 		function printSections(){
-			var frames = getFrames();
+			var sections = getSections();
 			var B = "<br />" ;
 			var result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>&sharp;/&flat;</th><th>Caption</th><th>Details</th>";
 			var namedNotes, specialNotes;
-			for (idx in frames){
-				var frame = frames[idx];
-				namedNotes = (Object.keys(frame.namedNotes).length>0) ? "namedNotes: "+JSON.stringify(Object.keys(frame.namedNotes)) : "";
-				specialNotes = (Object.keys(frame.noteTables).length>0) ? "<br />SpecialNotes: "+printTablesStats(frame.noteTables) : "";
+			for (idx in sections){
+				var section = sections[idx];
+				namedNotes = (Object.keys(section.namedNotes).length>0) ? "namedNotes: "+JSON.stringify(Object.keys(section.namedNotes)) : "";
+				specialNotes = (Object.keys(section.noteTables).length>0) ? "<br />SpecialNotes: "+printTablesStats(section.noteTables) : "";
 				var SEP = "</td><td>";
 				debugger
 				result = result+"<tr><td>"
 				       +"<a href=\"javascript:linkToSection('"+idx+"');\">"+(toInt(idx,0)+1)+"</a>"+SEP
-					   +frame.beats+SEP
-					   +"<B style='font-size: 130%;'>"+noteIDToNoteName(frame.rootID) +(frame.rootIDLead!=-1?"/"+noteIDToNoteName(frame.rootIDLead):"")+"</B>"+SEP
-				       +( frame.sharps ? " &sharp; " : " &flat; " )+SEP
-					   +"<b style='font-size: 130%;'>"+frame.caption+"</b>"+SEP
+					   +section.beats+SEP
+					   +"<B style='font-size: 130%;'>"+noteIDToNoteName(section.rootID) +(section.rootIDLead!=-1?"/"+noteIDToNoteName(section.rootIDLead):"")+"</B>"+SEP
+				       +( section.sharps ? " &sharp; " : " &flat; " )+SEP
+					   +"<b style='font-size: 130%;'>"+section.caption+"</b>"+SEP
 					   +namedNotes
 					   +specialNotes
 					   "</td></tr>";
@@ -856,7 +856,7 @@
 		}
 
 		function linkToSection(idx){
-			gSong.gotoFrame(idx);
+			gSong.gotoSection(idx);
 			hideCmdLine();
 		}
 
@@ -870,7 +870,7 @@
 			//console.log("setNamedNoteOpacity_inner element_id:"+element_id+" value: "+newValue);
 			clearAll();
 		    replay();
-		    updateFramesStatus();
+		    updateSectionsStatus();
 		}
 
 		function getNamedNoteOpacity(){
@@ -897,7 +897,7 @@
 			getSong().singleNoteOpacity = newValue;
 			clearAll();
 		    replay();
-		    updateFramesStatus();
+		    updateSectionsStatus();
 		}
 
 		function rangeSingleNoteOpacitySlide(element_id, value) {
@@ -919,7 +919,7 @@
 			getSong().tinyNoteOpacity = newValue;
 			clearAll();
 			replay();
-			updateFramesStatus();
+			updateSectionsStatus();
 		}
 
 		function rangeTinyNoteOpacitySlide(element_id, value) {
@@ -1246,8 +1246,8 @@
 			} else {
 				$('#btnRandomLoop').addClass("BtnPunchedOut").removeClass("BtnPunchedIn");
 			}
-			if (framesLooping()){
-				restartLoopFrames();
+			if (sectionsLooping()){
+				restartLoopSections();
 			}
 		});
 		$("#btnNoteV").click(function() {
@@ -1295,47 +1295,47 @@
 		$("#btnReplay").click(function() {
 		    replay();
 		});
-		$("#btnPrevFrame, #btnPrevFrame2").click(function() {
-		    gSong.gotoPrevFrame(false);
+		$("#btnPrevSection, #btnPrevSection2").click(function() {
+		    gSong.gotoPrevSection(false);
 		});
-		$("#btnNextFrame, #btnNextFrame2").click(function() {
-		    gSong.gotoNextFrame(false);
+		$("#btnNextSection, #btnNextSection2").click(function() {
+		    gSong.gotoNextSection(false);
 		});
-		$("#btnFirstFrame").click(function() {
-			gSong.firstFrame();
-			clearAndReplayFrame();
+		$("#btnFirstSection").click(function() {
+			gSong.firstSection();
+			clearAndReplaySection();
 		});
-		$("#btnLastFrame").click(function() {
-		    gSong.lastFrame();
-			clearAndReplayFrame();
+		$("#btnLastSection").click(function() {
+		    gSong.lastSection();
+			clearAndReplaySection();
 		});
 
-		$("#btnNewFrame").click(function() {
+		$("#btnNewSection").click(function() {
 		    var newIndex = $('#dropDownSectionOrder').val();//might include pseudo-value "END".
-		    gSong.newFrame(newIndex);
+		    gSong.newSection(newIndex);
 		});
-		$("#btnDeleteFrame").click(function() {
-		    gSong.deleteCurrentFrame();
+		$("#btnDeleteSection").click(function() {
+		    gSong.deleteCurrentSection();
 		});
-		$("#btnAddShallowCloneFrame").click(function() {
+		$("#btnAddShallowCloneSection").click(function() {
 			var newIndex = $('#dropDownSectionOrder').val();//might include pseudo-value "END".
-		    gSong.addShallowCloneFrame(newIndex);
+		    gSong.addShallowCloneSection(newIndex);
 		});
-		$("#btnAddDeepCloneFrame").click(function() {
+		$("#btnAddDeepCloneSection").click(function() {
 		    var newIndex = $('#dropDownSectionOrder').val();//might include pseudo-value "END".
-		    gSong.addDeepCloneFrame(newIndex);
+		    gSong.addDeepCloneSection(newIndex);
 		});
 		$('#btnMoveSectionOrder').click(function(){
 			var newIndex = $('#dropDownSectionOrder').val();
 			if (newIndex == "END"){
-				gSong.moveFrameToEND();
+				gSong.moveSectionToEND();
 			} else {
-				gSong.moveFrameTo(newIndex);
+				gSong.moveSectionTo(newIndex);
 			}
 			fullRepaint();
 		});
-		$("#btnLoopFrames").click(function() {
-		    toggleLoopFrames();
+		$("#btnLoopSections").click(function() {
+		    toggleLoopSections();
 		});
 		$("#btnLoopBeats").click(function() {
 		    toggleLoopBeats();
@@ -1381,7 +1381,7 @@
 		});
 
 		$("#txtBeatsPer" ).on( "change", function() {
-		 getCurrentFrame().beats = $( this ).val();
+		 getCurrentSection().beats = $( this ).val();
 		});
 
 		$("#btnPrevBeat").click(function() {
@@ -1410,7 +1410,7 @@
 
 		$("#txtCaption" ).on( "change", function() {
 		 var cap = $( this ).val();
-		 getCurrentFrame().caption = cap;
+		 getCurrentSection().caption = cap;
 		 $(".lblSectionCaption").html(cap);
 
 		});
@@ -1444,15 +1444,15 @@
 
 		// CODE-EXAMPLE("SelectWidget", "Root")
 	    $('#dropDownRoot').change(function() {
-	        getCurrentFrame().rootID = $(this).val();
+	        getCurrentSection().rootID = $(this).val();
 	        fullRepaint();
-	        updateFramesStatus();
+	        updateSectionsStatus();
 	    });
 		// END CODE-EXAMPLE("SelectWidget", "Root")
 		$('#dropDownRootLead').change(function() {
-            getCurrentFrame().rootIDLead = $('#dropDownRootLead').val();
+            getCurrentSection().rootIDLead = $('#dropDownRootLead').val();
             fullRepaint();
-	        updateFramesStatus();
+	        updateSectionsStatus();
 	    });
 
 		$("#btnRowRangeReset").click(function() {
@@ -1463,7 +1463,7 @@
 		$('#dropDownBaseInstrument').change(function() {
 			var baseInstrumentID = $(this).val();
 			fullRepaint();
-			updateFramesStatus();
+			updateSectionsStatus();
 		});
 
 		$('#dropDownCellHeight').change(function() {
@@ -1634,12 +1634,12 @@
 
 		$("#btnControlsToDisplayOptions, #btnControlsToDisplayOptions2").click(function() {
 	        var options = controlsToDisplayOptions();
-			getCurrentFrame().displayOptions = options;
+			getCurrentSection().displayOptions = options;
 			INFO("controlsToDisplayOptions: <br>"+JSON.stringify(options, null, 2));
 			showHideDisplayOptionsPresent();
 	    });
 		$("#btnDeleteDisplayOptions, #btnDeleteDisplayOptions2").click(function() {
-			delete getCurrentFrame().displayOptions;
+			delete getCurrentSection().displayOptions;
 			showHideDisplayOptionsPresent();
 	    });
 
@@ -1759,7 +1759,7 @@
 	    installAllTuningsTables();
 		installBtnHamburgerClicks();
 	    setupOpenFile();
-		frameChanged();
+		sectionChanged();
 	    installTDNoteClick();
 		bindDesktopEvents();
 		applyScalingPrefs(true);

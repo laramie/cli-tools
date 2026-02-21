@@ -2237,9 +2237,9 @@ to hide menus and the command-line.</p>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>p</b>rev
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>n</b>ext
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>l</b>ast
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>e</b>dit<small>[$currentFrameCardinal/$frameCount]</small>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>e</b>dit<small>[$currentSectionCardinal/$sectionCount]</small>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>d</b>elete
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Y</b>es: DELETE section $currentFrameCardinal/$frameCount !
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Y</b>es: DELETE section $currentSectionCardinal/$sectionCount !
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>n</b>o: keep section.
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>a</b>dd
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>s</b>hallow clone
@@ -2356,7 +2356,7 @@ to hide menus and the command-line.</p>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>t</b>oggle transport
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>l</b>oop
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loop <b>b</b>eats
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>s</b>ection<small>[$currentFrameCardinal/$frameCount]</small>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>s</b>ection<small>[$currentSectionCardinal/$sectionCount]</small>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>f</b>irst
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>p</b>rev
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>n</b>ext
@@ -2393,18 +2393,18 @@ to hide menus and the command-line.</p>
                     all the DisplayOptions stored for each Section
 
         In the object model, and therefore the file format, here are the objects:
-            frames - An array of frame objects in song order.
-            frame - An object in the frames array that represents one Section.
+            sections - An array of section objects in song order.
+            section - An object in the sections array that represents one Section.
             namedNotes - A dictionary of note objects that apply to all instruments 
                               in that Section.
                          Named Notes appear at every cell on the neck 
                               that corresponds to that note name, e.g. "B".
-            frame :: noteTables - a dictionary of arrays that store all played notes in that Section 
+            section :: noteTables - a dictionary of arrays that store all played notes in that Section 
                               on one instrument instance. 
                          Played notes are all notes that are not namedNotes: 
                               they have a single spot in a note cell. 
             visibleNoteTables - An array of instrument instance names, 
-                              that corresponds to the keys used to store frame :: table objects.
+                              that corresponds to the keys used to store section :: table objects.
                             Save the file makes the memory model reports this correctly.           
 
         In Chrome::Inspect you can use Developer tools Console
@@ -2412,16 +2412,16 @@ to hide menus and the command-line.</p>
                 getSong()
 
         Synopsize the "noteTables" collection:
-           getSong().frames.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
+           getSong().sections.forEach(function(a){console.log("id"+JSON.stringify(a.noteTables))});
 
         Delete all played notes (noteTables) in a song, leaving Named and Recorded notes only :
-           getSong().frames.forEach(function(a){a.noteTables = {}; });
+           getSong().sections.forEach(function(a){a.noteTables = {}; });
 
         Delete all Recorded notes:
-           getSong().frames.forEach(function(a){a.recordedNotes = {}; });
+           getSong().sections.forEach(function(a){a.recordedNotes = {}; });
 
         Set entire song to sharps:
-           getSong().frames.forEach(function(a){a.sharps = true; });
+           getSong().sections.forEach(function(a){a.sharps = true; });
 </pre>
 </div>
 </p>
