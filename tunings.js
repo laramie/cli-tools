@@ -27,7 +27,7 @@ var allTunings = {
       "frets": 24,
       "nut": true,
       "reverse": false,
-      "visible": true
+      "visible": false
     },
     {
       "instance": false,

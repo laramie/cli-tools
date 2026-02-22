@@ -281,11 +281,15 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 	    for (var r=0; r<rows; r++){
 	        var tun = allTunings.tunings[r];
 	        var checkedVisible = tun.visible ? " checked " : "";
-	        var btnStr = '<label for="cb'+tun.baseID+'"><nobr><input id="cb'+tun.baseID+'" '
+
+			var btnStr = "x";
+			if (tun.instance){
+	            btnStr = '<label for="cb'+tun.baseID+'"><nobr><input id="cb'+tun.baseID+'" '
 	                    +' type="checkbox" class="cbTuningVisible" '
 	                    +' name="cbn'+tun.baseID+'" value="'+tun.baseID+'" '
 	                    + checkedVisible +' >'
 	                    +tun.caption+'</nobr></label>';
+			}
 
 			var checkedLH = tun.reverse ? " checked " : "";
 	        var checkboxLH = '<label for="cbLH'+tun.baseID+'"><nobr>'
@@ -433,8 +437,8 @@ function getTunings(tableNamesArr){
       //if none, then show for newbies or browsers that clear checkboxes:
 	    var numShowing = showhideTunings();
 	    if (numShowing==0){
-			console.log("================== showDefaultTuning showing P46 ===========");
-	        showHideTuning(true, "P46");
+			console.log("================== NOT showDefaultTuning showing P46 ===========");
+	        //showHideTuning(true, "P46");
 	    }
 	    return numShowing;
 	 }
@@ -661,12 +665,11 @@ function bindFormTuningsEvents(){
 			alert("Original tuning not found.");
 			return;
 		}
-		// Deep clone
-		var cloned = JSON.parse(JSON.stringify(original));
+		
+		var cloned = JSON.parse(JSON.stringify(original)); // Deep clone
 		cloned.baseID = newBaseID;
-		// Add to array
+		cloned.instance = true;
 		allTunings.tunings.push(cloned);
-		// Rebuild table
 		reloadAllTuningsDisplay();
 	});
 }

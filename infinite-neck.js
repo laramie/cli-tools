@@ -560,7 +560,7 @@
 			}
 		}
 
-		//Copy gSong.tunings into allTunings.tunings here.
+		//Copy gSong.tunings into allTunings.tunings
 		if (gSong.tunings && Array.isArray(gSong.tunings)) {
 			var duplicateBaseIDs = [];
 			for (var i = 0; i < gSong.tunings.length; i++) {
@@ -572,8 +572,8 @@
 					duplicateBaseIDs.push(songTuning.baseID);
 					continue;
 				}
-				// Deep clone to avoid reference issues
-				var cloned = JSON.parse(JSON.stringify(songTuning));
+				
+				var cloned = JSON.parse(JSON.stringify(songTuning));  // Deep clone 
 				allTunings.tunings.push(cloned);
 			}
 			if (duplicateBaseIDs.length > 0) {
@@ -596,7 +596,6 @@
 		if (!gSong.isEmpty(gSong.getCurrentSection())){
 
 			var yes = $("#cbAppendSections").prop("checked");
-			//var yes = confirm("Keep previous Song Sections? \n( 'Cancel' deletes !! \nOtherwise, 'OK' adds new Song Sections at end of current Song Sections.)");
 			if (!yes){
 				gSong.removeAllSections();
 			}
