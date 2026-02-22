@@ -1,6 +1,7 @@
 {
   "tunings": [
     {
+      "instance": false,
       "baseID": "P48",
       "baseInstrument": "Guitar",
       "caption": "P4-8",
@@ -15,6 +16,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "P46",
       "baseInstrument": "Guitar",
       "caption": "P4",
@@ -28,6 +30,7 @@
       "visible": true
     },
     {
+      "instance": false,
       "baseID": "S6",
       "baseInstrument": "Guitar",
       "caption": "Standard",
@@ -41,6 +44,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "S8",
       "baseInstrument": "Guitar",
       "caption": "Standard-8",
@@ -55,6 +59,7 @@
       "pianoNamesRow": true
     },
     {
+      "instance": false,
       "baseID": "DropD",
       "baseInstrument": "Guitar",
       "caption": "DropD",
@@ -68,6 +73,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "DADGAD",
       "baseInstrument": "Guitar",
       "caption": "DADGAD",
@@ -81,6 +87,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "DGDGBD",
       "baseInstrument": "Guitar",
       "caption": "DGDGBD",
@@ -94,6 +101,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Bass4",
       "baseInstrument": "Bass",
       "caption": "Bass",
@@ -108,6 +116,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Bass8",
       "baseInstrument": "Bass",
       "caption": "Bass 8",
@@ -122,6 +131,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Cello",
       "baseInstrument": "Cello",
       "caption": "Cello",
@@ -136,6 +146,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "UkuleleSoprano",
       "baseInstrument": "Ukulele",
       "caption": "Soprano Ukulele",
@@ -149,6 +160,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "UkuleleConcert",
       "baseInstrument": "Ukulele",
       "caption": "Concert Ukulele",
@@ -163,6 +175,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "UkuleleTenor",
       "baseInstrument": "Ukulele",
       "caption": "Tenor Ukulele",
@@ -177,6 +190,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "UkuleleBaritone",
       "baseInstrument": "Ukulele",
       "caption": "Baritone Ukulele",
@@ -191,6 +205,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Mandolin",
       "baseInstrument": "Mandolin",
       "caption": "Mandolin",
@@ -205,6 +220,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "BanjoG",
       "baseInstrument": "Banjo",
       "caption": "Banjo Open G",
@@ -217,6 +233,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "BanjoDoubleD",
       "baseInstrument": "Banjo",
       "caption": "Banjo Double D",
@@ -229,6 +246,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "BanjoDoubleC",
       "baseInstrument": "Banjo",
       "caption": "Banjo Double C",
@@ -241,6 +259,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "BanjoSawmill",
       "baseInstrument": "Banjo",
       "caption": "Banjo Sawmill",
@@ -253,6 +272,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "BanjoGraveyard",
       "baseInstrument": "Banjo",
       "caption": "Banjo Graveyard [D]",
@@ -265,6 +285,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Perfect4thsCalculator",
       "baseInstrument": "Guitar",
       "caption": "Perfect 4ths Calculator",
@@ -276,6 +297,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "TritoneCalculator",
       "baseInstrument": "Guitar",
       "caption": "Tritone Calculator",
@@ -287,6 +309,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "ThirdsCalculator",
       "baseInstrument": "Guitar",
       "caption": "ThirdsCalculator",
@@ -298,6 +321,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "Chapman10Classic",
       "baseInstrument": "ChampmanStick",
       "caption": "Classic 10",
@@ -309,6 +333,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "MIDI",
       "baseInstrument": "MIDI",
       "caption": "8x8",
@@ -323,6 +348,7 @@
       "pinkKey": "C"
     },
     {
+      "instance": false,
       "baseID": "Linstrument",
       "baseInstrument": "MIDI",
       "caption": "Linstrument 8x24",
@@ -337,6 +363,7 @@
       "pinkKey": "C"
     },
     {
+      "instance": false,
       "baseID": "DEV",
       "baseInstrument": "Guitar",
       "caption": "Developer",
@@ -348,6 +375,7 @@
       "visible": false
     },
     {
+      "instance": false,
       "baseID": "PianoFrets",
       "baseInstrument": "Piano",
       "caption": "Piano Guitar",
@@ -360,6 +388,7 @@
       "pianoNamesRow": true
     },
     {
+      "instance": false,
       "baseID": "PianoFrets2",
       "baseInstrument": "Piano",
       "caption": "Piano Guitar 2Row",
@@ -372,6 +401,7 @@
       "pianoNamesRow": true
     },
     {
+      "instance": false,
       "baseID": "PianoFretsBass",
       "baseInstrument": "Piano",
       "caption": "Piano Bass",
@@ -384,6 +414,7 @@
       "pianoNamesRow": true
     },
     {
+      "instance": false,
       "baseID": "PianoSchroeder",
       "baseInstrument": "Piano",
       "caption": "Piano Schroeder",
@@ -397,6 +428,7 @@
       "fixedFretWidthMult": 0.5
     },
     {
+      "instance": false,
       "baseID": "Piano",
       "baseInstrument": "Piano",
       "caption": "Piano",
@@ -411,6 +443,7 @@
       "fixedFretWidthMult": 1.0
     },
     {
+      "instance": false,
       "baseID": "USER",
       "baseInstrument": "Guitar",
       "caption": "User",
