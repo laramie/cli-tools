@@ -273,9 +273,10 @@ function dumpTuningsToTable(tuningsInMemoryHash){
       var table = $("<table class='tuningsTable'>");
       var trh = $("<tr>");
       trh.html("<th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
-              +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>");
+                +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>Clone</th><th>InMem</th>"
+                ); 
       table.append(trh);
-      var sval = "";
+      var sInMemCount = "";
       var rows = allTunings.tunings.length;
 	    for (var r=0; r<rows; r++){
 	        var tun = allTunings.tunings[r];
@@ -304,38 +305,46 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 	                    +'<input class="checkboxNut"   id="cbNut'+tun.baseID+'" '
 	                    +' type="checkbox" name="cbnNut'+tun.baseID+'" value="'
 	                    +tun.baseID+'" '+checkedNut+'></nobr></label>';
+
 			var BN = tun.banjoNut?JSON.stringify(tun.banjoNut):"";
 			if (BN)	{
 				BN = BN.replaceAll(",", ",<br>");
-			}		
+			}
+			
+			var cloneBtn = '<button class="btnCloneTuning" data-baseid="'+tun.baseID+'">Clone</button>';
+			
+			sInMemCount = "";
+	        if (tuningsInMemoryHash[tun.baseID]){
+	            var val = tuningsInMemoryHash[tun.baseID];
+	            if (val && val > 0){
+	                sInMemCount = ""+val;
+	            }
+	        }
+			
 
 
 
 			var selectBlock = generateSelect(tun.baseID, tun.frets);
 			var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
 
-	        var tr = $("<tr>");
-	        tr.append($("<td>").html(btnStr));
-	        tr.append($("<td>").html(tun.baseID));
-	        tr.append($("<td>").html(tun.nStrings+"-string"));
-	        tr.append($("<td>").html(tun.baseInstrument));
-	        tr.append($("<td>").html(rowRangeToNoteNames(tun.rowRange, tun)));
-	        tr.append($("<td>").html(""+tun.rowRange));
-	        tr.append($("<td>").html(""+BN));
-	        tr.append($("<td>").html(checkboxLH));
-	        tr.append($("<td>").html(checkboxPN));
-	        tr.append($("<td>").html(checkboxNut));
-	        tr.append($("<td>").html(selectBlock)); //numFrets
-	        tr.append($("<td>").html(selectStringDividerHt));
-	        sval = "";
-	        if (tuningsInMemoryHash[tun.baseID]){
-	            var val = tuningsInMemoryHash[tun.baseID];
-	            if (val && val > 0){
-	                sval = ""+val;
-	            }
-	        }
-	        tr.append($("<td>").html("<b>"+sval+"</b>"));
-	        table.append(tr);
+			var tr = $("<tr>");
+			tr.append($("<td>").html(btnStr));
+			tr.append($("<td>").html(tun.baseID));
+			tr.append($("<td>").html(tun.nStrings+"-string"));
+			tr.append($("<td>").html(tun.baseInstrument));
+			tr.append($("<td>").html(rowRangeToNoteNames(tun.rowRange, tun)));
+			tr.append($("<td>").html(""+tun.rowRange));
+			tr.append($("<td>").html(""+BN));
+			tr.append($("<td>").html(checkboxLH));
+			tr.append($("<td>").html(checkboxPN));
+			tr.append($("<td>").html(checkboxNut));
+			tr.append($("<td>").html(selectBlock)); //numFrets
+			tr.append($("<td>").html(selectStringDividerHt));
+			tr.append($("<td>").html(cloneBtn));
+			tr.append($("<td>").html("<b>"+sInMemCount+"</b>"));
+			
+			
+			table.append(tr);
 	    }
 	    return table;
 }
@@ -636,4 +645,28 @@ function bindFormTuningsEvents(){
 		}
 	});
 	
+	// Clone button handler (delegated from #frmTunings to support table reloads)
+	$('#frmTunings').off('click', '.btnCloneTuning').on('click', '.btnCloneTuning', function() {
+		var baseID = $(this).data('baseid');
+		var newBaseID = window.prompt("Enter new baseID for cloned tuning:", baseID + "_copy");
+		if (!newBaseID) return;
+		// Check for duplicate baseID
+		if (allTunings.tunings.some(function(tuning) { return tuning.baseID === newBaseID; })) {
+			alert("A tuning with baseID '" + newBaseID + "' already exists.");
+			return;
+		}
+		// Find original tuning
+		var original = allTunings.tunings.find(function(tuning) { return tuning.baseID === baseID; });
+		if (!original) {
+			alert("Original tuning not found.");
+			return;
+		}
+		// Deep clone
+		var cloned = JSON.parse(JSON.stringify(original));
+		cloned.baseID = newBaseID;
+		// Add to array
+		allTunings.tunings.push(cloned);
+		// Rebuild table
+		reloadAllTuningsDisplay();
+	});
 }

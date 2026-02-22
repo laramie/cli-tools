@@ -559,7 +559,32 @@
 				Object.assign(theUSERTuning, gSong.userInstrumentTuning);  //the version in the song model is just used for persistence. allTunings.tunings array keeps the USER tuning that is used at runtime.
 			}
 		}
-		
+
+		//Copy gSong.tunings into allTunings.tunings here.
+		if (gSong.tunings && Array.isArray(gSong.tunings)) {
+			var duplicateBaseIDs = [];
+			for (var i = 0; i < gSong.tunings.length; i++) {
+				var songTuning = gSong.tunings[i];
+				var exists = allTunings.tunings.some(function(tuning) {
+					return tuning.baseID === songTuning.baseID;
+				});
+				if (exists) {
+					duplicateBaseIDs.push(songTuning.baseID);
+					continue;
+				}
+				// Deep clone to avoid reference issues
+				var cloned = JSON.parse(JSON.stringify(songTuning));
+				allTunings.tunings.push(cloned);
+			}
+			if (duplicateBaseIDs.length > 0) {
+				alert(
+					"Tuning(s) with baseID(s) '" +
+					duplicateBaseIDs.join("', '") +
+					"' already exist in allTunings. Skipping."
+				);
+			}
+		}
+
 		var frs = [];
 		for (var k in jsonObj.sections){
 			var section = jsonObj.sections[k];
