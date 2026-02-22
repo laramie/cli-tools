@@ -1715,6 +1715,19 @@
 
 	function bindDataActionHandlers(){
 		// Generate code here for all the Event Handlers:
+		$(document).on('click', '[data-action]', function(e) {
+			const action = $(this).data('action');
+			const arg = $(this).data('action-arg');
+			if (typeof window[action] === 'function') {
+				if (arg !== undefined) {
+					window[action](arg);
+				} else {
+					window[action]();
+				}
+			} else if (typeof window[action] === 'object' && typeof window[action].call === 'function') {
+				window[action].call(this, e);
+			}
+		});
 
 	}
 
