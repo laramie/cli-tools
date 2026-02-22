@@ -491,10 +491,21 @@
 		showMessages(gSong.graveyard.buildNoteTable());
 	}
 
+	//Use this function to skip saving the ColorDics, because they get generated anyway.
+	// Ultimately, only user-customized dicts should be saved, but right now it is doing all the default runtime generated dicts, bloating the file.
+	function skipColorDictsReplacer(key, value){
+		console.log("key: "+key);
+		if (key === 'userColors' || key === 'colorDicts') {
+			return undefined;
+		}
+		return value;
+	}
+
     // file save / save file / saveFile event
 	function downloadPlayedNotes(){
 	    updateMemoryModelPreFileSave();
-	    var text = JSON.stringify(getSong(), null, 2); // Create element. (with 2 spaces indentation)
+	    //var text = JSON.stringify(getSong(), null, 2); // Create element. (with 2 spaces indentation)
+	    var text = JSON.stringify(getSong(), skipColorDictsReplacer, 2); // Create element. (with 2 spaces indentation)
 	    //console.log("saved file:\r\n"+text);
 		var a = document.createElement('a'); // Attach href attribute with value of your file.
 	    //a.setAttribute("href", "data:application/xml;charset=utf-8," + text);
