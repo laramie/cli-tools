@@ -272,8 +272,8 @@ function rowRangeToNoteNames(rowRange, options){
 function dumpTuningsToTable(tuningsInMemoryHash){
       var table = $("<table class='tuningsTable'>");
       var trh = $("<tr>");
-      trh.html("<th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
-                +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>Clone</th><th>InMem</th>"
+      trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
+                +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>"
                 ); 
       table.append(trh);
       var sInMemCount = "";
@@ -328,6 +328,7 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 			var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
 
 			var tr = $("<tr>");
+			tr.append($("<td>").html(cloneBtn));
 			tr.append($("<td>").html(btnStr));
 			tr.append($("<td>").html(tun.baseID));
 			tr.append($("<td>").html(tun.nStrings+"-string"));
@@ -340,7 +341,6 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 			tr.append($("<td>").html(checkboxNut));
 			tr.append($("<td>").html(selectBlock)); //numFrets
 			tr.append($("<td>").html(selectStringDividerHt));
-			tr.append($("<td>").html(cloneBtn));
 			tr.append($("<td>").html("<b>"+sInMemCount+"</b>"));
 			
 			
