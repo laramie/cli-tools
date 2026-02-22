@@ -17,7 +17,7 @@ function isRecording(){
 
 function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
     var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
-    var noteFnBase = noteNamesFuncArr[relNoteNum];
+    var noteFnBase = gSong.noteNamesFuncArr[relNoteNum];
     var noteFn = noteFnBase;
     var displayPitch = relNoteNum + 1; //1-based: 1==first note of scale.
     var enharmonicName = "<span class='enharmonicName'>"+noteNameBase + "<small>" + sharpFlat + "</small></span>"
@@ -59,7 +59,7 @@ function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
 	var noteFnForHighlight = noteFn;
 	if (options.rootIDLead > -1){ //-1 is select option value for "follow rootID".
 		var relNoteNumLead = (12 + noteNum - options.rootIDLead) % 12; //0-based: 0==first note of scale
-	 	noteFnForHighlight = noteNamesFuncArr[relNoteNumLead];
+	 	noteFnForHighlight = gSong.noteNamesFuncArr[relNoteNumLead];
 	}
 
 	result = "<div class='NoteDisplay'>"
@@ -128,7 +128,7 @@ function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum, option
 
 			var fretWidth = toInt(width,60);
             if (options.naturalFretWidths && !tuning.fixedFretWidthMult){
-				multiplier = gFretLengths[cellcol];
+				multiplier = gSong.fretLengths[cellcol];
 				fretWidth = fretWidth * multiplier * 0.6;
 			}
             if (tuning.fixedFretWidthMult ){
@@ -736,8 +736,8 @@ function fillChord() {
     var scaleNotesArr = scaleNotes.split(',');
 
     var rootID = parseInt($('#dropDownRoot  option:selected').val());
-    var rootName = gNoteNamesArr[rootID];
-    var rootClassName = ".note" + gNoteNamesArr[rootID];
+    var rootName = constNoteNamesArr[rootID];
+    var rootClassName = ".note" + constNoteNamesArr[rootID];
 
     var scaleColor = $("input:radio[name=rbnFillNoteScale]:checked").val()
     var chordsColor = $("input:radio[name=rbnFillNoteChord]:checked").val()
@@ -758,7 +758,7 @@ function fillChord() {
 
     for (let i = 0; i < chordFnNotesArr.length; i++) {
         var noteID = (parseInt(chordFnNotesArr[i]) + rootID) % 12;
-        var noteName = gNoteNamesArr[noteID];
+        var noteName = constNoteNamesArr[noteID];
         if (keepRoot && rootName==noteName){
             console.log("NOT hosing root note by chord: "+noteName);
         } else {
@@ -769,7 +769,7 @@ function fillChord() {
 
     for (let i = 0; i < scaleNotesArr.length; i++) {
         var noteID = (parseInt(scaleNotesArr[i]) + rootID) % 12;
-        var noteName = gNoteNamesArr[noteID];
+        var noteName = constNoteNamesArr[noteID];
         if (   (keepChords && chordNames.includes(noteName))
             || (keepRoot   && rootName==noteName)            ){
             console.log("NOT hosing root/chord note by scale: "+noteName);

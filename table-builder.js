@@ -1,6 +1,6 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-// gNoteNamesArr is defined in infinite-neck.js
+// constNoteNamesArr is defined in infinite-neck.js
 const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
@@ -247,7 +247,7 @@ function midinumToNoteName(midinum){
         midinum += 12;
     }
     var index = (midinum - 9) % 12;
-    return gNoteNamesArr[index];
+    return constNoteNamesArr[index];
   // 21 == A0
   // 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
 }

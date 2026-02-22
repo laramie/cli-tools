@@ -665,9 +665,8 @@
 				}
 			}
 		}
-		var noteNum = gNoteNamesArr.indexOf(note.noteName);  //   Bb ==> 1 (since A ==> 0)
+		var noteNum = constNoteNamesArr.indexOf(note.noteName);  //   Bb ==> 1 (since A ==> 0)
 		var relNoteNum = (12 + noteNum - theRootID) % 12; //the function number: Tau is 1.  0-based: 0==first note of scale
-		//var noteFnBase = noteNamesFuncArr[relNoteNum];
 
 		var notePlusNumKey = "note"+(relNoteNum+1);  //Use 1-based for note1, note2, etc.
 		var userColor = gUserColorDict.dict[notePlusNumKey];

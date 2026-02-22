@@ -683,14 +683,14 @@ function setNoteFontSize(newValue){
 }
 
 function setSectionKeysFlats(){
-    gSharps = false;
+    gSong.sharps = false;
     getCurrentSection().sharps = false;
     resetNoteNames();
     updateSectionsStatus();
 }
 
 function setSectionKeysSharps(){
-    gSharps = true;
+    gSong.sharps = true;
     getCurrentSection().sharps = true;
     resetNoteNames();
     updateSectionsStatus();

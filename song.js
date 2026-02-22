@@ -1,13 +1,48 @@
 function makeSong(){
     const DEFAULT_BEATS = 4;
-    let obj = {
+    const noteNamesFuncArrDEFAULT = [
+	    "I", // 1 - I    I
+	    "&tau;", //"&tau;", // 2 - Tau    was: "&#x1D70F;"
+	    "II", // 3 - II
+	    "m", // 4 - m
+	    "III", // 5 - 3
+	    "IV", // 6 - IV
+	    "&Theta;", // 7 - Tri
+	    "V", // 8 - V
+	    "&sigma;", // 9 - Sigma
+	    "6", // 10 - VI
+	    "&delta;", // 11 - dom
+	    "&Delta;" // 12 - I
+	];
 
+    const FRET_LENGTHS_ARRAY = (() => {
+		var width = 60;
+		var L0 = 1;  //tuned length, (L-sub-zero)
+		const MAGIC_RATIO = 0.9438743;      //hand calculated from equation for fret ratios.
+		const FIRSTFRET_LENGTH = 0.05297;   //hand calculated from equation for fret ratios.
+        const fretLengths = [];
+		for (var n=2; n<=NUM_FRETS_MAX+1; n++){
+			var Cn = (Math.pow(MAGIC_RATIO, n));
+			var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
+			var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ; //0.05297 is the length of the first fret, if tuned length is 1.
+			debugger
+			fretLengths.push(R);
+		}
+        return fretLengths;
+    })();
+
+    let obj = {
         //FIELDS:
             sections: null,
         	gSectionsCurrentIndex: 0,
             gFirstBeatSeen: false,
             userInstrumentTuning: null,
             gSongModelListener: null,
+            noteNamesFuncArr: noteNamesFuncArrDEFAULT,
+            sharps: false,
+            captionsRowShowing: false,
+            fretLengths: FRET_LENGTHS_ARRAY,
+            presentationMode: false,
             constructing: false,
         //METHODS:
             make: construct_gSections,
@@ -88,6 +123,7 @@ function makeSong(){
         this.gSectionsCurrentIndex = this.addSection(this.constructSection());
 	    this.namedNoteOpacity = "1.00";
 	    this.singleNoteOpacity = "1.00";
+        //this.sharps = false;
         this.constructing = false;
         delete this.constructing;
     }
@@ -116,6 +152,7 @@ function makeSong(){
             make: section_constructor
         };
         result.make();
+        result.sharps=this.sharps;
         return result;
         function section_constructor(){
     	    this.noteTables = {};
@@ -128,7 +165,9 @@ function makeSong(){
             var beatsPer = DEFAULT_BEATS;
     	    this.beats = beatsPer;
     		this.currentBeat = 1;
-    	    this.sharps = gSharps;
+            debugger
+    	    //this.sharps = parentSong.sharps;
+            this.sharps = false;
     	}
         function cloneFrom(other){
             this.noteTables = other.noteTables;
@@ -141,6 +180,7 @@ function makeSong(){
             this.beats = other.beats ;
             this.currentBeat = other.currentBeat ;
             this.sharps = other.sharps ;
+            this.noteNamesFuncArr = other.noteNamesFuncArr; 
         }
 
         //these two return an html string that is either sharps or flats, depending on section.
@@ -675,9 +715,9 @@ function makeSong(){
     	var namedNotes = section.namedNotes;
         debugger
     	for (const noteName in namedNotes){
-            var index = gNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
+            var index = constNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
             index=(12+index + amount) % 12;
-            var transposedNoteName = gNoteNamesArr[index];
+            var transposedNoteName = constNoteNamesArr[index];
             var otherNote = namedNotes[noteName];
             if (otherNote.colorClass){
                 var clonedNote = newNote();
@@ -696,7 +736,7 @@ function makeSong(){
 
   	function getRootNoteName(section){
   		var noteID = parseInt( section.rootID );
-  		var noteName = gNoteNamesArr[noteID];
+  		var noteName = constNoteNamesArr[noteID];
   		return noteName;
   	}
 }

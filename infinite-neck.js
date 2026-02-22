@@ -21,27 +21,11 @@
 	const gBEND_CLASSES = "semitone1 semitone2 semitone3 prebend1 prebend2 prebend3 updown1 updown2 updown3"
 						  +" semitone1LH semitone2LH semitone3LH prebend1LH prebend2LH prebend3LH updown1LH updown2LH updown3LH";
 
-	const gNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
+	const constNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
 
-	const gNoteNamesArrFlats = "A,B<small>&#9837;</small>,B,C,D<small>&#9837;</small>,D,E<small>&#9837;</small>,E,F,G<small>&#9837;</small>,G,A<small>&#9837;</small>".split(',');
+	const constNoteNamesArrFlats = "A,B<small>&#9837;</small>,B,C,D<small>&#9837;</small>,D,E<small>&#9837;</small>,E,F,G<small>&#9837;</small>,G,A<small>&#9837;</small>".split(',');
 
-	const gNoteNamesArrSharps = "A,A<small>&#9839;</small>,B,C,C<small>&#9839;</small>,D,D<small>&#9839;</small>,E,F,F<small>&#9839;</small>,G,G<small>&#9839;</small>".split(',');
-
-	const noteNamesFuncArrDEFAULT = [
-	    "I", // 1 - I    I
-	    "&tau;", //"&tau;", // 2 - Tau    was: "&#x1D70F;"
-	    "II", // 3 - II
-	    "m", // 4 - m
-	    "III", // 5 - 3
-	    "IV", // 6 - IV
-	    "&Theta;", // 7 - Tri
-	    "V", // 8 - V
-	    "&sigma;", // 9 - Sigma
-	    "6", // 10 - VI
-	    "&delta;", // 11 - dom
-	    "&Delta;" // 12 - I
-	];
-	var noteNamesFuncArr = noteNamesFuncArrDEFAULT;
+	const constNoteNamesArrSharps = "A,A<small>&#9839;</small>,B,C,C<small>&#9839;</small>,D,D<small>&#9839;</small>,E,F,F<small>&#9839;</small>,G,G<small>&#9839;</small>".split(',');
 
 	function styleNumToCaption(styleNum){
 		switch(styleNum){
@@ -64,26 +48,24 @@
 	}
 
 	function noteNameToNoteID(noteName){
-		return gNoteNamesArr.indexOf(noteName);
+		return constNoteNamesArr.indexOf(noteName);
 	}
 
 	function noteIDToNoteName(noteIndex){
 		var noteName;
 		if (gSong.getCurrentSection().sharps){
-	        noteName = gNoteNamesArrSharps[noteIndex];
+	        noteName = constNoteNamesArrSharps[noteIndex];
 	    } else {
-	        noteName = gNoteNamesArrFlats[noteIndex];
+	        noteName = constNoteNamesArrFlats[noteIndex];
 	    }
 		return noteName;
 	}
 
 	function noteIDToNoteNameRaw(noteIndex){
-		return gNoteNamesArr[noteIndex];
+		return constNoteNamesArr[noteIndex];
 	}
 
 	//==========================================================================
-
-	var gSharps = false;
 
 	var gSong = null;  //constructed in document ready.
 
@@ -265,12 +247,12 @@
 	}
 
 	function resetSharps(options) {
-	    buildCells(gSharps, options);
+	    buildCells(gSong.sharps, options);
 	    resetSharpsControls();
 	}
 
 	function resetFlats(options) {
-	    buildCells(gSharps, options);
+	    buildCells(gSong.sharps, options);
 	    resetFlatsControls();
 	}
 
@@ -278,7 +260,7 @@
 	function resetNoteNames() {
 	    var options = {};
 	    var rootID = getCurrentSection().rootID;
-	    gSharps = getCurrentSection().sharps;
+	    gSong.sharps = getCurrentSection().sharps;
 	    if (rootID!=null && ((""+rootID).length>0)) {
 	        options.rootID = rootID;
 			options.rootIDLead = getCurrentSection().rootIDLead;//20240423
@@ -301,7 +283,7 @@
 		options.naturalFretWidths = $("#cbNaturalFretWidths").prop("checked");
 		options.naturaFontScaling = toInt($('#selNaturaFontScaling option:selected').val(), 45);
 
-	    if (gSharps) {
+	    if (gSong.sharps) {
 	        resetSharps(options);
 	        resetSharpsControls();
 	    } else {
@@ -621,6 +603,8 @@
 
 		$('#selThemes').val(gSong.theme).change();
 		$("#txtFilename").val(gSong.songName).change();
+		$("#cbPresentationMode").prop("checked", !!gSong.presentationMode).change();
+
 		setBPM(gSong.defaultBPM);
 
 		applyStylesheetsTo_gUserColorDict();
@@ -793,16 +777,16 @@
 			$("#divESCAPE").show();
 		}
 	}
-	var gCaptionsRowShowing = false;
+	
 	function toggleFullscreen(){
 		var wasVisible =  $('.container').is(':visible');  //container holds the menu buttons, so NOT fullscreen when visible.
 		$('.container').toggle();
 		if (wasVisible){
-			gCaptionsRowShowing = $('.captionRow').is(":visible");
+			gSong.captionsRowShowing = $('.captionRow').is(":visible");
 			$('.captionRow').hide();
 			$("#tabledestTopPad").show();
 		} else {
-			if (gCaptionsRowShowing){
+			if (gSong.captionsRowShowing){
 				$('.captionRow').show();
 			} else {
 				$('.captionRow').hide();
@@ -822,20 +806,8 @@
 		$('.captionRow').toggle();
 	}
 
-	var gFretLengths = [];
-	function populateFretLengthArray(){
-		var width = 60;
-		var L0 = 1;  //tuned length, (L-sub-zero)
-		const MAGIC_RATIO = 0.9438743;      //hand calculated from equation for fret ratios.
-		const FIRSTFRET_LENGTH = 0.05297;   //hand calculated from equation for fret ratios.
-
-		for (var n=2; n<=NUM_FRETS_MAX+1; n++){
-			var Cn = (Math.pow(MAGIC_RATIO, n));
-			var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
-			var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ; //0.05297 is the length of the first fret, if tuned length is 1.
-			gFretLengths.push(R);
-		}
-	}
+	
+	
 
 	function transpose(amount){
 		cycleThruKeys(amount);
@@ -975,25 +947,28 @@
 	//==============  Other functions that set CSS vars but not in Themes (or themeFunctions.js) =====================
 
 
-	var gNutSizeState = -1;  //start before state machine.
-	function cycleThruNutWidths(direction){
-		const arr = ["0", "30px", "60px", "100px", "140px", "220px", "340px","800px"];
-		var newValue="200px";
-		var show = true;
-		if (gNutSizeState==-1){
-			gNutSizeState = arr.length-1;
-		}
-		gNutSizeState = (gNutSizeState+1) % arr.length ;
-		if (gNutSizeState==0){
-			newValue="0";
-			show = false;
-			$('.nut').hide();
-		} else {
-			newValue = arr[gNutSizeState] ;
-		}
-		setOneCssVar("--nut-width",newValue);
-		if (show) $('.nut').show();
-	}
+	//This is a Closure state machine
+	const cycleThruNutWidths = (() => {
+		let gNutSizeState = -1; 
+		const arr = ["0", "30px", "60px", "100px", "140px", "220px", "340px", "800px"];
+		return function(direction) {
+			let newValue = "200px";
+			let show = true;
+			if (gNutSizeState === -1) {
+				gNutSizeState = arr.length - 1;
+			}
+			gNutSizeState = (gNutSizeState + 1) % arr.length;
+			if (gNutSizeState === 0) {
+				newValue = "0";
+				show = false;
+				$('.nut').hide();
+			} else {
+				newValue = arr[gNutSizeState];
+			}
+			setOneCssVar("--nut-width", newValue);
+			if (show) $('.nut').show();
+		};
+	})();
 
 
 
@@ -1039,11 +1014,9 @@
 
 	}
 
-	var gPresentationMode = false; //turn this on when full presentation: script takes control of cell widths & heights, etc.
-
 	function displayOptionsToControls(options){
 
-		if (gPresentationMode){
+		if (gSong.presentationMode){
 			var sizesObj = options.NoteDisplaySizes;
 		 	$("#dropDownCellWidth").val(sizesObj.width);
 		 	$("#dropDownCellHeight").val(sizesObj.height);	 // e.g. {"width": 120,"height": 60};
@@ -1207,9 +1180,6 @@
 
 
 
-	var gPressTimer;
-
-
 
 	//=============== document.ready event Binding ==========================
 
@@ -1234,7 +1204,7 @@
 
 
 		$("#cbPresentationMode").change(function(){
-			gPresentationMode = this.checked;
+			gSong.presentationMode = this.checked;
 		});
 
 
@@ -1659,34 +1629,34 @@
 			var txtVal = $('#textareaFunctionSymbols').val();
 		    try {
 				//Since we are allowing the user to put somthing in, let's validate a bit before accepting.
-				 noteNamesFuncArr = JSON.parse(txtVal);
-				 if (!noteNamesFuncArr.length){
+				 gSong.noteNamesFuncArr = JSON.parse(txtVal);
+				 if (!gSong.noteNamesFuncArr.length){
 					 throw new TypeError("NoteFunction array is empty -- check commas and quotes.");
 				 }
-				 if (!noteNamesFuncArr[0]){
+				 if (!gSong.noteNamesFuncArr[0]){
 					 throw new TypeError("First NoteFunction is empty");
 				 }
-				 if (!noteNamesFuncArr[11]){
+				 if (!gSong.noteNamesFuncArr[11]){
 					 throw new TypeError("Last NoteFunction is empty");
 				 }
 			 	 gSong.noteNamesFuncArr = txtVal;
 			} catch (error) {
-				noteNamesFuncArr = noteNamesFuncArrDEFAULT;
+				gSong.noteNamesFuncArr = gSong.noteNamesFuncArrDEFAULT;
 				alert("Error setting NoteFunction names: "+error);
 			}
 			fullRepaint();
 		});
 		// CODE-EXAMPLE("TextAreaWButtonWidget", "FunctionSymbols")
 		$("#btnFunctionSymbolsReset").click(function() {
-			noteNamesFuncArr = noteNamesFuncArrDEFAULT;
-			$('#textareaFunctionSymbols').val(JSON.stringify(noteNamesFuncArr));
+			gSong.noteNamesFuncArr = gSong.noteNamesFuncArrDEFAULT;
+			$('#textareaFunctionSymbols').val(JSON.stringify(gSong.noteNamesFuncArr));
 			fullRepaint();
 		});
 		// END-CODE-EXAMPLE("TextAreaWButtonWidget") 
 		$('#dropDownFunctionSymbols').change(function() {
             var value = $('#dropDownFunctionSymbols').val();
-			noteNamesFuncArr = JSON.parse(value);  //this one is safe--comes from our built SELECT.
-			$('#textareaFunctionSymbols').val(JSON.stringify(noteNamesFuncArr));
+			gSong.noteNamesFuncArr = JSON.parse(value);  //this one is safe--comes from our built SELECT.
+			$('#textareaFunctionSymbols').val(JSON.stringify(gSong.noteNamesFuncArr));
             fullRepaint();
 	    });
 
@@ -1741,6 +1711,11 @@
 		$('#btnShowWarny').click(function(){
 			$('#warny').show();
 		});
+	}
+
+	function bindDataActionHandlers(){
+		// Generate code here for all the Event Handlers:
+
 	}
 
 	//=============== document.ready HELPER functions ==========================
@@ -1808,12 +1783,11 @@
 		    return true;
 		}
 
-		populateFretLengthArray();
-
 		gSong = makeSong();  //var song global in this file (at top).
-
+		
 		gSong.graveyard = makeGraveyard();
 
+		
 		installDefaultColorDicts();
 		applyStylesheetsTo_gUserColorDict();
 		buildColorDicts();
@@ -1834,7 +1808,7 @@
 		//    which isn't "Default", although it should be.
 		//$('#selThemes').val("PoolShark").change();
 
-		$('#textareaFunctionSymbols').val(JSON.stringify(noteNamesFuncArr));
+		$('#textareaFunctionSymbols').val(JSON.stringify(gSong.noteNamesFuncArr));
 
 		var currentFilename = $("#txtFilename").val();
 	    $(".lblSongName").html(currentFilename);
