@@ -576,9 +576,9 @@ function makeSong(){
     	var namedNotes = section.namedNotes;
         debugger
     	for (const noteName in namedNotes){
-            var index = gNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
+            var index = constNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
             index=(12+index + amount) % 12;
-            var transposedNoteName = gNoteNamesArr[index];
+            var transposedNoteName = constNoteNamesArr[index];
             var otherNote = namedNotes[noteName];
             if (otherNote.colorClass){
                 var clonedNote = newNote();
@@ -597,7 +597,7 @@ function makeSong(){
 
   	function getRootNoteName(section){
   		var noteID = parseInt( section.rootID );
-  		var noteName = gNoteNamesArr[noteID];
+  		var noteName = constNoteNamesArr[noteID];
   		return noteName;
   	}
 }
