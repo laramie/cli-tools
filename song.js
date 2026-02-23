@@ -9,62 +9,118 @@
 /**
  * @returns {Song}
  */
+function makeSong(){
+    const DEFAULT_BEATS = 4;
+    const noteNamesFuncArrDEFAULT = [
+	    "I", // 1 - I    I
+	    "&tau;", //"&tau;", // 2 - Tau    was: "&#x1D70F;"
+	    "II", // 3 - II
+	    "m", // 4 - m
+	    "III", // 5 - 3
+	    "IV", // 6 - IV
+	    "&Theta;", // 7 - Tri
+	    "V", // 8 - V
+	    "&sigma;", // 9 - Sigma
+	    "6", // 10 - VI
+	    "&delta;", // 11 - dom
+	    "&Delta;" // 12 - I
+	];
 
-class Song {
-    constructor() {
-        const DEFAULT_BEATS = 4;
-        this.sections = null;
-        this.gSectionsCurrentIndex = 0;
-        this.gFirstBeatSeen = false;
-        this.userInstrumentTuning = null;
-        this.gSongModelListener = null;
-        this.noteNamesFuncArr = [
-            "I", "&tau;", "II", "m", "III", "IV", "&Theta;", "V", "&sigma;", "6", "&delta;", "&Delta;"
-        ];
-        this.sharps = false;
-        this.captionsRowShowing = false;
-        this.fretLengths = (() => {
-            var width = 60;
-            var L0 = 1;
-            const MAGIC_RATIO = 0.9438743;
-            const FIRSTFRET_LENGTH = 0.05297;
-            const fretLengths = [];
-            for (var n=2; n<=NUM_FRETS_MAX+1; n++){
-                var Cn = (Math.pow(MAGIC_RATIO, n));
-                var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
-                var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ;
-                fretLengths.push(R);
-            }
-            return fretLengths;
-        })();
-        this.presentationMode = false;
-        this.constructing = false;
-        this.make();
+    const FRET_LENGTHS_ARRAY = (() => {
+		var width = 60;
+		var L0 = 1;  //tuned length, (L-sub-zero)
+		const MAGIC_RATIO = 0.9438743;      //hand calculated from equation for fret ratios.
+		const FIRSTFRET_LENGTH = 0.05297;   //hand calculated from equation for fret ratios.
+        const fretLengths = [];
+		for (var n=2; n<=NUM_FRETS_MAX+1; n++){
+			var Cn = (Math.pow(MAGIC_RATIO, n));
+			var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
+			var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ; //0.05297 is the length of the first fret, if tuned length is 1.
+			fretLengths.push(R);
+		}
+        return fretLengths;
+    })();
+
+    let obj = {
+        //FIELDS:
+            sections: null,
+        	gSectionsCurrentIndex: 0,
+            gFirstBeatSeen: false,
+            userInstrumentTuning: null,
+            gSongModelListener: null,
+            noteNamesFuncArr: noteNamesFuncArrDEFAULT,
+            sharps: false,
+            captionsRowShowing: false,
+            fretLengths: FRET_LENGTHS_ARRAY,
+            presentationMode: false,
+            constructing: false,
+        //METHODS:
+            make: construct_gSections,
+
+            getCurrentSection: getCurrentSection,
+            getSectionsCurrentIndex: getSectionsCurrentIndex,
+            getRelativeSectionWithWrap: getRelativeSectionWithWrap,
+            test_getRelativeSectionWithWrap: test_getRelativeSectionWithWrap,
+            constructSection: constructSection,
+
+            getSections: getSections,
+            addSection: addSection,
+            addSections: addSections,
+            addSectionAfterCurrent: addSectionAfterCurrent,
+            removeAllSections: removeAllSections,
+
+            getBeat: getBeat,
+            incBeat: incBeat,
+            incBeatLoop: incBeatLoop,
+            decBeat: decBeat,
+            getBeats: getBeats,
+            setBeats: setBeats,
+            deleteBeat: deleteBeat,
+            prevBeat: prevBeat,
+            nextBeat: nextBeat,
+            prevNextBeat: prevNextBeat,
+            gotoFirstBeat: gotoFirstBeat,
+            moveBeatsLater: moveBeatsLater,
+
+            firstSection: firstSection,
+            lastSection: lastSection,
+            prevSection: prevSection,
+            nextSection: nextSection,
+            gotoSection: gotoSection,
+            gotoNextSection: gotoNextSection,
+            gotoPrevSection: gotoPrevSection,
+
+            insertSectionAtDest: insertSectionAtDest,
+            newSection: newSection,
+            addShallowCloneSection: addShallowCloneSection,
+            addDeepCloneSection: addDeepCloneSection,
+            addCloneSection: addCloneSection,
+            deleteCurrentSection: deleteCurrentSection,
+            isEmpty: isEmpty,
+            moveSectionToEND: moveSectionToEND,
+            moveSectionTo: moveSectionTo,
+
+            cycleThruKeysAllSections: cycleThruKeysAllSections,
+
+            getTableArrInCurrentSection: getTableArrInCurrentSection,
+            getTableArrInSection: getTableArrInSection,
+
+            removeUnusedTablesFromMemoryModel: removeUnusedTablesFromMemoryModel,
+            markVisibleTablesForFileSave: markVisibleTablesForFileSave,
+            getTuningHashInMemoryModel: getTuningHashInMemoryModel,
+            removeNotePlayedFromTable: removeNotePlayedFromTable,
+            exportFromTable: exportFromTable,
+            moveNamedNotesAllSections: moveNamedNotesAllSections,
+            moveNamedNotes: moveNamedNotes,
+            moveNamedNotesForSection: moveNamedNotesForSection,
+
+            getRootKey: song_getRootKey,
+            getLeadKey: song_getRootKeyLead,
+            getLeadNoteName: song_getLeadNoteName,
+            getRootNoteName: song_getRootNoteName
     }
-
-    make() {
-        this.constructing = true;
-        this.sections = [];
-        this.visibleNoteTables = [];
-        this.colorDicts = {};
-        this.defaultBPM = "80";
-        this.rootID = "3";
-        this.gSectionsCurrentIndex = this.addSection(this.constructSection());
-        this.namedNoteOpacity = "1.00";
-        this.singleNoteOpacity = "1.00";
-        this.constructing = false;
-        delete this.constructing;
-    }
-
-    getCurrentSection() {
-        return this.sections[this.gSectionsCurrentIndex];
-    }
-
-    // ...convert other methods similarly...
-}
-
-// Example usage:
-// let gSong = new Song();
+    obj.make();
+    return obj;
 
 
 
