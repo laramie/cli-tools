@@ -1,0 +1,40 @@
+{ "Source File" : "index.html",
+  "Chat Request": {
+        WIDGET("TextAreaWButtonWidget", "RowRange"", "1", "Presentation Mode", "User do this")
+  }
+} 
+
+
+{ "Source File" : "infinite-neck.js",
+  "Chat Request": {
+        CODE("TextAreaWButtonWidget", RowRange")
+  }
+} 
+
+{ "Source File" : "infinite-neck.js",
+  "Chat Request": {
+        CODE("TextAreaWButtonWidget", RowRange")
+  }
+} 
+
+{ "Source File" : "index.html",
+  "Chat Request": {
+        WIDGET("TextAreaWButtonWidget", "BanjoNut")
+  }
+} 
+
+{ "Source File" : "index.html",
+  "Chat Request": { 
+    WIDGET("TextWButtonWidget", "Caption"),
+    WIDGET("SelectWidget", "BaseInstrument")
+  } 
+}
+{ "Source File" : "infinite-neck.js",
+  "Chat Request": {
+        CODE("SelectWidget", "BaseInstrument")
+  }
+} 
+
+
+  
+
