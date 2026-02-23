@@ -1,0 +1,2 @@
+#push tags from local to server, because they don't go by default with git push:
+git push origin --tags
