@@ -510,6 +510,44 @@
 	}
 
     // file open / open file / openFile event
+	function setupOpenFileHAL(){
+		var fileInput = document.getElementById('fileInput');
+		fileInput.addEventListener('change', function(e) {  //click works, but is too jumpy. change doesn't work when you apply same file.
+			var file = fileInput.files[0];
+			var textType = /json.*/;
+			if (file.type.match(textType)) {
+				var reader = new FileReader();
+				var frs = [];
+				for (var k in jsonObj.sections){
+					var section = jsonObj.sections[k];
+					var replacementSection = gSong.constructSection();
+					section = Object.assign(replacementSection, section);
+					frs.push(section);
+				}
+				jsonObj.sections = frs;
+				if (!gSong.isEmpty(gSong.getCurrentSection())){
+					var yes = $("#cbAppendSections").prop("checked");
+					if (!yes){
+						gSong.removeAllSections();
+					}
+				}
+				gSong.addSections(jsonObj);
+				gSong.graveyard = makeGraveyard(gSong.graveyard);
+
+				var userTheme = gSong.userTheme;
+				if (userTheme){
+					userTheme["id"] = "USER";
+					getThemes()["USER"] = userTheme;
+					gSong.theme = "USER";
+				}
+				rebuildThemesDropdown();
+
+				updateAfterOpenSong();
+			}
+		});
+	}
+
+	// file open / open file / openFile event
 	function setupOpenFile(){
 	  	var fileInput = document.getElementById('fileInput');
 		fileInput.addEventListener('change', function(e) {  //click works, but is too jumpy. change doesn't work when you apply same file.
@@ -600,6 +638,8 @@
 
 		updateAfterOpenSong();
 	}
+
+
 	function updateAfterOpenSong(){
 		hideGraveyard();
 		installDefaultColorDicts();
@@ -1788,17 +1828,28 @@
 		$('#themeTableResults').hide();
 	}
 
-	//=============== document.ready ===========================================
+	//=============== Headless replacement for document.ready for testing ===========================================
+	function setupSongTests() {
+		gSong = makeSong();  //var song global in this file (at top).
+		
+		gSong.graveyard = makeGraveyard();
+		installDefaultColorDicts();
+		applyStylesheetsTo_gUserColorDict();
 
-	$(document).ready(function() {
+		//TODO: in each test be sure to set this somehow: gSong.songName = currentFilename;
+	}
+	
+	//=============== new appInit() called by document.ready ===========================================
+	// File-level appInit for browser startup
+	function appInit() {
 		window.onerror = function (message, url, lineNo, colno, error){
-		    alert('window.onerror: ' + message
-			    + '\r\n URL:'+url
+			alert('window.onerror: ' + message
+				+ '\r\n URL:'+url
 				+'\r\n Line Number: ' + lineNo
 				+'\r\n Col Number: '+colno
 				+'\r\n Stack: '+error.stack
 			);
-		    return true;
+			return true;
 		}
 
 		/**
@@ -1808,18 +1859,17 @@
 		
 		gSong.graveyard = makeGraveyard();
 
-		
 		installDefaultColorDicts();
 		applyStylesheetsTo_gUserColorDict();
 		buildColorDicts();
 		$('#divColorDicts').hide();
 		$("#CustomColorEditors").hide();
 
-	    installAllTuningsTables();
+		installAllTuningsTables();
 		installBtnHamburgerClicks();
-	    setupOpenFile();
+		setupOpenFile();
 		sectionChanged();
-	    installTDNoteClick();
+		installTDNoteClick();
 		bindDesktopEvents();
 		applyScalingPrefs(true);
 
@@ -1832,11 +1882,11 @@
 		$('#textareaFunctionSymbols').val(JSON.stringify(gSong.noteNamesFuncArr));
 
 		var currentFilename = $("#txtFilename").val();
-	    $(".lblSongName").html(currentFilename);
+		$(".lblSongName").html(currentFilename);
 		getSong().songName = currentFilename;
 		$('.topControlsCaptions').show();
 
-	    $('#cbHighlight').prop('checked', false);
+		$('#cbHighlight').prop('checked', false);
 		//NOTE: "checked" is done in buildUserColors, so you don't need to check any rb colors here.
 
 		$("#palette").show();
@@ -1877,7 +1927,8 @@
 		transportResize();
 
 
-		/*$('#cbFloatPalette').change(function() {
+		/*
+		$('#cbFloatPalette').change(function() {
 			if (this.checked){
 				dragElement(document.getElementById("palette"));
 			} else {
@@ -1888,5 +1939,11 @@
         draggable(document.getElementById('transport'));
 
 		scrollToTop();
+	}
+	//=============== end of new appInit() with document ready call ==========================================
 
-	}); //END document ready function
+	//=============== document.ready ===========================================
+
+	$(document).ready(appInit);
+
+	//=============== END document.ready ===========================================
