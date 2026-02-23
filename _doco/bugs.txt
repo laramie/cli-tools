@@ -1,4 +1,11 @@
 =============BUGS===================
+Order: Latest bugs are now listed First in this file
+====================================
+
+20260223: When customizing USER tuning, if you click Cancel when you clone: 
+   -- It DELETES any Tunings you have already cloned!  
+   -- Including ones from the file you just opened, I think.
+
 20240419: Section:NamedNotes => Stylesheet :: FindColor with AutoColor yields the weird green5 that means lookupcolor failed.
 
 TODO: 20240325 When you add a singleNote with a real color button, then go to automaticColor, the singleNote gets autocolored, when it should retain the color if placed by the user.
