@@ -1,4 +1,3 @@
-// Load all app dependencies and setup globals
 require('./jest-setup.js');
 const fs = require('fs');
 const path = require('path');
@@ -15,7 +14,7 @@ describe('Song JSON section count', () => {
       const filePath = path.join(__dirname, '../../songs', file);
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       // makeSong should now be available globally
-      const gSong = makeSong();
+      const gSong = global.makeSong();
       gSong.addSections(data);
       expect(gSong.getSections().length).toBe(expectedSections);
     });

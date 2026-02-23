@@ -456,7 +456,11 @@
 	    gSong.markVisibleTablesForFileSave();
 	    gSong.removeUnusedTablesFromMemoryModel();
 	    getBPM();
-	    gSong.songName = $("#txtFilename").val();  //TODO: move this to a more obvious function.
+	    
+		//TODO: move this to a more obvious function.
+		// For example, we should be storing that state in the visibleTables array of Table objects, which I also need for Tunings that watch other sections...
+		gSong.songName = $("#txtFilename").val();  
+		
 		gSong.userColors = gUserColorDict.dict;
 		gSong.theme = $('#selThemes').val();
 		var theUSERTuning = findTuningForID("USER");
@@ -1940,10 +1944,12 @@
 
 		scrollToTop();
 	}
-	//=============== end of new appInit() with document ready call ==========================================
+	//=============== end of new appInit() with document ready call ===========
 
-	//=============== document.ready ===========================================
+	//========================================================================= 
+	//  $(document).ready(appInit)                                      =======
+	//      will now be called from index.html                          =======
+	//      after all other script tags.                                =======
+	//=========================================================================
 
-	$(document).ready(appInit);
-
-	//=============== END document.ready ===========================================
+	

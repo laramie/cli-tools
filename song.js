@@ -301,13 +301,20 @@ function makeSong(){
         };
         result.make();
         result.sharps=this.sharps;
+        result.rootID = this.rootID; //TODO: check that this new default is OK.  Avoiding calling this.rootID = $("#dropDownRoot").val();
+            /*
+            TODO: this.rootID = $("#dropDownRoot").val(); should be result.rootID, 
+                  but also that is set in section_constructor()
+                  at any rate we need to get rid of jQuery.
+            */
         return result;
         function section_constructor(){
     	    this.noteTables = {};
     	    this.namedNotes = {};
     	    this.recordedNotes = {};
     		this.caption = "";
-    	    this.rootID = $("#dropDownRoot").val();
+    	    //TODO: I removed this, but we need to test that we do its repacement properly
+            //   this.rootID = $("#dropDownRoot").val();
     		this.rootIDLead = "-1";
 
             var beatsPer = DEFAULT_BEATS;
@@ -795,7 +802,7 @@ function makeSong(){
 	    for (i in allTunings.tunings){
 	         var baseID = allTunings.tunings[i].baseID;
 	         var divSelector = "#"+TABLEDIV_ID_PREFIX+baseID;
-	         if ($(divSelector).is(':visible')) {
+	         if ($(divSelector).is(':visible')) {  //TODO: this is a problem for Jest tests.  Refactor to sent this in.
 	             this.visibleNoteTables.push(TABLE_ID_PREFIX+baseID);
 	         }
 	    }
