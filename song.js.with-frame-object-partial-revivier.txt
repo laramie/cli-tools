@@ -574,7 +574,6 @@ function makeSong(){
     function moveNamedNotesForSection(amount, section){
     	var namedNotesClone = {};
     	var namedNotes = section.namedNotes;
-        debugger
     	for (const noteName in namedNotes){
             var index = constNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
             index=(12+index + amount) % 12;
