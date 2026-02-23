@@ -301,7 +301,6 @@
 	}
 
 	function buildCells(sharps, options) {
-		activityRebuild();
 	    if (sharps) {
 	        buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
 	        buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
@@ -322,7 +321,6 @@
 	    buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
 	    buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
 	    buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
-		activityRebuildDone();
 	}
 
 	//list of menu divs, accessed through .entries(), and associated button names,
@@ -474,10 +472,15 @@
 	}
 
 	//Use this function to skip saving the ColorDics, because they get generated anyway.
-	// Ultimately, only user-customized dicts should be saved, but right now it is doing all the default runtime generated dicts, bloating the file.
+	// Ultimately, only user-customized dicts should be saved, but right now it is doing 
+	// all the default run-time generated dicts, bloating the file.
+	// And other run-time props are removed.
 	function skipColorDictsReplacer(key, value){
 		console.log("key: "+key);
-		if (key === 'userColors' || key === 'colorDicts') {
+		if (   key === 'userColors' 
+			|| key === 'colorDicts' 
+			|| key === 'fretLengths' 
+			|| key === 'noteNamesFuncArr' ) {
 			return undefined;
 		}
 		return value;
@@ -859,7 +862,6 @@
 				namedNotes = (Object.keys(section.namedNotes).length>0) ? "namedNotes: "+JSON.stringify(Object.keys(section.namedNotes)) : "";
 				specialNotes = (Object.keys(section.noteTables).length>0) ? "<br />SpecialNotes: "+printTablesStats(section.noteTables) : "";
 				var SEP = "</td><td>";
-				debugger
 				result = result+"<tr><td>"
 				       +"<a href=\"javascript:linkToSection('"+idx+"');\">"+(toInt(idx,0)+1)+"</a>"+SEP
 					   +section.beats+SEP
@@ -1718,6 +1720,10 @@
 		$(document).on('click', '[data-action]', function(e) {
 			const action = $(this).data('action');
 			const arg = $(this).data('action-arg');
+			if (action === 'help') {
+				window.open(getHelpTopic(), 'infinitehelp');
+				return;
+			}
 			if (typeof window[action] === 'function') {
 				if (arg !== undefined) {
 					window[action](arg);
@@ -1786,7 +1792,6 @@
 
 	$(document).ready(function() {
 		window.onerror = function (message, url, lineNo, colno, error){
-			debugger
 		    alert('window.onerror: ' + message
 			    + '\r\n URL:'+url
 				+'\r\n Line Number: ' + lineNo
@@ -1796,6 +1801,9 @@
 		    return true;
 		}
 
+		/**
+		@type {ReturnType<typeof makeSong>}
+		*/
 		gSong = makeSong();  //var song global in this file (at top).
 		
 		gSong.graveyard = makeGraveyard();
@@ -1854,6 +1862,7 @@
 	    reloadAllTuningsDisplay();
 	    showDefaultTuning();//calls showhideTunings and shows S6 if none found.
 	    bindFormTuningsEvents();
+		bindDataActionHandlers();
 
 
 		$("#btnFlats").click();  //calls resetNoteNames();

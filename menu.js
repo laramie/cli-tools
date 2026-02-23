@@ -567,6 +567,11 @@ var gMenuFile =    {
           "trigger": "d",
           "children": [
             {
+              "caption": "song <b>f</b>ile format",
+              "trigger": "f",
+              "action": "showViewDiagnosticsSongFileFormat"
+            },
+            {
               "caption": "<b>s</b>ong model",
               "trigger": "s",
               "action": "showViewDiagnosticsFullModel"

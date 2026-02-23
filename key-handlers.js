@@ -464,8 +464,9 @@ function performCmdAction(menuItem, args){
             showMessages(displayOptionsTable());
             actionResult.result = "DisplayOptions sent to Messages";
             break;
-        case "showViewDiagnosticsFullModel":
-			showMessages(JSON.stringify(getSong(), null, 2));
+        case "showViewDiagnosticsSongFileFormat":
+			updateMemoryModelPreFileSave();
+			showMessages(JSON.stringify(getSong(), skipColorDictsReplacer, 2));
 			break;
 		case "showGraveyard":
 			showGraveyard();

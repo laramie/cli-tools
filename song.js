@@ -1,114 +1,70 @@
-function makeSong(){
-    const DEFAULT_BEATS = 4;
-    const noteNamesFuncArrDEFAULT = [
-	    "I", // 1 - I    I
-	    "&tau;", //"&tau;", // 2 - Tau    was: "&#x1D70F;"
-	    "II", // 3 - II
-	    "m", // 4 - m
-	    "III", // 5 - 3
-	    "IV", // 6 - IV
-	    "&Theta;", // 7 - Tri
-	    "V", // 8 - V
-	    "&sigma;", // 9 - Sigma
-	    "6", // 10 - VI
-	    "&delta;", // 11 - dom
-	    "&Delta;" // 12 - I
-	];
+/**
+ * @typedef {Object} Song
+ * @property {function(boolean):void} gotoNextSection
+ * @property {function():void} replay
+ * @property {function():void} getCurrentSection
+ * // ...add other methods you use...
+ */
 
-    const FRET_LENGTHS_ARRAY = (() => {
-		var width = 60;
-		var L0 = 1;  //tuned length, (L-sub-zero)
-		const MAGIC_RATIO = 0.9438743;      //hand calculated from equation for fret ratios.
-		const FIRSTFRET_LENGTH = 0.05297;   //hand calculated from equation for fret ratios.
-        const fretLengths = [];
-		for (var n=2; n<=NUM_FRETS_MAX+1; n++){
-			var Cn = (Math.pow(MAGIC_RATIO, n));
-			var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
-			var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ; //0.05297 is the length of the first fret, if tuned length is 1.
-			debugger
-			fretLengths.push(R);
-		}
-        return fretLengths;
-    })();
+/**
+ * @returns {Song}
+ */
 
-    let obj = {
-        //FIELDS:
-            sections: null,
-        	gSectionsCurrentIndex: 0,
-            gFirstBeatSeen: false,
-            userInstrumentTuning: null,
-            gSongModelListener: null,
-            noteNamesFuncArr: noteNamesFuncArrDEFAULT,
-            sharps: false,
-            captionsRowShowing: false,
-            fretLengths: FRET_LENGTHS_ARRAY,
-            presentationMode: false,
-            constructing: false,
-        //METHODS:
-            make: construct_gSections,
-
-            getCurrentSection: getCurrentSection,
-            getSectionsCurrentIndex: getSectionsCurrentIndex,
-            constructSection: constructSection,
-
-            getSections: getSections,
-            addSection: addSection,
-            addSections: addSections,
-            addSectionAfterCurrent: addSectionAfterCurrent,
-            removeAllSections: removeAllSections,
-
-            getBeat: getBeat,
-            incBeat: incBeat,
-            incBeatLoop: incBeatLoop,
-            decBeat: decBeat,
-            getBeats: getBeats,
-            setBeats: setBeats,
-            deleteBeat: deleteBeat,
-            prevBeat: prevBeat,
-            nextBeat: nextBeat,
-            prevNextBeat: prevNextBeat,
-            gotoFirstBeat: gotoFirstBeat,
-            moveBeatsLater: moveBeatsLater,
-
-            firstSection: firstSection,
-            lastSection: lastSection,
-            prevSection: prevSection,
-            nextSection: nextSection,
-            gotoSection: gotoSection,
-            gotoNextSection: gotoNextSection,
-            gotoPrevSection: gotoPrevSection,
-
-            insertSectionAtDest: insertSectionAtDest,
-            newSection: newSection,
-            addShallowCloneSection: addShallowCloneSection,
-            addDeepCloneSection: addDeepCloneSection,
-            addCloneSection: addCloneSection,
-            deleteCurrentSection: deleteCurrentSection,
-            isEmpty: isEmpty,
-            moveSectionToEND: moveSectionToEND,
-            moveSectionTo: moveSectionTo,
-
-            cycleThruKeysAllSections: cycleThruKeysAllSections,
-
-            getTableArrInCurrentSection: getTableArrInCurrentSection,
-            getTableArrInSection: getTableArrInSection,
-
-            removeUnusedTablesFromMemoryModel: removeUnusedTablesFromMemoryModel,
-            markVisibleTablesForFileSave: markVisibleTablesForFileSave,
-            getTuningHashInMemoryModel: getTuningHashInMemoryModel,
-            removeNotePlayedFromTable: removeNotePlayedFromTable,
-            exportFromTable: exportFromTable,
-            moveNamedNotesAllSections: moveNamedNotesAllSections,
-            moveNamedNotes: moveNamedNotes,
-            moveNamedNotesForSection: moveNamedNotesForSection,
-
-            getRootKey: song_getRootKey,
-            getLeadKey: song_getRootKeyLead,
-            getLeadNoteName: song_getLeadNoteName,
-            getRootNoteName: song_getRootNoteName
+class Song {
+    constructor() {
+        const DEFAULT_BEATS = 4;
+        this.sections = null;
+        this.gSectionsCurrentIndex = 0;
+        this.gFirstBeatSeen = false;
+        this.userInstrumentTuning = null;
+        this.gSongModelListener = null;
+        this.noteNamesFuncArr = [
+            "I", "&tau;", "II", "m", "III", "IV", "&Theta;", "V", "&sigma;", "6", "&delta;", "&Delta;"
+        ];
+        this.sharps = false;
+        this.captionsRowShowing = false;
+        this.fretLengths = (() => {
+            var width = 60;
+            var L0 = 1;
+            const MAGIC_RATIO = 0.9438743;
+            const FIRSTFRET_LENGTH = 0.05297;
+            const fretLengths = [];
+            for (var n=2; n<=NUM_FRETS_MAX+1; n++){
+                var Cn = (Math.pow(MAGIC_RATIO, n));
+                var Cnm1 = (Math.pow(MAGIC_RATIO, (n-1)));
+                var R = (L0*(1-Cn)-L0*(1-Cnm1))/FIRSTFRET_LENGTH ;
+                fretLengths.push(R);
+            }
+            return fretLengths;
+        })();
+        this.presentationMode = false;
+        this.constructing = false;
+        this.make();
     }
-    obj.make();
-    return obj;
+
+    make() {
+        this.constructing = true;
+        this.sections = [];
+        this.visibleNoteTables = [];
+        this.colorDicts = {};
+        this.defaultBPM = "80";
+        this.rootID = "3";
+        this.gSectionsCurrentIndex = this.addSection(this.constructSection());
+        this.namedNoteOpacity = "1.00";
+        this.singleNoteOpacity = "1.00";
+        this.constructing = false;
+        delete this.constructing;
+    }
+
+    getCurrentSection() {
+        return this.sections[this.gSectionsCurrentIndex];
+    }
+
+    // ...convert other methods similarly...
+}
+
+// Example usage:
+// let gSong = new Song();
 
 
 
@@ -131,6 +87,142 @@ function makeSong(){
     function getCurrentSection(){
 	    return this.sections[this.gSectionsCurrentIndex];
 	}
+
+    function test_getRelativeSectionWithWrap(){
+        const test = (sAmount) => {
+            let currIdx = this.getSectionsCurrentIndex();
+            let section = this.getRelativeSectionWithWrap(sAmount);
+            console.log("test-relative:"+sAmount+" ["+currIdx+"]==> key:"+section.rootID+" caption:"+section.caption);
+        }
+        test("-2");
+        test("-1");
+        test("-0");
+        test("0");
+        test("1");
+        test("2");
+        test("3");
+        test("@2");
+        test("@1");
+        test("@0");
+        test("@-0");
+        test("@-1");
+        test("^0");
+        test("^1");
+        test("^2");
+        test("^-1");
+        test("&-1");
+        test("&-0");
+        test("&0");
+        test("&1");
+        test("&2");
+        test("&3");
+        test("&4");
+        test("foo");
+        test("+foo");
+        test("-foo");
+        test("+");
+        test("-");
+        test("");
+    }
+
+    /*   Support
+     *   +3   3 sections ahead, with wrap
+     *   -3   3 sections back, with wrap
+     *   -1   previous section, with wrap
+     *   +1   next section, with wrap
+     *    1   Section 1 absolute (there always must be one section)
+     *    2   Section 2 absolute, or last if num too large
+     *    @1  Last section played in Random mode
+     *    @2  Two sections ago played in Random mode
+     *    ^1  previous section, no wrap, just go as early as you can, max is Section 1
+     *    ^2  2 sections back, no wrap, just go as early as you can, max is Section 1
+     *    &1  1 section ahead, no wrap, max is last Section
+     *    &2  2 sections ahead, no wrap, max is last Section
+     * 
+     *    Negative signs after the first character are ignored, so @-1 is the same as @1, and --1 is the same as -1.
+     *     So you can go "back" with -1 or ^1 or @1, and --1, ^-1, and @-1 are identical, respectively.
+    */
+    function getRelativeSectionWithWrap(sAmount){
+        const Direction = Object.freeze({
+            FORWARD:         '+',
+            BACKWARD:        '-',
+            ABSOLUTE:        'A',
+            PREVIOUS_PLAYED: '@',  // legal values for full string: "@-2" or "@2" or "@+2"
+            BACKWARD_NOWRAP: '^',  // legal values: ^1 ^2  go backwards.  No minus sign.
+            FORWARD_NOWRAP:  '&',  // legal value: &1 &2 go forwards. No minus signs.
+            BAD_INPUT:       'X',
+            EMPTY:           'E'
+        });
+        var firstChar = Direction.EMPTY; //TODO: fix this.
+
+        if (sAmount && sAmount[0]){
+            // Extract firstChar if present
+            const match = sAmount.match(/^([+\-@^&])([-+]?\d+)/);
+            let firstChar = null;
+            let intNum = 0;
+            let isnum = false;
+            if (match) {
+                firstChar = match[1];
+                // Try to parse the integer part
+                intNum = Math.abs(parseInt(match[2], 10));
+                isnum = /^[-+]?\d+$/.test(match[2]);
+                if (!isnum){
+                    firstChar = Direction.BAD_INPUT;
+                }
+            } else {
+                // If no special char, check for pure integer
+                if (/^[-+]?\d+$/.test(sAmount)) {
+                    firstChar = Direction.ABSOLUTE;
+                    intNum = Math.abs(parseInt(sAmount, 10));  //deal with the illegal --2.
+                    isnum = true;
+                } else {
+                    // Malformed input: neither special char nor integer
+                    firstChar = Direction.BAD_INPUT;
+                    intNum = 0;
+                    isnum = false;
+                    console.warn("Malformed section amount: ", sAmount);
+                }
+            }
+            var currentIndex = this.gSectionsCurrentIndex;
+            function wrap(oneBasedDistance, sectionsArray, currentZeroBasedIndex){
+                const n = sectionsArray.length;
+                const wrappedIndex = ((currentZeroBasedIndex + oneBasedDistance) % n + n) % n;
+                return wrappedIndex;
+            }
+
+            if (intNum === 0){
+                firstChar = Direction.BAD_INPUT;
+            }
+
+            switch (firstChar){
+                case Direction.BAD_INPUT:
+                case Direction.EMPTY:
+                    return this.sections[currentIndex];
+                case Direction.ABSOLUTE: //(number only, goto num or max)
+                    if (intNum > this.sections.length){
+                        return this.sections[this.sections.length-1];                           
+                    }
+                    return this.sections[intNum-1];
+                case Direction.PREVIOUS_PLAYED:  //(@)  TODO: this needs to use a stored list of previously played sections if Random Looping.
+                    intNum = -1*Math.abs(intNum);  
+                    //fall through for now, use the FORWARD/BACKWARD logic.
+                case Direction.FORWARD: // (+)
+                    var wrappedIndex = wrap(intNum, this.sections, currentIndex);
+                    return this.sections[wrappedIndex];
+                case Direction.BACKWARD: //(-)
+                    var wrappedIndex = wrap( -1 * intNum, this.sections, currentIndex);
+                    return this.sections[wrappedIndex];
+                case Direction.BACKWARD_NOWRAP:  //(^)
+                    return this.sections[Math.max(0, (currentIndex - Math.abs(intNum)))];
+                case Direction.FORWARD_NOWRAP:   //(&)
+                    var idx = (currentIndex + Math.abs(intNum))
+                    var maxidx = this.sections.length-1;
+                    return this.sections[(idx > maxidx) ? maxidx : idx];
+            }
+        } else {
+            return this.getCurrentSection();        
+        }
+    }
 
     function getSectionsCurrentIndex(){
         return this.gSectionsCurrentIndex;
@@ -165,7 +257,6 @@ function makeSong(){
             var beatsPer = DEFAULT_BEATS;
     	    this.beats = beatsPer;
     		this.currentBeat = 1;
-            debugger
     	    //this.sharps = parentSong.sharps;
             this.sharps = false;
     	}
@@ -713,7 +804,6 @@ function makeSong(){
     function moveNamedNotesForSection(amount, section){
     	var namedNotesClone = {};
     	var namedNotes = section.namedNotes;
-        debugger
     	for (const noteName in namedNotes){
             var index = constNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
             index=(12+index + amount) % 12;

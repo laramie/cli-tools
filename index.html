@@ -62,7 +62,7 @@
     				<button id="btnFillNotes"  type="button" class="MainMenuTabBtn BtnPunchedOut" tabindex="-1">F<b><u>i</u></b>ll</button>
     	            <button id="btnPalette"  type="button" class="MainMenuTabBtn BtnPunchedOut" tabindex="-1"><b><u>P</u></b>alette</button>
     	            <button id="btnDesktop"  type="button" class="MainMenuTabBtn BtnPunchedOut" tabindex="-1">Desktop</button>
-    	            <button onclick=" window.open(getHelpTopic(),'infinitehelp');" class="MainMenuTabBtn" tabindex="-1">Help</button>
+                    <button data-action="help" class="MainMenuTabBtn" tabindex="-1">Help</button>
                     &nbsp;&nbsp;<span id="SelectThemesDest" ></span>
     			</span>
                 <span id="transportTopPoint"></span>
@@ -397,7 +397,7 @@
                             </div>
                             <br>
                             <div class="sectionPageControlsGroup">
-                                Open Song from: <button id="btnSongList"  type="button" tabindex="-1" onclick="songLibrary()">Song Library</button>
+                                Open Song from: <button id="btnSongList"  type="button" tabindex="-1" data-action="songLibrary">Song Library</button>
                                 <div id="divSongList"></div>
                             </div>
                             <br>
@@ -412,7 +412,7 @@
                             <div class="sectionPageControlsGroup">
                                 <label for="txtBPM">BPM:&nbsp;</label>
                                 <input type="text" name="txtBPM" id="txtBPM" size="4" value="80"><button type="button">&check;</button>
-                                &nbsp;&nbsp;&nbsp;<button id="btnGraveyard"  type="button" onclick="showGraveyard();">View Graveyard</button>
+                                &nbsp;&nbsp;&nbsp;<button id="btnGraveyard"  type="button" data-action="showGraveyard">View Graveyard</button>
                             </div>
                         </td>
                     </tr>
@@ -975,8 +975,8 @@
                                 </td>
                                 <td>
                                     <span id="lblUIFontSize" style="background-color: white">&nbsp;</span>
-                                    &nbsp;&nbsp;&nbsp;<button id="btnIncreaseUIFont" type="button" onclick="increaseUIFont()" class="BtnPunchedOut">+</button>
-                                    &nbsp;&nbsp;&nbsp;<button id="btnDecreaseUIFont" type="button" onclick="decreaseUIFont()" class="BtnPunchedOut">-</button>
+                                    &nbsp;&nbsp;&nbsp;<button id="btnIncreaseUIFont" type="button" data-action="increaseUIFont" class="BtnPunchedOut">+</button>
+                                    &nbsp;&nbsp;&nbsp;<button id="btnDecreaseUIFont" type="button" data-action="decreaseUIFont" class="BtnPunchedOut">-</button>
 
                                 </td>
                             </tr>
@@ -987,8 +987,8 @@
                                 </td>
                                 <td>
                                     <span id="lblCellFontSize" style="background-color: white">&nbsp;</span>
-                                    &nbsp;&nbsp;&nbsp;<button id="btnIncreaseNoteFont" type="button" onclick="increaseNoteFont()" class="BtnPunchedOut">+</button>
-                                    &nbsp;&nbsp;&nbsp;<button id="btnDecreaseNoteFont" type="button" onclick="decreaseNoteFont()" class="BtnPunchedOut">-</button>
+                                    &nbsp;&nbsp;&nbsp;<button id="btnIncreaseNoteFont" type="button" data-action="increaseNoteFont" class="BtnPunchedOut">+</button>
+                                    &nbsp;&nbsp;&nbsp;<button id="btnDecreaseNoteFont" type="button" data-action="decreaseNoteFont" class="BtnPunchedOut">-</button>
 
 
                                 </td>
@@ -1728,28 +1728,28 @@
                                 <button id="btnToggleQuick" class="BtnPunchedOut BigMobileBtn" type="button" >Toggle QuickMenu</button>
                                 <br>
                                 <br>
-                                <button id="btnChromeFullscreen" class="BtnPunchedOut BigMobileBtn" type="button" onclick="ChromeFullscreen()" >Chrome Fullscreen</button>
+                                <button id="btnChromeFullscreen" class="BtnPunchedOut BigMobileBtn" type="button" data-action="ChromeFullscreen" >Chrome Fullscreen</button>
                                 <br>
                                 <br>
-                                <button id="btnFullscreen" class="BtnPunchedOut BigMobileBtn" type="button" onclick="enterFullscreen(true)" >infinite-neck Fullscreen</button>
+                                <button id="btnFullscreen" class="BtnPunchedOut BigMobileBtn" type="button" data-action="enterFullscreen" >infinite-neck Fullscreen</button>
                                 <br>
                                 <br>
-                                <button id="btnIncreaseUIFont" class="BtnPunchedOut BigMobileBtn" type="button" onclick="increaseUIFont()" >Increase UI Font</button>
+                                <button id="btnIncreaseUIFont" class="BtnPunchedOut BigMobileBtn" type="button" data-action="increaseUIFont" >Increase UI Font</button>
                                 <br>
                                 <br>
-                                <button id="btntoggleCaption" class="BtnPunchedOut BigMobileBtn" type="button" onclick="toggleCaption()" >Toggle Caption</button>
+                                <button id="btntoggleCaption" class="BtnPunchedOut BigMobileBtn" type="button" data-action="toggleCaption" >Toggle Caption</button>
                                 <br>
                                 <br>
-                                <button id="btntoggleInstrumentCaption" class="BtnPunchedOut BigMobileBtn" type="button" onclick="toggleInstrumentCaptionRow()" >Toggle Instrument Caption</button>
+                                <button id="btntoggleInstrumentCaption" class="BtnPunchedOut BigMobileBtn" type="button" data-action="toggleInstrumentCaptionRow" >Toggle Instrument Caption</button>
                                 <br>
                                 <br>
-                                <button id="btnSaveScaling" class="BtnPunchedOut BigMobileBtn" type="button" onclick="saveScalingPrefs()" >Save Scaling Prefs</button>
+                                <button id="btnSaveScaling" class="BtnPunchedOut BigMobileBtn" type="button" data-action="saveScalingPrefs" >Save Scaling Prefs</button>
                                 <br>
                                 <br>
-                                <button id="btnApplyScaling" class="BtnPunchedOut BigMobileBtn" type="button" onclick="applyScalingPrefs()" >Apply Scaling Prefs</button>
+                                <button id="btnApplyScaling" class="BtnPunchedOut BigMobileBtn" type="button" data-action="applyScalingPrefs" >Apply Scaling Prefs</button>
                                 <br>
                                 <br>
-                                <button id="btnClearScaling" class="BtnPunchedOut BigMobileBtn" type="button" onclick="clearScalingPrefs()" >Clear Scaling Prefs</button>
+                                <button id="btnClearScaling" class="BtnPunchedOut BigMobileBtn" type="button" data-action="clearScalingPrefs" >Clear Scaling Prefs</button>
                                 <br>
                                 <br>
                                 <div id="divScalingPrefs"></div>
@@ -1850,7 +1850,7 @@
         <br>
         <br>
         <br>
-        <button type="button" onclick="leaveFullscreen();">Exit Fullscreen</button>
+        <button type="button" data-action="leaveFullscreen">Exit Fullscreen</button>
     </div>
 
 </body>

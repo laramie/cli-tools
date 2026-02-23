@@ -501,18 +501,7 @@ function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
 
 //=================================REPLAY========================================
 
-function activityRebuild(){
-}
-function activityReplay(){
-}
-function activityRebuildDone(){
-}
-function activityReplayDone(){
-}
-
-
 function replay(){
-    activityReplay();
     var currSection = getCurrentSection();
     var hideNamedNotes  = $("#cbHideNamedNotes").prop("checked");
     var hideTinyNotes = $("#cbHideTinyNotes").prop("checked");
@@ -529,10 +518,15 @@ function replay(){
                 var theSelect;
                 if (namedNote.noteName){
                     theSelect = ".note"+namedNote.noteName;
+                    
                 } else {
                     theSelect = namedNote.noteNameClass; //old style before 20240324
                 }
     			var theClass = $(theSelect);
+                if (!theSelect){
+                    console.log("undef:"+JSON.stringify(namedNote));
+                }
+                console.log("named:"+theSelect+":"+theClass.length);
                 var theColorClass = lookupUserColorClass(namedNote);
     	        styleNamedNote(theClass, theColorClass, noteName); // sets opacity.
     	}
@@ -544,7 +538,9 @@ function replay(){
         var tablearr = currSection.noteTables[tablename];
         for (const scriptIndex in tablearr){
             var script = tablearr[scriptIndex];
-            var jtd = $("#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]");
+            var jtdselector = "#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]";
+            var jtd = $(jtdselector);
+            console.log("select:"+jtdselector+":"+jtd.length);
             jtd.each(function(i, obj){
                  var textdiv;
                  if (script.styleNum == undefined){
@@ -580,7 +576,6 @@ function replay(){
             });
         }
     }//end for
-    activityReplayDone();
 }
 
 function showMidiNotesInTable(tableID, midinum, preferredRow){
