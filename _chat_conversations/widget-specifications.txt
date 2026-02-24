@@ -126,7 +126,7 @@ For the above two examples, these two specifiers would be formatted thusly:
 Actual Chat Requests Now
 =================================
 
-Please generate the code specified in this format in the requests in the file "_TEMP_ONLY/chat-request-1.txt"
+Please generate the code specified in this format in the requests in the file "_chat_conversations/widget-specifiers.txt"
 
 
 
