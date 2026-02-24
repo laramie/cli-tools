@@ -2,6 +2,9 @@
 Order: Latest bugs are now listed First in this file
 ====================================
 
+2026023 : validate that songs/All-Chords-in-C-old-file-format.json should maybe fail the Jest test?  Or maybe I have code that handles the old file format so it passes?  Either way, we wanna know.
+
+
 20260223: When customizing USER tuning, if you click Cancel when you clone: 
    -- It DELETES any Tunings you have already cloned!  
    -- Including ones from the file you just opened, I think.

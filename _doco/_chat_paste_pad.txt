@@ -1,0 +1,51 @@
+"empty-song-missing-namedNotes.json"
+
+tests/empty-song-missing-noteTables.json (expected failure) (7 ms)
+
+'Error: \x1b[2mexpect(\x1b[22m\x1b[31mreceived\x1b[39m\x1b[2m).\x1b[22mtoHaveProperty\x1b[2m(\x1b[22m\x1b[32mpath\x1b[39m\x1b[2m)\x1b[22m\n\nExpected path: \x1b[32m"noteTables"\x1b[39m\nReceived path: \x1b[31m[]\x1b[39m\n\nReceived value: \x1b[31m{"beats": 4, "caption": "", "currentBeat": 1, "namedNotes": {}, "recordedNotes": {}, "rootID": "3", "rootIDLead": "-1", "sharps": false}\x1b[39m\n    at toHaveProperty (/home/laramie/infinite-neck/_tests/jest/song-section-count.test.js:51:21)\n    at Array.forEach (<anonymous>)\n    at forEach (/home/laramie/infin…    at Runtime._loadModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:944:12)\n    at Runtime.requireModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:832:12)\n    at jestAdapter (/home/laramie/infinite-neck/node_modules/jest-circus/build/runner.js:95:13)\n    at runTestInternal (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:343:7)'
+
+
+'Error: \x1b[2mexpect(\x1b[22m\x1b[31mreceived\x1b[39m\x1b[2m).\x1b[22mtoHaveProperty\x1b[2m(\x1b[22m\x1b[32mpath\x1b[39m\x1b[2m)\x1b[22m\n\nExpected path: \x1b[32m"noteTables"\x1b[39m\nReceived path: \x1b[31m[]\x1b[39m\n\nReceived value: \x1b[31m{"beats": 4, "caption": "", "currentBeat": 1, "namedNotes": {}, "recordedNotes": {}, "rootID": "3", "rootIDLead": "-1", "sharps": false}\x1b[39m\n    at toHaveProperty (/home/laramie/infinite-neck/_tests/jest/song-section-count.test.js:51:21)\n    at Array.forEach (<anonymous>)\n    at forEach (/home/laramie/infin…    at Runtime._loadModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:944:12)\n    at Runtime.requireModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:832:12)\n    at jestAdapter (/home/laramie/infinite-neck/node_modules/jest-circus/build/runner.js:95:13)\n    at runTestInternal (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:343:7)'
+
+sections[3],noteTables[tblUSER_copy:3,tblBanjo:2,tbleGuitar:4],namedNotes:2
+
+    {
+      "noteTables": {
+        "tblUSER_copy": [
+          {
+            "midinum": "59",
+            "row": "2",
+            "col": "4",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "B"
+          },
+          {
+            "midinum": "55",
+            "row": "3",
+            "col": "5",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "G"
+          }
+        ]
+      },
+      "namedNotes": {
+        "Bb": {
+          "noteName": "Bb",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "Gb": {
+          "noteName": "Gb",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        }
+      },
+      "recordedNotes": {},
+      "caption": "",
+      "rootIDLead": "-1",
+      "beats": 4,
+      "currentBeat": 1,
+      "sharps": false,
+      "rootID": "3"

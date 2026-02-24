@@ -1,3 +1,30 @@
+# Existing entries in .gitignore
+/_TEMP_ONLY/
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Build output
+dist/
+build/
+
+# Test coverage
+coverage/
+
+# VS Code settings
+.vscode/
 /infinite-neck/nbproject/private/
 .vscode/settings.json
 /_TEMP_ONLY/
