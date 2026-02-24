@@ -28,10 +28,32 @@ const filteredSongList = songList.filter(f => f !== 'song-list.json').concat(tes
 
 // Combine all files and mark expected failures
 const songFiles = [
-    ...filteredSongList.map(f => ({ file: f, expectedFailure: false })),
-    ...failureTestSongList.map(f => ({ file: f, expectedFailure: true }))
+    ...filteredSongList.map(f => ({ 
+                              file: f, 
+                              expectedFailure: false, 
+                              toString: function(){
+                                var ef = this.expectedFailure ? 
+                                    " [failure expected]"
+                                  : "";
+                                return "song:"+f.toString() + ef;
+                              } 
+                            })),
+    ...failureTestSongList.map(f => ({ 
+                              file: f, 
+                              expectedFailure: true,
+                              toString: function(){
+                                var ef = this.expectedFailure ? 
+                                    " [failure expected]"
+                                  : "";
+                                return "song:"+f.toString() + ef;
+                              } 
+                            }))
 ];
 
+
+//==================================================================
+//=========== Helper Functions =====================================
+//==================================================================
 
 
 function getNoteTableSummary(noteTables) {
@@ -82,6 +104,26 @@ function validateNoteTables(noteTables, sectionIdx) {
 }
 
 
+// Helper to validate namedNotes and noteTables presence as objects in each section
+function validateSectionDictionaries(data) {
+  if (!Array.isArray(data.sections)) return;
+  data.sections.forEach((section, idx) => {
+    expect(section).toHaveProperty('namedNotes');
+    expect(typeof section.namedNotes).toBe('object');
+    expect(section).toHaveProperty('noteTables');
+    expect(typeof section.noteTables).toBe('object');
+  });
+}
+// Helper to validate rootID presence at song and section level
+function getSectionRootIDs(data) {
+  if (!Array.isArray(data.sections)) return [];
+  return data.sections.map(section => {
+    expect(section).toHaveProperty('rootID');
+    return section.rootID;
+  });
+}
+
+
 // Helper to run all validations for a song file
 function runSongValidation(file, data, expectedFailure) {
   const expectedSections = Array.isArray(data.sections) ? data.sections.length : 0;
@@ -120,26 +162,14 @@ function runSongValidation(file, data, expectedFailure) {
   }
   return { expectedSections, sectionRootIDsSummary, rootID: data.rootID, errorSummary };
 }
-// Helper to validate namedNotes and noteTables presence as objects in each section
-function validateSectionDictionaries(data) {
-  if (!Array.isArray(data.sections)) return;
-  data.sections.forEach((section, idx) => {
-    expect(section).toHaveProperty('namedNotes');
-    expect(typeof section.namedNotes).toBe('object');
-    expect(section).toHaveProperty('noteTables');
-    expect(typeof section.noteTables).toBe('object');
-  });
-}
-// Helper to validate rootID presence at song and section level
-function getSectionRootIDs(data) {
-  if (!Array.isArray(data.sections)) return [];
-  return data.sections.map(section => {
-    expect(section).toHaveProperty('rootID');
-    return section.rootID;
-  });
-}
 
-describe('Song JSON section count', () => {
+
+//===================================================================
+//========         Now run the tests           ======================
+//===================================================================
+
+
+describe('Song Section count', () => {
   songFiles.forEach(({ file, expectedFailure }) => {
     const filePath = path.join(__dirname, '../../songs', file);
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -154,10 +184,10 @@ describe('Song JSON section count', () => {
 });
 
 describe('Song Section Structure and Summary', () => {
-  for (const songFile of songFiles) {
-    test(`sections summary for ${songFile}`, () => {
-      const songPath = path.join(SONGS_DIR, songFile);
-      const song = JSON.parse(fs.readFileSync(songPath, 'utf8'));
+  songFiles.forEach(({ file, expectedFailure }) => {
+    const filePath = path.join(__dirname, '../../songs', file);
+    const song = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    test(`sections summary for ${file}`, () => {
       expect(song).toHaveProperty('sections');
       expect(Array.isArray(song.sections)).toBe(true);
       song.sections.forEach((section, i) => {
@@ -172,5 +202,5 @@ describe('Song Section Structure and Summary', () => {
         }
       });
     });
-  }
+  });
 });

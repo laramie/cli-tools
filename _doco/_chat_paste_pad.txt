@@ -1,51 +1,44 @@
-"empty-song-missing-namedNotes.json"
-
-tests/empty-song-missing-noteTables.json (expected failure) (7 ms)
-
-'Error: \x1b[2mexpect(\x1b[22m\x1b[31mreceived\x1b[39m\x1b[2m).\x1b[22mtoHaveProperty\x1b[2m(\x1b[22m\x1b[32mpath\x1b[39m\x1b[2m)\x1b[22m\n\nExpected path: \x1b[32m"noteTables"\x1b[39m\nReceived path: \x1b[31m[]\x1b[39m\n\nReceived value: \x1b[31m{"beats": 4, "caption": "", "currentBeat": 1, "namedNotes": {}, "recordedNotes": {}, "rootID": "3", "rootIDLead": "-1", "sharps": false}\x1b[39m\n    at toHaveProperty (/home/laramie/infinite-neck/_tests/jest/song-section-count.test.js:51:21)\n    at Array.forEach (<anonymous>)\n    at forEach (/home/laramie/infin…    at Runtime._loadModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:944:12)\n    at Runtime.requireModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:832:12)\n    at jestAdapter (/home/laramie/infinite-neck/node_modules/jest-circus/build/runner.js:95:13)\n    at runTestInternal (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:343:7)'
-
-
-'Error: \x1b[2mexpect(\x1b[22m\x1b[31mreceived\x1b[39m\x1b[2m).\x1b[22mtoHaveProperty\x1b[2m(\x1b[22m\x1b[32mpath\x1b[39m\x1b[2m)\x1b[22m\n\nExpected path: \x1b[32m"noteTables"\x1b[39m\nReceived path: \x1b[31m[]\x1b[39m\n\nReceived value: \x1b[31m{"beats": 4, "caption": "", "currentBeat": 1, "namedNotes": {}, "recordedNotes": {}, "rootID": "3", "rootIDLead": "-1", "sharps": false}\x1b[39m\n    at toHaveProperty (/home/laramie/infinite-neck/_tests/jest/song-section-count.test.js:51:21)\n    at Array.forEach (<anonymous>)\n    at forEach (/home/laramie/infin…    at Runtime._loadModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:944:12)\n    at Runtime.requireModule (/home/laramie/infinite-neck/node_modules/jest-runtime/build/index.js:832:12)\n    at jestAdapter (/home/laramie/infinite-neck/node_modules/jest-circus/build/runner.js:95:13)\n    at runTestInternal (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/home/laramie/infinite-neck/node_modules/jest-runner/build/index.js:343:7)'
 
 sections[3],noteTables[tblUSER_copy:3,tblBanjo:2,tbleGuitar:4],namedNotes:2
 
-    {
-      "noteTables": {
-        "tblUSER_copy": [
-          {
-            "midinum": "59",
-            "row": "2",
-            "col": "4",
-            "colorClass": "noteTransparent",
-            "styleNum": 2,
-            "noteName": "B"
-          },
-          {
-            "midinum": "55",
-            "row": "3",
-            "col": "5",
-            "colorClass": "noteTransparent",
-            "styleNum": 2,
-            "noteName": "G"
-          }
-        ]
-      },
-      "namedNotes": {
-        "Bb": {
-          "noteName": "Bb",
-          "colorClass": "noteTransparent",
-          "styleNum": 0
-        },
-        "Gb": {
-          "noteName": "Gb",
-          "colorClass": "noteTransparent",
-          "styleNum": 0
-        }
-      },
-      "recordedNotes": {},
-      "caption": "",
-      "rootIDLead": "-1",
-      "beats": 4,
-      "currentBeat": 1,
-      "sharps": false,
-      "rootID": "3"
+OK.  I did some work, and fixed some things, but messed up other things!  
+I need you to help me sort it out.  
+I put the two describe() calls at the end of the file.  
+The first one, describe('Song Section count'...) is working.  
+The second one, describe('Song Section Structure and Summary'...) is not working because of error: 
+
+  TypeError: The "path" argument must be of type string. Received an instance of Object
+  
+The line of code is shown in the test output of the stack trace, where the caret points to the .join() call:
+
+> 189 |       const songPath = path.join(SONGS_DIR, songFile);
+
+This is, no doubt, caused by me trying to reuse songFiles where before you had something else.
+
+So this line of the file (as it is in the workspace now) works, because it uses the object set up the way it worked for the earlier tests you wrote:   
+
+   songFiles.forEach(({ file, expectedFailure }) => { .......
+
+I prefer this because it uses the songs in the song-list.json file rather than a directory scan.
+Whereas this line does not work:
+
+   for (const songFile of songFiles) { .......
+
+because it was expecting what you did before:
+
+  const SONGS_DIR = path.join(__dirname, '../../songs');
+  const songFiles = fs.readdirSync(SONGS_DIR).filter(f => f.endsWith('.json'));
+
+  for (const songFile of songFiles) {
+    test(`sections summary for ${songFile}`, () => {
+      and so on 
+
+So I want you to help me fix 
+
+    describe('Song Section Structure and Summary', () => { ......
+
+to follow the songFiles strategy of 
+
+    describe('Song Section count', () => { ......
+
+ 
