@@ -182,6 +182,20 @@ function runSongValidation(file, data, expectedFailure) {
   return { expectedSections, sectionRootIDsSummary, rootID: data.rootID, errorSummary };
 }
 
+function printVerboseModeMessage(){
+    if (VERBOSE_MODE) {
+      console.log('Verbose mode because INFINITE_NECK_VERBOSE=1'
+                  +'\r\n   Summaries will be longer.'
+                  +'\r\n   Per loop console.log may be issued.'
+                  +'\r\n   Run in terse mode to show less.'
+      );
+    } else  {
+      console.log('Terse mode because INFINITE_NECK_VERBOSE=0'
+                  +'\r\n   Summaries will be shorter.  Run in verbose mode to show full summaries.'
+      );
+    }  
+}
+
 
 //===================================================================
 //========         Now run the tests           ======================
@@ -189,17 +203,7 @@ function runSongValidation(file, data, expectedFailure) {
 
 
 describe('Song Section count', () => {
-  if (VERBOSE_MODE) {
-    console.log('Verbose mode because INFINITE_NECK_VERBOSE=1'
-                +'\r\n   Summaries will be longer.'
-                +'\r\n   Per loop console.log may be issued.'
-                +'\r\n   Run in terse mode to show less.'
-    );
-  } else  {
-    console.log('Terse mode because INFINITE_NECK_VERBOSE=0'
-                +'\r\n   Summaries will be shorter.  Run in verbose mode to show full summaries.'
-    );
-  }  
+  printVerboseModeMessage();
   songFiles.forEach(({ file, expectedFailure }) => {
     const filePath = path.join(__dirname, '../../songs', file);
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -212,4 +216,3 @@ describe('Song Section count', () => {
   });
 });
 
-// (Second describe block removed; logic now lives in runSongValidation)
