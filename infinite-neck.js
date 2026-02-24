@@ -1413,6 +1413,7 @@
 			} else {
 				gSong.moveSectionTo(newIndex);
 			}
+			updateSectionsStatus();
 			fullRepaint();
 		});
 		$("#btnLoopSections").click(function() {

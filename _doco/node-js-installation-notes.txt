@@ -16,3 +16,7 @@ npm audit fixed
 
 laramie@penguin:~/infinite-neck$ npm jest --version
 9.2.0
+
+# Running Jest tests in this setup: 
+laramie@penguin:~/infinite-neck$ export INFINITE_NECK_VERBOSE=1
+laramie@penguin:~/infinite-neck$ npx jest _tests/jest/song-section-count.test.js

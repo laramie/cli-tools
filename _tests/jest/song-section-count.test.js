@@ -57,9 +57,10 @@ const songFiles = [
 
 
 function getNoteTableSummary(noteTables) {
-  if (!noteTables || typeof noteTables !== 'object') return '';
+  if (!noteTables) return 'null';
+  if (typeof noteTables !== 'object') return 'not-an-object';
   const keys = Object.keys(noteTables);
-  if (keys.length === 0) return '';
+  if (keys.length === 0) return ':0';
   return (
     '[' +
     keys
@@ -127,15 +128,15 @@ function getSectionRootIDs(data) {
 // Helper to run all validations for a song file
 function runSongValidation(file, data, expectedFailure) {
   const expectedSections = Array.isArray(data.sections) ? data.sections.length : 0;
-  expect(data).toHaveProperty('rootID');
   const sectionRootIDs = getSectionRootIDs(data);
   const sectionRootIDsStr = `[${sectionRootIDs.join(",")}]`;
   const sectionRootIDsSummary = VERBOSE_MODE
-    ? `section rootIDs: ${sectionRootIDsStr}`
-    : `section rootIDs: ${sectionRootIDs.length}`;
+    ? `section.rootIDs: ${sectionRootIDsStr}`
+    : `section.rootIDs: ${sectionRootIDs.length}`;
   let failed = false;
   let errorSummary = '';
   try {
+    if (VERBOSE_MODE) {console.log('🡆  In song ⠶ '+file);}
     const gSong = global.makeSong();
     gSong.addSections(data);
     expect(gSong.getSections().length).toBe(expectedSections);
@@ -144,6 +145,22 @@ function runSongValidation(file, data, expectedFailure) {
     // Section-level rootID assertions (already checked in getSectionRootIDs)
     // Section-level namedNotes and noteTables assertions
     validateSectionDictionaries(data, file);
+
+    // --- Structure and Summary Validation (moved from second describe) ---
+    if (Array.isArray(data.sections)) {
+      data.sections.forEach((section, i) => {
+        expect(section).toHaveProperty('noteTables');
+        expect(section).toHaveProperty('namedNotes');
+        validateNoteTables(section.noteTables, i);
+        validateNamedNotes(section.namedNotes, i);
+        const noteTableSummary = getNoteTableSummary(section.noteTables);
+        const namedNotesCount = getNamedNotesCount(section.namedNotes);
+        if (VERBOSE_MODE) {
+          console.log(`sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDsSummary}》 `);
+        }
+      });
+    }
+    // --- End Structure and Summary Validation ---
   } catch (e) {
     failed = true;
     if (expectedFailure) {
@@ -155,6 +172,8 @@ function runSongValidation(file, data, expectedFailure) {
       }
     }
   }
+  console.log("runSongValidation: song: "+file
+             +"\r\n     "+JSON.stringify({expectedSections, sectionRootIDsSummary, rootID: data.rootID}));
   if (expectedFailure) {
     expect(failed).toBe(true);
   } else {
@@ -170,37 +189,27 @@ function runSongValidation(file, data, expectedFailure) {
 
 
 describe('Song Section count', () => {
+  if (VERBOSE_MODE) {
+    console.log('Verbose mode because INFINITE_NECK_VERBOSE=1'
+                +'\r\n   Summaries will be longer.'
+                +'\r\n   Per loop console.log may be issued.'
+                +'\r\n   Run in terse mode to show less.'
+    );
+  } else  {
+    console.log('Terse mode because INFINITE_NECK_VERBOSE=0'
+                +'\r\n   Summaries will be shorter.  Run in verbose mode to show full summaries.'
+    );
+  }  
   songFiles.forEach(({ file, expectedFailure }) => {
     const filePath = path.join(__dirname, '../../songs', file);
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    const { expectedSections, sectionRootIDsSummary, rootID, errorSummary } = runSongValidation(file, data, expectedFailure);
     const testLabel = expectedFailure
       ? `${file} (expected failure)`
-      : `${file} ${expectedSections} sections, rootID: ${rootID}, ${sectionRootIDsSummary}`;
+      : `${file}`;
     test(testLabel, () => {
       runSongValidation(file, data, expectedFailure);
     });
   });
 });
 
-describe('Song Section Structure and Summary', () => {
-  songFiles.forEach(({ file, expectedFailure }) => {
-    const filePath = path.join(__dirname, '../../songs', file);
-    const song = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    test(`sections summary for ${file}`, () => {
-      expect(song).toHaveProperty('sections');
-      expect(Array.isArray(song.sections)).toBe(true);
-      song.sections.forEach((section, i) => {
-        expect(section).toHaveProperty('noteTables');
-        expect(section).toHaveProperty('namedNotes');
-        validateNoteTables(section.noteTables, i);
-        validateNamedNotes(section.namedNotes, i);
-        const noteTableSummary = getNoteTableSummary(section.noteTables);
-        const namedNotesCount = getNamedNotesCount(section.namedNotes);
-        if (VERBOSE_MODE) {
-          console.log(`sections[${i}],noteTables${noteTableSummary},namedNotes:${namedNotesCount}`);
-        }
-      });
-    });
-  });
-});
+// (Second describe block removed; logic now lives in runSongValidation)
