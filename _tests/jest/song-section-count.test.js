@@ -1,5 +1,38 @@
+require('./jest-setup.js');
+const fs = require('fs');
+const path = require('path');
+
+// Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
+const VERBOSE_MODE = process.env.INFINITE_NECK_VERBOSE === '1' || process.env.INFINITE_NECK_VERBOSE === 'true';
+
 // --- Song Section Structure and Summary Test ---
 const ALLOWED_NOTE_NAMES = ["A","Bb","B","C","Db","D","Eb","E","F","Gb","G","Ab"];
+
+
+const SONGS_DIR = path.join(__dirname, '../../songs');
+  
+// Dynamically load all song files from song-list.json
+const songListPath = path.join(__dirname, '../../songs/song-list.json');
+const songList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
+
+// Load extra test songs from songs/tests/test-song-list.json
+const testSongListPath = path.join(__dirname, '../../songs/tests/test-song-list.json');
+const testSongList = JSON.parse(fs.readFileSync(testSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+
+// Load failure test songs from songs/tests/failure-test-song-list.json
+const failureTestSongListPath = path.join(__dirname, '../../songs/tests/failure-test-song-list.json');
+const failureTestSongList = JSON.parse(fs.readFileSync(failureTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+
+// Filter out song-list.json itself to avoid recursion, then add extra test songs
+const filteredSongList = songList.filter(f => f !== 'song-list.json').concat(testSongList);
+
+// Combine all files and mark expected failures
+const songFiles = [
+    ...filteredSongList.map(f => ({ file: f, expectedFailure: false })),
+    ...failureTestSongList.map(f => ({ file: f, expectedFailure: true }))
+];
+
+
 
 function getNoteTableSummary(noteTables) {
   if (!noteTables || typeof noteTables !== 'object') return '';
@@ -48,34 +81,6 @@ function validateNoteTables(noteTables, sectionIdx) {
   }
 }
 
-describe('Song Section Structure and Summary', () => {
-  const VERBOSE_MODE = !!(process.env.INFINITE_NECK_VERBOSE && process.env.INFINITE_NECK_VERBOSE !== '0');
-
-  const fs = require('fs');
-  const path = require('path');
-  const SONGS_DIR = path.join(__dirname, '../../songs');
-  const songFiles = fs.readdirSync(SONGS_DIR).filter(f => f.endsWith('.json'));
-
-  for (const songFile of songFiles) {
-    test(`sections summary for ${songFile}`, () => {
-      const songPath = path.join(SONGS_DIR, songFile);
-      const song = JSON.parse(fs.readFileSync(songPath, 'utf8'));
-      expect(song).toHaveProperty('sections');
-      expect(Array.isArray(song.sections)).toBe(true);
-      song.sections.forEach((section, i) => {
-        expect(section).toHaveProperty('noteTables');
-        expect(section).toHaveProperty('namedNotes');
-        validateNoteTables(section.noteTables, i);
-        validateNamedNotes(section.namedNotes, i);
-        const noteTableSummary = getNoteTableSummary(section.noteTables);
-        const namedNotesCount = getNamedNotesCount(section.namedNotes);
-        if (VERBOSE_MODE) {
-          console.log(`sections[${i}],noteTables${noteTableSummary},namedNotes:${namedNotesCount}`);
-        }
-      });
-    });
-  }
-});
 
 // Helper to run all validations for a song file
 function runSongValidation(file, data, expectedFailure) {
@@ -125,8 +130,6 @@ function validateSectionDictionaries(data) {
     expect(typeof section.noteTables).toBe('object');
   });
 }
-// Toggle verbose/terse output
-const VERBOSE_MODE = process.env.INFINITE_NECK_VERBOSE === '1' || process.env.INFINITE_NECK_VERBOSE === 'true';
 // Helper to validate rootID presence at song and section level
 function getSectionRootIDs(data) {
   if (!Array.isArray(data.sections)) return [];
@@ -136,35 +139,8 @@ function getSectionRootIDs(data) {
   });
 }
 
-require('./jest-setup.js');
-const fs = require('fs');
-const path = require('path');
-
-
-
-// Dynamically load all song files from song-list.json
-const songListPath = path.join(__dirname, '../../songs/song-list.json');
-const songList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
-
-// Load extra test songs from songs/tests/test-song-list.json
-const testSongListPath = path.join(__dirname, '../../songs/tests/test-song-list.json');
-const testSongList = JSON.parse(fs.readFileSync(testSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
-
-// Load failure test songs from songs/tests/failure-test-song-list.json
-const failureTestSongListPath = path.join(__dirname, '../../songs/tests/failure-test-song-list.json');
-const failureTestSongList = JSON.parse(fs.readFileSync(failureTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
-
-// Filter out song-list.json itself to avoid recursion, then add extra test songs
-const filteredSongList = songList.filter(f => f !== 'song-list.json').concat(testSongList);
-
 describe('Song JSON section count', () => {
-  // Combine all files and mark expected failures
-  const allFiles = [
-    ...filteredSongList.map(f => ({ file: f, expectedFailure: false })),
-    ...failureTestSongList.map(f => ({ file: f, expectedFailure: true }))
-  ];
-
-  allFiles.forEach(({ file, expectedFailure }) => {
+  songFiles.forEach(({ file, expectedFailure }) => {
     const filePath = path.join(__dirname, '../../songs', file);
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const { expectedSections, sectionRootIDsSummary, rootID, errorSummary } = runSongValidation(file, data, expectedFailure);
@@ -175,4 +151,26 @@ describe('Song JSON section count', () => {
       runSongValidation(file, data, expectedFailure);
     });
   });
+});
+
+describe('Song Section Structure and Summary', () => {
+  for (const songFile of songFiles) {
+    test(`sections summary for ${songFile}`, () => {
+      const songPath = path.join(SONGS_DIR, songFile);
+      const song = JSON.parse(fs.readFileSync(songPath, 'utf8'));
+      expect(song).toHaveProperty('sections');
+      expect(Array.isArray(song.sections)).toBe(true);
+      song.sections.forEach((section, i) => {
+        expect(section).toHaveProperty('noteTables');
+        expect(section).toHaveProperty('namedNotes');
+        validateNoteTables(section.noteTables, i);
+        validateNamedNotes(section.namedNotes, i);
+        const noteTableSummary = getNoteTableSummary(section.noteTables);
+        const namedNotesCount = getNamedNotesCount(section.namedNotes);
+        if (VERBOSE_MODE) {
+          console.log(`sections[${i}],noteTables${noteTableSummary},namedNotes:${namedNotesCount}`);
+        }
+      });
+    });
+  }
 });
