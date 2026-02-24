@@ -57,6 +57,7 @@ function makeSong(){
         //METHODS:
             make: construct_gSections,
 
+            fixupCurrentIndexForLoadedSong: fixupCurrentIndexForLoadedSong,
             getCurrentSection: getCurrentSection,
             getSectionsCurrentIndex: getSectionsCurrentIndex,
             getRelativeSectionWithWrap: getRelativeSectionWithWrap,
@@ -140,8 +141,20 @@ function makeSong(){
         delete this.constructing;
     }
 
+    function fixupCurrentIndexForLoadedSong(){
+        var sci = this.gSectionsCurrentIndex;
+        if (this.gSectionsCurrentIndex >= this.sections.length){
+            this.gSectionsCurrentIndex = this.sections.length-1;
+            console.warn("gSong::fixupCurrentIndexForLoadedSong() found that the song gSectionsCurrentIndex was out of range: "+sci+" resetting to : "+this.gSectionsCurrentIndex);
+        }
+        if (this.gSectionsCurrentIndex < 0){
+            this.gSectionsCurrentIndex = 0;
+            console.warn("gSong::fixupCurrentIndexForLoadedSong() found that the song gSectionsCurrentIndex was out of range: "+sci);
+        }  
+    }
+
     function getCurrentSection(){
-	    return this.sections[this.gSectionsCurrentIndex];
+        return this.sections[this.gSectionsCurrentIndex];
 	}
 
     function test_getRelativeSectionWithWrap(){

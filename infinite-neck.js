@@ -577,7 +577,8 @@
 		  hideAllTunings();
 		}
 		var jsonObj = JSON.parse(str);
-		Object.assign(gSong, jsonObj)
+		Object.assign(gSong, jsonObj);
+		gSong.fixupCurrentIndexForLoadedSong();
 
 		if (gSong.userInstrumentTuning){
 			var theUSERTuning = findTuningForID("USER");
