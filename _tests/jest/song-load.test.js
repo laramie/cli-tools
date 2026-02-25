@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
-const VERBOSE_MODE = process.env.INFINITE_NECK_VERBOSE === '1' || process.env.INFINITE_NECK_VERBOSE === 'true';
+const VERBOSE_MODE = parseInt(process.env.INFINITE_NECK_VERBOSE, 10) || 0;
 
 const PRETTY_PRINT_CONSOLE = true;
 const LF = "\n";
@@ -165,20 +165,18 @@ function getSectionRootIDs(data) {
 // Helper to run all validations for a song file
 function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   const expectedSections = Array.isArray(data.sections) ? data.sections.length : 0;
-  const sectionRootIDs = getSectionRootIDs(data);
-  const sectionRootIDsStr = sectionRootIDs.length < 10
-                            ? `[${sectionRootIDs.join(",")}]`
-                            : `first-9-more` ;
-  const sectionRootIDsSummary = VERBOSE_MODE
-    ? `section.rootIDs: ${sectionRootIDsStr}`
-    : `section.rootIDs: ${sectionRootIDs.length}`;
+  const sectionRootIDsArr = getSectionRootIDs(data);
+  const sectionRootIDsArrStr = rootIDsMore(sectionRootIDsArr);
+  const sectionRootIDs = VERBOSE_MODE > 0
+    ? `${sectionRootIDsArrStr}`
+    : `${sectionRootIDsArr.length}`;
   let failed = false;
   let errorSummary = '';
-  let summaryInfo = { expectedSections, sectionRootIDsSummary, song_rootID: data.rootID };
+  let summaryInfo = { expectedSections, sectionRootIDs, song_rootID: data.rootID };
   let currentSectionIndex = -1;
   let currentObjectDump = "";
   try {
-    if (VERBOSE_MODE) {console.log('🡆  In song ⠶ '+file);}
+    if (VERBOSE_MODE > 0) {console.log('🡆  In song ⠶ '+file);}
     const gSong = global.makeSong();
     gSong.addSections(data);
     expect(gSong.getSections().length).toBe(expectedSections);
@@ -188,7 +186,6 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
     // Section-level namedNotes and noteTables assertions
     validateSectionDictionaries(data, file);
 
-    // --- Structure and Summary Validation (moved from second describe) ---
     if (Array.isArray(data.sections)) {
       data.sections.forEach((section, i) => {
         currentSectionIndex = i;
@@ -200,8 +197,8 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
         validateNamedNotes(section.namedNotes, songTestOptions, summaryInfo);
         const noteTableSummary = getNoteTableSummary(section.noteTables);
         const namedNotesCount = getNamedNotesCount(section.namedNotes);
-        if (VERBOSE_MODE) {
-          console.log(`sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDsSummary}》 `);
+        if (VERBOSE_MODE > 1) {
+          console.log(`sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDs}》 `);
         }
       });
     }
@@ -211,41 +208,67 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
     failed = true;
     // Always log filename and summary info with exception
     const summaryStr = PRETTY_PRINT_CONSOLE ? JSON.stringify(summaryInfo, null, 4) : JSON.stringify(summaryInfo);
-    errorMsg = `\n🛑 --- Failure in file: ${file} :: sections[${currentSectionIndex}] ---\nSummary: ${summaryStr}\n✴   Jest Exception: \n❮❮❮\n ${e.message}\n${e.stack}\n❯❯❯\n\n`;
-    if (VERBOSE_MODE || expectedFailure) {
+    const jestException = (VERBOSE_MODE > 1)
+            ? `${e.message}\n${e.stack}`
+            : `${e.message}\n`;
+    errorMsg =   `\n🛑 Failure in file: ${file} :: sections[${currentSectionIndex}]\nSummary: ${summaryStr}`
+                +`\n✴   Jest Exception: \n❮❮❮\n ${jestException}\n❯❯❯\n\n`;
+    if (VERBOSE_MODE>0) {
       errorSummary = errorMsg;
-      errorMsg = errorMsg;
-      if (VERBOSE_MODE){
-        console.log(errorMsg +LF+LF+"currentObject:"+LF+currentObjectDump);
+      let dump = "";
+      if (VERBOSE_MODE>1){
+        dump = LF+LF+"currentObject:"+LF+currentObjectDump;
       }
+      console.log(errorMsg + dump);
     } else {
       errorSummary = '';
     }
   }
-  if (VERBOSE_MODE) {
+  if (VERBOSE_MODE>0) {
     console.log("runSongValidation: song: "+file
-             +LF+"     "+JSON.stringify({expectedSections, sectionRootIDsSummary, song_rootID: data.rootID}));
+             +LF+"     "+JSON.stringify({expectedSections, sectionRootIDs, song_rootID: data.rootID}));
   }
   if (expectedFailure) {
     expect(failed).toBe(true);
   } else {
     expect(failed).toBe(false);
   }
-  return { expectedSections, sectionRootIDsSummary, song_rootID: data.rootID, errorSummary };
+  return { expectedSections, sectionRootIDs, song_rootID: data.rootID, errorSummary };
 }
 
 function printVerboseModeMessage(){
-    if (VERBOSE_MODE) {
-      console.log('Verbose mode because INFINITE_NECK_VERBOSE=1'
-                  +'\r\n   Summaries will be longer.'
-                  +'\r\n   Per loop console.log may be issued.'
-                  +'\r\n   Run in terse mode to show less.'
+    if (VERBOSE_MODE>0) {
+      console.log('Verbose mode because INFINITE_NECK_VERBOSE > 0'
+                  +'\r\n   Summaries will be longer, you ran with INFINITE_NECK_VERBOSE='+VERBOSE_MODE
+                  +'\r\n   In bash:'
+                  +'\r\n          export INFINITE_NECK_VERBOSE=1'
+                  +'\r\n   ==> will dump lots more context info for tests'
+                  +'\r\n'
+                  +'\r\n          export INFINITE_NECK_VERBOSE=2'
+                  +'\r\n   ==> same, but with full object dumps in context, plus per-loop logs'
+                  +'\r\n'
+                  +'\r\n   Run in terse mode to show just what Jest prints:'
+                  +'\r\n          export INFINITE_NECK_VERBOSE=0'
+                  +'\r\n'
+                  +'\r\n   Run in ultra-terse mode to show just what Jest prints and skip these messages:'
+                  +'\r\n          export INFINITE_NECK_VERBOSE=-1'
+                  
       );
+    } else if (VERBOSE_MODE === -1){
+      //Nothing.  Stock Jest test. No messages, not even this one.
     } else  {
-      console.log('Terse mode because INFINITE_NECK_VERBOSE=0'
-                  +'\r\n   Summaries will be shorter.  Run in verbose mode to show full summaries.'
+      console.log('Terse mode because INFINITE_NECK_VERBOSE=0 or not set.'
+                  +'\r\n   Run with -1 to suppress this message. Run with 1 or 2 (verbose mode) to show full summaries:'
+                  +'\r\n          export INFINITE_NECK_VERBOSE=1'
       );
     }  
+}
+
+function rootIDsMore(sectionRootIDsArr){
+  const sectionRootIDsArrStr = sectionRootIDsArr.length < 10
+    ? `[${sectionRootIDsArr.join(",")}]`
+    : `[${sectionRootIDsArr.slice(0, 10).join(",")}...${sectionRootIDsArr.length - 10} more]`;
+  return sectionRootIDsArrStr;
 }
 
 
@@ -261,12 +284,12 @@ describe('Song file and gSong loading validation', () => {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     // Gather summary info for label
     const sectionCount = Array.isArray(data.sections) ? data.sections.length : 0;
-    const rootIDs = Array.isArray(data.sections) ? data.sections.map(s => s.rootID).join(',') : '';
+    const rootIDs = Array.isArray(data.sections) ? rootIDsMore(data.sections.map(s => s.rootID)) : '';
     const strictMode = songTestOptions.strictFile_styleNum ? 'strict' : 'normal';
     const testLabel = `${file}`
       + (expectedFailure ? ' (expected failure)' : '')
       + ` | sections:${sectionCount}`
-      + ` | rootIDs:[${rootIDs}]`
+      + ` | rootIDs:${rootIDs}`
       + ` | songFormat:${strictMode}`;
     test(testLabel, () => {
       runSongValidation(file, data, expectedFailure, songTestOptions);
