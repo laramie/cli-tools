@@ -2,15 +2,62 @@ require('./jest-setup.js');
 const fs = require('fs');
 const path = require('path');
 
-// Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
-const VERBOSE_MODE = parseInt(process.env.INFINITE_NECK_VERBOSE, 10) || 0;
-
-const PRETTY_PRINT_CONSOLE = true;
 const LF = "\n";
+
+// Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
+// See printVerboseModeMessage() for explanation.
+const INFINITE_NECK_VERBOSE = process.env.INFINITE_NECK_VERBOSE;
+const VERBOSE_MODE_INT = parseInt(INFINITE_NECK_VERBOSE, 10);
+const VERBOSE_MODE = isNaN(VERBOSE_MODE_INT) 
+         ? 0
+         : VERBOSE_MODE_INT;
+
+const MORE_THRESHOLD = VERBOSE_MODE > 1
+                       ? 100
+                       : 10;
+
+function logVerbose(level, msg) {
+  if (VERBOSE_MODE >= level) console.log(msg);
+}
+
+function printVerboseModeMessage(){
+    function getHelpMsg(){
+      return   '\r\n    INFINITE_NECK_VERBOSE values:'
+              +'\r\n    -1 : Ultra-terse, no console logs at all'
+              +'\r\n     0 : Terse, only minimal Jest output'
+              +'\r\n     1 : Verbose, summary info, flat context objects, <10 rootIDs'
+              +'\r\n     2 : More-verbose, pretty context objects'
+              +'\r\n     3 : Ultra-verbose, pretty Section objects, per-loop logs, <100 rootIDs';
+    }
+    function getSnarky(){
+      return '\r\n   In bash this sets verbose value of 1:'
+              +'\r\n'
+              +'\r\n          export INFINITE_NECK_VERBOSE=1'
+              +'\r\n';
+    }
+    if (VERBOSE_MODE>0) {
+      logVerbose(0, 'Verbose mode because you ran with INFINITE_NECK_VERBOSE='+VERBOSE_MODE
+                    +getHelpMsg()
+      );
+    } else if (VERBOSE_MODE === -1){
+      //Nothing.  Stock Jest test. No messages, not even this one.
+    } else if (isNaN(VERBOSE_MODE_INT)) {
+      logVerbose(0, 'Verbose mode because you ran with INFINITE_NECK_VERBOSE='+INFINITE_NECK_VERBOSE
+                  +'\r\n   which is not a valid level. Run with -1 to suppress this message, or with 1, 2, or 3 (verbose modes) to show full summaries and help.'
+                  +getSnarky()
+                  +getHelpMsg()
+      );
+    } else {
+      logVerbose(0, 'Terse mode because env var was not set, or set to 0 with: export INFINITE_NECK_VERBOSE=0'
+                  +'\r\n   Run with -1 to suppress this message, or with 1, 2, or 3 (verbose modes) to show full summaries and help.'
+                  +getSnarky()
+                  +getHelpMsg()
+      );
+    }  
+}
 
 // --- Song Section Structure and Summary Test ---
 const ALLOWED_NOTE_NAMES = ["A","Bb","B","C","Db","D","Eb","E","F","Gb","G","Ab"];
-
 
 const SONGS_DIR = path.join(__dirname, '../../songs');
   
@@ -94,24 +141,25 @@ function validateNamedNotes(namedNotes, songTestOptions = {}, summaryInfo) {
   for (const key of Object.keys(namedNotes)) {
     summaryInfo.namedNoteKey = key;
     expect(ALLOWED_NOTE_NAMES).toContain(key);
-    const nn = namedNotes[key];
-    // If nn is an empty object, allow it, e.g. 
-    if (Object.keys(nn).length === 0) {
+    const note = namedNotes[key];
+    if (Object.keys(note).length === 0) {  // allow empty note entries like "G":{}
       continue;
     }
-    summaryInfo.namedNote = PRETTY_PRINT_CONSOLE ? nn : JSON.stringify(nn);
-    expect(nn).toHaveProperty('noteName');
-    expect(nn).toHaveProperty('colorClass');
+    summaryInfo.note = VERBOSE_MODE > 1 
+        ? note 
+        : JSON.stringify(note);
+    expect(note).toHaveProperty('noteName');
+    expect(note).toHaveProperty('colorClass');
     if (songTestOptions.strictFile_styleNum) {
-      expect(nn).not.toHaveProperty('styleNum');
+      expect(note).not.toHaveProperty('styleNum');
     } else {
-      expect(nn).toHaveProperty('styleNum');
-      expect(typeof nn.styleNum === 'number' && Number.isInteger(nn.styleNum)).toBe(true);
+      expect(note).toHaveProperty('styleNum');
+      expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
     }
-    expect(nn.noteName).toBe(key);
-    expect(typeof nn.colorClass === 'string' && nn.colorClass.length > 0).toBe(true);
+    expect(note.noteName).toBe(key);
+    expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
   }
-  summaryInfo.namedNote = "";
+  summaryInfo.note = "";
   summaryInfo.namedNoteKey = "";
 }
 
@@ -123,7 +171,9 @@ function validateNoteTables(noteTables, songTestOptions = {}, summaryInfo) {
       if (!Array.isArray(oneTable)) continue;  //change this to expect an Array.
       oneTable.forEach((note, idx) => {
           summaryInfo.noteTableIndex = idx;
-          summaryInfo.note = note;
+          summaryInfo.note = VERBOSE_MODE > 1 
+            ? note 
+            : JSON.stringify(note);
           expect(note).toHaveProperty('noteName');
           expect(note).toHaveProperty('colorClass');
           if (songTestOptions.strictFile_styleNum) {
@@ -176,16 +226,13 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   let currentSectionIndex = -1;
   let currentObjectDump = "";
   try {
-    if (VERBOSE_MODE > 0) {console.log('🡆  In song ⠶ '+file);}
+    logVerbose(1, '🡆  In song ⠶ '+file+LF+"     "+JSON.stringify({expectedSections, sectionRootIDs, song_rootID: data.rootID}));
     const gSong = global.makeSong();
     gSong.addSections(data);
     expect(gSong.getSections().length).toBe(expectedSections);
-    // Song-level rootID assertion
-    expect(data).toHaveProperty('rootID');
+    expect(data).toHaveProperty('rootID');  // Song-level rootID assertion
     // Section-level rootID assertions (already checked in getSectionRootIDs)
-    // Section-level namedNotes and noteTables assertions
-    validateSectionDictionaries(data, file);
-
+    validateSectionDictionaries(data, file); // Section-level namedNotes and noteTables assertions
     if (Array.isArray(data.sections)) {
       data.sections.forEach((section, i) => {
         currentSectionIndex = i;
@@ -197,9 +244,7 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
         validateNamedNotes(section.namedNotes, songTestOptions, summaryInfo);
         const noteTableSummary = getNoteTableSummary(section.noteTables);
         const namedNotesCount = getNamedNotesCount(section.namedNotes);
-        if (VERBOSE_MODE > 1) {
-          console.log(`sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDs}》 `);
-        }
+        logVerbose(3, `sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDs}》 `);
       });
     }
 
@@ -207,8 +252,10 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   } catch (e) {
     failed = true;
     // Always log filename and summary info with exception
-    const summaryStr = PRETTY_PRINT_CONSOLE ? JSON.stringify(summaryInfo, null, 4) : JSON.stringify(summaryInfo);
-    const jestException = (VERBOSE_MODE > 1)
+    const summaryStr = VERBOSE_MODE > 1
+            ? JSON.stringify(summaryInfo, null, 4) 
+            : JSON.stringify(summaryInfo);
+    const jestException = VERBOSE_MODE > 1
             ? `${e.message}\n${e.stack}`
             : `${e.message}\n`;
     errorMsg =   `\n🛑 Failure in file: ${file} :: sections[${currentSectionIndex}]\nSummary: ${summaryStr}`
@@ -216,18 +263,15 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
     if (VERBOSE_MODE>0) {
       errorSummary = errorMsg;
       let dump = "";
-      if (VERBOSE_MODE>1){
+      if (VERBOSE_MODE>2){
         dump = LF+LF+"currentObject:"+LF+currentObjectDump;
       }
-      console.log(errorMsg + dump);
+      logVerbose(1, errorMsg + dump);
     } else {
       errorSummary = '';
     }
   }
-  if (VERBOSE_MODE>0) {
-    console.log("runSongValidation: song: "+file
-             +LF+"     "+JSON.stringify({expectedSections, sectionRootIDs, song_rootID: data.rootID}));
-  }
+  
   if (expectedFailure) {
     expect(failed).toBe(true);
   } else {
@@ -236,38 +280,11 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   return { expectedSections, sectionRootIDs, song_rootID: data.rootID, errorSummary };
 }
 
-function printVerboseModeMessage(){
-    if (VERBOSE_MODE>0) {
-      console.log('Verbose mode because INFINITE_NECK_VERBOSE > 0'
-                  +'\r\n   Summaries will be longer, you ran with INFINITE_NECK_VERBOSE='+VERBOSE_MODE
-                  +'\r\n   In bash:'
-                  +'\r\n          export INFINITE_NECK_VERBOSE=1'
-                  +'\r\n   ==> will dump lots more context info for tests'
-                  +'\r\n'
-                  +'\r\n          export INFINITE_NECK_VERBOSE=2'
-                  +'\r\n   ==> same, but with full object dumps in context, plus per-loop logs'
-                  +'\r\n'
-                  +'\r\n   Run in terse mode to show just what Jest prints:'
-                  +'\r\n          export INFINITE_NECK_VERBOSE=0'
-                  +'\r\n'
-                  +'\r\n   Run in ultra-terse mode to show just what Jest prints and skip these messages:'
-                  +'\r\n          export INFINITE_NECK_VERBOSE=-1'
-                  
-      );
-    } else if (VERBOSE_MODE === -1){
-      //Nothing.  Stock Jest test. No messages, not even this one.
-    } else  {
-      console.log('Terse mode because INFINITE_NECK_VERBOSE=0 or not set.'
-                  +'\r\n   Run with -1 to suppress this message. Run with 1 or 2 (verbose mode) to show full summaries:'
-                  +'\r\n          export INFINITE_NECK_VERBOSE=1'
-      );
-    }  
-}
 
 function rootIDsMore(sectionRootIDsArr){
-  const sectionRootIDsArrStr = sectionRootIDsArr.length < 10
+  const sectionRootIDsArrStr = sectionRootIDsArr.length < MORE_THRESHOLD
     ? `[${sectionRootIDsArr.join(",")}]`
-    : `[${sectionRootIDsArr.slice(0, 10).join(",")}...${sectionRootIDsArr.length - 10} more]`;
+    : `[${sectionRootIDsArr.slice(0, MORE_THRESHOLD).join(",")}...${sectionRootIDsArr.length - MORE_THRESHOLD} more]`;
   return sectionRootIDsArrStr;
 }
 
