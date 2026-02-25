@@ -1,7 +1,5 @@
 {
     "songs": [
-    ],
-    "ignoredSongs": [
          "All-Chords-A.json",
          "All-Chords-Ab.json",    
          "All-Chords-B.json",
@@ -31,5 +29,7 @@
          "snake.json",
          "song-list.json",
          "three-chord-wonder.json"
-    ]
+    ],
+    "ignoredSongs": [
+     ]
 }

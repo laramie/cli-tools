@@ -5,6 +5,9 @@ const path = require('path');
 // Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
 const VERBOSE_MODE = process.env.INFINITE_NECK_VERBOSE === '1' || process.env.INFINITE_NECK_VERBOSE === 'true';
 
+const PRETTY_PRINT_CONSOLE = true;
+const LF = "\n";
+
 // --- Song Section Structure and Summary Test ---
 const ALLOWED_NOTE_NAMES = ["A","Bb","B","C","Db","D","Eb","E","F","Gb","G","Ab"];
 
@@ -87,14 +90,16 @@ function getNamedNotesCount(namedNotes) {
 }
 
 
-function validateNamedNotes(namedNotes, songTestOptions = {}) {
+function validateNamedNotes(namedNotes, songTestOptions = {}, summaryInfo) {
   for (const key of Object.keys(namedNotes)) {
+    summaryInfo.namedNoteKey = key;
     expect(ALLOWED_NOTE_NAMES).toContain(key);
     const nn = namedNotes[key];
     // If nn is an empty object, allow it, e.g. 
     if (Object.keys(nn).length === 0) {
       continue;
     }
+    summaryInfo.namedNote = PRETTY_PRINT_CONSOLE ? nn : JSON.stringify(nn);
     expect(nn).toHaveProperty('noteName');
     expect(nn).toHaveProperty('colorClass');
     if (songTestOptions.strictFile_styleNum) {
@@ -106,14 +111,19 @@ function validateNamedNotes(namedNotes, songTestOptions = {}) {
     expect(nn.noteName).toBe(key);
     expect(typeof nn.colorClass === 'string' && nn.colorClass.length > 0).toBe(true);
   }
+  summaryInfo.namedNote = "";
+  summaryInfo.namedNoteKey = "";
 }
 
-function validateNoteTables(noteTables, songTestOptions = {}) {
+function validateNoteTables(noteTables, songTestOptions = {}, summaryInfo) {
   expect(typeof noteTables).toBe('object');
   for (const tblnameKey of Object.keys(noteTables)) {
+      summaryInfo.tableName = tblnameKey;
       const oneTable = noteTables[tblnameKey];
       if (!Array.isArray(oneTable)) continue;  //change this to expect an Array.
       oneTable.forEach((note, idx) => {
+          summaryInfo.noteTableIndex = idx;
+          summaryInfo.note = note;
           expect(note).toHaveProperty('noteName');
           expect(note).toHaveProperty('colorClass');
           if (songTestOptions.strictFile_styleNum) {
@@ -126,7 +136,10 @@ function validateNoteTables(noteTables, songTestOptions = {}) {
           }
           expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
       });
+      summaryInfo.noteTableIndex = "";
+      summaryInfo.note = "";
   }
+  summaryInfo.tableName = "";
 }
 
 // Helper to validate namedNotes and noteTables presence as objects in each section
@@ -153,14 +166,16 @@ function getSectionRootIDs(data) {
 function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   const expectedSections = Array.isArray(data.sections) ? data.sections.length : 0;
   const sectionRootIDs = getSectionRootIDs(data);
-  const sectionRootIDsStr = `[${sectionRootIDs.join(",")}]`;
+  const sectionRootIDsStr = sectionRootIDs.length < 10
+                            ? `[${sectionRootIDs.join(",")}]`
+                            : `first-9-more` ;
   const sectionRootIDsSummary = VERBOSE_MODE
     ? `section.rootIDs: ${sectionRootIDsStr}`
     : `section.rootIDs: ${sectionRootIDs.length}`;
   let failed = false;
   let errorSummary = '';
-  let summaryInfo = { expectedSections, sectionRootIDsSummary, rootID: data.rootID };
-  let currentIndex = -1;
+  let summaryInfo = { expectedSections, sectionRootIDsSummary, song_rootID: data.rootID };
+  let currentSectionIndex = -1;
   let currentObjectDump = "";
   try {
     if (VERBOSE_MODE) {console.log('🡆  In song ⠶ '+file);}
@@ -176,12 +191,13 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
     // --- Structure and Summary Validation (moved from second describe) ---
     if (Array.isArray(data.sections)) {
       data.sections.forEach((section, i) => {
-        currentIndex = i;
+        currentSectionIndex = i;
+        summaryInfo.currentSectionIndex = i;
         currentObjectDump = JSON.stringify(section, null, 4);
         expect(section).toHaveProperty('noteTables');
         expect(section).toHaveProperty('namedNotes');
-        validateNoteTables(section.noteTables, songTestOptions);
-        validateNamedNotes(section.namedNotes, songTestOptions);
+        validateNoteTables(section.noteTables, songTestOptions, summaryInfo);
+        validateNamedNotes(section.namedNotes, songTestOptions, summaryInfo);
         const noteTableSummary = getNoteTableSummary(section.noteTables);
         const namedNotesCount = getNamedNotesCount(section.namedNotes);
         if (VERBOSE_MODE) {
@@ -194,13 +210,13 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   } catch (e) {
     failed = true;
     // Always log filename and summary info with exception
-    const summaryStr = JSON.stringify(summaryInfo);
-    errorMsg = `\n--- Failure in file: ${file} :: sections[${currentIndex}] ---\nSummary: ${summaryStr}\n${e.message}\n${e.stack}`;
+    const summaryStr = PRETTY_PRINT_CONSOLE ? JSON.stringify(summaryInfo, null, 4) : JSON.stringify(summaryInfo);
+    errorMsg = `\n🛑 --- Failure in file: ${file} :: sections[${currentSectionIndex}] ---\nSummary: ${summaryStr}\n✴   Jest Exception: \n❮❮❮\n ${e.message}\n${e.stack}\n❯❯❯\n\n`;
     if (VERBOSE_MODE || expectedFailure) {
       errorSummary = errorMsg;
       errorMsg = errorMsg;
       if (VERBOSE_MODE){
-        console.log(errorMsg +"\r\n\r\ncurrentObject:\r\n    "+currentObjectDump);
+        console.log(errorMsg +LF+LF+"currentObject:"+LF+currentObjectDump);
       }
     } else {
       errorSummary = '';
@@ -208,14 +224,14 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   }
   if (VERBOSE_MODE) {
     console.log("runSongValidation: song: "+file
-             +"\r\n     "+JSON.stringify({expectedSections, sectionRootIDsSummary, rootID: data.rootID}));
+             +LF+"     "+JSON.stringify({expectedSections, sectionRootIDsSummary, song_rootID: data.rootID}));
   }
   if (expectedFailure) {
     expect(failed).toBe(true);
   } else {
     expect(failed).toBe(false);
   }
-  return { expectedSections, sectionRootIDsSummary, rootID: data.rootID, errorSummary };
+  return { expectedSections, sectionRootIDsSummary, song_rootID: data.rootID, errorSummary };
 }
 
 function printVerboseModeMessage(){
