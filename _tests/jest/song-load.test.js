@@ -133,8 +133,29 @@ function createSongFilesArray(){
 // ==== NEW code block for refactor of createSongFilesArray ============= 
 
 //TODO: refactor createSongFilesArray() as createSongFilesArrayRefactored() leaving createSongFilesArray() alone. 
-function createSongFilesArrayRefactored(masterListArray){
-  //TODO: CODE HERE: everything that got done in createSongFilesArray, but on the flexible array so I can send in different ones.
+function createSongFilesArray_Refactored(masterListArray) {
+  // masterListArray: array of songTestOptions objects, each with {list, dir, ...}
+  // For each entry, load the song list, apply dir prefix, and build {file, songTestOptions}
+  let theSongFilesArray = [];
+  masterListArray.forEach(songTestOptions => {
+    // Defensive: skip if no list or dir
+    if (!songTestOptions.list || !songTestOptions.dir) return;
+    // Use createSongList to get the song file names (with relDir if needed)
+    // If dir is SONGSDIR, relDir is null; if dir is SONGSTESTDIR, relDir is SONGSTEST_RELDIR
+    let relDir = null;
+    if (songTestOptions.dir === SONGSTESTDIR) {
+      relDir = SONGSTEST_RELDIR;
+    }
+    const songList = createSongList(songTestOptions.list, relDir);
+    songList.forEach(f => {
+      // Spread songTestOptions to avoid mutation
+      theSongFilesArray.push({
+        file: f,
+        songTestOptions: { ...songTestOptions }
+      });
+    });
+  });
+  return theSongFilesArray;
 }
 
 function setUpMaster_songTestOptions_Array(){
@@ -182,6 +203,18 @@ function setupHarsh_songTestOptions_Array(){
     ];
 }
 
+function setupTestdirHarsh_songTestOptions_Array(){
+  return theHarshListArray = [
+      {
+        expectedFailure: true,
+        strictFile_styleNum: true,
+        list: SONGSTESTDIR+'test-song-list-harsh-test.json',
+        dir:  SONGSTESTDIR,
+        reason: "harsh-mode-songs👍fail"
+      }
+    ];
+}
+
 function setup_songTestOptions_Array_FromNamed(songlist){
    throw new Error("Method setupListFromNamed not implemented yet.");
 }
@@ -190,6 +223,7 @@ function setup_songTestOptions_Array_FromNamed(songlist){
 //for development, hard-code DO_HARSH_TEST and DO_MASTER_TEST:
 const DO_HARSH_TEST = false;
 const DO_MASTER_TEST = false;
+const DO_TESTDIR_HARSH_TEST = true;
 
 let songFiles = null;
 if (INFINITE_NECK_SONGLIST){
@@ -198,6 +232,8 @@ if (INFINITE_NECK_SONGLIST){
     songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
 } else if (DO_HARSH_TEST){
     songFiles = createSongFilesArray_Refactored(setupHarsh_songTestOptions_Array());
+} else if (DO_TESTDIR_HARSH_TEST){
+    songFiles = createSongFilesArray_Refactored(setupTestdirHarsh_songTestOptions_Array());
 } else {
     //Do it the way we did before the refactor:
     songFiles = createSongFilesArray();

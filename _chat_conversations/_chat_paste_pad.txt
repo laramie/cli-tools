@@ -56,3 +56,17 @@ Time:        0.855 s, estimated 2 s
 Ran all test suites matching _tests/jest/song-load.test.js.
 laramie@penguin:~/infinite-neck$ 
 
+
+You da man!  I knew you'd have a bead on this.  So cool.  
+
+Yes, I'd love it if you could implement the changes.  
+
+I hope you saw that in the next iteration, I'll be implementing:
+
+   setup_songTestOptions_Array_FromNamed(songlist)
+
+but that for now we'll leave it as an exception. I just wanted you to be aware that the next iteration will have all those properties in a JSON file, so you can see where we are going.
+
+
+
+
