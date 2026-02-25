@@ -19,4 +19,4 @@ laramie@penguin:~/infinite-neck$ npm jest --version
 
 # Running Jest tests in this setup: 
 laramie@penguin:~/infinite-neck$ export INFINITE_NECK_VERBOSE=1
-laramie@penguin:~/infinite-neck$ npx jest _tests/jest/song-section-count.test.js
+laramie@penguin:~/infinite-neck$ npx jest _tests/jest/song-load.test.js

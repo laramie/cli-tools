@@ -2,5 +2,5 @@
   "compilerOptions": {
     "target": "ES6"
   },
-  "include": ["*.js", "_tests/jest/song-section-count.test.js"]
+  "include": ["*.js", "_tests/jest/song-load.test.js"]
 }

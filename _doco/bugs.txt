@@ -2,6 +2,13 @@
 Order: Latest bugs are now listed First in this file
 ====================================
 
+20262024 : namedNote "G":{} is valid and means there are no G's played.  
+           TODO: in strict mode in the Jest test, we might check this
+                  _tests/jest/song-load.test.js 
+                  ==> if the Song object ever cleans up empty notes.  
+           But for now it is valid.
+    
+
 2026023 : validate that songs/All-Chords-in-C-old-file-format.json should maybe fail the Jest test?  Or maybe I have code that handles the old file format so it passes?  Either way, we wanna know.
 
 

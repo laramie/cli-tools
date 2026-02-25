@@ -1,5 +1,6 @@
 {
     "songs": [
-        "old-file-format-styleNum-missing.json"
+        "empty-song-missing-noteTables.json",
+        "empty-song-missing-namedNotes.json"
     ]
 }

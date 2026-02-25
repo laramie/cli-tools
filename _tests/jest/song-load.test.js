@@ -91,6 +91,10 @@ function validateNamedNotes(namedNotes, songTestOptions = {}) {
   for (const key of Object.keys(namedNotes)) {
     expect(ALLOWED_NOTE_NAMES).toContain(key);
     const nn = namedNotes[key];
+    // If nn is an empty object, allow it, e.g. 
+    if (Object.keys(nn).length === 0) {
+      continue;
+    }
     expect(nn).toHaveProperty('noteName');
     expect(nn).toHaveProperty('colorClass');
     if (songTestOptions.strictFile_styleNum) {
@@ -106,28 +110,22 @@ function validateNamedNotes(namedNotes, songTestOptions = {}) {
 
 function validateNoteTables(noteTables, songTestOptions = {}) {
   expect(typeof noteTables).toBe('object');
-  for (const key of Object.keys(noteTables)) {
-    expect(ALLOWED_NOTE_NAMES).toContain(key);
-    const nn = namedNotes[key];
-    // If nn is an empty object, allow it, e.g. 
-    if (Object.keys(nn).length === 0) {
-      continue;
-    }
-    // Otherwise, run expects
-    expect(nn).toHaveProperty('noteName');
-    expect(nn).toHaveProperty('colorClass');
-    if (songTestOptions.strictFile_styleNum) {
-      // In strict mode, styleNum must be present and an integer
-      expect(nn).toHaveProperty('styleNum');
-      expect(typeof nn.styleNum === 'number' && Number.isInteger(nn.styleNum)).toBe(true);
-    } else {
-      // In normal mode, styleNum is optional, but if present, must be an integer
-      if (nn.hasOwnProperty('styleNum')) {
-        expect(typeof nn.styleNum === 'number' && Number.isInteger(nn.styleNum)).toBe(true);
-      }
-    }
-    expect(nn.noteName).toBe(key);
-    expect(typeof nn.colorClass === 'string' && nn.colorClass.length > 0).toBe(true);
+  for (const tblnameKey of Object.keys(noteTables)) {
+      const oneTable = noteTables[tblnameKey];
+      if (!Array.isArray(oneTable)) continue;  //change this to expect an Array.
+      oneTable.forEach((note, idx) => {
+          expect(note).toHaveProperty('noteName');
+          expect(note).toHaveProperty('colorClass');
+          if (songTestOptions.strictFile_styleNum) {
+            expect(note).toHaveProperty('styleNum');
+            expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
+          } else {
+            if (note.hasOwnProperty('styleNum')) {
+              expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
+            }
+          }
+          expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
+      });
   }
 }
 
