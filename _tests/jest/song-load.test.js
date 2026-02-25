@@ -4,6 +4,8 @@ const path = require('path');
 
 const LF = "\n";
 
+const INFINITE_NECK_SONGLIST = process.env.INFINITE_NECK_SONGLIST;
+
 // Toggle verbose/terse output with bash environment variable INFINITE_NECK_VERBOSE
 // See printVerboseModeMessage() for explanation.
 const INFINITE_NECK_VERBOSE = process.env.INFINITE_NECK_VERBOSE;
@@ -17,6 +19,7 @@ const MORE_THRESHOLD = VERBOSE_MODE > 1
                        : 10;
 
 function logVerbose(level, msg) {
+  if (VERBOSE_MODE === -1) return;
   if (VERBOSE_MODE >= level) console.log(msg);
 }
 
@@ -61,55 +64,102 @@ const ALLOWED_NOTE_NAMES = ["A","Bb","B","C","Db","D","Eb","E","F","Gb","G","Ab"
 
 const SONGS_DIR = path.join(__dirname, '../../songs');
   
-// Dynamically load all song files from song-list.json
-const songListPath = path.join(__dirname, '../../songs/song-list.json');
-const songList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
 
-// Load extra test songs from songs/tests/test-song-list.json
-const testSongListPath = path.join(__dirname, '../../songs/tests/test-song-list.json');
-const testSongList = JSON.parse(fs.readFileSync(testSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+// Song list file constants
+const SONGSDIR = 'songs/';
+const SONGSTEST_RELDIR = 'tests/';
+const SONGSTESTDIR = SONGSDIR+SONGSTEST_RELDIR;
 
-// Load failure test songs from songs/tests/failure-test-song-list.json
-const failureTestSongListPath = path.join(__dirname, '../../songs/tests/failure-test-song-list.json');
-const failureTestSongList = JSON.parse(fs.readFileSync(failureTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+const SONG_LIST_FILE = SONGSDIR+'song-list.json';
+const TEST_SONG_LIST_FILE = SONGSTESTDIR+'test-song-list.json';
+const FAILURE_TEST_SONG_LIST_FILE = SONGSTESTDIR+'failure-test-song-list.json';
+const FAILURE_STRICT_TEST_SONG_LIST_FILE = SONGSTESTDIR+'failure-strict-test-song-list.json';
 
-const failureStrictTestSongListPath = path.join(__dirname, '../../songs/tests/failure-strict-test-song-list.json');
-const failureStrictTestSongList = JSON.parse(fs.readFileSync(failureStrictTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+function createSongList(theSongListFile, relDir=null){
+    const songListPath = path.join(__dirname, '../../', theSongListFile);
+    let theSongList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
+    if (relDir){
+      theSongList = theSongList.map(f => `${relDir}${f}`);
+    }
+    return theSongList;
+}
 
-// Filter out song-list.json itself to avoid recursion, then add extra test songs
-const filteredSongList = songList.filter(f => f !== 'song-list.json').concat(testSongList);
+function createSongFilesArray(){
+    // Dynamically load all song files from song-list.json
+    //const songListPath = path.join(__dirname, '../../', SONG_LIST_FILE);
+    //const songList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
+    const songList = createSongList(SONG_LIST_FILE);
 
-// Combine all files and mark expected failures
+    // Load extra test songs from songs/tests/test-song-list.json
+    //const testSongListPath = path.join(__dirname, '../../', TEST_SONG_LIST_FILE);
+    //const testSongList = JSON.parse(fs.readFileSync(testSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+    const testSongList = createSongList(TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
 
-const songFiles = [
-    ...filteredSongList.map(f => ({
-      file: f,
-      expectedFailure: false,
-      songTestOptions: {},
-      toString: function() {
-        var ef = this.expectedFailure ? " [failure expected]" : "";
-        return "song:" + f.toString() + ef;
-      }
-    })),
-    ...failureTestSongList.map(f => ({
-      file: f,
-      expectedFailure: true,
-      songTestOptions: {},
-      toString: function() {
-        var ef = this.expectedFailure ? " [failure expected]" : "";
-        return "song:" + f.toString() + ef;
-      }
-    })),
-    ...failureStrictTestSongList.map(f => ({
-      file: f,
-      expectedFailure: true,
-      songTestOptions: { strictFile_styleNum: true },
-      toString: function() {
-        var ef = this.expectedFailure ? " [failure expected]" : "";
-        return "song:" + f.toString() + ef + " [strictFile_styleNum]";
-      }
-    }))
-];
+    // Load failure test songs from songs/tests/failure-test-song-list.json
+    //const failureTestSongListPath = path.join(__dirname, '../../', FAILURE_TEST_SONG_LIST_FILE);
+    //const failureTestSongList = JSON.parse(fs.readFileSync(failureTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+    const failureTestSongList = createSongList(FAILURE_TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
+
+    //const failureStrictTestSongListPath = path.join(__dirname, '../../', FAILURE_STRICT_TEST_SONG_LIST_FILE);
+    //const failureStrictTestSongList = JSON.parse(fs.readFileSync(failureStrictTestSongListPath, 'utf8')).songs.map(f => `tests/${f}`);
+    const failureStrictTestSongList = createSongList(FAILURE_STRICT_TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
+
+    // Combine all files and mark expected failures
+
+    let theSongFiles = [
+        ...songList.map(f => ({
+          file: f,
+          expectedFailure: false,
+          songTestOptions: { strictFile_styleNum: true, list: SONG_LIST_FILE, dir: SONGSDIR  },
+          toString: function() {
+            var ef = this.expectedFailure ? " [failure expected]" : "";
+            return "song:" + f.toString() + ef;
+          }
+        })),
+        ...testSongList.map(f => ({
+          file: f,
+          expectedFailure: false,
+          songTestOptions: { list: TEST_SONG_LIST_FILE, dir: SONGSTESTDIR },
+          toString: function() {
+            var ef = this.expectedFailure ? " [failure expected]" : "";
+            return "song:" + f.toString() + ef;
+          }
+        })),
+        ...failureTestSongList.map(f => ({
+          file: f,
+          expectedFailure: true,
+          songTestOptions: { strictFile_styleNum: true, list: FAILURE_TEST_SONG_LIST_FILE, dir: SONGSTESTDIR  },
+          toString: function() {
+            var ef = this.expectedFailure ? " [failure expected]" : "";
+            return "song:" + f.toString() + ef;
+          }
+        })),
+        ...failureStrictTestSongList.map(f => ({
+          file: f,
+          expectedFailure: true,
+          songTestOptions: { strictFile_styleNum: true, list: FAILURE_STRICT_TEST_SONG_LIST_FILE, dir: SONGSTESTDIR  },
+          toString: function() {
+            var ef = this.expectedFailure ? " [failure expected]" : "";
+            return "song:" + f.toString() + ef + " [strictFile_styleNum]";
+          }
+        }))
+    ];
+    return theSongFiles;
+  }
+
+  function createSongFilesArrayFromNamed(named){
+
+  }
+
+let songFiles = INFINITE_NECK_SONGLIST
+                ? createSongFilesArrayFromNamed(INFINITE_NECK_SONGLIST)
+                : createSongFilesArray();  
+
+// Filter to a single song if INFINITE_NECK_SONG is set
+const INFINITE_NECK_SONG = process.env.INFINITE_NECK_SONG;
+if (INFINITE_NECK_SONG) {
+  songFiles = songFiles.filter(entry => entry.file === INFINITE_NECK_SONG);
+}
 
 
 //==================================================================
@@ -136,7 +186,6 @@ function getNamedNotesCount(namedNotes) {
   return Object.keys(namedNotes).length;
 }
 
-
 function validateNamedNotes(namedNotes, songTestOptions = {}, summaryInfo) {
   for (const key of Object.keys(namedNotes)) {
     summaryInfo.namedNoteKey = key;
@@ -150,12 +199,7 @@ function validateNamedNotes(namedNotes, songTestOptions = {}, summaryInfo) {
         : JSON.stringify(note);
     expect(note).toHaveProperty('noteName');
     expect(note).toHaveProperty('colorClass');
-    if (songTestOptions.strictFile_styleNum) {
-      expect(note).not.toHaveProperty('styleNum');
-    } else {
-      expect(note).toHaveProperty('styleNum');
-      expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
-    }
+    validateStyleNum(note, songTestOptions);
     expect(note.noteName).toBe(key);
     expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
   }
@@ -166,30 +210,35 @@ function validateNamedNotes(namedNotes, songTestOptions = {}, summaryInfo) {
 function validateNoteTables(noteTables, songTestOptions = {}, summaryInfo) {
   expect(typeof noteTables).toBe('object');
   for (const tblnameKey of Object.keys(noteTables)) {
-      summaryInfo.tableName = tblnameKey;
-      const oneTable = noteTables[tblnameKey];
-      if (!Array.isArray(oneTable)) continue;  //change this to expect an Array.
-      oneTable.forEach((note, idx) => {
-          summaryInfo.noteTableIndex = idx;
-          summaryInfo.note = VERBOSE_MODE > 1 
-            ? note 
-            : JSON.stringify(note);
-          expect(note).toHaveProperty('noteName');
-          expect(note).toHaveProperty('colorClass');
-          if (songTestOptions.strictFile_styleNum) {
-            expect(note).toHaveProperty('styleNum');
-            expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
-          } else {
-            if (note.hasOwnProperty('styleNum')) {
-              expect(typeof note.styleNum === 'number' && Number.isInteger(note.styleNum)).toBe(true);
-            }
-          }
-          expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
-      });
-      summaryInfo.noteTableIndex = "";
-      summaryInfo.note = "";
+    summaryInfo.tableName = tblnameKey;
+    const oneTable = noteTables[tblnameKey];
+    if (!Array.isArray(oneTable)) continue;  //change this to expect an Array.
+    oneTable.forEach((note, idx) => {
+      summaryInfo.noteTableIndex = idx;
+      summaryInfo.note = VERBOSE_MODE > 1 
+        ? note 
+        : JSON.stringify(note);
+      expect(note).toHaveProperty('noteName');
+      expect(note).toHaveProperty('colorClass');
+      validateStyleNum(note, songTestOptions);
+      expect(typeof note.colorClass === 'string' && note.colorClass.length > 0).toBe(true);
+    });
+    summaryInfo.noteTableIndex = "";
+    summaryInfo.note = "";
   }
   summaryInfo.tableName = "";
+}
+
+// Helper to validate styleNum property according to strictFile_styleNum
+function validateStyleNum(obj, songTestOptions = {}) {
+  if (songTestOptions.strictFile_styleNum) {
+    expect(obj).toHaveProperty('styleNum');
+    expect(typeof obj.styleNum === 'number' && Number.isInteger(obj.styleNum)).toBe(true);
+  } else {
+    if (obj.hasOwnProperty('styleNum')) {
+      expect(typeof obj.styleNum === 'number' && Number.isInteger(obj.styleNum)).toBe(true);
+    }
+  }
 }
 
 // Helper to validate namedNotes and noteTables presence as objects in each section
@@ -202,6 +251,7 @@ function validateSectionDictionaries(data) {
     expect(typeof section.noteTables).toBe('object');
   });
 }
+
 // Helper to validate rootID presence at song and section level
 function getSectionRootIDs(data) {
   if (!Array.isArray(data.sections)) return [];
@@ -210,7 +260,6 @@ function getSectionRootIDs(data) {
     return section.rootID;
   });
 }
-
 
 // Helper to run all validations for a song file
 function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
@@ -226,7 +275,10 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
   let currentSectionIndex = -1;
   let currentObjectDump = "";
   try {
-    logVerbose(1, '🡆  In song ⠶ '+file+LF+"     "+JSON.stringify({expectedSections, sectionRootIDs, song_rootID: data.rootID}));
+    logVerbose(1, '🡆  In song ⠶ '+file
+                   +LF+" expectedFailure:"+expectedFailure
+                  +LF+"     "+JSON.stringify({expectedSections, sectionRootIDs, song_rootID: data.rootID})
+                  +LF+" songTestOptions:"+JSON.stringify(songTestOptions));
     const gSong = global.makeSong();
     gSong.addSections(data);
     expect(gSong.getSections().length).toBe(expectedSections);
@@ -247,9 +299,14 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
         logVerbose(3, `sections[${i}]➝  noteTables${noteTableSummary}  •  namedNotes:${namedNotesCount}  •  《${sectionRootIDs}》 `);
       });
     }
-
+    logVerbose(1, '👉   leaving test block ⠶ '+file
+       +LF+" expectedFailure:"+expectedFailure
+                  +LF+" songTestOptions:"+JSON.stringify(songTestOptions));
     // --- End Structure and Summary Validation ---
   } catch (e) {
+    logVerbose(1, '👉   caught exception ⠶ '+file
+                  +LF+" expectedFailure:"+expectedFailure
+                  +LF+" songTestOptions:"+JSON.stringify(songTestOptions));
     failed = true;
     // Always log filename and summary info with exception
     const summaryStr = VERBOSE_MODE > 1
@@ -258,7 +315,10 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
     const jestException = VERBOSE_MODE > 1
             ? `${e.message}\n${e.stack}`
             : `${e.message}\n`;
-    errorMsg =   `\n🛑 Failure in file: ${file} :: sections[${currentSectionIndex}]\nSummary: ${summaryStr}`
+    errorMsg = 
+      `\n🛑 Failure in file: ${file} :: sections[${currentSectionIndex}]\nSummary: ${summaryStr}`
+                +LF+" expectedFailure:"+expectedFailure
+                 +LF+`failed: ${failed}`
                 +`\n✴   Jest Exception: \n❮❮❮\n ${jestException}\n❯❯❯\n\n`;
     if (VERBOSE_MODE>0) {
       errorSummary = errorMsg;
@@ -271,6 +331,11 @@ function runSongValidation(file, data, expectedFailure, songTestOptions = {}) {
       errorSummary = '';
     }
   }
+  logVerbose(1, '🎄   preparing to run final expect ⠶ '+file
+                  +LF+" expectedFailure:"+expectedFailure
+                  +LF+`failed: ${failed}`
+                  +LF+" songTestOptions:"+JSON.stringify(songTestOptions));
+
   
   if (expectedFailure) {
     expect(failed).toBe(true);
@@ -288,26 +353,35 @@ function rootIDsMore(sectionRootIDsArr){
   return sectionRootIDsArrStr;
 }
 
-
 //===================================================================
 //========         Now run the tests           ======================
 //===================================================================
 
-
 describe('Song file and gSong loading validation', () => {
   printVerboseModeMessage();
+  let accumFilename = [];
+  let data = null;
   songFiles.forEach(({ file, expectedFailure, songTestOptions }) => {
     const filePath = path.join(__dirname, '../../songs', file);
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    accumFilename.push(`${filePath}`);
+    try {
+      data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (e){
+      logVerbose(1, `File list so far: ${LF}${accumFilename.join(LF)}`)
+      logVerbose(1, `🛑 Error reading file: ${filePath}`);
+      throw e;
+    }
     // Gather summary info for label
     const sectionCount = Array.isArray(data.sections) ? data.sections.length : 0;
     const rootIDs = Array.isArray(data.sections) ? rootIDsMore(data.sections.map(s => s.rootID)) : '';
-    const strictMode = songTestOptions.strictFile_styleNum ? 'strict' : 'normal';
-    const testLabel = `${file}`
-      + (expectedFailure ? ' (expected failure)' : '')
+    const strictMode = songTestOptions.strictFile_styleNum ? '| songFormat:strict🧐' : '';
+    const rootIDsLabel = (VERBOSE_MODE>0) ? ` | rootIDs:${rootIDs}` : '';
+    const testLabel = `${SONGSDIR}${file}`     // file is like "bar.json" and "tests/foo.json" :: tests/ is already included in the test file because of how they were parsed at the top of this test file.
+      + (expectedFailure ? ' (expected failure🍌)' : '')
+      + ` | list:${songTestOptions.list}`
       + ` | sections:${sectionCount}`
-      + ` | rootIDs:${rootIDs}`
-      + ` | songFormat:${strictMode}`;
+      +   rootIDsLabel
+      + ` ${strictMode}`;
     test(testLabel, () => {
       runSongValidation(file, data, expectedFailure, songTestOptions);
     });

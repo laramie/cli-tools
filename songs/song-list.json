@@ -1,8 +1,12 @@
 {
     "songs": [
-         "All-Chords-A.json"
+        "tests/old-file-format-styleNum-missing.json",
+        "tests/empty-song-missing-noteTables.json"
+        
      ],
     "ignoredSongs": [
+       
+         "All-Chords-A.json",
          "All-Chords-Ab.json",    
          "All-Chords-B.json",
          "All-Chords-Bb.json",
@@ -29,7 +33,7 @@
          "pretty-lights-more-bling.json",
          "progression-on-strat.json",
          "snake.json",
-         "song-list.json",
          "three-chord-wonder.json"
-     ]
+    
+    ]
 }
