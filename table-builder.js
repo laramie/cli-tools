@@ -407,12 +407,7 @@ export function generateSelectStringDividerHt(ID, sHeightValue) {
 //================ Public functions to manage tunings ==========================
 
 export function findTuning(oneBaseID) {
-	for (i in allTunings.tunings) {
-		var baseID = allTunings.tunings[i].baseID;
-		if (baseID === oneBaseID) { 
-			return allTunings.tunings[i];
-		}
-	}
+	return allTunings.tunings.find(tuning => tuning.baseID === oneBaseID);
 }
 
 /** name includes the string TABLE_ID_PREFIX, currently "tbl" **/
@@ -434,14 +429,10 @@ export function findTuningForID(id) {
 }
 
 export function getTunings(tableNamesArr) {
-	var result = [];
-	for (var idx in tableNamesArr) {
-		var tableID = tableNamesArr[idx];
-		var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
-		var tuning = findTuningForID(tuningID);
-		result.push(tuning);
-	}
-	return result;
+	return tableNamesArr.map(tableID => {
+		const tuningID = tableID.substring(TABLE_ID_PREFIX.length);
+		return findTuningForID(tuningID);
+	});
 }
 
 
@@ -450,7 +441,7 @@ export function getTunings(tableNamesArr) {
 
 export function showDefaultTuning() {
 	//if none, then show for newbies or browsers that clear checkboxes:
-	var numShowing = showhideTunings();
+	var numShowing = showHideTunings();
 	if (numShowing == 0) {
 		console.log("================== NOT showDefaultTuning showing P46 ==========="); 
 		//showHideTuning(true, "P46");
@@ -458,7 +449,7 @@ export function showDefaultTuning() {
 	return numShowing;
 }
 
-export function showhideTunings() {
+export function showHideTunings() {
 	var tuningsCheckboxes = $(".cbTuningVisible");
 	tuningsCheckboxes.each(function (index, element) {
 		var theCB = $(element)
@@ -468,7 +459,7 @@ export function showhideTunings() {
 		//console.log("showhideTuning: idx:"+index+" ["+basekey+"] "+show);
 	});
 	var numTunings = $(".cbTuningVisible:checked").length;
-	//console.log("showhideTunings num: "+numTunings);
+	//console.log("showHideTunings num: "+numTunings);
 	return numTunings;
 }
 
@@ -508,38 +499,32 @@ export function showHideTuning(show, basekey) {
 
 export function showTuningsForTablesInFile() {
 	var numFound = 0;
-	for (section in getSong().sections) {
-		var noteTables = getSong().sections[section].noteTables;
-		for (tablekey in noteTables) {
-			var tablearr = noteTables[tablekey];
+	getSong().sections.forEach(section => {
+		Object.entries(section.noteTables).forEach(([tablekey, tablearr]) => {
 			if (tablearr && tablearr.length > 0) {
-				var basekey = tablekey.substring(TABLE_ID_PREFIX.length);
+				const basekey = tablekey.substring(TABLE_ID_PREFIX.length);
 				showTuning(basekey);
 				numFound++;
 			}
-		}
-	}
-	for (visTableIdx in getSong().visibleNoteTables) {
-		var visbasekey = getSong().visibleNoteTables[visTableIdx].substring(TABLE_ID_PREFIX.length);
-
-		var tuning = findTuning(visbasekey);
+		});
+	});
+	getSong().visibleNoteTables.forEach(visTableID => {
+		const visbasekey = visTableID.substring(TABLE_ID_PREFIX.length);
+		const tuning = findTuning(visbasekey);
 		if (tuning) {
 			tuning.visible = true;
 		} else {
-			console.log("tuning not found for basekey: " + basekey);
+			console.log("tuning not found for basekey: " + visbasekey);
 		}
 		reinstallAllTuningsTables();
-
 		showTuning(visbasekey);
 		numFound++;
-	}
+	});
 	return numFound;
 }
 
 export function hideAllTunings() {
-	for (i in allTunings.tunings) {
-		hideTuning(allTunings.tunings[i].baseID);
-	}
+	allTunings.tunings.forEach(tuning => hideTuning(tuning.baseID));
 }
 
 /**
@@ -594,7 +579,7 @@ export function bindFormTuningsEvents() {
 		}
 		reinstallAllTuningsTables();
 		showHideTuning(show, basekey);
-		showhideTunings();
+		showHideTunings();
 	});
 	$('#frmTunings .checkboxLH').change(function () {
 		var tuningID = this.value;
