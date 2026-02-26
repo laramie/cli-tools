@@ -1,7 +1,7 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-import { 
-    NUM_FRETS_MAX,
+import {
+	NUM_FRETS_MAX,
 	constNoteNamesArr,
 	reloadAllTuningsDisplay,
 	reinstallAllTuningsTables
@@ -20,527 +20,527 @@ const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
-function buildNoteTable(options){
-	if (options.visible==false){
+function buildNoteTable(options) {
+	if (options.visible == false) {
 		//console.log("NOT building invisible table: "+options.caption);
 		return null;
 	}
-    var midinum;
-    var nutClass = "";
-    var noteName = "";
-    var colDisplay = 0;
-    var numRows = options.rowRange.length;
+	var midinum;
+	var nutClass = "";
+	var noteName = "";
+	var colDisplay = 0;
+	var numRows = options.rowRange.length;
 
-    var table = $('<table>');
-    table.attr("border", "0");
-    table.attr("cellpadding", "0");
-    table.attr("cellspacing", "4");
-    table.attr("id", TABLE_ID_PREFIX+options.baseID);
-    table.attr("rowRange", '['+options.rowRange.toString()+']');
-    table.attr("reversed", options.reverse);
-    table.attr("fretTableBuilt", true);
-    table.addClass("fretTable");
-	if (options.leftmargin){
+	var table = $('<table>');
+	table.attr("border", "0");
+	table.attr("cellpadding", "0");
+	table.attr("cellspacing", "4");
+	table.attr("id", TABLE_ID_PREFIX + options.baseID);
+	table.attr("rowRange", '[' + options.rowRange.toString() + ']');
+	table.attr("reversed", options.reverse);
+	table.attr("fretTableBuilt", true);
+	table.addClass("fretTable");
+	if (options.leftmargin) {
 		table.addClass("leftmarginInstrument");
 	}
 	var doNamesRow = options.pianoNamesRow;
 	var stringDividerHeight = options.stringDividerHeight;
 	var doStringDivider = false;
-	if (stringDividerHeight && (""+stringDividerHeight) != "0"){
+	if (stringDividerHeight && ("" + stringDividerHeight) != "0") {
 		doStringDivider = true;
 	}
-    var tuningNoteNames = "";
-    for(var r=0; r<numRows; r++){
-        tuningNoteNames = midinumToNoteName(options.rowRange[r])+tuningNoteNames;
-        var row = $('<tr>');
-        row.addClass("stringRow");
+	var tuningNoteNames = "";
+	for (var r = 0; r < numRows; r++) {
+		tuningNoteNames = midinumToNoteName(options.rowRange[r]) + tuningNoteNames;
+		var row = $('<tr>');
+		row.addClass("stringRow");
 		var namesRow = $("<tr>");
 		var dividerRow = $("<tr>");
 		dividerRow.addClass('stringDividerTR');
-        var nCols = options.nut ? options.frets+1 : options.frets;
+		var nCols = options.nut ? options.frets + 1 : options.frets;
 		var banjoNut = options.banjoNut ? options.banjoNut[r] : undefined;
 
-		for(var c=0; c<nCols; c++){
+		for (var c = 0; c < nCols; c++) {
 			var deadCell = false;
-			if (banjoNut){
+			if (banjoNut) {
 				nutClass = "";
-				if (options.reverse){
-					if ( c == (nCols-banjoNut-1) ){
+				if (options.reverse) {
+					if (c == (nCols - banjoNut - 1)) {
 						nutClass = "nutR";
-					} else if ( c > (nCols-banjoNut-1) ){
+					} else if (c > (nCols - banjoNut - 1)) {
 						deadCell = true;
 					}
 				} else {
-					if ( c == banjoNut ){
+					if (c == banjoNut) {
 						nutClass = "nut";
-					} else if (c < banjoNut){
+					} else if (c < banjoNut) {
 						deadCell = true;
 					}
 				}
-			} else if ((c==0) && options.nut && !options.reverse){
-                nutClass = "nut";
-            } else if ((c==options.frets) && options.nut && options.reverse) {
-                nutClass = "nutR";
-            } else {
-                nutClass = "";
-            }
+			} else if ((c == 0) && options.nut && !options.reverse) {
+				nutClass = "nut";
+			} else if ((c == options.frets) && options.nut && options.reverse) {
+				nutClass = "nutR";
+			} else {
+				nutClass = "";
+			}
 
-            if (options.reverse){
-                midinum = options.rowRange[r] + options.frets- c;
-                colDisplay = options.frets-c;
-            } else {
-                midinum = options.rowRange[r] + c;
-                colDisplay = c;
-            }
-            noteName = midinumToNoteName(midinum);
-            var noteClass = "note"+noteName;//"noteD";
+			if (options.reverse) {
+				midinum = options.rowRange[r] + options.frets - c;
+				colDisplay = options.frets - c;
+			} else {
+				midinum = options.rowRange[r] + c;
+				colDisplay = c;
+			}
+			noteName = midinumToNoteName(midinum);
+			var noteClass = "note" + noteName;//"noteD";
 			var notePinkClass = "";
-			if (options.pinkKey && noteName==options.pinkKey){
+			if (options.pinkKey && noteName == options.pinkKey) {
 				notePinkClass = " notePinkKey";
 			}
-            var tdline = '<td class="note '+ noteClass+notePinkClass +' '+nutClass+'" noteName="'+noteName+'">';
-            var cell = $(tdline).html("");
-              cell.attr("midiNum", ""+midinum);
-	          cell.attr("cellrow", r);
-	          cell.attr("cellcol", colDisplay);
-	          cell.attr("celltable", TABLE_ID_PREFIX+options.baseID);
-			  cell.html(""+noteName);
-            if (deadCell){
+			var tdline = '<td class="note ' + noteClass + notePinkClass + ' ' + nutClass + '" noteName="' + noteName + '">';
+			var cell = $(tdline).html("");
+			cell.attr("midiNum", "" + midinum);
+			cell.attr("cellrow", r);
+			cell.attr("cellcol", colDisplay);
+			cell.attr("celltable", TABLE_ID_PREFIX + options.baseID);
+			cell.html("" + noteName);
+			if (deadCell) {
 				cell = $('<td class="note" style="min-width: 1em; background-color: #222;">');
 			}
 			row.append(cell);
-			if (doNamesRow){
+			if (doNamesRow) {
 				var sHeight = "";
 				var namesRowHeight = options.pianoNamesRowHeight;
-				if (namesRowHeight){
-					sHeight = ' style="height: '+namesRowHeight+'" ';
+				if (namesRowHeight) {
+					sHeight = ' style="height: ' + namesRowHeight + '" ';
 				}
 				var namesTdline = '<td class="namesRowCell" >';
-				var colorArea = $('<div class="'+noteClass+'" '+sHeight+' >');
+				var colorArea = $('<div class="' + noteClass + '" ' + sHeight + ' >');
 				colorArea.html(noteName);
 				var namesCell = $(namesTdline);
 				namesCell.append(colorArea);
 				namesRow.append(namesCell);
 			}
-			if (doStringDivider && r>0){
+			if (doStringDivider && r > 0) {
 				var dividerCell = $("<td class='stringDividerTD'>");
 				dividerRow.append(dividerCell);
 			}
-        } //end for-loop columns
-		if (doStringDivider){
-			dividerRow.css({"height": stringDividerHeight});
+		} //end for-loop columns
+		if (doStringDivider) {
+			dividerRow.css({ "height": stringDividerHeight });
 			table.append(dividerRow);
 		}
-		if (doNamesRow){
+		if (doNamesRow) {
 			table.append(namesRow);
 		}
 
 
-        table.append(row);
-    } //end for-loop rows
+		table.append(row);
+	} //end for-loop rows
 
-	if(options.diamonds){
-        var diamondRow = diamondsRow(options);
-        if (diamondRow!=null){
-            table.append(diamondRow);
-        }
+	if (options.diamonds) {
+		var diamondRow = diamondsRow(options);
+		if (diamondRow != null) {
+			table.append(diamondRow);
+		}
 	} else {
-		if (doStringDivider){
-			dividerRow.css({"height": stringDividerHeight});
+		if (doStringDivider) {
+			dividerRow.css({ "height": stringDividerHeight });
 			table.append(dividerRow);
 		}
 	}
 
-    var div = $('<div>');
-    div.addClass("instrumentBackground");
-    div.attr("id", TABLEDIV_ID_PREFIX+options.baseID);
-    var exportButton = "&nbsp;&nbsp;<button class='exportButton moveyButton' tabindex='-1' onclick='exportFromTable(\""+TABLE_ID_PREFIX+options.baseID+"\")'>Export Highlights</button>";
-	var hamburger = "<button id='btnHamburger"+options.baseID+"' class='HamburgerInstrumentClass showsubcaption moveyButton' type='button' tabindex='-1'>&equiv;</button>";
-	var hamburgerColorDict = "<button id='btnHamburgerColorDict"+options.baseID+"' class='showcolordict moveyButton' type='button' tabindex='-1'><img src='img/colordictThumbnail.png' style='width:35px;height:15px;'></button>";
+	var div = $('<div>');
+	div.addClass("instrumentBackground");
+	div.attr("id", TABLEDIV_ID_PREFIX + options.baseID);
+	var exportButton = "&nbsp;&nbsp;<button class='exportButton moveyButton' tabindex='-1' onclick='exportFromTable(\"" + TABLE_ID_PREFIX + options.baseID + "\")'>Export Highlights</button>";
+	var hamburger = "<button id='btnHamburger" + options.baseID + "' class='HamburgerInstrumentClass showsubcaption moveyButton' type='button' tabindex='-1'>&equiv;</button>";
+	var hamburgerColorDict = "<button id='btnHamburgerColorDict" + options.baseID + "' class='showcolordict moveyButton' type='button' tabindex='-1'><img src='img/colordictThumbnail.png' style='width:35px;height:15px;'></button>";
 
 	var spanLeadDifferentFromRoot = "&nbsp;<span class='spanLeadDifferentFromRoot'></span>";
 	var spanRootID = "&nbsp;&nbsp;&nbsp;<span class='lblRootID'></span>";
-    var joniTuning = "<span class='joniTuning'><small>Joni:</small>"+getJoniTuning(options)+"</span>";
+	var joniTuning = "<span class='joniTuning'><small>Joni:</small>" + getJoniTuning(options) + "</span>";
 	var noteClickedCaption = "<span class='lblNoteClickedCaption'></span>";
 	var p = $("<p>");
-    p.addClass("captionRow");
-    var reverse = options.reverse ? '&nbsp;&nbsp;<span class="tuningReverseCaption">Left-Handed</span>' : '';
+	p.addClass("captionRow");
+	var reverse = options.reverse ? '&nbsp;&nbsp;<span class="tuningReverseCaption">Left-Handed</span>' : '';
 	var S = "&nbsp;&nbsp;";
-    p.html('<b>'+options.caption+'</b>&nbsp;&nbsp;&nbsp;<span class="subcaption">'
-	            +options.nStrings+'-string '
-				+options.baseInstrument
-				+'&nbsp;&nbsp;&nbsp;['+rowRangeToNoteNames(options.rowRange, options)+']'+S
-				+joniTuning
-				+reverse
-				+exportButton+S
-				+spanRootID
-				+spanLeadDifferentFromRoot+S
-				+noteClickedCaption
-				+hamburgerColorDict+S+S
-				+'</span>'
-				+hamburger+S+S
-				+"<div class='currentColorDict''></div>"+S
-			    
-			);
+	p.html('<b>' + options.caption + '</b>&nbsp;&nbsp;&nbsp;<span class="subcaption">'
+		+ options.nStrings + '-string '
+		+ options.baseInstrument
+		+ '&nbsp;&nbsp;&nbsp;[' + rowRangeToNoteNames(options.rowRange, options) + ']' + S
+		+ joniTuning
+		+ reverse
+		+ exportButton + S
+		+ spanRootID
+		+ spanLeadDifferentFromRoot + S
+		+ noteClickedCaption
+		+ hamburgerColorDict + S + S
+		+ '</span>'
+		+ hamburger + S + S
+		+ "<div class='currentColorDict''></div>" + S
+
+	);
 	div.append(p);
-    div.append(table);
-    return  div;
+	div.append(table);
+	return div;
 }
 
-function getJoniTuning(options){
+function getJoniTuning(options) {
 	var len = options.rowRange.length;
-	var last = len-1;  //zero-based.
+	var last = len - 1;  //zero-based.
 	//First, bottom string:
 	var tuningNoteNames = "";
 	var firstStringNum = options.rowRange[last];
-	if (options.banjoNut && options.banjoNut[last]){
+	if (options.banjoNut && options.banjoNut[last]) {
 		firstStringNum = firstStringNum + options.banjoNut[last];
 	}
 	var prevStringNum = firstStringNum;
-	for(var r=last; r>=0; r--){
+	for (var r = last; r >= 0; r--) {
 		var currStringNum = options.rowRange[r];
 		var semitones = currStringNum - prevStringNum;
-		if (r==last){
+		if (r == last) {
 			tuningNoteNames = midinumToNoteName(firstStringNum);
-    	} else {
-			var st = (semitones < 0) ? '('+semitones+')' : semitones;
-    		tuningNoteNames = tuningNoteNames + st;
-    	}
+		} else {
+			var st = (semitones < 0) ? '(' + semitones + ')' : semitones;
+			tuningNoteNames = tuningNoteNames + st;
+		}
 		prevStringNum = currStringNum;
 	}
- 	var result = '['+tuningNoteNames+']' ;
-   	return result;
+	var result = '[' + tuningNoteNames + ']';
+	return result;
 }
 
-function diamondsRow(options){
-        var arr = options.diamonds; //[3,5,7,9,15,17,19,21]
-        var dblArr = options.doubleDiamonds; //[12,24];
-		if (!dblArr){
-			dblArr = [];
+function diamondsRow(options) {
+	var arr = options.diamonds; //[3,5,7,9,15,17,19,21]
+	var dblArr = options.doubleDiamonds; //[12,24];
+	if (!dblArr) {
+		dblArr = [];
+	}
+	var singleDiamond = "&#9672;";
+	var doubleDiamonds = '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr class="diamondsRow" ><td class="doubleDiamonds">&#9672;</td>'
+		+ '</tr><tr><td class="doubleDiamonds">&#9672;</td></tr></table>';
+	var diamondRow = $("<tr  class='diamondsRow' >");
+	//diamondRow.addClass('diamonds');
+	diamondRow.addClass('NotAString');
+	var nCols = options.nut ? options.frets + 1 : options.frets;
+	var dcwn;
+	for (var dc = 0; dc < nCols; dc++) {
+		var td = $('<td>');
+		td.addClass('diamonds');
+		dcwn = dc;  //short for DiamondColumnWithNut
+		if (options.reverse) {
+			if (options.nut) {
+				dcwn = (options.frets - 1) - dc;
+				if (dc == (nCols - 1)) td.addClass("diamondRowSupernut");
+			} else {
+				dcwn = options.frets - dc;
+			}
+		} else {
+			if (options.nut) {
+				dcwn = dc - 1;
+				if (dc == 0) td.addClass("diamondRowSupernut");
+			} else {
+				dcwn = dc;
+			}
 		}
-        var singleDiamond = "&#9672;";
-        var doubleDiamonds = '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr class="diamondsRow" ><td class="doubleDiamonds">&#9672;</td>'
-                             +'</tr><tr><td class="doubleDiamonds">&#9672;</td></tr></table>';
-        var diamondRow = $("<tr  class='diamondsRow' >");
-        //diamondRow.addClass('diamonds');
-        diamondRow.addClass('NotAString');
-        var nCols = options.nut ? options.frets+1 : options.frets;
-        var dcwn;
-        for (var dc = 0; dc<nCols; dc++){
-            var td = $('<td>');
-			td.addClass('diamonds');
-            dcwn = dc;  //short for DiamondColumnWithNut
-            if (options.reverse){
-                if (options.nut){
-                    dcwn = (options.frets-1) - dc;
-					if (dc==(nCols-1)) td.addClass("diamondRowSupernut");
-                } else {
-                    dcwn = options.frets - dc;
-                }
-            } else {
-                if (options.nut){
-                    dcwn = dc - 1;
-					if (dc==0) td.addClass("diamondRowSupernut");
-                } else {
-                    dcwn = dc;
-                }
-            }
-            if (dblArr.includes(dcwn+1)){  //user reads JSON file value as 1-based.
-                td.html(doubleDiamonds);
-            } else if (arr.includes(dcwn+1)){
-                td.html(singleDiamond);
-            } else {
-                td.html("&nbsp;");
-            }
-            diamondRow.append(td);
-        }
-        return diamondRow;
+		if (dblArr.includes(dcwn + 1)) {  //user reads JSON file value as 1-based.
+			td.html(doubleDiamonds);
+		} else if (arr.includes(dcwn + 1)) {
+			td.html(singleDiamond);
+		} else {
+			td.html("&nbsp;");
+		}
+		diamondRow.append(td);
+	}
+	return diamondRow;
 }
 
-function midinumToNoteName(midinum){
-    if (midinum <=9){
-        midinum += 12;
-    }
-    var index = (midinum - 9) % 12;
-    return constNoteNamesArr[index];
-  // 21 == A0
-  // 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
+function midinumToNoteName(midinum) {
+	if (midinum <= 9) {
+		midinum += 12;
+	}
+	var index = (midinum - 9) % 12;
+	return constNoteNamesArr[index];
+	// 21 == A0
+	// 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
 }
 
-function rowRangeToNoteNames(rowRange, options){
-    var numRows = rowRange.length;
-    var tuningNoteNames = "";
-    for(var r=0; r<numRows; r++){
+function rowRangeToNoteNames(rowRange, options) {
+	var numRows = rowRange.length;
+	var tuningNoteNames = "";
+	for (var r = 0; r < numRows; r++) {
 		var midi = rowRange[r];
-		if (options.banjoNut && options.banjoNut[r]){
-			var nCols = options.nut ? options.frets+1 : options.frets;
+		if (options.banjoNut && options.banjoNut[r]) {
+			var nCols = options.nut ? options.frets + 1 : options.frets;
 			var banjoNut = options.banjoNut[r];
 			midi += banjoNut;
 		}
-        tuningNoteNames = midinumToNoteName(midi)+tuningNoteNames;
+		tuningNoteNames = midinumToNoteName(midi) + tuningNoteNames;
 
-    }
-    return tuningNoteNames;
+	}
+	return tuningNoteNames;
 
 }
 
-function dumpTuningsToTable(tuningsInMemoryHash){
-      var table = $("<table class='tuningsTable'>");
-      var trh = $("<tr>");
-      trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
-                +"<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>"
-                ); 
-      table.append(trh);
-      var sInMemCount = "";
-      var rows = allTunings.tunings.length;
-	    for (var r=0; r<rows; r++){
-	        var tun = allTunings.tunings[r];
-	        var checkedVisible = tun.visible ? " checked " : "";
+function dumpTuningsToTable(tuningsInMemoryHash) {
+	var table = $("<table class='tuningsTable'>");
+	var trh = $("<tr>");
+	trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
+		+ "<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>"
+	);
+	table.append(trh);
+	var sInMemCount = "";
+	var rows = allTunings.tunings.length;
+	for (var r = 0; r < rows; r++) {
+		var tun = allTunings.tunings[r];
+		var checkedVisible = tun.visible ? " checked " : "";
 
-			var btnStr = "x";
-			if (tun.instance){
-	            btnStr = '<label for="cb'+tun.baseID+'"><nobr><input id="cb'+tun.baseID+'" '
-	                    +' type="checkbox" class="cbTuningVisible" '
-	                    +' name="cbn'+tun.baseID+'" value="'+tun.baseID+'" '
-	                    + checkedVisible +' >'
-	                    +tun.caption+'</nobr></label>';
+		var btnStr = "x";
+		if (tun.instance) {
+			btnStr = '<label for="cb' + tun.baseID + '"><nobr><input id="cb' + tun.baseID + '" '
+				+ ' type="checkbox" class="cbTuningVisible" '
+				+ ' name="cbn' + tun.baseID + '" value="' + tun.baseID + '" '
+				+ checkedVisible + ' >'
+				+ tun.caption + '</nobr></label>';
+		}
+
+		var checkedLH = tun.reverse ? " checked " : "";
+		var checkboxLH = '<label for="cbLH' + tun.baseID + '"><nobr>'
+			+ '<input class="checkboxLH"   id="cbLH' + tun.baseID + '" '
+			+ ' type="checkbox" name="cbnLH' + tun.baseID + '" value="'
+			+ tun.baseID + '" ' + checkedLH + '>Left-Handed</nobr></label>';
+
+		var checkedPN = tun.pianoNamesRow ? " checked " : "";
+		var checkboxPN = '<label for="cbPN' + tun.baseID + '"><nobr>'
+			+ '<input class="checkboxPN"   id="cbPN' + tun.baseID + '" '
+			+ ' type="checkbox" name="cbnPN' + tun.baseID + '" value="'
+			+ tun.baseID + '" ' + checkedPN + '></nobr></label>';
+
+
+		var checkedNut = tun.nut ? " checked " : "";
+		var checkboxNut = '<label for="cbNut' + tun.baseID + '"><nobr>'
+			+ '<input class="checkboxNut"   id="cbNut' + tun.baseID + '" '
+			+ ' type="checkbox" name="cbnNut' + tun.baseID + '" value="'
+			+ tun.baseID + '" ' + checkedNut + '></nobr></label>';
+
+		var BN = tun.banjoNut ? JSON.stringify(tun.banjoNut) : "";
+		if (BN) {
+			BN = BN.replaceAll(",", ",<br>");
+		}
+
+		var cloneBtn = '<button class="btnCloneTuning" data-baseid="' + tun.baseID + '">Clone</button>';
+
+		sInMemCount = "";
+		if (tuningsInMemoryHash[tun.baseID]) {
+			var val = tuningsInMemoryHash[tun.baseID];
+			if (val && val > 0) {
+				sInMemCount = "" + val;
 			}
-
-			var checkedLH = tun.reverse ? " checked " : "";
-	        var checkboxLH = '<label for="cbLH'+tun.baseID+'"><nobr>'
-	                    +'<input class="checkboxLH"   id="cbLH'+tun.baseID+'" '
-	                    +' type="checkbox" name="cbnLH'+tun.baseID+'" value="'
-	                    +tun.baseID+'" '+checkedLH+'>Left-Handed</nobr></label>';
-
-			var checkedPN = tun.pianoNamesRow ? " checked " : "";
-	        var checkboxPN = '<label for="cbPN'+tun.baseID+'"><nobr>'
-	                    +'<input class="checkboxPN"   id="cbPN'+tun.baseID+'" '
-	                    +' type="checkbox" name="cbnPN'+tun.baseID+'" value="'
-	                    +tun.baseID+'" '+checkedPN+'></nobr></label>';
-			
-
-			var checkedNut = tun.nut ? " checked " : "";
-	        var checkboxNut = '<label for="cbNut'+tun.baseID+'"><nobr>'
-	                    +'<input class="checkboxNut"   id="cbNut'+tun.baseID+'" '
-	                    +' type="checkbox" name="cbnNut'+tun.baseID+'" value="'
-	                    +tun.baseID+'" '+checkedNut+'></nobr></label>';
-
-			var BN = tun.banjoNut?JSON.stringify(tun.banjoNut):"";
-			if (BN)	{
-				BN = BN.replaceAll(",", ",<br>");
-			}
-			
-			var cloneBtn = '<button class="btnCloneTuning" data-baseid="'+tun.baseID+'">Clone</button>';
-			
-			sInMemCount = "";
-	        if (tuningsInMemoryHash[tun.baseID]){
-	            var val = tuningsInMemoryHash[tun.baseID];
-	            if (val && val > 0){
-	                sInMemCount = ""+val;
-	            }
-	        }
-			
+		}
 
 
 
-			var selectBlock = generateSelect(tun.baseID, tun.frets);
-			var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
 
-			var tr = $("<tr>");
-			tr.append($("<td>").html(cloneBtn));
-			tr.append($("<td>").html(btnStr));
-			tr.append($("<td>").html(tun.baseID));
-			tr.append($("<td>").html(tun.nStrings+"-string"));
-			tr.append($("<td>").html(tun.baseInstrument));
-			tr.append($("<td>").html(rowRangeToNoteNames(tun.rowRange, tun)));
-			tr.append($("<td>").html(""+tun.rowRange));
-			tr.append($("<td>").html(""+BN));
-			tr.append($("<td>").html(checkboxLH));
-			tr.append($("<td>").html(checkboxPN));
-			tr.append($("<td>").html(checkboxNut));
-			tr.append($("<td>").html(selectBlock)); //numFrets
-			tr.append($("<td>").html(selectStringDividerHt));
-			tr.append($("<td>").html("<b>"+sInMemCount+"</b>"));
-			
-			
-			table.append(tr);
-	    }
-	    return table;
+		var selectBlock = generateSelect(tun.baseID, tun.frets);
+		var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
+
+		var tr = $("<tr>");
+		tr.append($("<td>").html(cloneBtn));
+		tr.append($("<td>").html(btnStr));
+		tr.append($("<td>").html(tun.baseID));
+		tr.append($("<td>").html(tun.nStrings + "-string"));
+		tr.append($("<td>").html(tun.baseInstrument));
+		tr.append($("<td>").html(rowRangeToNoteNames(tun.rowRange, tun)));
+		tr.append($("<td>").html("" + tun.rowRange));
+		tr.append($("<td>").html("" + BN));
+		tr.append($("<td>").html(checkboxLH));
+		tr.append($("<td>").html(checkboxPN));
+		tr.append($("<td>").html(checkboxNut));
+		tr.append($("<td>").html(selectBlock)); //numFrets
+		tr.append($("<td>").html(selectStringDividerHt));
+		tr.append($("<td>").html("<b>" + sInMemCount + "</b>"));
+
+
+		table.append(tr);
+	}
+	return table;
 }
 
 const SELECT_FRETS_PFX = "selFrets";
 const SELECT_STRINGDIVIDER_PFX = "selDivider";
 
-function generateSelect(ID, frets){
-    var sel = "<select class='selectFrets' id='"+SELECT_FRETS_PFX+ID+"'>";
-    for (var r=1; r<=NUM_FRETS_MAX; r++){  // NUM_FRETS_MAX from infinite-neck.js
-        var selected = "";
-        if (r==frets){
-            selected = " selected ";
-        }
-        var opt = "<option value='"+r+"' "+selected+"> "+r+" </option>";
-        sel = sel +opt;
+function generateSelect(ID, frets) {
+	var sel = "<select class='selectFrets' id='" + SELECT_FRETS_PFX + ID + "'>";
+	for (var r = 1; r <= NUM_FRETS_MAX; r++) {  // NUM_FRETS_MAX from infinite-neck.js
+		var selected = "";
+		if (r == frets) {
+			selected = " selected ";
+		}
+		var opt = "<option value='" + r + "' " + selected + "> " + r + " </option>";
+		sel = sel + opt;
 
-    }
-    sel = sel + "</select>";
-    return sel;
+	}
+	sel = sel + "</select>";
+	return sel;
 }
 
-function generateSelectStringDividerHt(ID, sHeightValue){
-    var sel = "<select class='selectStringDividerHt' id='"+SELECT_STRINGDIVIDER_PFX+ID+"'>";
+function generateSelectStringDividerHt(ID, sHeightValue) {
+	var sel = "<select class='selectStringDividerHt' id='" + SELECT_STRINGDIVIDER_PFX + ID + "'>";
 	var opt = "<option value='0'>0</option>";
-	sel = sel +opt;
-    for (var r=1; r<=8; r++){
-		var ht = "0."+r+"em";
-        var selected = "";
-        if(ht == sHeightValue){
+	sel = sel + opt;
+	for (var r = 1; r <= 8; r++) {
+		var ht = "0." + r + "em";
+		var selected = "";
+		if (ht == sHeightValue) {
 			selected = " selected ";
-        }
-        opt = "<option value='"+ht+"' "+selected+"> "+ht+" </option>";
-        sel = sel +opt;
+		}
+		opt = "<option value='" + ht + "' " + selected + "> " + ht + " </option>";
+		sel = sel + opt;
 
-    }
-    sel = sel + "</select>";
-    return sel;
+	}
+	sel = sel + "</select>";
+	return sel;
 }
 
 //================ Public functions to manage tunings ==========================
 
-function findTuning(oneBaseID){
-  for (i in allTunings.tunings){
-	  var baseID = allTunings.tunings[i].baseID;
-	  if (baseID === oneBaseID){
-		  return allTunings.tunings[i];
-	  }
-  }
+function findTuning(oneBaseID) {
+	for (i in allTunings.tunings) {
+		var baseID = allTunings.tunings[i].baseID;
+		if (baseID === oneBaseID) {
+			return allTunings.tunings[i];
+		}
+	}
 }
 
 /** name includes the string TABLE_ID_PREFIX, currently "tbl" **/
-function findTuningForName(tableID){
+function findTuningForName(tableID) {
 	var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
 	return findTuningForID(tuningID);
 }
 
-function findTuningForID(id){
-      var rows = allTunings.tunings.length;
-	    for (var r=0; r<rows; r++){
-	        var tun = allTunings.tunings[r];
-	        var baseID = tun.baseID;
-	        if (baseID === id){
-	            return tun;
-	        }
-	    }
-	    return null;
-}
-
-function getTunings(tableNamesArr){
-    var result = [];
-    for (var idx in tableNamesArr){
-        var tableID = tableNamesArr[idx];
-        var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
-        var tuning = findTuningForID(tuningID);
-        result.push(tuning);
-    }
-    return result;
-}
-
-
-
-
-
-  function showDefaultTuning(){
-      //if none, then show for newbies or browsers that clear checkboxes:
-	    var numShowing = showhideTunings();
-	    if (numShowing==0){
-			console.log("================== NOT showDefaultTuning showing P46 ===========");
-	        //showHideTuning(true, "P46");
-	    }
-	    return numShowing;
-	 }
-
-	function showhideTunings() {
-	    var tuningsCheckboxes = $(".cbTuningVisible");
-	    tuningsCheckboxes.each( function(index, element) {
-              var theCB= $(element)
-              var show = theCB.prop('checked');
-	            var basekey = theCB.val();
-	            showHideTuning(show, basekey);
-	            //console.log("showhideTuning: idx:"+index+" ["+basekey+"] "+show);
-      });
-	    var numTunings = $(".cbTuningVisible:checked").length;
-	    //console.log("showhideTunings num: "+numTunings);
-	    return numTunings;
-	}
-
-
-	function hideTuning(tablekey){
-	    showHideTuning(false, tablekey);
-	}
-	function showTuning(tablekey){
-	    showHideTuning(true, tablekey);
-	}
-	function showHideTuning(show, basekey){
-	    //console.log("showHideTuning:"+show+":"+basekey);
-	    var cbKey = "#cb"+basekey;
-	    var divKey = "#"+TABLEDIV_ID_PREFIX+basekey;
-	    var jcb = $(cbKey);
-	    var jdiv = $(divKey);
-	    jcb.prop("checked", show);
-		//jcb.click();
-	    if (show){   //change the checkbox in the GUI
-	        jdiv.show();  
-	    } else {
-	        jdiv.hide();
-	    }
-		var tuning = findTuningForID(basekey);
-		if (tuning){
-        	tuning.visible =show;  //change it in the in-memory model.
-		} else {
-			var stacktrace = "";
-			try {
-				throw new Error(); 
-			} catch (e) {
-				stacktrace = ""+e.stack;
-			}
-			alert("Tuning not found for: "+basekey +" at: "+stacktrace);
+function findTuningForID(id) {
+	var rows = allTunings.tunings.length;
+	for (var r = 0; r < rows; r++) {
+		var tun = allTunings.tunings[r];
+		var baseID = tun.baseID;
+		if (baseID === id) {
+			return tun;
 		}
 	}
+	return null;
+}
 
-	function showTuningsForTablesInFile(){
-	     var numFound = 0;
-	     for (section in getSong().sections){
-	         var noteTables = getSong().sections[section].noteTables;
-	         for (tablekey in noteTables){
-	             var tablearr = noteTables[tablekey];
-	             if (tablearr && tablearr.length>0) {
-	                  var basekey = tablekey.substring(TABLE_ID_PREFIX.length);
-	                  showTuning(basekey);
-	                  numFound++;
-	             }
-	         }
-	     }
-	     for (visTableIdx in getSong().visibleNoteTables){
-	         var visbasekey = getSong().visibleNoteTables[visTableIdx].substring(TABLE_ID_PREFIX.length);
-
-			 var tuning = findTuning(visbasekey);
-	         if (tuning){
-	             tuning.visible = true;
-	         } else {
-	             console.log("tuning not found for basekey: "+basekey);
-	         }
-	 		 reinstallAllTuningsTables();
-
-	         showTuning(visbasekey);
-	         numFound++;
-	     }
-	     return numFound;
+function getTunings(tableNamesArr) {
+	var result = [];
+	for (var idx in tableNamesArr) {
+		var tableID = tableNamesArr[idx];
+		var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
+		var tuning = findTuningForID(tuningID);
+		result.push(tuning);
 	}
+	return result;
+}
 
-	function hideAllTunings(){
-	    for (i in allTunings.tunings){
-	        hideTuning(allTunings.tunings[i].baseID);
-	    }
+
+
+
+
+function showDefaultTuning() {
+	//if none, then show for newbies or browsers that clear checkboxes:
+	var numShowing = showhideTunings();
+	if (numShowing == 0) {
+		console.log("================== NOT showDefaultTuning showing P46 ===========");
+		//showHideTuning(true, "P46");
 	}
+	return numShowing;
+}
+
+function showhideTunings() {
+	var tuningsCheckboxes = $(".cbTuningVisible");
+	tuningsCheckboxes.each(function (index, element) {
+		var theCB = $(element)
+		var show = theCB.prop('checked');
+		var basekey = theCB.val();
+		showHideTuning(show, basekey);
+		//console.log("showhideTuning: idx:"+index+" ["+basekey+"] "+show);
+	});
+	var numTunings = $(".cbTuningVisible:checked").length;
+	//console.log("showhideTunings num: "+numTunings);
+	return numTunings;
+}
+
+
+function hideTuning(tablekey) {
+	showHideTuning(false, tablekey);
+}
+function showTuning(tablekey) {
+	showHideTuning(true, tablekey);
+}
+function showHideTuning(show, basekey) {
+	//console.log("showHideTuning:"+show+":"+basekey);
+	var cbKey = "#cb" + basekey;
+	var divKey = "#" + TABLEDIV_ID_PREFIX + basekey;
+	var jcb = $(cbKey);
+	var jdiv = $(divKey);
+	jcb.prop("checked", show);
+	//jcb.click();
+	if (show) {   //change the checkbox in the GUI
+		jdiv.show();
+	} else {
+		jdiv.hide();
+	}
+	var tuning = findTuningForID(basekey);
+	if (tuning) {
+		tuning.visible = show;  //change it in the in-memory model.
+	} else {
+		var stacktrace = "";
+		try {
+			throw new Error();
+		} catch (e) {
+			stacktrace = "" + e.stack;
+		}
+		alert("Tuning not found for: " + basekey + " at: " + stacktrace);
+	}
+}
+
+function showTuningsForTablesInFile() {
+	var numFound = 0;
+	for (section in getSong().sections) {
+		var noteTables = getSong().sections[section].noteTables;
+		for (tablekey in noteTables) {
+			var tablearr = noteTables[tablekey];
+			if (tablearr && tablearr.length > 0) {
+				var basekey = tablekey.substring(TABLE_ID_PREFIX.length);
+				showTuning(basekey);
+				numFound++;
+			}
+		}
+	}
+	for (visTableIdx in getSong().visibleNoteTables) {
+		var visbasekey = getSong().visibleNoteTables[visTableIdx].substring(TABLE_ID_PREFIX.length);
+
+		var tuning = findTuning(visbasekey);
+		if (tuning) {
+			tuning.visible = true;
+		} else {
+			console.log("tuning not found for basekey: " + basekey);
+		}
+		reinstallAllTuningsTables();
+
+		showTuning(visbasekey);
+		numFound++;
+	}
+	return numFound;
+}
+
+function hideAllTunings() {
+	for (i in allTunings.tunings) {
+		hideTuning(allTunings.tunings[i].baseID);
+	}
+}
 
 /**
  * Converts a comma-separated string to an array of integers, with validation.
@@ -549,138 +549,138 @@ function getTunings(tableNamesArr){
  * @throws {Error} If any element is not a valid integer.
  */
 function convertStringToIntArray(inputString) {
-  // 1. Split the string by the comma separator
-  const stringArray = inputString.split(',');
+	// 1. Split the string by the comma separator
+	const stringArray = inputString.split(',');
 
-  // 2. Map each string element to an integer and validate
-  const intArray = stringArray.map(str => {
-    // Trim whitespace from the string
-    const trimmedStr = str.trim();
+	// 2. Map each string element to an integer and validate
+	const intArray = stringArray.map(str => {
+		// Trim whitespace from the string
+		const trimmedStr = str.trim();
 
-    // Use parseInt with base 10 (decimal) for robust conversion
-    const num = Number.parseInt(trimmedStr, 10);
+		// Use parseInt with base 10 (decimal) for robust conversion
+		const num = Number.parseInt(trimmedStr, 10);
 
-    // 3. Check if the result is a valid integer and not NaN
-    // The `Number.isNaN()` check is crucial for safety
-    if (Number.isNaN(num) || trimmedStr === '') {
-      throw new Error(`Invalid input: "${str}" is not a valid integer.`);
-    }
+		// 3. Check if the result is a valid integer and not NaN
+		// The `Number.isNaN()` check is crucial for safety
+		if (Number.isNaN(num) || trimmedStr === '') {
+			throw new Error(`Invalid input: "${str}" is not a valid integer.`);
+		}
 
-    // 4. Additionally, check if the original string was an actual number (prevents '1a' being parsed as '1')
-    // This is the safest way to ensure the whole string was an integer representation
-    if (String(num) !== trimmedStr) {
-        throw new Error(`Invalid input: "${str}" contains non-integer characters.`);
-    }
+		// 4. Additionally, check if the original string was an actual number (prevents '1a' being parsed as '1')
+		// This is the safest way to ensure the whole string was an integer representation
+		if (String(num) !== trimmedStr) {
+			throw new Error(`Invalid input: "${str}" contains non-integer characters.`);
+		}
 
-    return num;
-  });
+		return num;
+	});
 
-  return intArray;
+	return intArray;
 }
 
 
 //===================== event binding =======================================
-	//One dependency: the existence of a form called "#frmTunings" with our tuningstable.
+//One dependency: the existence of a form called "#frmTunings" with our tuningstable.
 
-function bindFormTuningsEvents(){
-	$('#frmTunings .cbTuningVisible').change(function() {
-        var show = this.checked;
-        var basekey = this.value;
-        var tuning = findTuning(basekey);
-        if (tuning){
-            tuning.visible = show;
-        } else {
-            console.log("tuning not found for basekey: "+basekey);
-        }
+function bindFormTuningsEvents() {
+	$('#frmTunings .cbTuningVisible').change(function () {
+		var show = this.checked;
+		var basekey = this.value;
+		var tuning = findTuning(basekey);
+		if (tuning) {
+			tuning.visible = show;
+		} else {
+			console.log("tuning not found for basekey: " + basekey);
+		}
 		reinstallAllTuningsTables();
-        showHideTuning(show, basekey);
-        showhideTunings();
-    });
-    $('#frmTunings .checkboxLH').change(function() {
-        var tuningID = this.value;
-        var tuning = findTuningForID(tuningID);
-        tuning.reverse = this.checked;
-        reinstallAllTuningsTables();
-    });
-    $('#frmTunings .selectFrets').change(function() {
-        var tuningID = this.id.substring(SELECT_FRETS_PFX.length);
-        var tuning = findTuningForID(tuningID);
-        tuning.frets = parseInt(this.value);
-        reinstallAllTuningsTables();
-    });
-	$('#frmTunings .selectStringDividerHt').change(function() {
-        var tuningID = this.id.substring(SELECT_STRINGDIVIDER_PFX.length);
-        var tuning = findTuningForID(tuningID);
-        tuning.stringDividerHeight = this.value;
-        reinstallAllTuningsTables();
-    });
-	$('#frmTunings .checkboxPN').change(function() {
-        var tuningID = this.value;
+		showHideTuning(show, basekey);
+		showhideTunings();
+	});
+	$('#frmTunings .checkboxLH').change(function () {
+		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
-        tuning.pianoNamesRow = this.checked;
-        reinstallAllTuningsTables();
-    });
-	$('#frmTunings .checkboxNut').change(function() {
-        var tuningID = this.value;
+		tuning.reverse = this.checked;
+		reinstallAllTuningsTables();
+	});
+	$('#frmTunings .selectFrets').change(function () {
+		var tuningID = this.id.substring(SELECT_FRETS_PFX.length);
 		var tuning = findTuningForID(tuningID);
-        tuning.nut = this.checked;
-        reinstallAllTuningsTables();
-    });
-	$('#btnShowHideEditUserTuning').off('click').click(function() {
+		tuning.frets = parseInt(this.value);
+		reinstallAllTuningsTables();
+	});
+	$('#frmTunings .selectStringDividerHt').change(function () {
+		var tuningID = this.id.substring(SELECT_STRINGDIVIDER_PFX.length);
+		var tuning = findTuningForID(tuningID);
+		tuning.stringDividerHeight = this.value;
+		reinstallAllTuningsTables();
+	});
+	$('#frmTunings .checkboxPN').change(function () {
+		var tuningID = this.value;
+		var tuning = findTuningForID(tuningID);
+		tuning.pianoNamesRow = this.checked;
+		reinstallAllTuningsTables();
+	});
+	$('#frmTunings .checkboxNut').change(function () {
+		var tuningID = this.value;
+		var tuning = findTuningForID(tuningID);
+		tuning.nut = this.checked;
+		reinstallAllTuningsTables();
+	});
+	$('#btnShowHideEditUserTuning').off('click').click(function () {
 		$('#divEditUserTuning').toggle();
 	});
-	$('#btnSaveUserTuning').off('click').click(function() {
-        var tun = findTuningForID("USER");
-		if (tun){
+	$('#btnSaveUserTuning').off('click').click(function () {
+		var tun = findTuningForID("USER");
+		if (tun) {
 			var text = $('#textareaRowRange').val();
-			if (text){
-				if (text.trim()){
+			if (text) {
+				if (text.trim()) {
 					try {
 						var arr = convertStringToIntArray(text.trim());
 						tun.rowRange = arr;
 						tun.nStrings = tun.rowRange.length;
-					} catch (e){
-						alert("User instrument RowRange invalid: "+text);
+					} catch (e) {
+						alert("User instrument RowRange invalid: " + text);
 						return;
 					}
 				}
 			}
-			
+
 
 			var sBanjoNut = $('#textareaBanjoNut').val();
-			if (sBanjoNut && sBanjoNut.trim()){
+			if (sBanjoNut && sBanjoNut.trim()) {
 				tun.banjoNut = JSON.parse(sBanjoNut);
 			}
 
 			var sCaption = $('#txtUserInstrumentCaption').val();
-			if (sCaption && sCaption.trim()){
+			if (sCaption && sCaption.trim()) {
 				tun.caption = sCaption.trim();
 			}
 
 			tun.baseInstrument = $('#dropDownBaseInstrument  option:selected').val();
-			
+
 			reloadAllTuningsDisplay();
 			reinstallAllTuningsTables();
 		}
 	});
-	
+
 	// Clone button handler (delegated from #frmTunings to support table reloads)
-	$('#frmTunings').off('click', '.btnCloneTuning').on('click', '.btnCloneTuning', function() {
+	$('#frmTunings').off('click', '.btnCloneTuning').on('click', '.btnCloneTuning', function () {
 		var baseID = $(this).data('baseid');
 		var newBaseID = window.prompt("Enter new baseID for cloned tuning:", baseID + "_copy");
 		if (!newBaseID) return;
 		// Check for duplicate baseID
-		if (allTunings.tunings.some(function(tuning) { return tuning.baseID === newBaseID; })) {
+		if (allTunings.tunings.some(function (tuning) { return tuning.baseID === newBaseID; })) {
 			alert("A tuning with baseID '" + newBaseID + "' already exists.");
 			return;
 		}
 		// Find original tuning
-		var original = allTunings.tunings.find(function(tuning) { return tuning.baseID === baseID; });
+		var original = allTunings.tunings.find(function (tuning) { return tuning.baseID === baseID; });
 		if (!original) {
 			alert("Original tuning not found.");
 			return;
 		}
-		
+
 		var cloned = JSON.parse(JSON.stringify(original)); // Deep clone
 		cloned.baseID = newBaseID;
 		cloned.instance = true;

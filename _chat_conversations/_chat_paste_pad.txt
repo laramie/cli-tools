@@ -1,12 +1,16 @@
-event-bus.js:19 Uncaught SyntaxError: Unexpected token 'export'
-jquery-3.7.1.min.js:2 jQuery.Deferred exception: NUM_FRETS_MAX is not defined ReferenceError: NUM_FRETS_MAX is not defined
-    at http://localhost:8000/infinite-neck/song.js:35:20
-    at makeSong (http://localhost:8000/infinite-neck/song.js:42:7)
-    at appInit (http://localhost:8000/infinite-neck/infinite-neck.js:1870:11)
-    at HTMLDocument.<anonymous> (http://localhost:8000/infinite-neck/infinite-neck.js:4:38)
-    at e (https://code.jquery.com/jquery-3.7.1.min.js:2:27028)
-    at https://code.jquery.com/jquery-3.7.1.min.js:2:27330 undefined
-(anonymous) @ jquery-3.7.1.min.js:2
-jquery-3.7.1.min.js:2 Uncaught ReferenceError: NUM_FRETS_MAX is not defined
-infinite-neck.js:1862 Uncaught TypeError: Cannot read properties of null (reading 'stack')
-    at window.onerror (infinite-neck.js:1862:27)
+Cool.  Just to be sure.  I'm proposing this structure: 
+
+table-builder.js ::
+    export function findTuning(oneBaseID)
+    export function findTuningForName
+    export function bindFormTuningsEvents()  // calls jQuery.  Should be encapsulated so it doesn't get called from headless _tests
+
+TableBuilder.js ::
+     //imports pretty much all functions from table-builder.js
+     export function findTuning ....        // only on the "public" api
+     export function findTuningForName .... // only on the "public" api
+
+ infinite-neck.js ::
+     imports only 
+        TableBuilder.findTuning 
+        TableBuilder.findTuningForName    
