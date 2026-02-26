@@ -823,7 +823,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			installBtnHamburgerClicks();
 	        clearAll();
 	        resetNoteNames();
-	        showhideTunings();
+	        showHideTunings();
 	}
 
 	function installTDNoteClick(){
@@ -1998,7 +1998,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		installRBColorChangeEvents();
 
 	    reloadAllTuningsDisplay();
-	    showDefaultTuning();//calls showhideTunings and shows S6 if none found.
+	    showDefaultTuning();//calls showHideTunings and shows S6 if none found.
 	    bindFormTuningsEvents();
 		bindDataActionHandlers();
 
