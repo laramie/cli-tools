@@ -1,21 +1,32 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
+import { 
+    NUM_FRETS_MAX,
+	constNoteNamesArr,
+	reloadAllTuningsDisplay,
+	reinstallAllTuningsTables
+} from './infinite-neck.js';
+import {
+	allTunings
+} from './tunings.js';
+
 
 // constNoteNamesArr is defined in infinite-neck.js
 const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
-function buildNoteTable(options){
+export function buildNoteTable(options){
 	if (options.visible==false){
 		//console.log("NOT building invisible table: "+options.caption);
 		return null;
 	}
     var midinum;
+class TableBuilder {
     var nutClass = "";
     var noteName = "";
     var colDisplay = 0;
     var numRows = options.rowRange.length;
-
+	buildNoteTable(options){
     var table = $('<table>');
     table.attr("border", "0");
     table.attr("cellpadding", "0");
@@ -69,6 +80,11 @@ function buildNoteTable(options){
             } else {
                 nutClass = "";
             }
+					class TableBuilder {
+						constructor() {
+							// Add state here if needed in future
+						}
+
 
             if (options.reverse){
                 midinum = options.rowRange[r] + options.frets- c;
@@ -176,6 +192,8 @@ function getJoniTuning(options){
 	var len = options.rowRange.length;
 	var last = len-1;  //zero-based.
 	//First, bottom string:
+}
+export { TableBuilder };
 	var tuningNoteNames = "";
 	var firstStringNum = options.rowRange[last];
 	if (options.banjoNut && options.banjoNut[last]){
@@ -234,6 +252,7 @@ function diamondsRow(options){
                 td.html(doubleDiamonds);
             } else if (arr.includes(dcwn+1)){
                 td.html(singleDiamond);
+
             } else {
                 td.html("&nbsp;");
             }
@@ -269,7 +288,7 @@ function rowRangeToNoteNames(rowRange, options){
 
 }
 
-function dumpTuningsToTable(tuningsInMemoryHash){
+export function dumpTuningsToTable(tuningsInMemoryHash){
       var table = $("<table class='tuningsTable'>");
       var trh = $("<tr>");
       trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
@@ -313,6 +332,7 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 			var BN = tun.banjoNut?JSON.stringify(tun.banjoNut):"";
 			if (BN)	{
 				BN = BN.replaceAll(",", ",<br>");
+
 			}
 			
 			var cloneBtn = '<button class="btnCloneTuning" data-baseid="'+tun.baseID+'">Clone</button>';
@@ -332,6 +352,7 @@ function dumpTuningsToTable(tuningsInMemoryHash){
 			var selectStringDividerHt = generateSelectStringDividerHt(tun.baseID, tun.stringDividerHeight);
 
 			var tr = $("<tr>");
+
 			tr.append($("<td>").html(cloneBtn));
 			tr.append($("<td>").html(btnStr));
 			tr.append($("<td>").html(tun.baseID));
@@ -392,16 +413,11 @@ function generateSelectStringDividerHt(ID, sHeightValue){
 //================ Public functions to manage tunings ==========================
 
 function findTuning(oneBaseID){
-  for (i in allTunings.tunings){
-	  var baseID = allTunings.tunings[i].baseID;
-	  if (baseID === oneBaseID){
-		  return allTunings.tunings[i];
-	  }
-  }
+	return allTunings.tunings.find(tuning => tuning.baseID === oneBaseID);
 }
 
 /** name includes the string TABLE_ID_PREFIX, currently "tbl" **/
-function findTuningForName(tableID){
+export function findTuningForName(tableID){
 	var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
 	return findTuningForID(tuningID);
 }
@@ -433,7 +449,7 @@ function getTunings(tableNamesArr){
 
 
 
-  function showDefaultTuning(){
+  export function showDefaultTuning(){
       //if none, then show for newbies or browsers that clear checkboxes:
 	    var numShowing = showhideTunings();
 	    if (numShowing==0){
@@ -443,7 +459,7 @@ function getTunings(tableNamesArr){
 	    return numShowing;
 	 }
 
-	function showhideTunings() {
+	export function showhideTunings() {
 	    var tuningsCheckboxes = $(".cbTuningVisible");
 	    tuningsCheckboxes.each( function(index, element) {
               var theCB= $(element)
@@ -464,7 +480,7 @@ function getTunings(tableNamesArr){
 	function showTuning(tablekey){
 	    showHideTuning(true, tablekey);
 	}
-	function showHideTuning(show, basekey){
+	export function showHideTuning(show, basekey){
 	    //console.log("showHideTuning:"+show+":"+basekey);
 	    var cbKey = "#cb"+basekey;
 	    var divKey = "#"+TABLEDIV_ID_PREFIX+basekey;
@@ -513,7 +529,7 @@ function getTunings(tableNamesArr){
 	         } else {
 	             console.log("tuning not found for basekey: "+basekey);
 	         }
-	 		 resinstallAllTuningsTables();
+	 		 reinstallAllTuningsTables();
 
 	         showTuning(visbasekey);
 	         numFound++;
@@ -567,7 +583,7 @@ function convertStringToIntArray(inputString) {
 //===================== event binding =======================================
 	//One dependency: the existence of a form called "#frmTunings" with our tuningstable.
 
-function bindFormTuningsEvents(){
+export function bindFormTuningsEvents(){
 	$('#frmTunings .cbTuningVisible').change(function() {
         var show = this.checked;
         var basekey = this.value;
@@ -577,7 +593,7 @@ function bindFormTuningsEvents(){
         } else {
             console.log("tuning not found for basekey: "+basekey);
         }
-		resinstallAllTuningsTables();
+		reinstallAllTuningsTables();
         showHideTuning(show, basekey);
         showhideTunings();
     });
@@ -585,31 +601,31 @@ function bindFormTuningsEvents(){
         var tuningID = this.value;
         var tuning = findTuningForID(tuningID);
         tuning.reverse = this.checked;
-        resinstallAllTuningsTables();
+        reinstallAllTuningsTables();
     });
     $('#frmTunings .selectFrets').change(function() {
         var tuningID = this.id.substring(SELECT_FRETS_PFX.length);
         var tuning = findTuningForID(tuningID);
         tuning.frets = parseInt(this.value);
-        resinstallAllTuningsTables();
+        reinstallAllTuningsTables();
     });
 	$('#frmTunings .selectStringDividerHt').change(function() {
         var tuningID = this.id.substring(SELECT_STRINGDIVIDER_PFX.length);
         var tuning = findTuningForID(tuningID);
         tuning.stringDividerHeight = this.value;
-        resinstallAllTuningsTables();
+        reinstallAllTuningsTables();
     });
 	$('#frmTunings .checkboxPN').change(function() {
         var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
         tuning.pianoNamesRow = this.checked;
-        resinstallAllTuningsTables();
+        reinstallAllTuningsTables();
     });
 	$('#frmTunings .checkboxNut').change(function() {
         var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
         tuning.nut = this.checked;
-        resinstallAllTuningsTables();
+        reinstallAllTuningsTables();
     });
 	$('#btnShowHideEditUserTuning').off('click').click(function() {
 		$('#divEditUserTuning').toggle();
@@ -645,7 +661,7 @@ function bindFormTuningsEvents(){
 			tun.baseInstrument = $('#dropDownBaseInstrument  option:selected').val();
 			
 			reloadAllTuningsDisplay();
-			resinstallAllTuningsTables();
+			reinstallAllTuningsTables();
 		}
 	});
 	
