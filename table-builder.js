@@ -20,7 +20,7 @@ const TABLE_ID_PREFIX = "tbl";
 const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
-function buildNoteTable(options) {
+export function buildNoteTable(options) {
 	if (options.visible == false) {
 		//console.log("NOT building invisible table: "+options.caption);
 		return null;
@@ -190,7 +190,7 @@ function buildNoteTable(options) {
 function getJoniTuning(options) {
 	var len = options.rowRange.length;
 	var last = len - 1;  //zero-based.
-	//First, bottom string:
+	// First, bottom string:
 	var tuningNoteNames = "";
 	var firstStringNum = options.rowRange[last];
 	if (options.banjoNut && options.banjoNut[last]) {
@@ -215,7 +215,7 @@ function getJoniTuning(options) {
 function diamondsRow(options) {
 	var arr = options.diamonds; //[3,5,7,9,15,17,19,21]
 	var dblArr = options.doubleDiamonds; //[12,24];
-	if (!dblArr) {
+	if (!dblArr) { 
 		dblArr = [];
 	}
 	var singleDiamond = "&#9672;";
@@ -270,7 +270,7 @@ function midinumToNoteName(midinum) {
 function rowRangeToNoteNames(rowRange, options) {
 	var numRows = rowRange.length;
 	var tuningNoteNames = "";
-	for (var r = 0; r < numRows; r++) {
+	for (var r = 0; r < numRows; r++) { 
 		var midi = rowRange[r];
 		if (options.banjoNut && options.banjoNut[r]) {
 			var nCols = options.nut ? options.frets + 1 : options.frets;
@@ -287,7 +287,7 @@ function rowRangeToNoteNames(rowRange, options) {
 function dumpTuningsToTable(tuningsInMemoryHash) {
 	var table = $("<table class='tuningsTable'>");
 	var trh = $("<tr>");
-	trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>"
+	trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>" 
 		+ "<th>BN</th><th>Right/Left</th><th>PianoNames</th><th>Nut</th><th>Frets</th><th>Divider</th><th>InMem</th>"
 	);
 	table.append(trh);
@@ -371,7 +371,7 @@ function dumpTuningsToTable(tuningsInMemoryHash) {
 const SELECT_FRETS_PFX = "selFrets";
 const SELECT_STRINGDIVIDER_PFX = "selDivider";
 
-function generateSelect(ID, frets) {
+export function generateSelect(ID, frets) {
 	var sel = "<select class='selectFrets' id='" + SELECT_FRETS_PFX + ID + "'>";
 	for (var r = 1; r <= NUM_FRETS_MAX; r++) {  // NUM_FRETS_MAX from infinite-neck.js
 		var selected = "";
@@ -389,7 +389,7 @@ function generateSelect(ID, frets) {
 function generateSelectStringDividerHt(ID, sHeightValue) {
 	var sel = "<select class='selectStringDividerHt' id='" + SELECT_STRINGDIVIDER_PFX + ID + "'>";
 	var opt = "<option value='0'>0</option>";
-	sel = sel + opt;
+	sel = sel + opt; 
 	for (var r = 1; r <= 8; r++) {
 		var ht = "0." + r + "em";
 		var selected = "";
@@ -409,7 +409,7 @@ function generateSelectStringDividerHt(ID, sHeightValue) {
 function findTuning(oneBaseID) {
 	for (i in allTunings.tunings) {
 		var baseID = allTunings.tunings[i].baseID;
-		if (baseID === oneBaseID) {
+		if (baseID === oneBaseID) { 
 			return allTunings.tunings[i];
 		}
 	}
@@ -452,7 +452,7 @@ function showDefaultTuning() {
 	//if none, then show for newbies or browsers that clear checkboxes:
 	var numShowing = showhideTunings();
 	if (numShowing == 0) {
-		console.log("================== NOT showDefaultTuning showing P46 ===========");
+		console.log("================== NOT showDefaultTuning showing P46 ==========="); 
 		//showHideTuning(true, "P46");
 	}
 	return numShowing;
@@ -462,7 +462,7 @@ function showhideTunings() {
 	var tuningsCheckboxes = $(".cbTuningVisible");
 	tuningsCheckboxes.each(function (index, element) {
 		var theCB = $(element)
-		var show = theCB.prop('checked');
+		var show = theCB.prop('checked'); 
 		var basekey = theCB.val();
 		showHideTuning(show, basekey);
 		//console.log("showhideTuning: idx:"+index+" ["+basekey+"] "+show);
