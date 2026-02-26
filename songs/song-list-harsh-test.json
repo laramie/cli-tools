@@ -2,10 +2,10 @@
     "songTestOptions": {
         "expectedFailure":           true,
         "strictFile_styleNum":       true,
-        "reason":                   "harsh-mode-songs👍fail",
-        "dir":                      ""
+        "reason":                   "harsh-mode-songs👍fail"
     },
     "songs": [
+         "All-Chords-A.json",
         "tests/old-file-format-styleNum-missing.json",
         "tests/empty-song-missing-noteTables.json"
         

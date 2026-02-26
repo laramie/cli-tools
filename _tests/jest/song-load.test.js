@@ -90,13 +90,8 @@ const SONGSDIR = 'songs/';
 const SONGSTEST_RELDIR = 'tests/';
 const SONGSTESTDIR = SONGSDIR + SONGSTEST_RELDIR;
 
-const SONG_LIST_FILE = SONGSDIR + 'song-list.json';
-const TEST_SONG_LIST_FILE = SONGSTESTDIR + 'test-song-list.json';
-const FAILURE_TEST_SONG_LIST_FILE = SONGSTESTDIR + 'failure-test-song-list.json';
-const FAILURE_STRICT_TEST_SONG_LIST_FILE = SONGSTESTDIR + 'failure-strict-test-song-list.json';
-
 function createSongList(theSongListFile, relDir = null) {
-    console.log("========= attempting to open file in createSongList: "+theSongListFile);
+    logVerbose(3, "   🦊 attempting to open file in createSongList: "+theSongListFile);
     const songListPath = path.join(__dirname, '../../', theSongListFile);
     let theSongList = JSON.parse(fs.readFileSync(songListPath, 'utf8')).songs;
     if (relDir) {
@@ -106,42 +101,8 @@ function createSongList(theSongListFile, relDir = null) {
 }
 
 
-function createSongFilesArray() {
-    const songList = createSongList(SONG_LIST_FILE);
-    const testSongList = createSongList(TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
-    const failureTestSongList = createSongList(FAILURE_TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
-    const failureStrictTestSongList = createSongList(FAILURE_STRICT_TEST_SONG_LIST_FILE, SONGSTEST_RELDIR);
-
-    // Combine all files and mark expected failures
-
-    let theSongFilesArray = [
-        ...songList.map(f => ({
-            file: f,
-            songTestOptions: { expectedFailure: false, strictFile_styleNum: true, list: SONG_LIST_FILE, dir: SONGSDIR, reason: "library-songs👍pass" }
-
-        })),
-        ...testSongList.map(f => ({
-            file: f,
-            songTestOptions: { expectedFailure: false, list: TEST_SONG_LIST_FILE, dir: SONGSTESTDIR, reason: "test-songs👍pass" }
-
-        })),
-        ...failureTestSongList.map(f => ({
-            file: f,
-            songTestOptions: { expectedFailure: true, strictFile_styleNum: true, list: FAILURE_TEST_SONG_LIST_FILE, dir: SONGSTESTDIR, reason: "test-songs👍should-fail" }
-
-        })),
-        ...failureStrictTestSongList.map(f => ({
-            file: f,
-            songTestOptions: { expectedFailure: true, strictFile_styleNum: true, list: FAILURE_STRICT_TEST_SONG_LIST_FILE, dir: SONGSTESTDIR, reason: "test-songs👍should-fail-strict" }
-
-        }))
-    ];
-    return theSongFilesArray;
-}
-
 // ==== NEW code block for refactor of createSongFilesArray ============= 
 
-//TODO: refactor createSongFilesArray() as createSongFilesArrayRefactored() leaving createSongFilesArray() alone. 
 function createSongFilesArray_Refactored(masterListArray) {
     // masterListArray: array of songTestOptions objects, each with {list, dir, ...}
     // For each entry, load the song list, apply dir prefix, and build {file, songTestOptions}
@@ -171,28 +132,29 @@ function setUpMaster_songTestOptions_Array() {
     return [
         {
             expectedFailure: false,
-            strictFile_styleNum: true,
-            list: SONG_LIST_FILE,
+            strictFile_styleNum: false,
+            list: SONGSDIR + 'song-list.json',
             dir: SONGSDIR,
             reason: "library-songs👍pass"
         },
         {
             expectedFailure: false,
-            list: TEST_SONG_LIST_FILE,
+            strictFile_styleNum: false,
+            list: SONGSTESTDIR + 'test-song-list.json',
             dir: SONGSTESTDIR,
             reason: "test-songs👍pass"
         },
         {
             expectedFailure: true,
             strictFile_styleNum: true,
-            list: FAILURE_TEST_SONG_LIST_FILE,
+            list: SONGSTESTDIR + 'failure-test-song-list.json',
             dir: SONGSTESTDIR,
             reason: "test-songs👍should-fail"
         },
         {
             expectedFailure: true,
             strictFile_styleNum: true,
-            list: FAILURE_STRICT_TEST_SONG_LIST_FILE,
+            list: SONGSTESTDIR + 'failure-strict-test-song-list.json',
             dir: SONGSTESTDIR,
             reason: "test-songs👍should-fail-strict"
         }
@@ -240,7 +202,7 @@ function setup_songTestOptions_Array_FromNamed(songlist) {
     let parsed;
     try {
         parsed = JSON.parse(fileContents);
-        logVerbose(-1, JSON.stringify(parsed,null,2));  
+        logVerbose(3, "  🦊  song file read in setup_songTestOptions_Array_FromNamed: "+LF+JSON.stringify(parsed,null,2));  
     } catch (e) {
         logVerbose(1, `🛑 Error parsing JSON in songTestOptions file: ${listPath}`);
         throw e;
@@ -256,13 +218,15 @@ function setup_songTestOptions_Array_FromNamed(songlist) {
         logVerbose(1, `🛑 Strict structure violation in songTestOptions file: ${listPath}`);
         throw new Error('setup_songTestOptions_Array_FromNamed: JSON file must contain { songTestOptions: {...}, songs: [...] }');
     }
-    // Build array of songTestOptions for each song
+    // Build array of {file, songTestOptions} objects for each song
     return parsed.songs.map(songFile => ({
-        ...parsed.songTestOptions,
         file: (parsed.songTestOptions.dir === SONGSTESTDIR ? SONGSTEST_RELDIR : '') + songFile,
-        list: listFilename,
-        dir: parsed.songTestOptions.dir || SONGSDIR,
-        reason: parsed.songTestOptions.reason || ''
+        songTestOptions: {
+            ...parsed.songTestOptions,
+            list: listFilename,
+            dir: parsed.songTestOptions.dir || SONGSDIR,
+            reason: parsed.songTestOptions.reason || ''
+        }
     }));
 }
 
@@ -270,18 +234,19 @@ function setup_songTestOptions_Array_FromNamed(songlist) {
 
 let songFiles = null;
 if (INFINITE_NECK_SONGLIST) {
+    logVerbose(0, "Running INFINITE_NECK_SONGLIST="+INFINITE_NECK_SONGLIST);
     songFiles = setup_songTestOptions_Array_FromNamed(INFINITE_NECK_SONGLIST);
-} else if (SUITE===1) {
-    songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
 } else if (SUITE===2) {
+    logVerbose(0, "Running INFINITE_NECK_SUITE=2");
     songFiles = createSongFilesArray_Refactored(setupHarsh_songTestOptions_Array());
 } else if (SUITE===3) {
+    logVerbose(0, "Running INFINITE_NECK_SUITE=3");
     songFiles = createSongFilesArray_Refactored(setupTestdirHarsh_songTestOptions_Array());
-} else {
-    //Do it the way we did before the refactor:
-    songFiles = createSongFilesArray();
+} else {  
+    logVerbose(0, "Running INFINITE_NECK_SUITE=1, Default, Master.");
+    songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
 }
-logVerbose(-1, "  🧐 createSongFilesArray--->songFiles : " + JSON.stringify(songFiles, null, 4));
+logVerbose(3, "  🦊 createSongFilesArray--->songFiles : " +LF+ JSON.stringify(songFiles, null, 4));
 
 // ==== END NEW code block for refactor of createSongFilesArray =============
 
@@ -495,6 +460,8 @@ describe('Song file and gSong loading validation', () => {
     songFiles.forEach(({ file, songTestOptions }) => {
         const filePath = path.join(__dirname, '../../songs', file);
         accumFilename.push(`${filePath}`);
+        logVerbose(3, "  🦊 atempting to read song: "+filePath);
+        logVerbose(3, "  🦊 with options: "+LF+JSON.stringify(songTestOptions,null,4));
         try {
             data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch (e) {

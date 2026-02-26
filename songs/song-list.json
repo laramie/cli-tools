@@ -1,10 +1,5 @@
 {
     "songs": [
-        "tests/old-file-format-styleNum-missing.json",
-        "tests/empty-song-missing-noteTables.json"
-        
-     ],
-    "ignoredSongs": [
        
          "All-Chords-A.json",
          "All-Chords-Ab.json",    
@@ -35,5 +30,8 @@
          "snake.json",
          "three-chord-wonder.json"
     
+    ],
+    "ignoredSongs": [
+        
     ]
 }

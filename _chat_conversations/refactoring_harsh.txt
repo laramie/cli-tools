@@ -1,0 +1,185 @@
+
+
+Right now I'd like to add a conditional to handle some songs in "Strict File Mode".  
+
+I want to send in an option "strictFile_styleNum" in an options dictionary.  
+
+    songTestOtions.strictFile_styleNum
+    
+This would be the first option in this new dictionary, but I would want to add more options later, hence the dictionary of options.  
+
+I want to keep using the single entry to the test here:
+
+    describe('Song file and gSong loading validation', () => {
+
+so that means extending the pattern you did with expectedFailure, this time sending in songTestOptions.       
+
+The code in question is:
+
+    validateNamedNotes()
+        ....
+        expect(nn).toHaveProperty('styleNum');
+
+
+Basically, if songTestOtions.strictFile_styleNum then fail. 
+
+The trick is that I expect certain song files to fail.  So we want to kick "describe('Song file and gSong loading validation'" off with a different file list.  Just like 
+
+   failureTestSongList ----reads-from---->   '../../songs/tests/failure-test-song-list.json'
+
+we want 
+
+   failureStrictTestSongList ----reads-from---->   '../../songs/tests/failure-strict-test-song-list.json'
+
+where failureStrictTestSongList will contain the list of song files that I have in failure-strict-test-song-list.json, which should all be run with songTestOtions.strictFile_styleNum and expectedFailure of true.
+
+And the code at the top of the file should add this following the pattern for the other file reads.
+
+One more request!  I formatted "const songFiles" declaration with a bunch of whitespace that helps me read it.  Please preserve the structure of that block when you generate code for the new songFiles assignment.
+
+Before you generate code, let's see your plan of generally how you'd deal with the code sections.  Thanks!
+
+
+
+PASS  _tests/jest/song-load.test.js
+  Song file and gSong loading validation
+    ✓ tests/all-note-types.json | sections:4 | rootIDs:[3,4,5,6] | songFormat:normal (45 ms)
+    ✓ tests/all-note-types-2tunings.json | sections:4 | rootIDs:[3,4,5,6] | songFormat:normal (56 ms)
+    ✓ tests/empty-song-missing-noteTables.json (expected failure) | sections:1 | rootIDs:[3] | songFormat:normal (42 ms)
+    ✓ tests/empty-song-missing-namedNotes.json (expected failure) | sections:1 | rootIDs:[3] | songFormat:normal (7 ms)
+    ✓ tests/old-file-format-styleNum-missing.json (expected failure) | sections:2 | rootIDs:[0,0] | songFormat:strict (17 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.855 s, estimated 2 s
+Ran all test suites matching _tests/jest/song-load.test.js.
+laramie@penguin:~/infinite-neck$ 
+
+
+You da man!  I knew you'd have a bead on this.  So cool.  
+
+Yes, I'd love it if you could implement the changes.  
+
+I hope you saw that in the next iteration, I'll be implementing:
+
+   setup_songTestOptions_Array_FromNamed(songlist)
+
+but that for now we'll leave it as an exception. I just wanted you to be aware that the next iteration will have all those properties in a JSON file, so you can see where we are going.
+
+
+
+========================================================================
+Running Default, the old way: 
+
+     🧐 createSongFilesArray--->songFiles : [
+        {
+            "file": "tests/old-file-format-styleNum-missing.json",
+            "songTestOptions": {
+                "expectedFailure": false,
+                "strictFile_styleNum": true,
+                "list": "songs/song-list.json",
+                "dir": "songs/",
+                "reason": "library-songs👍pass"
+            }
+        },
+        {
+            "file": "tests/empty-song-missing-noteTables.json",
+            "songTestOptions": {
+                "expectedFailure": false,
+                "strictFile_styleNum": true,
+                "list": "songs/song-list.json",
+                "dir": "songs/",
+                "reason": "library-songs👍pass"
+            }
+        },
+        {
+            "file": "tests/old-file-format-styleNum-missing.json",
+            "songTestOptions": {
+                "expectedFailure": true,
+                "strictFile_styleNum": true,
+                "list": "songs/tests/failure-test-song-list.json",
+                "dir": "songs/tests/",
+                "reason": "test-songs👍should-fail"
+            }
+        }
+    ]
+
+========================================================================
+
+From Harsh:
+
+console.log
+      🧐 array: [
+        {
+            "expectedFailure": true,
+            "strictFile_styleNum": true,
+            "reason": "harsh-mode-songs👍fail",
+            "file": "tests/old-file-format-styleNum-missing.json",
+            "list": "songs/tests/test-song-list-harsh-test.json",
+            "dir": "songs/"
+        },
+        {
+            "expectedFailure": true,
+            "strictFile_styleNum": true,
+            "reason": "harsh-mode-songs👍fail",
+            "file": "tests/empty-song-missing-noteTables.json",
+            "list": "songs/tests/test-song-list-harsh-test.json",
+            "dir": "songs/"
+        }
+    ]
+
+      at log (_tests/jest/song-load.test.js:27:40)
+
+  console.log
+      🧐 songFiles : [
+        {
+            "file": "tests/old-file-format-styleNum-missing.json",
+            "songTestOptions": {
+                "expectedFailure": true,
+                "strictFile_styleNum": true,
+                "reason": "harsh-mode-songs👍fail",
+                "file": "tests/old-file-format-styleNum-missing.json",
+                "list": "songs/tests/test-song-list-harsh-test.json",
+                "dir": "songs/"
+            }
+        },
+        {
+            "file": "tests/empty-song-missing-noteTables.json",
+            "songTestOptions": {
+                "expectedFailure": true,
+                "strictFile_styleNum": true,
+                "reason": "harsh-mode-songs👍fail",
+                "file": "tests/old-file-format-styleNum-missing.json",
+                "list": "songs/tests/test-song-list-harsh-test.json",
+                "dir": "songs/"
+            }
+        },
+        {
+            "file": "tests/old-file-format-styleNum-missing.json",
+            "songTestOptions": {
+                "expectedFailure": true,
+                "strictFile_styleNum": true,
+                "reason": "harsh-mode-songs👍fail",
+                "file": "tests/empty-song-missing-noteTables.json",
+                "list": "songs/tests/test-song-list-harsh-test.json",
+                "dir": "songs/"
+            }
+        },
+        {
+            "file": "tests/empty-song-missing-noteTables.json",
+            "songTestOptions": {
+                "expectedFailure": true,
+                "strictFile_styleNum": true,
+                "reason": "harsh-mode-songs👍fail",
+                "file": "tests/empty-song-missing-noteTables.json",
+                "list": "songs/tests/test-song-list-harsh-test.json",
+                "dir": "songs/"
+            }
+        }
+    ]
+
+
+========================================================================
+========================================================================
+
