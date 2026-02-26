@@ -1,4 +1,10 @@
 {
+    "songTestOptions": {
+        "expectedFailure":           true,
+        "strictFile_styleNum":       true,
+        "reason":                   "harsh-mode-songs👍fail",
+        "dir":                      ""
+    },
     "songs": [
         "tests/old-file-format-styleNum-missing.json",
         "tests/empty-song-missing-noteTables.json"
