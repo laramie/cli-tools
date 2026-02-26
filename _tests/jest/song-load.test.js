@@ -215,8 +215,45 @@ function setupTestdirHarsh_songTestOptions_Array(){
     ];
 }
 
-function setup_songTestOptions_Array_FromNamed(songlist){
-   throw new Error("Method setupListFromNamed not implemented yet.");
+function setup_songTestOptions_Array_FromNamed(songlist) {
+  // songlist is a relative path like "tests/test-song-list-harsh-test.json"
+  const listFilename = SONGSDIR + songlist;
+  const listPath = path.join(__dirname, '../../', listFilename);
+  let fileContents;
+  logVerbose(0, "🛈  Reading named file from env: "+INFINITE_NECK_SONGLIST
+             +LFWS2+" found: "+listPath);
+  try {
+    fileContents = fs.readFileSync(listPath, 'utf8');
+  } catch (e) {
+    logVerbose(1, `🛑 Error reading songTestOptions file: ${listPath}`);
+    throw e;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(fileContents);
+  } catch (e) {
+    logVerbose(1, `🛑 Error parsing JSON in songTestOptions file: ${listPath}`);
+    throw e;
+  }
+  // Strict structure enforcement
+  if (
+    !parsed ||
+    typeof parsed !== 'object' ||
+    !parsed.songTestOptions ||
+    typeof parsed.songTestOptions !== 'object' ||
+    !Array.isArray(parsed.songs)
+  ) {
+    logVerbose(1, `🛑 Strict structure violation in songTestOptions file: ${listPath}`);
+    throw new Error('setup_songTestOptions_Array_FromNamed: JSON file must contain { songTestOptions: {...}, songs: [...] }');
+  }
+  // Build array of songTestOptions for each song
+  return parsed.songs.map(songFile => ({
+    ...parsed.songTestOptions,
+    file: (parsed.songTestOptions.dir === SONGSTESTDIR ? SONGSTEST_RELDIR : '') + songFile,
+    list: listFilename,
+    dir: parsed.songTestOptions.dir || SONGSDIR,
+    reason: parsed.songTestOptions.reason || ''
+  }));
 }
 
 
@@ -227,7 +264,10 @@ const DO_TESTDIR_HARSH_TEST = true;
 
 let songFiles = null;
 if (INFINITE_NECK_SONGLIST){
-    songFiles = createSongFilesArray_Refactored(setup_songTestOptions_Array_FromNamed(INFINITE_NECK_SONGLIST));
+    var arr = setup_songTestOptions_Array_FromNamed(INFINITE_NECK_SONGLIST);
+    logVerbose(0, "  🧐 array: "+JSON.stringify(arr,null,4));
+    songFiles = createSongFilesArray_Refactored(arr);
+    logVerbose(0, "  🧐 songFiles : "+JSON.stringify(songFiles,null,4));
 } else if (DO_MASTER_TEST){
     songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
 } else if (DO_HARSH_TEST){
