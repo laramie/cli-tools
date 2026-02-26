@@ -187,7 +187,7 @@ export function buildNoteTable(options) {
 	return div;
 }
 
-function getJoniTuning(options) {
+export function getJoniTuning(options) {
 	var len = options.rowRange.length;
 	var last = len - 1;  //zero-based.
 	// First, bottom string:
@@ -212,7 +212,7 @@ function getJoniTuning(options) {
 	return result;
 }
 
-function diamondsRow(options) {
+export function diamondsRow(options) {
 	var arr = options.diamonds; //[3,5,7,9,15,17,19,21]
 	var dblArr = options.doubleDiamonds; //[12,24];
 	if (!dblArr) { 
@@ -257,7 +257,7 @@ function diamondsRow(options) {
 	return diamondRow;
 }
 
-function midinumToNoteName(midinum) {
+export function midinumToNoteName(midinum) {
 	if (midinum <= 9) {
 		midinum += 12;
 	}
@@ -267,7 +267,7 @@ function midinumToNoteName(midinum) {
 	// 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
 }
 
-function rowRangeToNoteNames(rowRange, options) {
+export function rowRangeToNoteNames(rowRange, options) {
 	var numRows = rowRange.length;
 	var tuningNoteNames = "";
 	for (var r = 0; r < numRows; r++) { 
@@ -284,7 +284,7 @@ function rowRangeToNoteNames(rowRange, options) {
 
 }
 
-function dumpTuningsToTable(tuningsInMemoryHash) {
+export function dumpTuningsToTable(tuningsInMemoryHash) {
 	var table = $("<table class='tuningsTable'>");
 	var trh = $("<tr>");
 	trh.html("<th>Clone</th><th>Tuning</th><th>ID</th><th>Strings</th><th>Instrument</th><th>Notes&nbsp;&uarr;</th><th>MIDI&nbsp;&darr;</th>" 
@@ -386,7 +386,7 @@ export function generateSelect(ID, frets) {
 	return sel;
 }
 
-function generateSelectStringDividerHt(ID, sHeightValue) {
+export function generateSelectStringDividerHt(ID, sHeightValue) {
 	var sel = "<select class='selectStringDividerHt' id='" + SELECT_STRINGDIVIDER_PFX + ID + "'>";
 	var opt = "<option value='0'>0</option>";
 	sel = sel + opt; 
@@ -406,7 +406,7 @@ function generateSelectStringDividerHt(ID, sHeightValue) {
 
 //================ Public functions to manage tunings ==========================
 
-function findTuning(oneBaseID) {
+export function findTuning(oneBaseID) {
 	for (i in allTunings.tunings) {
 		var baseID = allTunings.tunings[i].baseID;
 		if (baseID === oneBaseID) { 
@@ -416,12 +416,12 @@ function findTuning(oneBaseID) {
 }
 
 /** name includes the string TABLE_ID_PREFIX, currently "tbl" **/
-function findTuningForName(tableID) {
+export function findTuningForName(tableID) {
 	var tuningID = tableID.substring(TABLE_ID_PREFIX.length);
 	return findTuningForID(tuningID);
 }
 
-function findTuningForID(id) {
+export function findTuningForID(id) {
 	var rows = allTunings.tunings.length;
 	for (var r = 0; r < rows; r++) {
 		var tun = allTunings.tunings[r];
@@ -433,7 +433,7 @@ function findTuningForID(id) {
 	return null;
 }
 
-function getTunings(tableNamesArr) {
+export function getTunings(tableNamesArr) {
 	var result = [];
 	for (var idx in tableNamesArr) {
 		var tableID = tableNamesArr[idx];
@@ -448,7 +448,7 @@ function getTunings(tableNamesArr) {
 
 
 
-function showDefaultTuning() {
+export function showDefaultTuning() {
 	//if none, then show for newbies or browsers that clear checkboxes:
 	var numShowing = showhideTunings();
 	if (numShowing == 0) {
@@ -458,7 +458,7 @@ function showDefaultTuning() {
 	return numShowing;
 }
 
-function showhideTunings() {
+export function showhideTunings() {
 	var tuningsCheckboxes = $(".cbTuningVisible");
 	tuningsCheckboxes.each(function (index, element) {
 		var theCB = $(element)
@@ -473,13 +473,13 @@ function showhideTunings() {
 }
 
 
-function hideTuning(tablekey) {
+export function hideTuning(tablekey) {
 	showHideTuning(false, tablekey);
 }
-function showTuning(tablekey) {
+export function showTuning(tablekey) {
 	showHideTuning(true, tablekey);
 }
-function showHideTuning(show, basekey) {
+export function showHideTuning(show, basekey) {
 	//console.log("showHideTuning:"+show+":"+basekey);
 	var cbKey = "#cb" + basekey;
 	var divKey = "#" + TABLEDIV_ID_PREFIX + basekey;
@@ -506,7 +506,7 @@ function showHideTuning(show, basekey) {
 	}
 }
 
-function showTuningsForTablesInFile() {
+export function showTuningsForTablesInFile() {
 	var numFound = 0;
 	for (section in getSong().sections) {
 		var noteTables = getSong().sections[section].noteTables;
@@ -536,7 +536,7 @@ function showTuningsForTablesInFile() {
 	return numFound;
 }
 
-function hideAllTunings() {
+export function hideAllTunings() {
 	for (i in allTunings.tunings) {
 		hideTuning(allTunings.tunings[i].baseID);
 	}
@@ -582,7 +582,7 @@ function convertStringToIntArray(inputString) {
 //===================== event binding =======================================
 //One dependency: the existence of a form called "#frmTunings" with our tuningstable.
 
-function bindFormTuningsEvents() {
+export function bindFormTuningsEvents() {
 	$('#frmTunings .cbTuningVisible').change(function () {
 		var show = this.checked;
 		var basekey = this.value;
