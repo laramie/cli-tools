@@ -1,4 +1,4 @@
-var gThemes = {
+export const gThemes = {
     "Default": {
         "id": "Default",
         "caption": "Default",

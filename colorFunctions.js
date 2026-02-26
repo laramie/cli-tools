@@ -1,4 +1,13 @@
 //color functions, moved from infinite-neck.js
+import {
+	gColorPickerColors
+} from './colorPickerColors.js';
+import {
+	getSong,
+	getCurrentSection
+} from './infinite-neck.js';
+import {gUserColorDict} from './userColors.js';
+
 
 //================== colorDicts ================================================
 
@@ -9,7 +18,7 @@
 			colorSchemeName = "user";
 			result.changed = true;
 		}
-		var existingScheme = gSong.colorDicts[colorSchemeName];
+		var existingScheme = getSong().colorDicts[colorSchemeName];
 		if (existingScheme){
 			if (existingScheme.readOnly || existingScheme.computed){
 				result.systemSchemeName = colorSchemeName;
@@ -71,7 +80,7 @@
 		}
 
 		//console.log("new scheme: "+JSON.stringify(colorDict));
-		var recordedScheme = gSong.colorDicts[colorSchemeName];
+		var recordedScheme = getSong().colorDicts[colorSchemeName];
 		if (recordedScheme){
 			Object.assign(recordedScheme.dict, colorDict);  //this colorDict is already a .dict object.
 			recordedScheme.checked = true;
@@ -83,10 +92,10 @@
 			    dict: {}
 			};
 			if (cleanResult.systemSchemeName){
-				var cloneBase = gSong.colorDicts[cleanResult.systemSchemeName];
+				var cloneBase = getSong().colorDicts[cleanResult.systemSchemeName];
 				Object.assign(recordedScheme.dict, cloneBase.dict);
 			} else if (chosenSystemSchemeName){
-				var cloneBase = gSong.colorDicts[chosenSystemSchemeName];
+				var cloneBase = getSong().colorDicts[chosenSystemSchemeName];
 				Object.assign(recordedScheme.dict, cloneBase.dict);
 			}
 			$('#txtColorSchemeName').attr('systemSchemeName', null);
@@ -94,7 +103,7 @@
 			Object.assign(recordedScheme.dict, colorDict);  //this colorDict is already a .dict object.
 		}
 
-		gSong.colorDicts[colorSchemeName] = recordedScheme;
+		getSong().colorDicts[colorSchemeName] = recordedScheme;
 
 		for (const [notekey, captionColor] of Object.entries(recordedScheme.dict)) {
 			if (captionColor.colorClass){
@@ -136,7 +145,7 @@
 
 	const COLOR_DICT_ROW = "colorDictRow";
 
-	function buildColorDicts(){
+	export function buildColorDicts(){
 		var eventSelectors = [];
 		var tbl = $("<table class='tblColorDicts'>");
 
@@ -155,7 +164,7 @@
 		tbl.append(headerRow);
 
 		// then all matching keys in each Dict in the song's list.
-		for (const [dictkey, schemeObj] of Object.entries(gSong.colorDicts)) {
+		for (const [dictkey, schemeObj] of Object.entries(getSong().colorDicts)) {
 			tbl.append(colorDictDisplayRow(dictkey, schemeObj, true, eventSelectors));
 		}
 
@@ -170,7 +179,7 @@
 
 		var activeStylesheets = calculateActiveStylesheets();
 		$('.ActiveStylesheets').html("Active Stylesheets: "+activeStylesheets);
-		gSong.activeStylesheets = activeStylesheets;
+		getSong().activeStylesheets = activeStylesheets;
 
 		updateCurrentColorDictStrip(activeStylesheets, gUserColorDict);
 		registerColorSchemeCBEventSelectors(eventSelectors);
@@ -259,18 +268,39 @@
 		return row;
 	}
 
-	function registerColorSchemeCBEventSelectors(eventSelectors){
+	function registerColorSchemeCBEventSelectorsFAILED(eventSelectors){
+		if (!eventSelectors){
+			console.warn("ERROR getting event selectors, which should look like:" 
+				+"0:#cbWhichColorDictAll-Clear,1:#cbWhichColorDictCycleOfColors,2:#cbWhichColorDictRoles,3:#cbWhichColorDictFingerings,4:#cbWhichColorDictDefault"
+			)
+			return ;
+		}
+		var foo = eventSelectors;
 		for (k in eventSelectors){
 			$(eventSelectors[k]).change(function(){
 				var cb = $(this);
 				var willBeChecked = cb.prop('checked');
 				var id = cb.val();
-				gSong.colorDicts[id].checked = willBeChecked;
+				getSong().colorDicts[id].checked = willBeChecked;
 				applyStylesheetsTo_gUserColorDict();
 				fullRepaint();
 				buildColorDicts();
 			});
 		}
+	}
+
+	function registerColorSchemeCBEventSelectors(eventSelectors){
+		eventSelectors.forEach(function(selector){
+			$(selector).change(function(){
+				var cb = $(this);
+				var willBeChecked = cb.prop('checked');
+				var id = cb.val();
+				getSong().colorDicts[id].checked = willBeChecked;
+				applyStylesheetsTo_gUserColorDict();
+				fullRepaint();
+				buildColorDicts();
+			});
+		});
 	}
 
 	function moveStylesheetToEnd(lastDictkey){
@@ -284,7 +314,7 @@
 		var temp = {};
 		var last = null;
 
-		for (const [key, scheme] of Object.entries(gSong.colorDicts)) {
+		for (const [key, scheme] of Object.entries(getSong().colorDicts)) {
 			if (key == lastDictkey){
 				if ( !scheme.readOnly && !scheme.computed ){
 					//user clicked user stylesheet
@@ -320,13 +350,13 @@
 		if (last){
 			temp[lastDictkey] = last;
 		}
-		gSong.colorDicts = temp;
+		getSong().colorDicts = temp;
 	}
 
 	function chuseStylesheet(dictkey){
-		var colorScheme = gSong.colorDicts[dictkey];
+		var colorScheme = getSong().colorDicts[dictkey];
 		if (colorScheme){
-			gSong.currentColorDict = dictkey;
+			getSong().currentColorDict = dictkey;
 			for (const [notekey, captionColor] of Object.entries(colorScheme.dict)) {
 				if (captionColor.colorClass){
 					gUserColorDict.dict[notekey] = captionColor;
@@ -368,11 +398,11 @@
 	}
 
 	function deleteUserStylesheet(dictkey){
-		var obj = gSong.colorDicts[dictkey];
+		var obj = getSong().colorDicts[dictkey];
 		context = {"dictkey": dictkey, "which": "UserStylesheet"};
-        gSong.graveyard.bury(GraveType.STYLESHEET, obj, context);
+        getSong().graveyard.bury(GraveType.STYLESHEET, obj, context);
 
-		delete gSong.colorDicts[dictkey];
+		delete getSong().colorDicts[dictkey];
 		applyStylesheetsTo_gUserColorDict();
 		buildUserColors();
 		buildColorDicts();
@@ -388,8 +418,8 @@
 		$('.currentColorDict').empty().append(tbl);
 	}
 
-	function applyStylesheetsTo_gUserColorDict(){
-		for (const [key, scheme] of Object.entries(gSong.colorDicts)) {
+	export function applyStylesheetsTo_gUserColorDict(){
+		for (const [key, scheme] of Object.entries(getSong().colorDicts)) {
 			if (scheme.checked && !scheme.computed){
 				var dict = scheme.dict;
 				Object.assign(gUserColorDict.dict, dict);
@@ -399,7 +429,7 @@
 
 	function calculateActiveStylesheets(){
 		var result = [];
-		for (const [key, scheme] of Object.entries(gSong.colorDicts)) {
+		for (const [key, scheme] of Object.entries(getSong().colorDicts)) {
 			if (scheme.checked){
 				if (scheme.Default){
 					result = ["Default"]; //reset and ditch the previous things that built gUserColorDictOEM.
@@ -411,7 +441,7 @@
 		return result.join("+");
 	}
 
-    function buildUserColors() {
+    export function buildUserColors() {
         function buildOneRadio(Role, obj, checkedString){
             var userColorClass = "note"+Role;
             var captionClass = (obj.captionClass) ? obj.captionClass : userColorClass;
@@ -426,12 +456,12 @@
         }
         $("#idRoleButtonsDest").empty();
         var checkedString = 'checked="checked"';
-        for (key in gUserColorDict.dict){
-	         var obj = gUserColorDict.dict[key];
-	         var role = key.substring("note".length);  // from noteChord" to "Chord"
-	         buildOneRadio(role, obj, checkedString);
-	         checkedString = '';//first one done, now the rest should be NOT checked.
-        }
+		Object.entries(gUserColorDict.dict).forEach(([key, obj], idx) => {
+			var role = key.substring("note".length);  // from noteChord" to "Chord"
+			buildOneRadio(role, obj, checkedString);
+			checkedString = '';//first one done, now the rest should be NOT checked.
+		});
+    
         $("#idRootRoleSpan").removeClass().addClass(gUserColorDict.dict["noteRoot"].colorClass);
         $("#idChordRoleSpan").removeClass().addClass(gUserColorDict.dict["noteChord"].colorClass);
         $("#idScaleRoleSpan").removeClass().addClass(gUserColorDict.dict["noteScale"].colorClass);
@@ -454,18 +484,16 @@
 		var CELL = '<td onclick="colorPickerClicked(this)" colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
 		var result = [];
 		var groups = gColorPickerColors.groups;
-		for (ig in groups){
-			var row = groups[ig];
+		Object.entries(groups).forEach(([ig, row]) => {
 			if (row) result.push("<tr>");
-			for (ir in row){
-				var noteColor = row[ir];
+			row.forEach(noteColor => {
 				if (noteColor){
 					var cell = CELL.replace(/NOTE_COLOR_CLASS/g, noteColor);
 					result.push(cell);
 				}
-			}
+			});
 			if (row) result.push("</tr>");
-		}
+		});
 		var noneRow = "<tr><td colspan='100%' colorClass='' class='noteBlue6' onclick=\"colorPickerClicked(this)\">none</td></tr>";
 		result.push(noneRow);
 		return result.join(''); //Return just TRs not TABLE.
@@ -490,15 +518,14 @@
 						 +'</tr>');
 			  return row;
 	   }
-	   var table = $('<table>');
-	   for (key in gUserColorDict.dict){
-		   var obj = gUserColorDict.dict[key];
-		   var role = key.substring("note".length);  // from noteChord" to "Chord"
-		   var row = buildOneColor(role, obj, "");
-		   if (row) {
-			   table.append(row);
-		   }
-	   }
+	    var table = $('<table>');
+	    Object.entries(gUserColorDict.dict).forEach(([key, obj]) => {
+			var role = key.substring("note".length);  // from noteChord" to "Chord"
+			var row = buildOneColor(role, obj, "");
+			if (row) {
+				table.append(row);
+			}
+		});
 	   $("#UserColorsEditorDest").empty().append(table);
 	   $('#colorPicker').html(buildColorPicker());  //buildColorPicker returns rows, not TABLE.
 	   // #hatchPicker is built manually in index.html

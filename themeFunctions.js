@@ -1,13 +1,15 @@
+import { gThemes } from './themes.js';
+
 //relies on themes.js which defines gThemes.
 
     //========= things that hold a ref to gThemes ==============================
-    function getDefaultTheme(){
+    export function getDefaultTheme(){
         return gThemes["Default"];
     }
-    function getThemes(){
+    export function getThemes(){
         return gThemes;
     }
-    function getWidget_SelectThemes(){
+    export function getWidget_SelectThemes(){
         return generateSelectThemes(gThemes);
     }
     //==========================================================================
@@ -51,7 +53,7 @@
     //=======================================================================
 
 
-	function themeToControls(theme){
+	export function themeToControls(theme){
 		function setVal(selector, whichThemeKey){
 			if (theme[whichThemeKey]){
 				var newValue = theme[whichThemeKey];
@@ -181,11 +183,11 @@
 	function themeDiffResults(html){
 		$('#themeDiffResults').html(html);
 	}
-	function clearThemeDiffResults(){
+	export function clearThemeDiffResults(){
 		$('#themeDiffResults').html("");
 	}
 
-	function theme(themeOptions){
+	export function theme(themeOptions){
 		function rule(cssVarName, whichOption){
 			if (themeOptions[whichOption]){
 				return cssVarName+": "+themeOptions[whichOption]+"; ";   //no extra quotes around cssVarName or value.  This is CSS not JSON.
@@ -269,17 +271,15 @@
 		//warny.show();
 	}
 
-	function auditThemes(){
+	export function auditThemes(){
 		function showOptions(selector, optionName, foo){
 			table.append("<tr><td>"+optionName+"</td><td><b>{&nbsp;"+showSelectOptions(selector,"   ")+"&nbsp;}</b></td><td>"+selector+"</td></tr>");
 		}
 		var table = $("<table class='INFO_Table'>");
 
-		var themes = getThemes();
-		for (k in themes){
-			themeToControls(themes[k]);
-			//sends a boatload of warning messages, one for each theme value not found in a select.
-		}
+		Object.values(getThemes()).forEach(theme => {
+			themeToControls(theme);
+		});
 		//Now show what's in all those SELECT dropdowns.
 		function auditThemesShowOptions(){
 			showOptions('#dropDownNoteRadius', 'noteRadius');

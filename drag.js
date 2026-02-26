@@ -1,6 +1,6 @@
 
 
-function draggable(el) {
+export function draggable(el) {
   el.addEventListener('mousedown', function(e) {
     var offsetX = e.clientX - parseInt(window.getComputedStyle(this).left);
     var offsetY = e.clientY - parseInt(window.getComputedStyle(this).top);

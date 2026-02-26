@@ -1,4 +1,4 @@
-var gColorPickerColors = {
+export const gColorPickerColors = {
  "groups":
   [
     [

@@ -1,10 +1,10 @@
-var gUserColorDict = {
+export const gUserColorDict = {
     readOnly: true,
     computed: true,
     checked: true,
     dict: {}
 }
-var gUserColorDictRolesDefault = {
+export const gUserColorDictRolesDefault = {
     readOnly: true,
     computed: false,
     checked: true,
@@ -106,7 +106,7 @@ var gUserColorDictRolesDefault = {
         }
     }
 };
-var gUserColorDictFingeringsDefault = {
+export const gUserColorDictFingeringsDefault = {
     readOnly: true,
     computed: false,
     checked: true,
@@ -146,7 +146,7 @@ var gUserColorDictFingeringsDefault = {
     }
 };
 
-var gDefault_CycleOfColors = {
+export const gDefault_CycleOfColors = {
     readOnly: true,
     computed: false,
     checked: true,
@@ -203,7 +203,7 @@ var gDefault_CycleOfColors = {
     }
 };
 
-var gAllClear = {
+export const gAllClear = {
     readOnly: true,
     computed: false,
     checked: true,
@@ -382,7 +382,7 @@ gUserColorDictFingeringsDefault.readOnly = true;
 Object.assign(gUserColorDict.dict, gDefault_CycleOfColors.dict);
 gDefault_CycleOfColors.readOnly = true;
 
-const gUserColorDictOEM = {
+export const gUserColorDictOEM = {
     readOnly: true,
     computed: true,
     checked: true,

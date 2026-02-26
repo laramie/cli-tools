@@ -52,7 +52,7 @@ function checkRB(id){
     $(id).prop("checked", true);
 }
 
-function txtCmdLine_keypress(e) {
+export function txtCmdLine_keypress(e) {
     if (gMenuPointer.type && gMenuPointer.type == "input" && event.keyCode != 13){
         return;
     }

@@ -1,3 +1,17 @@
+import { 
+    NUM_FRETS_MAX, 
+    getCurrentSection,
+    resetNoteNames,
+    showBeats
+} from './infinite-neck.js';
+import {
+	allTunings
+} from './tunings.js';
+import {
+	toInt
+} from './utils.js';
+
+
 /**
  * @typedef {Object} Song
  * @property {function(boolean):void} gotoNextSection
@@ -9,7 +23,7 @@
 /**
  * @returns {Song}
  */
-function makeSong(){
+export function makeSong(){
     const DEFAULT_BEATS = 4;
     const noteNamesFuncArrDEFAULT = [
 	    "I", // 1 - I    I
@@ -110,7 +124,6 @@ function makeSong(){
             markVisibleTablesForFileSave: markVisibleTablesForFileSave,
             getTuningHashInMemoryModel: getTuningHashInMemoryModel,
             removeNotePlayedFromTable: removeNotePlayedFromTable,
-            exportFromTable: exportFromTable,
             moveNamedNotesAllSections: moveNamedNotesAllSections,
             moveNamedNotes: moveNamedNotes,
             moveNamedNotesForSection: moveNamedNotesForSection,
@@ -383,7 +396,7 @@ function makeSong(){
 	function addSection(section){
 	    var newIndex = this.sections.push(section) - 1;
 	    this.gSectionsCurrentIndex = newIndex;
-	    if (!this.constructing) updateSectionsStatus(this);
+	    if (!this.constructing) publish_UpdateSectionStatus(this);
 	    return newIndex;
 	    // sections is an array of gNotesPlayed objects. push() returns length.
 	}
@@ -398,7 +411,7 @@ function makeSong(){
             this.gSectionsCurrentIndex = this.gSectionsCurrentIndex+1;
         }
         fullRepaint();
-	    updateSectionsStatus();
+	    publish_UpdateSectionStatus();
 	    return this.gSectionsCurrentIndex;
 	    // sections is an array of gNotesPlayed objects.
 	}
@@ -510,7 +523,7 @@ function makeSong(){
 		this.getCurrentSection().recordedNotes = result;
 		this.setBeats(beatCount+1);
         gotoFirstBeat();
-		updateSectionsStatus();
+		publish_UpdateSectionStatus();
         fullRepaint();
         showBeats();
 	}
@@ -541,7 +554,7 @@ function makeSong(){
          this.setBeats(nBeats-1);
          var currBeat = nStartBeat > this.getBeats() ? this.getBeats() : nStartBeat;
          this.getCurrentSection().currentBeat = currBeat;
-         updateSectionsStatus();
+         publish_UpdateSectionStatus();
          showBeats();
     }
 
@@ -555,15 +568,6 @@ function makeSong(){
 
     function prevNextBeat(isNext){
             clearHighlights();
-            /*
-            var jLblCurrentBeat = $("#lblCurrentBeat");
-  	        var sBeats = $("#txtBeatsPer").val();
-  	        if (sBeats == ""){
-  	            gSong.addBeat();
-  	            sBeats = $("#txtBeatsPer").val();
-  	        }
-            */
-
   	        var beat  = this.getBeat();
   	        var beats = this.getBeats();
 
@@ -576,43 +580,65 @@ function makeSong(){
   	               this.decBeat();
   	            }
   	        }
-  	        //jLblCurrentBeat.text(gSong.getBeat());
-  	        //$("#lblBeat").html(""+gSong.getBeat());
-            updateSectionsStatus();
+            publish_UpdateSectionStatus();
   			showBeats();
     }
 
 
+    //============== TODO:EventBus keep all new EventBus handling code between these comments, ending in END-TODO:EventBus =====================================
+    
+    function publish_SectionChanged(){
+        console.log("in new EventBus strategy: publish_SectionChanged");
+        //sectionChanged(); //TODO:EventBus: call this throught the EventBus
+        EventBus.trigger('SectionChanged', { sectionIndex: this.getSectionsCurrentIndex() });
+    }      
+
+    // replacement for direct calls to infinite-neck.js :: updateSectionsStatus();
+    function publish_UpdateSectionStatus(){
+        console.log("in new EventBus strategy: publish_UpdateSectionStatus");
+        //updateSectionsStatus();  // TODO:EventBus:  call this through the EventBus instead.
+        EventBus.trigger('UpdateSectionStatus', { sectionIndex: this.getSectionsCurrentIndex() });
+    }
+
+    //Not handled at all yet:
+    function publish_SectionMoved(){
+        EventBus.trigger('SectionMoved', { sectionIndex: this.getSectionsCurrentIndex() });
+    }
+
+    //============== END-TODO:EventBus =====================================
+
+    
+    
     //============== Section handling =====================================
 
 	function firstSection(){
 	    this.gSectionsCurrentIndex = 0;
-	    sectionChanged();
+	    publish_SectionChanged();
 	}
 
 	function lastSection() {
 		 this.gSectionsCurrentIndex = this.sections.length-1;
-		 sectionChanged();
+		 publish_SectionChanged();
 	}
 
 	function prevSection(){
 	    if (this.gSectionsCurrentIndex > 0){
 	        this.gSectionsCurrentIndex--;
 	    }
-	    sectionChanged();
+	    publish_SectionChanged();
 	}
 	function nextSection(){
 	    if (this.gSectionsCurrentIndex < (this.sections.length-1)){
 	        this.gSectionsCurrentIndex++;
 	    }
-	    sectionChanged();
+	    publish_SectionChanged();
 	}
     function gotoSection(idx){
         var sectionIdx = toInt(idx, -1);
         if (sectionIdx > -1 && sectionIdx < this.sections.length){
             this.gSectionsCurrentIndex = sectionIdx;
             clearAndReplaySection();
-            sectionChanged();
+            publish_SectionChanged();
         }
     }
 
@@ -682,7 +708,7 @@ function makeSong(){
         }
         clearAll();
 	    this.gotoFirstBeat();
-	    sectionChanged();//updateSectionsStatus();
+	    publish_SectionChanged();//updateSectionsStatus();
 	}
 
 	function addShallowCloneSection(destIndex){
@@ -711,7 +737,7 @@ function makeSong(){
 		clearAll();
 	    resetNoteNames();//calls replay
 	    //updateSectionsStatus();
-	    sectionChanged();//calls updateSectionsStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
+	    publish_SectionChanged();//calls updateSectionsStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
 	    return aSection;
 	}
 
@@ -734,7 +760,7 @@ function makeSong(){
 	    this.prevSection();
 	    clearAll();
 	    replay();
-        sectionChanged();
+        publish_SectionChanged();
         //fullRepaint();
 		return true;
 	}
@@ -826,26 +852,24 @@ function makeSong(){
   function getTuningHashInMemoryModel(){
    var hashTuningNames = {};
    var section;
-   for (sectionIdx in this.sections){     //for all sections...
-	    section = this.sections[sectionIdx];
-   	  for (const tablename in section.noteTables){
-	        var tablearr = section.noteTables[tablename];
-	        if (tablearr && tablearr.length && tablearr.length>0){
-	            var tuningID = tablename.substring(TABLE_ID_PREFIX.length);
-	            var val = hashTuningNames[tuningID];
-	            if (!val){
-	                val = tablearr.length;
-	                hashTuningNames[tuningID] = val;
-	                //console.log("section:"+sectionIdx+" tuningID:"+tuningID
-	                //    +" val-len:"+val+" new: "+tablearr.length+" obj: "+JSON.stringify(hashTuningNames));
-	            } else {
-	                hashTuningNames[tuningID] = val + tablearr.length;
-	                //console.log("section: "+sectionIdx+" tuningID:"+tuningID
-	                //   +" val:"+val+" adding:"+tablearr.length+" obj:"+JSON.stringify(hashTuningNames));
-	            }
-	        }
-	    }
-	  }
+     this.sections.forEach((section, sectionIdx) => { //for all sections...
+            Object.entries(section.noteTables).forEach(([tablename, tablearr]) => {
+                if (tablearr && tablearr.length && tablearr.length > 0) {
+                    var tuningID = tablename.substring(TABLE_ID_PREFIX.length);
+                    var val = hashTuningNames[tuningID];
+                    if (!val) {
+                        val = tablearr.length;
+                        hashTuningNames[tuningID] = val;
+                        //console.log("section:"+sectionIdx+" tuningID:"+tuningID
+                        //    +" val-len:"+val+" new: "+tablearr.length+" obj: "+JSON.stringify(hashTuningNames));
+                    } else {
+                        hashTuningNames[tuningID] = val + tablearr.length;
+                        //console.log("section: "+sectionIdx+" tuningID:"+tuningID
+                        //   +" val:"+val+" adding:"+tablearr.length+" obj:"+JSON.stringify(hashTuningNames));
+                    }
+                }
+            });
+        });
 	  return hashTuningNames;
 	}
 

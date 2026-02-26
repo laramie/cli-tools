@@ -1,98 +1,12 @@
-There are now several ways in.
-
-if (INFINITE_NECK_SONGLIST) {
-    songFiles = setup_songTestOptions_Array_FromNamed(INFINITE_NECK_SONGLIST);
-} else if (SUITE===1) {
-    songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
-} else if (SUITE===2) {
-    songFiles = createSongFilesArray_Refactored(setupHarsh_songTestOptions_Array());
-} else if (SUITE===3) {
-    songFiles = createSongFilesArray_Refactored(setupTestdirHarsh_songTestOptions_Array());
-} else {
-    songFiles = createSongFilesArray_Refactored(setUpMaster_songTestOptions_Array());
-}
-
-Of these, only setup_songTestOptions_Array_FromNamed() is failing due to not finding files. 
-
-
-So the path that goes through env var SUITE=2 succeeds and runs this :
-
-    songFiles = createSongFilesArray_Refactored(setupHarsh_songTestOptions_Array());
-
-and creates this structure, which is what has been passing the tests.  
-
-
-[
-        {
-            "file": "All-Chords-A.json",
-            "songTestOptions": {
-                "expectedFailure": false,
-                "strictFile_styleNum": true,
-                "list": "songs/song-list-harsh-test.json",
-                "dir": "songs/",
-                "reason": "harsh-mode-songs👍fail"
-            }
-        },
-        {
-            "file": "tests/old-file-format-styleNum-missing.json",
-            "songTestOptions": {
-                "expectedFailure": false,
-                "strictFile_styleNum": true,
-                "list": "songs/song-list-harsh-test.json",
-                "dir": "songs/",
-                "reason": "harsh-mode-songs👍fail"
-            }
-        },
-        {
-            "file": "tests/empty-song-missing-noteTables.json",
-            "songTestOptions": {
-                "expectedFailure": false,
-                "strictFile_styleNum": true,
-                "list": "songs/song-list-harsh-test.json",
-                "dir": "songs/",
-                "reason": "harsh-mode-songs👍fail"
-            }
-        }
-    ]
-
-The path that goes from the env var
-
-export INFINITE_NECK_SONGLIST='song-list-harsh-test.json';
-
-reads:   song-list-harsh-test.json
-found: /home/laramie/infinite-neck/songs/song-list-harsh-test.json
-
-Calls setup_songTestOptions_Array_FromNamed()
-
-And then makes this structure:
-
- [
-        {
-            "expectedFailure": true,
-            "strictFile_styleNum": true,
-            "reason": "harsh-mode-songs👍fail",
-            "file": "All-Chords-A.json",
-            "list": "songs/song-list-harsh-test.json",
-            "dir": "songs/"
-        },
-        {
-            "expectedFailure": true,
-            "strictFile_styleNum": true,
-            "reason": "harsh-mode-songs👍fail",
-            "file": "tests/old-file-format-styleNum-missing.json",
-            "list": "songs/song-list-harsh-test.json",
-            "dir": "songs/"
-        },
-        {
-            "expectedFailure": true,
-            "strictFile_styleNum": true,
-            "reason": "harsh-mode-songs👍fail",
-            "file": "tests/empty-song-missing-noteTables.json",
-            "list": "songs/song-list-harsh-test.json",
-            "dir": "songs/"
-        }
-    ]
-
-This structure is flat inside and does not contain a "file" and "songTestOptions" property.    
-
-So the goal is to make the second strucutre look like the first by setup_songTestOptions_Array_FromNamed()   
+event-bus.js:19 Uncaught SyntaxError: Unexpected token 'export'
+jquery-3.7.1.min.js:2 jQuery.Deferred exception: NUM_FRETS_MAX is not defined ReferenceError: NUM_FRETS_MAX is not defined
+    at http://localhost:8000/infinite-neck/song.js:35:20
+    at makeSong (http://localhost:8000/infinite-neck/song.js:42:7)
+    at appInit (http://localhost:8000/infinite-neck/infinite-neck.js:1870:11)
+    at HTMLDocument.<anonymous> (http://localhost:8000/infinite-neck/infinite-neck.js:4:38)
+    at e (https://code.jquery.com/jquery-3.7.1.min.js:2:27028)
+    at https://code.jquery.com/jquery-3.7.1.min.js:2:27330 undefined
+(anonymous) @ jquery-3.7.1.min.js:2
+jquery-3.7.1.min.js:2 Uncaught ReferenceError: NUM_FRETS_MAX is not defined
+infinite-neck.js:1862 Uncaught TypeError: Cannot read properties of null (reading 'stack')
+    at window.onerror (infinite-neck.js:1862:27)

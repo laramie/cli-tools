@@ -1,0 +1,473 @@
+I like where this is going. I'm familiar with MVC and some of the more modern model abstractions you mentioned.  I agree some flavor of this is correct.  I'd like to drill down into exactly how the view and controller interact with the model in my case.  And we are talking at a pretty high level at this point, I don't need to see code lower than the API or event delegation layer.  
+
+I don't know if this will help our conversation, but here is some background about our domain.  Then I'd like to get into the discussion of factoring the controller and views out of the model space.
+
+So, I have a NoteTable.  Of the 144 notes on the neck, say, it stores all of them. When a user clicks on a cell that triggers them "playing" that note.  My app supports: 
+
+-- click on empty cell adds a note of various flavors, depending on what state the Palette is infinite
+
+-- clicking also depends on whether the application is "recording" beats.
+
+-- The gSong / makeSong() object in song.js stores information about the entire user's session, an abstraction in the real world that is called a song.  Like if you played a song that was a 12 bar blues, there would be 12 Sections, each representing unique chords, or collections of notes played.  So the song stores Sections.  The Sections store the notes, by flavor
+
+NamedNotes -- when the user clicks a cell, the name of the note is looked up, based on the tuning, and then all notes on the neck that share that repeating name are also highlighted.  In Western Music, there are 12 notes, then they repeat.  Each set of 12 notes is called an octave.  The notes are conventionally called by everyone the same, and correspond to exact musical pitches.  They repeat as they go up in pitches we hear: ... F Gb G | Ab A Bb B C Db D Eb E F Gb G | Ab Bb ... For human hearing, we can consider having to 128 notes, give or take.  Pianos represent 88.  The guitar in this example has 144 cells, but some of them overlap the identity of pitched.  
+
+You may be familiar with this:
+
+  https://en.wikipedia.org/wiki/Musical_note#12-tone_chromatic_scale
+
+  in infinite-neck we at least cover the MIDI spec of notes numbered 0...127
+
+  But that means that on our guitar neck, the note C may appear 7 times if we respect the MIDI spec, or 12 times if we account for the fact that some strings overlap note ranges, usually by 5 or 7 notes.
+
+  So a single click on a cell identified as being a C in the order, may select all C notes on that guitar.  Not in the real world, but on digital keyboards this is common.  The C notes, which appear at intervals of 12 apart on one string, are then offset maybe 5 cells up on the next row/string.
+
+SingleNotes -- single cells the user clicks that are remembered by row and column.  We do display the Note name, but we mostly track exactyl where the user clicked.
+
+We have other types of SingleNotes for different highlighting and meaning.
+
+All SingleNote type can be "recorded" which means they are stored for replay every time the Section changes, or the section managed is collection of time interval representations called "beats"
+
+So in our 12 bar blues song, the first 4 bars may be functionally the same in terms of notes played. Then the next 4 then the next 4.  That is typical.  So a Song is 3 Sections, each containing 4 bars.  Bars are further divided in time to be 4 beats.  In each beat, you might play a different SingleNote.  But in each Section you can only play one NamedNote.  That's not a music rule, that's a rule in the way we display the song for this application.
+
+So our Song has 3 Section, and each section has 16 beats to represent 4 beats in each of the 4 bars.  We ignore bars and just say a Song has 3 Sections and a Section has 16 beats, for this application.  Of course, those numbers are set by the user, but the structure stays the same, we still don't model bars, and we don't model abstractions above Sections being in a Song.
+
+So We have a View and Controller in the HTML Table.  The Controller as I understand it, would be that when the user clicks on a cell, the HTML table cell's click handler would inform the Model, Section::NamedNotes in our case.  e.g. gSong.getCurrentSection()  So our controller manipulates the model.  Currently, I am storing lots of information about the notes in the table, but it doesn't really live there.  Like there are custom data attributes stored on the TD html elements that i use at render time to look up cell color, etc.  I am interested in the discussion about moving all of this to the model.
+
+What is intersting about what you said is how the view can be passed a model and render it, without the model knowing.  So factoring the api's of each of these abstractions becomes key.
+
+Section object currently live in an array managed by Song.  Song is defined by:
+   song.js :: makeSong() 
+   which can call 
+      :: construct_gSections()
+      :: constructSection()
+
+      A Section object is constructed by constructSection(), and can manage the notes I talked about: 
+
+      function section_constructor(){
+    	    this.noteTables = {};
+    	    this.namedNotes = {};
+    	    this.recordedNotes = {};
+    		this.caption = "";
+
+            So NamedNote objects go live in the nameNotes dictionary
+            SingleNotes live in arrays in noteTables, and the same with recordedNotes.
+
+            Section[0]
+                .namedNote
+
+Here is an example of our Song model with 3 Sections, each with 4 Beats, and some NamedNotes, some SingleNotes, and some SingleNotes in the RecordedNotes storage.
+
+You can also see that I have two instruments: S6_copy (a 6 string guitar) and Bass4_copy (a 4 string bass).
+
+{
+  "sections": [
+    {
+      "noteTables": {},
+      "namedNotes": {
+        "C": {
+          "noteName": "C",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "E": {
+          "noteName": "E",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "G": {
+          "noteName": "G",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        }
+      },
+      "recordedNotes": {
+        "1": [
+          {
+            "midinum": "67",
+            "row": "0",
+            "col": "3",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "G"
+          },
+          {
+            "midinum": "33",
+            "row": "3",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "A",
+            "finger": "1"
+          }
+        ],
+        "2": [
+          {
+            "midinum": "68",
+            "row": "0",
+            "col": "4",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "Ab"
+          }
+        ],
+        "3": [
+          {
+            "midinum": "69",
+            "row": "0",
+            "col": "5",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "A"
+          },
+          {
+            "midinum": "33",
+            "row": "3",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "A",
+            "finger": "1"
+          }
+        ],
+        "4": [
+          {
+            "midinum": "70",
+            "row": "0",
+            "col": "6",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "Bb"
+          }
+        ]
+      },
+      "caption": "",
+      "rootIDLead": "-1",
+      "beats": 4,
+      "currentBeat": 4,
+      "sharps": false,
+      "rootID": "3"
+    },
+    {
+      "noteTables": {},
+      "namedNotes": {
+        "F": {
+          "noteName": "F",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "A": {
+          "noteName": "A",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "C": {
+          "noteName": "C",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        }
+      },
+      "recordedNotes": {
+        "1": [
+          {
+            "midinum": "62",
+            "row": "1",
+            "col": "3",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "D"
+          },
+          {
+            "midinum": "38",
+            "row": "2",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "D",
+            "finger": "1"
+          }
+        ],
+        "2": [
+          {
+            "midinum": "64",
+            "row": "1",
+            "col": "5",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "E"
+          },
+          {
+            "midinum": "38",
+            "row": "2",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "D",
+            "finger": "1"
+          }
+        ],
+        "3": [
+          {
+            "midinum": "65",
+            "row": "1",
+            "col": "6",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "F"
+          },
+          {
+            "midinum": "38",
+            "row": "2",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "D",
+            "finger": "1"
+          }
+        ],
+        "4": [
+          {
+            "midinum": "67",
+            "row": "1",
+            "col": "8",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "G"
+          },
+          {
+            "midinum": "38",
+            "row": "2",
+            "col": "5",
+            "colorClass": "noteFinger1",
+            "styleNum": 6,
+            "noteName": "D",
+            "finger": "1"
+          }
+        ]
+      },
+      "caption": "",
+      "rootIDLead": "-1",
+      "beats": 4,
+      "currentBeat": 4,
+      "sharps": false,
+      "rootID": "8"
+    },
+    {
+      "noteTables": {},
+      "namedNotes": {
+        "G": {
+          "noteName": "G",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "B": {
+          "noteName": "B",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        },
+        "D": {
+          "noteName": "D",
+          "colorClass": "noteTransparent",
+          "styleNum": 0
+        }
+      },
+      "recordedNotes": {
+        "1": [
+          {
+            "midinum": "72",
+            "row": "0",
+            "col": "8",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "C"
+          },
+          {
+            "midinum": "40",
+            "row": "2",
+            "col": "7",
+            "colorClass": "noteFinger3",
+            "styleNum": 6,
+            "noteName": "E",
+            "finger": "3"
+          }
+        ],
+        "2": [
+          {
+            "midinum": "65",
+            "row": "1",
+            "col": "6",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "F"
+          },
+          {
+            "midinum": "41",
+            "row": "2",
+            "col": "8",
+            "colorClass": "noteFinger3",
+            "styleNum": 6,
+            "noteName": "F",
+            "finger": "3"
+          }
+        ],
+        "3": [
+          {
+            "midinum": "69",
+            "row": "0",
+            "col": "5",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "A"
+          },
+          {
+            "midinum": "40",
+            "row": "2",
+            "col": "7",
+            "colorClass": "noteFinger3",
+            "styleNum": 6,
+            "noteName": "E",
+            "finger": "3"
+          }
+        ],
+        "4": [
+          {
+            "midinum": "64",
+            "row": "1",
+            "col": "5",
+            "colorClass": "noteTransparent",
+            "styleNum": 2,
+            "noteName": "E"
+          }
+        ]
+      },
+      "caption": "",
+      "rootIDLead": "-1",
+      "beats": 4,
+      "currentBeat": 2,
+      "sharps": false,
+      "rootID": "10"
+    }
+  ],
+  "gSectionsCurrentIndex": 2,
+  "gFirstBeatSeen": false,
+  "userInstrumentTuning": {
+    "instance": false,
+    "baseID": "USER",
+    "baseInstrument": "Guitar",
+    "caption": "User",
+    "nStrings": 6,
+    "rowRange": [
+      64,
+      59,
+      55,
+      50,
+      45,
+      40
+    ],
+    "diamonds": [
+      3,
+      5,
+      7,
+      9,
+      15,
+      17,
+      19,
+      21
+    ],
+    "doubleDiamonds": [
+      12,
+      24
+    ],
+    "frets": 16,
+    "nut": true,
+    "reverse": false,
+    "visible": false
+  },
+  "gSongModelListener": null,
+  "sharps": false,
+  "captionsRowShowing": false,
+  "presentationMode": false,
+  "visibleNoteTables": [
+    "tblS6_copy",
+    "tblBass4_copy"
+  ],
+  "defaultBPM": "80",
+  "rootID": "3",
+  "namedNoteOpacity": "1.00",
+  "singleNoteOpacity": "1.00",
+  "graveyard": {
+    "records": []
+  },
+  "activeStylesheets": "Default",
+  "songName": "Round-midnight",
+  "tunings": [
+    {
+      "instance": true,
+      "baseID": "S6_copy",
+      "baseInstrument": "Guitar",
+      "caption": "Standard",
+      "nStrings": 6,
+      "rowRange": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "diamonds": [
+        3,
+        5,
+        7,
+        9,
+        15,
+        17,
+        19,
+        21
+      ],
+      "doubleDiamonds": [
+        12,
+        24
+      ],
+      "frets": 16,
+      "nut": true,
+      "reverse": false,
+      "visible": true
+    },
+    {
+      "instance": true,
+      "baseID": "Bass4_copy",
+      "baseInstrument": "Bass",
+      "caption": "Bass",
+      "nStrings": 4,
+      "rowRange": [
+        43,
+        38,
+        33,
+        28
+      ],
+      "diamonds": [
+        3,
+        5,
+        7,
+        9,
+        15,
+        17,
+        19,
+        21
+      ],
+      "doubleDiamonds": [
+        12,
+        24
+      ],
+      "stringDividerHeight": "0.6em",
+      "frets": 15,
+      "nut": true,
+      "reverse": false,
+      "visible": true
+    }
+  ],
+  "theme": "Autobahn"
+}
+
+

@@ -1,4 +1,18 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
+import {
+	getSong,
+	getCurrentSection,
+	resetNoteNames,
+	updateSectionsStatus
+} from './infinite-neck.js';
+
+export { document_keyup, document_keypress };
+
+
+const FONT_INCREMENT = 1;
+const DEFAULT_FONT_SIZE = 10;  
+const DEFAULT_NOTE_FONT_SIZE = 22;  // Keep in sync with infinite-neck.css :root --named-note-font-size: 22pt;  Here "pt" is glued on by code below.
+
 
 function document_keyup(evt) {
     if (evt.keyCode == 27) {  // ESC key
@@ -9,12 +23,7 @@ function document_keyup(evt) {
     }
 }
 
-const FONT_INCREMENT = 1;
-const DEFAULT_NOTE_FONT_SIZE = 22;  // Keep in sync with infinite-neck.css :root --named-note-font-size: 22pt;  Here "pt" is glued on by code below.
 
-var gNoteFontSize = DEFAULT_NOTE_FONT_SIZE;
-
-var gFontSize = 10;
 
 function document_keypress(e) {
     if (event.keyCode == 13) {
@@ -37,22 +46,22 @@ function document_keypress(e) {
                 break;
             case "b":
             case "B":
-                gSong.prevBeat();
+                getSong().prevBeat();
                 break;
             case "c": //"_C_olor"
                 $("#cbAutomaticColor").click();
                 break;
             case "n":
             case "N":
-                gSong.nextBeat();
+                getSong().nextBeat();
                 break;
             case "<":
             case ",":
-                gSong.gotoPrevSection(false);
+                getSong().gotoPrevSection(false);
                 break;
             case ">":
             case ".":
-                gSong.gotoNextSection(false);
+                getSong().gotoNextSection(false);
                 break;
             case "[":
                 checkRB('#idMidiPitches');
@@ -77,11 +86,11 @@ function document_keypress(e) {
                 break;
             case "k":
                  cycleThruKeys(1);
-                 highlightOneNote(gSong.getRootNoteName());
+                 highlightOneNote(getSong().getRootNoteName());
                  break;
             case "K":
                 cycleThruKeys(-1);
-                highlightOneNote(gSong.getRootNoteName());
+                highlightOneNote(getSong().getRootNoteName());
                 break;
             case "f":
             case "F":
@@ -206,8 +215,8 @@ function document_keypress(e) {
                 decreaseNoteFont();
                 break;
             case ")":
-                gNoteFontSize = DEFAULT_NOTE_FONT_SIZE;
-                setOneCssVar("--named-note-font-size",""+gNoteFontSize+"pt");
+                m_NoteFontSize = DEFAULT_NOTE_FONT_SIZE;
+                setOneCssVar("--named-note-font-size",""+m_NoteFontSize+"pt");
                 updateFontLabel();
                 break;
             default:
@@ -303,20 +312,20 @@ function performCmdAction(menuItem, args){
 			break;
 
 		case "firstSection":
-			gSong.firstSection();
+			getSong().firstSection();
             clearAndReplaySection();
 			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "prevSection":
-			gSong.gotoPrevSection(false);  //calls clearAndReplaySection();
+			getSong().gotoPrevSection(false);  //calls clearAndReplaySection();
 			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "nextSection":
-			gSong.gotoNextSection(false);  //calls clearAndReplaySection();
+			getSong().gotoNextSection(false);  //calls clearAndReplaySection();
 			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
 		case "lastSection":
-			gSong.lastSection();
+			getSong().lastSection();
             clearAndReplaySection();
 			actionResult.result = ""+(getSectionsCurrentIndex()+1);
 			break;
@@ -388,11 +397,11 @@ function performCmdAction(menuItem, args){
 			break;
 			
 		case "nextBeat":
-			gSong.nextBeat();
+			getSong().nextBeat();
 			actionResult.result = ""+getCurrentSection().currentBeat;
 			break;
 		case "prevBeat":
-			gSong.prevBeat();
+			getSong().prevBeat();
 			actionResult.result = ""+getCurrentSection().currentBeat;
 			break;
 		case "addBeat":
@@ -400,11 +409,11 @@ function performCmdAction(menuItem, args){
 			actionResult.result = ""+getCurrentSection().beats;
 			break;
 		case "deleteBeat":
-			gSong.deleteBeat();
+			getSong().deleteBeat();
 			actionResult.result = ""+getCurrentSection().beats;
 			break;
         case "moveBeatsLater":
-			gSong.moveBeatsLater();
+			getSong().moveBeatsLater();
 			actionResult.result = ""+getCurrentSection().beats;
 			break;
 		case "showDialog-song":
@@ -482,7 +491,7 @@ function performCmdAction(menuItem, args){
 			hideCmdLine();
 			break;
 		case "sectionDelete":
-			var deleted = gSong.deleteCurrentSection();
+			var deleted = getSong().deleteCurrentSection();
 			if (deleted){
 				actionResult.result = "deleted";
 			} else {
@@ -491,7 +500,7 @@ function performCmdAction(menuItem, args){
 			break;
 		case "sectionAdd":
 			console.log("sectionAdd=====!!");
-			gSong.newSection(); //don't call addSection(section), which is an internal call.
+			getSong().newSection(); //don't call addSection(section), which is an internal call.
 			actionResult.result = "added";
 			break;
 		case "sectionAddShallowClone":
@@ -636,62 +645,70 @@ function hideMessages(){
 }
 function showGraveyard(){
     hideAllMenuDivs();
-    showMessages(gSong.graveyard.buildNoteTable());
+    showMessages(getSong().graveyard.buildNoteTable());
 }
 function hideGraveyard(){
     $("#divMessages").hide();
 }
 
 function increaseUIFont(){
-    ++gFontSize;
+    ++m_FontSize;
     updateUIFont();
 }
 function decreaseUIFont(){
-    --gFontSize;
+    --m_FontSize;
     updateUIFont();
 }
 function updateUIFont(){
-    $("body").css({"font-size": (gFontSize)+"pt"});
+    $("body").css({"font-size": (m_FontSize)+"pt"});
     updateFontLabel();
 }
 function getUIFontSize(){
-    return gFontSize;
+    return m_FontSize;
 }
 function setUIFontSize(newValue){
-    gFontSize = newValue;
+    m_FontSize = newValue;
     updateUIFont();
 }
 
 
 function increaseNoteFont(){
-    gNoteFontSize += FONT_INCREMENT;
+    m_NoteFontSize += FONT_INCREMENT;
     updateNoteFont();
 }
 function decreaseNoteFont(){
-    if (gNoteFontSize > 0.5){ gNoteFontSize -= FONT_INCREMENT; }
+    if (m_NoteFontSize > 0.5){ m_NoteFontSize -= FONT_INCREMENT; }
     updateNoteFont();
 }
 function updateNoteFont(){
-    setOneCssVar("--named-note-font-size",""+gNoteFontSize+"pt");
+    setOneCssVar("--named-note-font-size",""+m_NoteFontSize+"pt");
     updateFontLabel();
 }
-function getNoteFontSize(){
-    return gNoteFontSize;
+
+var m_FontSize = DEFAULT_FONT_SIZE;
+export function getFontSize() {
+	return m_FontSize;
 }
-function setNoteFontSize(newValue){
-    gNoteFontSize = newValue;
+
+var m_NoteFontSize = DEFAULT_NOTE_FONT_SIZE;
+
+export function getNoteFontSize(){
+    return m_NoteFontSize;
+}
+export function setNoteFontSize(newValue){
+    m_NoteFontSize = newValue;
     updateNoteFont();
 }
 
-function setSectionKeysFlats(){
-    gSong.sharps = false;
+export function setSectionKeysFlats(){
+    getSong().sharps = false;
     getCurrentSection().sharps = false;
     resetNoteNames();
     updateSectionsStatus();
 }
 
-function setSectionKeysSharps(){
-    gSong.sharps = true;
+export function setSectionKeysSharps(){
+    getSong().sharps = true;
     getCurrentSection().sharps = true;
     resetNoteNames();
     updateSectionsStatus();
@@ -708,7 +725,7 @@ function getValue(what){
 		case "sectionCount":
 			return getSong().sections.length;
 		case "graveyardRecordCount":
-			return gSong.graveyard.getRecordCount();
+			return getSong().graveyard.getRecordCount();
 		case "beats":
 		case "beatCount":
 			return getCurrentSection().beats;

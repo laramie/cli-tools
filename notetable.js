@@ -1,5 +1,6 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
+
 /*  This file manages an html table, specifically its TD.note collection.
 *  Certain model data are stored or replicated in the TD elements themselves.
 *  Home of future:
@@ -7,6 +8,21 @@
 *   which manages the real engine of infinite-neck.js, the display of the main model: getSong().
 *   Output is all for the instrument noteTables built and inserted into index.html.
 */
+
+import {
+	getSong,
+	getCurrentSection,
+    hideNoteClickedCaption,
+    resetNoteNames,
+    showBeats
+} from './infinite-neck.js';
+
+import {
+    findTuningForName
+} from './table-builder.js';
+import {
+	toInt
+} from './utils.js';
 
 function isRecording(){
     var btn = $("#btnRecord");
@@ -17,7 +33,7 @@ function isRecording(){
 
 function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
     var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
-    var noteFnBase = gSong.noteNamesFuncArr[relNoteNum];
+    var noteFnBase = getSong().noteNamesFuncArr[relNoteNum];
     var noteFn = noteFnBase;
     var displayPitch = relNoteNum + 1; //1-based: 1==first note of scale.
     var enharmonicName = "<span class='enharmonicName'>"+noteNameBase + "<small>" + sharpFlat + "</small></span>"
@@ -59,7 +75,7 @@ function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
 	var noteFnForHighlight = noteFn;
 	if (options.rootIDLead > -1){ //-1 is select option value for "follow rootID".
 		var relNoteNumLead = (12 + noteNum - options.rootIDLead) % 12; //0-based: 0==first note of scale
-	 	noteFnForHighlight = gSong.noteNamesFuncArr[relNoteNumLead];
+	 	noteFnForHighlight = getSong().noteNamesFuncArr[relNoteNumLead];
 	}
 
 	result = "<div class='NoteDisplay'>"
@@ -106,7 +122,7 @@ function buildFloatingNotes(cell, subright, subleft, noteFn, midinum, noteFuncti
 //global:
 var tinyNote = 1;
 
-function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum, options){
+export function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum, options){
     var cellsSet = $(selector);
 	cellsSet.each(function(i, obj){
         var cell=$(this);
@@ -128,13 +144,13 @@ function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum, option
 
 			var fretWidth = toInt(width,60);
             if (options.naturalFretWidths && !tuning.fixedFretWidthMult){
-				multiplier = gSong.fretLengths[cellcol];
+				multiplier = getSong().fretLengths[cellcol];
 				fretWidth = fretWidth * multiplier * 0.6;
 			}
             if (tuning.fixedFretWidthMult ){
                 fretWidth = width * tuning.fixedFretWidthMult * 0.6;
             }
-            sW = fretWidth+"pt";
+            const sW = fretWidth+"pt";
 
             var fontMultiplier = Math.pow(multiplier, options.naturaFontScaling*0.01);//{was 0.75 when I got the body, cell, and scaling fonts worked out, before that was: 0.3} The smaller the exponent, the samller the effect of the multiplier, since it is less than one.
             cell.attr("fontMultiplier", fontMultiplier);
@@ -472,7 +488,7 @@ function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
         theMidiNotePlayedClass = "tinyNotePlayedBend";
         theBendClass = bendValue;
     }
-    gSong.removeNotePlayedFromTable(notePlayed, parentTableID);
+    getSong().removeNotePlayedFromTable(notePlayed, parentTableID);
     if (!clear){
         if (    !singleNoteAlreadyPlayed
              && !tinyNoteAlreadyPlayed
@@ -480,7 +496,7 @@ function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
              && !fingeringAlreadyPlayed
              && !bendAlreadyPlayed
            ){
-                var tableArr = gSong.getTableArrInCurrentSection(parentTableID);
+                var tableArr = getSong().getTableArrInCurrentSection(parentTableID);
                 if (dontAddToTableArray){  //because recording has already added the note to beats in recordedNotes.
                     //console.log("Not adding note to tablearray:"+JSON.stringify(notePlayed));
                 } else {
@@ -501,7 +517,7 @@ function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
 
 //=================================REPLAY========================================
 
-function replay(){
+export function replay(){
     var currSection = getCurrentSection();
     var hideNamedNotes  = $("#cbHideNamedNotes").prop("checked");
     var hideTinyNotes = $("#cbHideTinyNotes").prop("checked");
@@ -526,7 +542,7 @@ function replay(){
                 if (!theSelect){
                     console.log("undef:"+JSON.stringify(namedNote));
                 }
-                console.log("named:"+theSelect+":"+theClass.length);
+                //console.log("named:"+theSelect+":"+theClass.length);
                 var theColorClass = lookupUserColorClass(namedNote);
     	        styleNamedNote(theClass, theColorClass, noteName); // sets opacity.
     	}
@@ -598,7 +614,7 @@ function showMidiNotesInTable(tableID, midinum, preferredRow){
 }
 
 
-function showHighlightsForBeat(nBeat){
+export function showHighlightsForBeat(nBeat){
     var dict = getCurrentSection().recordedNotes;
     if (dict){
 
@@ -674,13 +690,13 @@ function highlightOneNote(noteName){
 
 //=================================CLEARING========================================
 
-function fullRepaint(){
+export function fullRepaint(){
     clearAll();
     resetNoteNames();
     showBeats();
 }
 
-function clearAll() {
+export function clearAll() {
     hideNoteClickedCaption();
     var tdNote = $("td.note");
     tdNote.children(".NoteDisplay").removeClass("NoteActive");

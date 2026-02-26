@@ -85,7 +85,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} Maj 9",
+      "caption": "${getSong().getRootKey()} Maj 9",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -130,7 +130,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} min 7 / min 9",
+      "caption": "${getSong().getRootKey()} min 7 / min 9",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -170,7 +170,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} min7 b5",
+      "caption": "${getSong().getRootKey()} min7 b5",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -210,7 +210,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} dim",
+      "caption": "${getSong().getRootKey()} dim",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -273,7 +273,7 @@
           }
         ]
       },
-      "caption": "${gSong.getRootKey()} 6-9",
+      "caption": "${getSong().getRootKey()} 6-9",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 2,
@@ -309,7 +309,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} sus II",
+      "caption": "${getSong().getRootKey()} sus II",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 2,
@@ -345,7 +345,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} sus IV",
+      "caption": "${getSong().getRootKey()} sus IV",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -385,7 +385,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} dom7",
+      "caption": "${getSong().getRootKey()} dom7",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -425,7 +425,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} min7",
+      "caption": "${getSong().getRootKey()} min7",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -461,7 +461,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} 13  /   dom7 add-6",
+      "caption": "${getSong().getRootKey()} 13  /   dom7 add-6",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,
@@ -497,7 +497,7 @@
         }
       },
       "recordedNotes": {},
-      "caption": "${gSong.getRootKey()} min-maj",
+      "caption": "${getSong().getRootKey()} min-maj",
       "rootID": 3,
       "rootIDLead": "-1",
       "beats": 1,

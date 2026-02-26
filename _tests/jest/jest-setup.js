@@ -1,5 +1,9 @@
 // _tests/jest/jest-setup.js
 // Loads all JS dependencies in browser order for Jest tests
+
+import { gColorPickerColors } from '../../colorPickerColors.js';
+
+
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
@@ -27,6 +31,7 @@ const jsFiles = [
   'display-options.js',
   'svgLines.js',
   'menu.js',
+  'event-bus.js',
   'infinite-neck.js'
 ];
 

@@ -375,8 +375,8 @@ function runSongValidation(file, data, songTestOptions = {}) {
             + LF + "    • summary:" + JSON.stringify({ expectedSections, sectionRootIDs, song_rootID: data.rootID })
             + LF + "    • songTestOptions:" + JSON.stringify(songTestOptions));
         const gSong = global.makeSong();
-        gSong.addSections(data);
-        expect(gSong.getSections().length).toBe(expectedSections);
+        getSong().addSections(data);
+        expect(getSong().getSections().length).toBe(expectedSections);
         expect(data).toHaveProperty('rootID');  // Song-level rootID assertion
         // Section-level rootID assertions (already checked in getSectionRootIDs)
         validateSectionDictionaries(data, file); // Section-level namedNotes and noteTables assertions
@@ -452,8 +452,32 @@ function rootIDsMore(sectionRootIDsArr) {
 //========         Now run the tests           ======================
 //===================================================================
 
+printVerboseModeMessage();
+
+// New test suite for test_getRelativeSectionWithWrap
+
+describe('gSong test_getRelativeSectionWithWrap', () => {
+    test('should run test_getRelativeSectionWithWrap without errors', () => {
+        const gSong = global.makeSong();
+        // Add some sections to ensure the test runs meaningfully
+        getSong().addSection(getSong().constructSection());
+        getSong().addSection(getSong().constructSection());
+        getSong().addSection(getSong().constructSection());
+        // Optionally set captions/rootIDs for clarity
+        getSong().sections[0].caption = 'Section 1';
+        getSong().sections[0].rootID = '1';
+        getSong().sections[1].caption = 'Section 2';
+        getSong().sections[1].rootID = '2';
+        getSong().sections[2].caption = 'Section 3';
+        getSong().sections[2].rootID = '3';
+        // Run the method
+        expect(() => {
+            getSong().test_getRelativeSectionWithWrap();
+        }).not.toThrow();
+    });
+});
+
 describe('Song file and gSong loading validation', () => {
-    printVerboseModeMessage();
     let accumFilename = [];
     let data = null;
     logVerbose(2, "🛈  Song Files to be tested with songTestOptions: " + LF + JSON.stringify(songFiles, null, 4));

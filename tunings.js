@@ -1,4 +1,4 @@
-var allTunings = {
+export const allTunings = {
   "tunings": [
     {
       "instance": false,

@@ -10,7 +10,7 @@ const GraveType = Object.freeze({
         DESKTOP: "DESKTOP",
         INSTRUMENT: "INSTRUMENT"
 });
-function makeGraveyard(flatObj){
+export function makeGraveyard(flatObj){
 
     let obj = {
         //FIELDS:
@@ -90,7 +90,7 @@ function makeGraveyard(flatObj){
                 break;
             case GraveType.SECTION:
                 record.caption = record.caption + " raised from: "+record.context.SectionIndex +" at "+record.time;
-                gSong.addSection(JSON.parse(record.json));
+                getSong().addSection(JSON.parse(record.json));
                 break;
             case GraveType.DISPLAY:
             case GraveType.BEAT:
@@ -99,10 +99,10 @@ function makeGraveyard(flatObj){
                 if (dictkey){
                     var base = dictkey;
                     var i = 1;
-                    while (gSong.colorDicts[dictkey]){
+                    while (getSong().colorDicts[dictkey]){
                         dictkey = base+'R'+(i++);
                     }
-                    gSong.colorDicts[dictkey] = JSON.parse(record.json);
+                    getSong().colorDicts[dictkey] = JSON.parse(record.json);
                     chuseStylesheet(dictkey);
                 }
                 break;
@@ -116,7 +116,7 @@ function makeGraveyard(flatObj){
                  return;
         }
         record.lastRevived = Date.now();
-        showMessages(gSong.graveyard.buildNoteTable());
+        showMessages(getSong().graveyard.buildNoteTable());
         fullRepaint();
     }
 
@@ -145,7 +145,7 @@ function makeGraveyard(flatObj){
                 theContext = theContext.substring(0,60)+"...";
             }
             var lastRevived = record.lastRevived ? record.lastRevived : "";
-            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:gSong.graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
+            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:getSong().graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
             var row2 = "<tr><td><span onclick='$(\"#grave"+record.timestamp+"\").toggle();'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
             resultBody.unshift(row2);
             resultBody.unshift(row);

@@ -1,3 +1,7 @@
+import {
+	showBeats
+} from './infinite-neck.js';
+
 	var showBeatsIntervalPointer = null;
 
 	const LOOPING_FRAMES_CAPTION        = "LOOPING...";
@@ -74,17 +78,17 @@
 	}
 
 	function showBeatsIntervalHandler(){
-		var beat = gSong.getBeat();
-		var beats = gSong.getBeats();
+		var beat = getSong().getBeat();
+		var beats = getSong().getBeats();
 	    if (beat >= beats){
 			if (sectionsLooping()){
-				gSong.gotoNextSection(true);  //calls showBeats()
+				getSong().gotoNextSection(true);  //calls showBeats()
 			} else {
-				gSong.incBeatLoop();
+				getSong().incBeatLoop();
 				showBeats();
 			}
 		} else {
-			gSong.incBeatLoop();
+			getSong().incBeatLoop();
 			showBeats();
 		}
 	}
