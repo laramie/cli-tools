@@ -10,8 +10,7 @@ function displayOptionsTable(){
     res.push("<tr><td style='vertical-align: bottom;'>Section&nbsp;#</td>"+rowc+"</tr>");
 
     var sections = getSong().getSections();
-    for (var sectionIdx in sections){
-        var section = sections[sectionIdx];
+    sections.forEach((section, sectionIdx) => {
         var displayOptions = section.displayOptions;
         if (displayOptions){
             var row = displayOptionsRow(optionsPrototype, displayOptions, sectionIdx, prevDisplayOptions, skippedRow);
@@ -21,7 +20,7 @@ function displayOptionsTable(){
         } else {
             skippedRow = true;
         }
-    }
+    });
 
     res.push("</table>");
     return res.join("\r\n")

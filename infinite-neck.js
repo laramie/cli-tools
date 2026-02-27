@@ -595,12 +595,11 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			if (file.type.match(textType)) {
 				var reader = new FileReader();
 				var frs = [];
-				for (var k in jsonObj.sections){
-					var section = jsonObj.sections[k];
+				Object.values(jsonObj.sections).forEach(section => {
 					var replacementSection = getSong().constructSection();
 					section = Object.assign(replacementSection, section);
 					frs.push(section);
-				}
+				});
 				jsonObj.sections = frs;
 				if (!getSong().isEmpty(getSong().getCurrentSection())){
 					var yes = $("#cbAppendSections").prop("checked");
@@ -687,12 +686,11 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 
 		var frs = [];
-		for (var k in jsonObj.sections){
-			var section = jsonObj.sections[k];
+		Object.values(jsonObj.sections).forEach(section => {
 			var replacementSection = getSong().constructSection();
 			section = Object.assign(replacementSection, section);
 			frs.push(section);
-		}
+		});
 		jsonObj.sections = frs;
 		if (!getSong().isEmpty(getSong().getCurrentSection())){
 
@@ -770,10 +768,9 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		} else {
 			$.get( "songs/song-list.json", function(data){
 				var result = "";
-				for (var k in data.songs){
-						var song = data.songs[k];
-						result = result + "<a href='javascript:loadSong(\""+song+"\")'>"+song+"</a><br />";
-				}
+				Object.values(data.songs).forEach(song => {
+					result = result + "<a href='javascript:loadSong(\""+song+"\")'>"+song+"</a><br />";
+				});
 				$('#divSongList').html(result).show();
 			});
 		}

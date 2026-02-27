@@ -128,9 +128,8 @@ export function txtCmdLine_keypress(e) {
 
     var menu = gMenuPointer;
     var children = menu.children;
-    for (var childIdx in children){
+    children.forEach((child, childIdx) => {
         //now look in all children to see if user pressed the trigger for the child menu
-        var child = children[childIdx];
         if (child.trigger == e.key){
             if (child.action && hasNoChildMenus(child)){
                 diveMenu(child,"showing-list-menu");
@@ -185,5 +184,5 @@ export function txtCmdLine_keypress(e) {
                 }
             }
         }
-    }
+    });
 }

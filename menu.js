@@ -952,9 +952,9 @@ function buildChildMenuCaptionsRow(menu){
 
 
     var totalCaption = "";
-    for (var childIdx in children){
-        totalCaption += children[childIdx].caption;
-    }
+      children.forEach(child => {
+        totalCaption += child.caption;
+      });
     var vert = true;
     if (totalCaption.length < 70){  //if total number of characters is small, it is a list of small items.
         vert = false;
@@ -967,19 +967,18 @@ function buildChildMenuCaptionsRow(menu){
         vert = true;
     }
 
-    for (var childIdx in children){
-        var child = children[childIdx];
+      children.forEach(child => {
         var bang = "";
         if (child && child.bang && child.bang == true){
-            bang = "!&nbsp;";
+          bang = "!&nbsp;";
         }
         var theCaption = expandCaption(child);
         if (vert){
-            result = result+bang+theCaption+"<br />";
+          result = result+bang+theCaption+"<br />";
         } else {
-            result = result+"<td>"+bang+theCaption+"</td>";
+          result = result+"<td>"+bang+theCaption+"</td>";
         }
-    }
+      });
     const exit = "e<b>x</b>it";
     if (vert){
          result = "<td>"+result+"<br>"+exit+"</td>";
@@ -1016,14 +1015,14 @@ function printMenuStackByStackWalk(){
     var result = "";
     var kmax = gCurrentMenuStack.length-1;
     var caption;
-    for (var k in gCurrentMenuStack){
-        caption = gCurrentMenuStack[k].caption;
+      gCurrentMenuStack.forEach((stackItem, k) => {
+        caption = stackItem.caption;
         if (kmax == k){
-            result = result + "<br><span class='cmdPrompt'>"+caption+":</span>";
+          result = result + "<br><span class='cmdPrompt'>"+caption+":</span>";
         } else {
-            result = result + "<br>"+caption;
+          result = result + "<br>"+caption;
         }
-    }
+      });
     return result;
 }
 
@@ -1058,21 +1057,21 @@ function printMenuStackBreadcrumbs(addedCrumb){
 
 function printMenuStackBreadcrumbsByStack(){
     var result = "<b>";
-    for (var k in gCurrentMenuStack){
-        var s = gCurrentMenuStack[k].trigger;
-        if (!s){
-            s = "</b>["+gCurrentMenuStack[k].caption+"]<b>";
-        }
-        result = result + ""+s;
-    }
+    gCurrentMenuStack.forEach(stackItem => {
+      var s = stackItem.trigger;
+      if (!s){
+        s = "</b>["+stackItem.caption+"]<b>";
+      }
+      result = result + ""+s;
+    });
     return result+"</b>";
 }
 function printMenuStackBreadcrumbCaptions(sep){
     var result = "";
-    for (var k in gCurrentMenuStack){
-        var theSep = (k<=1) ? "" : sep;
-        result = result + theSep + gCurrentMenuStack[k].caption;
-    }
+    gCurrentMenuStack.forEach((stackItem, k) => {
+      var theSep = (k<=1) ? "" : sep;
+      result = result + theSep + stackItem.caption;
+    });
     return result;
 }
 
@@ -1090,12 +1089,11 @@ function showChildMenusRecursively(menu, level){
     var result = indent+menu.caption+":>";
     //l(""+level+":menu.caption:"+menu.caption);
     var children = menu.children;
-    for (var childIdx in children){
-        var child = children[childIdx];
-        var childrenMenus = showChildMenusRecursively(child, level);
-        result = result+"<br>"+childrenMenus;
-        //l(""+level+":children::"+childrenMenus);
-    }
+    children.forEach(child => {
+      var childrenMenus = showChildMenusRecursively(child, level);
+      result = result+"<br>"+childrenMenus;
+      //l(""+level+":children::"+childrenMenus);
+    });
     return result;
 }
 
@@ -1116,13 +1114,12 @@ function expandCaption(menuItem){
     var caption = menuItem.caption;
     var vars = menuItem.vars;
     if (vars && caption){
-        for (idx in vars){
-            var str = vars[idx];
-            var strValue = getValue(str);
-            if ((strValue != undefined) && (""+strValue).length>0){
-                caption = caption.replaceAll("$"+str, ""+strValue);
-            }
+      vars.forEach(str => {
+        var strValue = getValue(str);
+        if ((strValue != undefined) && (""+strValue).length>0){
+          caption = caption.replaceAll("$"+str, ""+strValue);
         }
+      });
     }
     return caption;
 }
