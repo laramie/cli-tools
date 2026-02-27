@@ -325,13 +325,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	function resetSharps(options) {
-	    buildCells(getSong().sharps, options);
-	    resetSharpsControls();
+		buildCells(getSong().sharps, options);
+		resetSharpsControls();
 	}
 
 	function resetFlats(options) {
-	    buildCells(getSong().sharps, options);
-	    resetFlatsControls();
+		buildCells(getSong().sharps, options);
+		resetFlatsControls();
 	}
 
 
@@ -379,26 +379,26 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	function buildCells(sharps, options) {
-	    if (sharps) {
-	        buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
-	        buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
-	        buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
-	        buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
-	        buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
-	    } else {
-	        buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
-	        buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
-	        buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
-	        buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
-	        buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
-	    }
-	    buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
-	    buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
-	    buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
-	    buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
-	    buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
-	    buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
-	    buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
+		if (sharps) {
+			NoteTable.buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
+			NoteTable.buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
+			NoteTable.buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
+			NoteTable.buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
+			NoteTable.buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
+		} else {
+			NoteTable.buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
+			NoteTable.buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
+			NoteTable.buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
+			NoteTable.buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
+			NoteTable.buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
+		}
+		NoteTable.buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
+		NoteTable.buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
+		NoteTable.buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
+		NoteTable.buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
+		NoteTable.buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
+		NoteTable.buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
+		NoteTable.buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
 	}
 
 	//list of menu divs, accessed through .entries(), and associated button names,
