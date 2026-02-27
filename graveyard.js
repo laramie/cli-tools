@@ -138,7 +138,7 @@ export function makeGraveyard(flatObj){
                       +'&nbsp;&nbsp;<button type="button" onclick="hideGraveyard();">Close</button>';
 
 
-        for (k in this.records){
+        Object.keys(this.records).forEach(k => {
             var record = this.records[k];
             var theContext = JSON.stringify(record.context);
             if (theContext.length > 60){
@@ -148,6 +148,7 @@ export function makeGraveyard(flatObj){
             var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:getSong().graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
             var row2 = "<tr><td><span onclick='$(\"#grave"+record.timestamp+"\").toggle();'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
             resultBody.unshift(row2);
+        });
             resultBody.unshift(row);
         }
         result.push("<table class='tblGraveyard'>");

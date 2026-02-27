@@ -158,7 +158,7 @@ import { gThemes } from './themes.js';
 			return (val==undefined) ? "<span class='undefThemeOption'>"+val+"</span>" : val;
 		}
 		var htmlres = "";
-		for (key in options){
+		Object.keys(options).forEach(key => {
 			var val = options[key];
 			var valdef = def[key];
 			var valorig = orig[key];
@@ -169,7 +169,7 @@ import { gThemes } from './themes.js';
 			} else {
 				htmlres += "<tr  class='themeDiff_Default'><td><i>"+key+"</i></td><td>"+val+"</td><td>"+u(valorig)+"</td><td>"+u(valdef)+"</td></tr>";
 			}
-		}
+		});
 		return "<table id='themeDiff'>"
 				+"<caption><span class='themeDiff_NotDefault'>not default</span><span class='themeDiff_Default'>default</span><span class='themeDiff_Changed'>changed</span></caption>"
 				+" <tr><th>property</th><th>value</th><th>original</th><th>default</th></tr>"

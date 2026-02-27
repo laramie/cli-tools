@@ -823,17 +823,15 @@ export function makeSong(){
 
 
     function removeUnusedTablesFromMemoryModel(){
-	  for (sectionIdx in this.sections){     //for all sections...
-	    var section = this.sections[sectionIdx];
-	    var tempTables = {};
-	    for (const tablename in section.noteTables){
-	        var tablearr = section.noteTables[tablename];
-	        if (tablearr && tablearr.length && tablearr.length>0){
-	            tempTables[tablename] = tablearr;
-	        }
-	    }
-	    section.noteTables = tempTables;
-	  }
+            this.sections.forEach(section => { // for all sections...
+                var tempTables = {};
+                Object.entries(section.noteTables).forEach(([tablename, tablearr]) => {
+                        if (tablearr && tablearr.length && tablearr.length > 0) {
+                                tempTables[tablename] = tablearr;
+                        }
+                });
+                section.noteTables = tempTables;
+            });
 	}
 
     function markVisibleTablesForFileSave(){
@@ -876,17 +874,15 @@ export function makeSong(){
 
     function removeNotePlayedFromTable(notePlayed, parentTableID){
       var tableArr = this.getTableArrInCurrentSection(parentTableID);
-      for (key in tableArr){
-            var itemNotePlayed = tableArr[key];
+      tableArr.forEach((itemNotePlayed, key) => {
             if (   itemNotePlayed.col == notePlayed.col
                 && itemNotePlayed.row == notePlayed.row
                 && itemNotePlayed.styleNum == notePlayed.styleNum  ){
-
                 //console.log("found cell["+key+"] item: "+JSON.stringify(itemNotePlayed));
                 tableArr.splice(key, 1);
-                break;
+                return false; // break out of forEach
             }
-        }
+        });
     }
 
     function moveNamedNotesAllSections(amount){

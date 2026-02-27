@@ -632,47 +632,48 @@ export function showHighlightsForBeat(nBeat){
 		 	.hide();
 
 		var arrForBeat = dict[""+nBeat];
-        for (k in arrForBeat){      //zero loops for undefined arrForBeat
-            var note = arrForBeat[k];
-			var tdNote = $("td.note[midinum='"+note.midinum+"'][cellrow='"+note.row+"']");
-
-            if (note.styleNum == STYLENUM_MIDIPITCHES){
-                $("td.note[midinum='"+note.midinum+"']")  //special case: just select MIDI note across all strings e.g. all C-66's.
-			        .addClass("noteHighlight");
-            } else if (note.styleNum == STYLENUM_MIDIPITCHESSINGLE){
-                tdNote
-                    .addClass("noteHighlightSingle");
-            } else if (note.styleNum == STYLENUM_FINGERING){
-				tdNote
-                    .find("div.Fingering")
-				    .addClass("FingeringPlayed")
-					.addClass("Playback")
-					.addClass(lookupUserColorClass(note))
-					.html(note.finger)  //finger (1234T) shown in cell here.
-					.show();
-			}  else if (note.styleNum == STYLENUM_SINGLE){
-				tdNote
-                    .find("div.singleNote")
-					.addClass("singleNotePlayed")
-					.addClass("Playback")
-					.addClass(lookupUserColorClass(note))
-					.show();
-			}  else if (note.styleNum == STYLENUM_TINY){
-				tdNote
-                    .find("div.tinyNote")
-					.addClass("tinyNotePlayed")
-					.addClass("Playback")
-					.addClass(lookupUserColorClass(note))
-					.show();
-			}  else if (note.styleNum == STYLENUM_BEND){
-				tdNote
-                    .find("div.tinyNote")
-					.addClass("tinyNotePlayedBend")
-					.addClass("Playback")
-					.addClass(note.bendValue)
-					.addClass(lookupUserColorClass(note))
-					.show();
-			}
+            if (arrForBeat) {
+                arrForBeat.forEach(note => {
+                    var tdNote = $("td.note[midinum='"+note.midinum+"'][cellrow='"+note.row+"']");
+                    if (note.styleNum == STYLENUM_MIDIPITCHES){
+                        $("td.note[midinum='"+note.midinum+"']")
+                            .addClass("noteHighlight");
+                    } else if (note.styleNum == STYLENUM_MIDIPITCHESSINGLE){
+                        tdNote
+                            .addClass("noteHighlightSingle");
+                    } else if (note.styleNum == STYLENUM_FINGERING){
+                        tdNote
+                            .find("div.Fingering")
+                            .addClass("FingeringPlayed")
+                            .addClass("Playback")
+                            .addClass(lookupUserColorClass(note))
+                            .html(note.finger)  //finger (1234T) shown in cell here.
+                            .show();
+                    }  else if (note.styleNum == STYLENUM_SINGLE){
+                        tdNote
+                            .find("div.singleNote")
+                            .addClass("singleNotePlayed")
+                            .addClass("Playback")
+                            .addClass(lookupUserColorClass(note))
+                            .show();
+                    }  else if (note.styleNum == STYLENUM_TINY){
+                        tdNote
+                            .find("div.tinyNote")
+                            .addClass("tinyNotePlayed")
+                            .addClass("Playback")
+                            .addClass(lookupUserColorClass(note))
+                            .show();
+                    }  else if (note.styleNum == STYLENUM_BEND){
+                        tdNote
+                            .find("div.tinyNote")
+                            .addClass("tinyNotePlayedBend")
+                            .addClass("Playback")
+                            .addClass(note.bendValue)
+                            .addClass(lookupUserColorClass(note))
+                            .show();
+                    }
+                });
+            }
         }
     }
 }
@@ -838,16 +839,15 @@ function doFill(theClass, NoteNames, Color){
         //NO: let replay color the notes.  We are just adding them to the model here.
         //theClass.addClass(lookupUserColorClassByClass(Color))
 		//             .addClass("NoteActive");
-        for (key in NoteNames){
+        Object.keys(NoteNames).forEach(key => {
             var noteName = NoteNames[key];
-            //currSection.namedNotes[noteName] = {"noteNameClass": ".note"+noteName, "colorClass": Color, "noteName": noteName};
             currSection.namedNotes[noteName] = {"noteName": noteName, "colorClass": Color};
-        }
+        });
     } else {
         eraseNamedNote(theClass);
-        for (key in NoteNames){
+        Object.keys(NoteNames).forEach(key => {
             currSection.namedNotes[NoteNames[key]] = {};
-        }
+        });
     }
 }
 

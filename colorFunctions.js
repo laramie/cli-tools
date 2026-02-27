@@ -48,14 +48,13 @@ import {gUserColorDict} from './userColors.js';
 		var keys = Object.keys(notes);
 
 		if (doSampleSection){
-			for (k in keys){
-				var noteName = keys[k];
+			keys.forEach(noteName => {
 				var noteFnNum = noteNameToNoteID(noteName);
-				var rel =(12+noteFnNum-rootIndex) % 12;
-				var noteKey = "note"+(rel+1);   //Use 1-based for note1, note2, etc.
-				var note = notes[keys[k]];
+				var rel = (12 + noteFnNum - rootIndex) % 12;
+				var noteKey = "note" + (rel + 1); // Use 1-based for note1, note2, etc.
+				var note = notes[noteName];
 				var cc = note.colorClass;
-				if (cc){
+				if (cc) {
 					var noteClone = JSON.parse(JSON.stringify(note));
 					noteClone.colorClass = cc;
 					var res = lookupUserColor(noteClone);
@@ -276,7 +275,7 @@ import {gUserColorDict} from './userColors.js';
 			return ;
 		}
 		var foo = eventSelectors;
-		for (k in eventSelectors){
+		Object.keys(eventSelectors).forEach(k => {
 			$(eventSelectors[k]).change(function(){
 				var cb = $(this);
 				var willBeChecked = cb.prop('checked');
@@ -286,7 +285,7 @@ import {gUserColorDict} from './userColors.js';
 				fullRepaint();
 				buildColorDicts();
 			});
-		}
+		});
 	}
 
 	function registerColorSchemeCBEventSelectors(eventSelectors){
