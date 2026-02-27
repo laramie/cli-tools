@@ -31,7 +31,7 @@ import {
 	fullRepaint,
 	replay,
 	showHighlightsForBeat
-} from './notetable.js';
+} from './NoteTable.js';
 import {
 	makeSong
 } from './song.js';
@@ -966,36 +966,34 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 		function printTablesStats(noteTables){
-			var result = "";
-			var B = "<br />";
-			for (key in noteTables){
-				var tableArr = noteTables[key];
-				result = result + B + key + ":" + tableArr.length;
-			}
+			let result = "";
+			const B = "<br />";
+			Object.entries(noteTables).forEach(([key, tableArr]) => {
+				result += B + key + ":" + tableArr.length;
+			});
 			return result;
 		}
 
 		function printSections(){
-			var sections = getSections();
-			var B = "<br />" ;
-			var result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>&sharp;/&flat;</th><th>Caption</th><th>Details</th>";
-			var namedNotes, specialNotes;
-			for (idx in sections){
-				var section = sections[idx];
-				namedNotes = (Object.keys(section.namedNotes).length>0) ? "namedNotes: "+JSON.stringify(Object.keys(section.namedNotes)) : "";
-				specialNotes = (Object.keys(section.noteTables).length>0) ? "<br />SpecialNotes: "+printTablesStats(section.noteTables) : "";
-				var SEP = "</td><td>";
-				result = result+"<tr><td>"
-				       +"<a href=\"javascript:linkToSection('"+idx+"');\">"+(toInt(idx,0)+1)+"</a>"+SEP
-					   +section.beats+SEP
-					   +"<B style='font-size: 130%;'>"+noteIDToNoteName(section.rootID) +(section.rootIDLead!=-1?"/"+noteIDToNoteName(section.rootIDLead):"")+"</B>"+SEP
-				       +( section.sharps ? " &sharp; " : " &flat; " )+SEP
-					   +"<b style='font-size: 130%;'>"+section.caption+"</b>"+SEP
-					   +namedNotes
-					   +specialNotes
-					   "</td></tr>";
-			}
-			return result+"</table>";
+			const sections = getSections();
+			const B = "<br />";
+			let result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>&sharp;/&flat;</th><th>Caption</th><th>Details</th>";
+			let namedNotes, specialNotes;
+			sections.forEach((section, idx) => {
+				namedNotes = (section.namedNotes && Object.keys(section.namedNotes).length > 0) ? "namedNotes: " + JSON.stringify(Object.keys(section.namedNotes)) : "";
+				specialNotes = (section.noteTables && Object.keys(section.noteTables).length > 0) ? "<br />SpecialNotes: " + printTablesStats(section.noteTables) : "";
+				const SEP = "</td><td>";
+				result += "<tr><td>"
+					+ "<a href=\"javascript:linkToSection('" + idx + "');\">" + (toInt(idx, 0) + 1) + "</a>" + SEP
+					+ section.beats + SEP
+					+ "<B style='font-size: 130%;'>" + noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
+					+ (section.sharps ? " &sharp; " : " &flat; ") + SEP
+					+ "<b style='font-size: 130%;'>" + section.caption + "</b>" + SEP
+					+ namedNotes
+					+ specialNotes
+					+ "</td></tr>";
+			});
+			return result + "</table>";
 		}
 
 		function linkToSection(idx){
