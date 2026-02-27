@@ -519,73 +519,70 @@ export function replay(){
     var hideFingering   = $("#cbHideFingering").prop("checked");
 
     if (!hideNamedNotes){
-    	var clone = {};
-        for (const noteName in currSection.namedNotes){
-    			//   every G cell has a class "noteG" --> however, as stored,
-                //   namedNote.noteNameClass is ".noteG", to make it a selector
-                //       ==> Construct jQuery with ".noteG"
-    	        var namedNote = currSection.namedNotes[noteName];
-                var theSelect;
-                if (namedNote.noteName){
-                    theSelect = ".note"+namedNote.noteName;
-                    
-                } else {
-                    theSelect = namedNote.noteNameClass; //old style before 20240324
-                }
-    			var theClass = $(theSelect);
-                if (!theSelect){
-                    console.log("undef:"+JSON.stringify(namedNote));
-                }
-                //console.log("named:"+theSelect+":"+theClass.length);
-                var theColorClass = lookupUserColorClass(namedNote);
-    	        styleNamedNote(theClass, theColorClass, noteName); // sets opacity.
-    	}
+        var clone = {};
+        Object.keys(currSection.namedNotes).forEach(noteName => {
+            //   every G cell has a class "noteG" --> however, as stored,
+            //   namedNote.noteNameClass is ".noteG", to make it a selector
+            //       ==> Construct jQuery with ".noteG"
+            var namedNote = currSection.namedNotes[noteName];
+            var theSelect;
+            if (namedNote.noteName){
+                theSelect = ".note"+namedNote.noteName;
+            } else {
+                theSelect = namedNote.noteNameClass; //old style before 20240324
+            }
+            var theClass = $(theSelect);
+            if (!theSelect){
+                console.log("undef:"+JSON.stringify(namedNote));
+            }
+            //console.log("named:"+theSelect+":"+theClass.length);
+            var theColorClass = lookupUserColorClass(namedNote);
+            styleNamedNote(theClass, theColorClass, noteName); // sets opacity.
+        });
     } else {
         $('.namedNote').hide();
     }
 
-    for (const tablename in currSection.noteTables){
+    Object.keys(currSection.noteTables).forEach(tablename => {
         var tablearr = currSection.noteTables[tablename];
-        for (const scriptIndex in tablearr){
-            var script = tablearr[scriptIndex];
+        tablearr.forEach(script => {
             var jtdselector = "#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]";
             var jtd = $(jtdselector);
             console.log("select:"+jtdselector+":"+jtd.length);
             jtd.each(function(i, obj){
-                 var textdiv;
-                 if (script.styleNum == undefined){
-                     script.styleNum = 1;//legacy files not saved with styleNum attr.
-                     console.log("======================== undefined styleNum =============="+JSON.stringify(script));
-                     //remove this if you don't see it in console. I've been on this file format for a while now.
-                 }
-                 if (script.styleNum == STYLENUM_TINY && !hideTinyNotes){
-                     textdiv = $(this).find(".tinyNote");
-                     textdiv.addClass("tinyNotePlayed");
-                     textdiv.css("opacity",  getSong().tinyNoteOpacity);
-                 } else if (script.styleNum == STYLENUM_SINGLE && !hideSingleNotes){
-                     textdiv = $(this).find(".singleNote");
-                     textdiv.addClass("singleNotePlayed");
-                     textdiv.css("opacity",  getSong().singleNoteOpacity);
-                 } else if (script.styleNum == STYLENUM_BEND && !hideTinyNotes){
-                     textdiv = $(this).find(".tinyNote");
-                     textdiv.addClass("tinyNotePlayedBend");	//MOJO  replay
-                     textdiv.addClass(script.bendValue);
-                     textdiv.css("opacity",  getSong().tinyNoteOpacity);//tiny and bends go together on visibility and opacity
-                 } else if (script.styleNum == STYLENUM_FINGERING && !hideFingering){
-                     textdiv = $(this).find(".Fingering");
-					 if (script.finger){
-						 textdiv.html(script.finger);
-					 }
-                     textdiv.addClass("FingeringPlayed");
-					 textdiv.show();
-                 }
-
-                 if (textdiv && script.colorClass) {
-                     textdiv.addClass(lookupUserColorClass(script));
-                 }
+                var textdiv;
+                if (script.styleNum == undefined){
+                    script.styleNum = 1;//legacy files not saved with styleNum attr.
+                    console.log("======================== undefined styleNum =============="+JSON.stringify(script));
+                    //remove this if you don't see it in console. I've been on this file format for a while now.
+                }
+                if (script.styleNum == STYLENUM_TINY && !hideTinyNotes){
+                    textdiv = $(this).find(".tinyNote");
+                    textdiv.addClass("tinyNotePlayed");
+                    textdiv.css("opacity",  getSong().tinyNoteOpacity);
+                } else if (script.styleNum == STYLENUM_SINGLE && !hideSingleNotes){
+                    textdiv = $(this).find(".singleNote");
+                    textdiv.addClass("singleNotePlayed");
+                    textdiv.css("opacity",  getSong().singleNoteOpacity);
+                } else if (script.styleNum == STYLENUM_BEND && !hideTinyNotes){
+                    textdiv = $(this).find(".tinyNote");
+                    textdiv.addClass("tinyNotePlayedBend");
+                    textdiv.addClass(script.bendValue);
+                    textdiv.css("opacity",  getSong().tinyNoteOpacity);//tiny and bends go together on visibility and opacity
+                } else if (script.styleNum == STYLENUM_FINGERING && !hideFingering){
+                    textdiv = $(this).find(".Fingering");
+                    if (script.finger){
+                        textdiv.html(script.finger);
+                    }
+                    textdiv.addClass("FingeringPlayed");
+                    textdiv.show();
+                }
+                if (textdiv && script.colorClass) {
+                    textdiv.addClass(lookupUserColorClass(script));
+                }
             });
-        }
-    }//end for
+        });
+    });
 }
 
 function showMidiNotesInTable(tableID, midinum, preferredRow){

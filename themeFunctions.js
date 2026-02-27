@@ -20,13 +20,11 @@ import { gThemes } from './themes.js';
         var result = "";
         var opt;
 
-        for (var key in themes){
-            var theme = themes[key];
-            //console.log("theme:"+key+":"+JSON.stringify(theme, null, 2));
-
-            opt =  "<option tabindex='-1' value='"+theme.id+"'>"+theme.caption+" </option>";
-            sel = sel +opt;
-        }
+		Object.values(themes).forEach(theme => {
+			//console.log("theme:"+theme.id+":"+JSON.stringify(theme, null, 2));
+			opt =  "<option tabindex='-1' value='"+theme.id+"'>"+theme.caption+" </option>";
+			sel = sel + opt;
+		});
         sel = sel + "</select>";
         return sel;
     }

@@ -35,7 +35,7 @@ const jsFiles = [
   'infinite-neck.js'
 ];
 
-// Create a context for the scripts to run in (simulates window/global)
+// Create a context where the scripts to run (simulates window/global)
 const context = vm.createContext(global);
 
 // Load each JS file into the context

@@ -1,6 +1,6 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-//Static functions for handling recorded notes in a Section.  Kept out of song.js to keep the recording logic in one place.
+//Static functions handling recorded notes in a Section.  Kept out of song.js to keep the recording logic in one place.
 //Of course, this picks up the gSong reference from infinite-neck.js via getCurrentSection().
 import {
 	getSong,

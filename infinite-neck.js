@@ -525,7 +525,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    getBPM();
 	    
 		//TODO: move this to a more obvious function.
-		// For example, we should be storing that state in the visibleTables array of Table objects, which I also need for Tunings that watch other sections...
+		// Example, we should be storing that state in the visibleTables array of Table objects, which I also need for Tunings that watch other sections...
 		getSong().songName = $("#txtFilename").val();  
 		
 		getSong().userColors = gUserColorDict.dict;
@@ -871,7 +871,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		getCurrentSection().rootID = curr;
 		$("#dropDownRoot").val(getCurrentSection().rootID);
 		resetNoteNames();
-		clearRecordedNotes();//for some reason this clears highlights correctly, and used to be in updateSectionsStatus, but didn't belong there.
+		clearRecordedNotes();// TODO: make sure this is OK, and delete this comment: This clears highlights correctly, and used to be in updateSectionsStatus, but didn't belong there.
 		updateSectionsStatus();
 	}
 

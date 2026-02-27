@@ -766,16 +766,16 @@ export function makeSong(){
 	}
 
 	function isEmpty(section){
-	   var namedNoteCount = 0;
-	   var tableCount = 0;
-	   for (const noteName in section.namedNotes){
-	        namedNoteCount++;
-	    }
-	    for (const tablename in section.noteTables){
-	        var tablearr = section.noteTables[tablename];
-	        tableCount += tablearr.length;
-	    }
-	    return ((tableCount + namedNoteCount) == 0);
+       var namedNoteCount = 0;
+       var tableCount = 0;
+       Object.keys(section.namedNotes).forEach(noteName => {
+            namedNoteCount++;
+        });
+        Object.keys(section.noteTables).forEach(tablename => {
+            var tablearr = section.noteTables[tablename];
+            tableCount += tablearr.length;
+        });
+        return ((tableCount + namedNoteCount) == 0);
 	}
 
     function moveSectionToEND(){
@@ -800,12 +800,11 @@ export function makeSong(){
     //This function works: it transposes every Section in a Song by 'amount', but I haven't installed it in the menu yet.
     function cycleThruKeysAllSections(amount){
         var sections = this.getSections();
-		for (var idx in sections){
-            var section = sections[idx];
-			var curr = toInt(section.rootID, 0);
-			curr=(12+curr + amount) % 12;
-			section.rootID = curr;
-		}
+        sections.forEach(section => {
+            var curr = toInt(section.rootID, 0);
+            curr = (12 + curr + amount) % 12;
+            section.rootID = curr;
+        });
 	}
 
     function getTableArrInCurrentSection(tableID){
@@ -835,14 +834,14 @@ export function makeSong(){
 	}
 
     function markVisibleTablesForFileSave(){
-	    this.visibleNoteTables = [];
-	    for (i in allTunings.tunings){
-	         var baseID = allTunings.tunings[i].baseID;
-	         var divSelector = "#"+TABLEDIV_ID_PREFIX+baseID;
-	         if ($(divSelector).is(':visible')) {  //TODO: this is a problem for Jest tests.  Refactor to sent this in.
-	             this.visibleNoteTables.push(TABLE_ID_PREFIX+baseID);
-	         }
-	    }
+        this.visibleNoteTables = [];
+        allTunings.tunings.forEach(tuning => {
+            var baseID = tuning.baseID;
+            var divSelector = "#"+TABLEDIV_ID_PREFIX+baseID;
+            if ($(divSelector).is(':visible')) {  //TODO: this is a problem with Jest tests.  Refactor to sent this in.
+                this.visibleNoteTables.push(TABLE_ID_PREFIX+baseID);
+            }
+        });
 	    var tunings = getTunings(this.visibleNoteTables);
 	    this.tunings = tunings;
 	}
@@ -887,10 +886,9 @@ export function makeSong(){
 
     function moveNamedNotesAllSections(amount){
         var sections = this.getSections();
-		for (var idx in sections){
-            var section = sections[idx];
-	        moveNamedNotesForSection(amount, section);
-		}
+        sections.forEach(section => {
+            moveNamedNotesForSection(amount, section);
+        });
 	}
 
     function moveNamedNotes(amount){
@@ -898,9 +896,9 @@ export function makeSong(){
 
     }
     function moveNamedNotesForSection(amount, section){
-    	var namedNotesClone = {};
-    	var namedNotes = section.namedNotes;
-    	for (const noteName in namedNotes){
+        var namedNotesClone = {};
+        var namedNotes = section.namedNotes;
+        Object.keys(namedNotes).forEach(noteName => {
             var index = constNoteNamesArr.indexOf(noteName);  //globally known list of A,Bb,B,C etc.
             index=(12+index + amount) % 12;
             var transposedNoteName = constNoteNamesArr[index];
@@ -913,11 +911,10 @@ export function makeSong(){
                 //delete clonedNote.noteNameClass;
                 namedNotesClone[transposedNoteName] = clonedNote;
             }
-
-    	}
-    	section.namedNotes = namedNotesClone;
+        });
+        section.namedNotes = namedNotesClone;
         //console.log("original: "+JSON.stringify(namedNotes) + "\r\n new:"+JSON.stringify(this.getCurrentSection().namedNotes));
-    	return getRootNoteName(section);  //as we transpose, keep highlighting the rootID.
+        return getRootNoteName(section);  //as we transpose, keep highlighting the rootID.
   	}
 
   	function getRootNoteName(section){
