@@ -27,14 +27,14 @@ import {
 	toInt
 } from './utils.js';
 
-function isRecording(){
+export function isRecording(){
     var btn = $("#btnRecord");
     var recording = btn.attr("recording");
     return ((recording != undefined) && recording == "true");
 }
 
 
-function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
+export function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
     var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
     var noteFnBase = getSong().noteNamesFuncArr[relNoteNum];
     var noteFn = noteFnBase;
@@ -91,7 +91,7 @@ function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
 
 //=================================================================================
 
-function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFunctionClass){
+export function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFunctionClass){
     return "<div class='namedNote'>"
 	        +"<span class='midinumDisplayNamedNote'>"+midinum+"</span>"
             +"<div class='CenterCell'>"
@@ -106,7 +106,7 @@ function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFunctionCl
         +"</div></div>";
 }
 
-function buildFloatingNotes(cell, subright, subleft, noteFn, midinum, noteFunctionClass){
+export function buildFloatingNotes(cell, subright, subleft, noteFn, midinum, noteFunctionClass){
     var     result =  "<div class='tinyNote'>"+noteFn+"</div>";
             result += "<div class='singleNote'>"
                            +"<span class='midinumDisplay'>" +midinum+"</span>"
@@ -169,7 +169,7 @@ export function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum,
 
 //=================================CLICK HANDLING===============================
 
-function colorNote(cell) {
+export function colorNote(cell) {
     var styleNum = STYLENUM_NAMED;
     var doHighlight = false;
     var doHighlightSingle = false;
@@ -361,7 +361,7 @@ function colorNote(cell) {
     }
 }
 
-function dropper(cell, cellcol, cellrow, styleNum, noteName){
+export function dropper(cell, cellcol, cellrow, styleNum, noteName){
     var jCell = $(cell);
     if (noteName && styleNum == 0){ //namedNote
         var note = getCurrentSection().namedNotes[noteName];
@@ -392,7 +392,7 @@ function dropper(cell, cellcol, cellrow, styleNum, noteName){
     }
 }
 
-function styleNamedNote(theClass, theColorClass, noteName){
+export function styleNamedNote(theClass, theColorClass, noteName){
 	theClass.children(".NoteDisplay")
 		.addClass("NoteActive");
 	var namedNoteDiv = theClass.children(".NoteDisplay").children(".namedNote");
@@ -401,17 +401,17 @@ function styleNamedNote(theClass, theColorClass, noteName){
 	namedNoteDiv.css("opacity",  getSong().namedNoteOpacity);
 }
 
-function eraseNamedNote(NoteDisplayClassEls){
+export function eraseNamedNote(NoteDisplayClassEls){
     NoteDisplayClassEls.removeClass().addClass("NoteDisplay");
     var namedNoteDiv = NoteDisplayClassEls.children(".namedNote");
     clearNamedNoteDivs(namedNoteDiv);
 }
-function clearNamedNoteDivs(namedNoteDivs){
+export function clearNamedNoteDivs(namedNoteDivs){
     namedNoteDivs.removeClass().addClass("namedNote");
 }
 
 
-function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
+export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
     var bendValue = $('#selBend option:selected').val();
     if (styleNum == STYLENUM_BEND){
         var isNut = cell.hasClass("nut") || cell.hasClass("nutR");
@@ -592,7 +592,7 @@ export function replay(){
     });
 }
 
-function showMidiNotesInTable(tableID, midinum, preferredRow){
+export function showMidiNotesInTable(tableID, midinum, preferredRow){
   var tds = $("table[id='"+tableID+"'] td[midinum='"+midinum+"'][cellrow='"+preferredRow+"']");
   //console.log("tds.length:"+tds.length);
   if (tds.length==0){
@@ -633,53 +633,53 @@ export function showHighlightsForBeat(nBeat){
 		 	.hide();
 
 		var arrForBeat = dict[""+nBeat];
-            if (arrForBeat) {
-                arrForBeat.forEach(note => {
-                    var tdNote = $("td.note[midinum='"+note.midinum+"'][cellrow='"+note.row+"']");
-                    if (note.styleNum == STYLENUM_MIDIPITCHES){
-                        $("td.note[midinum='"+note.midinum+"']")
-                            .addClass("noteHighlight");
-                    } else if (note.styleNum == STYLENUM_MIDIPITCHESSINGLE){
-                        tdNote
-                            .addClass("noteHighlightSingle");
-                    } else if (note.styleNum == STYLENUM_FINGERING){
-                        tdNote
-                            .find("div.Fingering")
-                            .addClass("FingeringPlayed")
-                            .addClass("Playback")
-                            .addClass(lookupUserColorClass(note))
-                            .html(note.finger)  //finger (1234T) shown in cell here.
-                            .show();
-                    }  else if (note.styleNum == STYLENUM_SINGLE){
-                        tdNote
-                            .find("div.singleNote")
-                            .addClass("singleNotePlayed")
-                            .addClass("Playback")
-                            .addClass(lookupUserColorClass(note))
-                            .show();
-                    }  else if (note.styleNum == STYLENUM_TINY){
-                        tdNote
-                            .find("div.tinyNote")
-                            .addClass("tinyNotePlayed")
-                            .addClass("Playback")
-                            .addClass(lookupUserColorClass(note))
-                            .show();
-                    }  else if (note.styleNum == STYLENUM_BEND){
-                        tdNote
-                            .find("div.tinyNote")
-                            .addClass("tinyNotePlayedBend")
-                            .addClass("Playback")
-                            .addClass(note.bendValue)
-                            .addClass(lookupUserColorClass(note))
-                            .show();
-                    }
-                });
-            }
+        if (arrForBeat) {
+            arrForBeat.forEach(note => {
+                var tdNote = $("td.note[midinum='"+note.midinum+"'][cellrow='"+note.row+"']");
+                if (note.styleNum == STYLENUM_MIDIPITCHES){
+                    $("td.note[midinum='"+note.midinum+"']")
+                        .addClass("noteHighlight");
+                } else if (note.styleNum == STYLENUM_MIDIPITCHESSINGLE){
+                    tdNote
+                        .addClass("noteHighlightSingle");
+                } else if (note.styleNum == STYLENUM_FINGERING){
+                    tdNote
+                        .find("div.Fingering")
+                        .addClass("FingeringPlayed")
+                        .addClass("Playback")
+                        .addClass(lookupUserColorClass(note))
+                        .html(note.finger)  //finger (1234T) shown in cell here.
+                        .show();
+                }  else if (note.styleNum == STYLENUM_SINGLE){
+                    tdNote
+                        .find("div.singleNote")
+                        .addClass("singleNotePlayed")
+                        .addClass("Playback")
+                        .addClass(lookupUserColorClass(note))
+                        .show();
+                }  else if (note.styleNum == STYLENUM_TINY){
+                    tdNote
+                        .find("div.tinyNote")
+                        .addClass("tinyNotePlayed")
+                        .addClass("Playback")
+                        .addClass(lookupUserColorClass(note))
+                        .show();
+                }  else if (note.styleNum == STYLENUM_BEND){
+                    tdNote
+                        .find("div.tinyNote")
+                        .addClass("tinyNotePlayedBend")
+                        .addClass("Playback")
+                        .addClass(note.bendValue)
+                        .addClass(lookupUserColorClass(note))
+                        .show();
+                }
+            });
         }
+        
     }
 }
 
-function highlightOneNote(noteName){
+export function highlightOneNote(noteName){
 	var selector = "td.note"+noteName;
       $(selector).addClass("noteHighlight");
 	  //console.log("Highlighting:"+noteName+" :: "+selector);
@@ -715,7 +715,7 @@ export function clearAll() {
     colorWhiteBlackKeys();
 }
 
-function clearHighlights(){
+export function clearHighlights(){
     $("td.note").removeClass("noteHighlight");
     $("td.note").removeClass("noteHighlightSingle");
 }
@@ -723,7 +723,7 @@ function clearHighlights(){
 
 //==================FILLING=====================================================
 
-function colorWhiteBlackKeys() {
+export function colorWhiteBlackKeys() {
     $('.noteDb:not(.nut,.nutR)').addClass("noteBlackKey");
     $('.noteEb:not(.nut,.nutR)').addClass("noteBlackKey");
     $('.noteGb:not(.nut,.nutR)').addClass("noteBlackKey");
@@ -738,7 +738,7 @@ function colorWhiteBlackKeys() {
     $('.noteC:not(.nut,.nutR)').addClass("noteWhiteKey");
 }
 
-function fillChord() {
+export function fillChord() {
     var chordFnNotes = $('#dropDownChords option:selected').val();
     var chordFnNotesArr = chordFnNotes.split(',');
 
@@ -796,7 +796,7 @@ function fillChord() {
                rootColor, chordsColor, scaleColor);
 }
 
-function fillChord2(root, chord, scale, rootName, chordNoteNames, scaleNoteNames, rootColor, chordsColor, scaleColor) {
+export function fillChord2(root, chord, scale, rootName, chordNoteNames, scaleNoteNames, rootColor, chordsColor, scaleColor) {
     //the arguments <chordNoteNames> and <scaleNoteNames> are arrays of ".noteBb" etc.
 
 	/** EACH OF THESE IS A COLLECTION OF TD > DIV.NoteDisplay   **/
@@ -831,7 +831,7 @@ function fillChord2(root, chord, scale, rootName, chordNoteNames, scaleNoteNames
     }
 }
 
-function doFill(theClass, NoteNames, Color){
+export function doFill(theClass, NoteNames, Color){
     if (Color == "noteKeep"){
         return;
     }
