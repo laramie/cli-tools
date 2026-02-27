@@ -6,6 +6,9 @@ import {
 	getSong,
 	getCurrentSection
 } from './infinite-neck.js';
+import {
+	Note
+} from 'note.js';
 import {gUserColorDict} from './userColors.js';
 
 
@@ -665,18 +668,18 @@ import {gUserColorDict} from './userColors.js';
 		var result = {};
 		var theRootID;
 		switch (note.styleNum){
-			case STYLENUM_BEND:
-			case STYLENUM_TINY:
+			case Note.STYLENUM_BEND:
+			case Note.STYLENUM_TINY:
 				theRootID = getCurrentSection().rootIDLead;
 				if (!theRootID || theRootID == "-1"){
 					theRootID = getCurrentSection().rootID;
 				}
 				break;
-			case STYLENUM_NAMED:
-			case STYLENUM_SINGLE:
-			case STYLENUM_MIDIPITCHES:
-			case STYLENUM_MIDIPITCHESSINGLE:
-			case STYLENUM_FINGERING:
+			case Note.STYLENUM_NAMED:
+			case Note.STYLENUM_SINGLE:
+			case Note.STYLENUM_MIDIPITCHES:
+			case Note.STYLENUM_MIDIPITCHESSINGLE:
+			case Note.STYLENUM_FINGERING:
 				theRootID = getCurrentSection().rootID;
 				break;
 			default:

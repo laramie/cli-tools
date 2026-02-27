@@ -1,5 +1,3 @@
-//=========================From GIT ========================================================
-
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
 
@@ -19,7 +17,10 @@ import {
     resetNoteNames,
     showBeats
 } from './infinite-neck.js';
-
+import {
+    newNote,
+    Note
+} from './note.js';
 import {
     TableBuilder
 } from './TableBuilder.js';
@@ -170,7 +171,7 @@ export function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum,
 //=================================CLICK HANDLING===============================
 
 export function colorNote(cell) {
-    var styleNum = STYLENUM_NAMED;
+    var styleNum = Note.STYLENUM_NAMED;
     var doHighlight = false;
     var doHighlightSingle = false;
     var doPlayedNotes = false;
@@ -185,34 +186,34 @@ export function colorNote(cell) {
     }
     switch (theHighlight){
         case "Named":
-            styleNum = STYLENUM_NAMED;
+            styleNum = Note.STYLENUM_NAMED;
             break;
         case "Tiny":
             doPlayedNotes = true;
-            styleNum = STYLENUM_TINY;
+            styleNum = Note.STYLENUM_TINY;
             break;
         case "Single":
             doPlayedNotes = true;
-            styleNum = STYLENUM_SINGLE;
+            styleNum = Note.STYLENUM_SINGLE;
             break;
         case "Fingering":
             doPlayedNotes = true;
-            styleNum = STYLENUM_FINGERING;
+            styleNum = Note.STYLENUM_FINGERING;
             break;
         case "MidiPitches":
             doHighlight = true;
-            styleNum = STYLENUM_MIDIPITCHES;
+            styleNum = Note.STYLENUM_MIDIPITCHES;
             break;
         case "MidiPitchesSingle":
             doHighlightSingle = true;
-            styleNum = STYLENUM_MIDIPITCHESSINGLE;
+            styleNum = Note.STYLENUM_MIDIPITCHESSINGLE;
             break;
         case "Bend":
             doPlayedNotes = true;//MOJO colorNote
-            styleNum = STYLENUM_BEND;
+            styleNum = Note.STYLENUM_BEND;
             break;
         default:
-            styleNum = STYLENUM_NAMED;
+            styleNum = Note.STYLENUM_NAMED;
     }
 
     var theColorClass = $("input:radio[name=rbColor]:checked").val();
@@ -263,12 +264,12 @@ export function colorNote(cell) {
             if (!doKeep) {
                 if (isRecording()){
                     if (theColorClass != "noteClear"){
-                        if (styleNum == STYLENUM_FINGERING){
+                        if (styleNum == Note.STYLENUM_FINGERING){
                             handleRecordedNote("Fingering");
-                        } else if (styleNum == STYLENUM_SINGLE){
+                        } else if (styleNum == Note.STYLENUM_SINGLE){
                             handleRecordedNote("singleNote");
-                        } else if (styleNum == STYLENUM_TINY
-                               ||  styleNum == STYLENUM_BEND){
+                        } else if (styleNum == Note.STYLENUM_TINY
+                               ||  styleNum == Note.STYLENUM_BEND){
                             handleRecordedNote("tinyNote");
                         } else {
                             colorSingleNotes(cell, theColorClass, styleNum, false);//no recording for namedNote.
@@ -332,17 +333,14 @@ export function colorNote(cell) {
         */
 
 
-		if (theColorClass == "noteClear"){  //color "noteClear" is hardcoded to mean actually clear/delete the note.
+		if (theColoClass == "noteClear"){  //color "noteClear" is hardcoded to mean actually clear/delete the note.
 			getCurrentSection().namedNotes[noteName] = {};
             clearNamedNoteDivs(namedNoteDiv);
             noteNameElements.find(".NoteDisplay").removeClass().addClass("NoteDisplay");;
 		} else {
 
-            var note = newNote();
-            note.noteName = noteName;
-            //note.noteNameClass = ".note"+noteName;
+            var note = newNote(noteName, styleNum);
             note.colorClass = theColorClass;
-            note.styleNum = styleNum;
 
             var automaticColorClass = lookupUserColorClass(note);
             var noteAlreadyColoredWithCurrent  = namedNoteDiv.hasClass(automaticColorClass);
@@ -413,7 +411,7 @@ export function clearNamedNoteDivs(namedNoteDivs){
 
 export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableArray) {
     var bendValue = $('#selBend option:selected').val();
-    if (styleNum == STYLENUM_BEND){
+    if (styleNum == Note.STYLENUM_BEND){
         var isNut = cell.hasClass("nut") || cell.hasClass("nutR");
         if (isNut){
             return;
@@ -439,18 +437,16 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
     var c = jCell.attr("cellcol");
     var noteName = jCell.attr("noteName"); //could also get this from caller colorNote().
 
-    var notePlayed = newNote();
+    var notePlayed = newNote(noteName, styleNum);
     notePlayed.midinum = midinum;
     notePlayed.row = r;
     notePlayed.col = c;
     notePlayed.colorClass = theColorClass;
-    notePlayed.styleNum = styleNum;
-    notePlayed.noteName = noteName;
 
     var sn = jCell.attr("stylenum");
     var sns = sn ? sn : "";
     jCell.attr("stylenum", sns +" + "+styleNum);
-    if (styleNum == STYLENUM_BEND){
+    if (styleNum == Note.STYLENUM_BEND){
         notePlayed.bendValue = bendValue;
     }
     var textdiv;
@@ -460,18 +456,18 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
     var tinyNoteAlreadyPlayed = false;
     var bendAlreadyPlayed = false;
     var fingeringAlreadyPlayed = false;
-    if (styleNum == STYLENUM_TINY){
+    if (styleNum == Note.STYLENUM_TINY){
         textdiv =    jCell.find(".tinyNote");
         tinyNoteAlreadyPlayed = textdiv.hasClass(lookupUserColorClass(notePlayed));
         textdiv.removeClass().addClass("tinyNote");
         theMidiNotePlayedClass = "tinyNotePlayed";
-    } else if (styleNum == STYLENUM_SINGLE){
+    } else if (styleNum == Note.STYLENUM_SINGLE){
         textdiv =    jCell.find(".singleNote");
         singleNoteAlreadyPlayed = textdiv.hasClass(lookupUserColorClass(notePlayed));
         textdiv.removeClass().addClass("singleNote");
         textdiv.css("opacity",  getSong().singleNoteOpacity);
         theMidiNotePlayedClass = "singleNotePlayed";
-    } else if (styleNum == STYLENUM_FINGERING){
+    } else if (styleNum == Note.STYLENUM_FINGERING){
 		textdiv =    jCell.find(".Fingering");
 		fingeringAlreadyPlayed = textdiv.hasClass(lookupUserColorClass(notePlayed));
         textdiv.removeClass().addClass("Fingering");
@@ -482,7 +478,7 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
 		notePlayed.finger = finger;
 		notePlayed.colorClass = theColorClass;
 		theMidiNotePlayedClass = "FingeringPlayed";
-    } else if (styleNum == STYLENUM_BEND){
+    } else if (styleNum == Note.STYLENUM_BEND){
         textdiv =    jCell.find(".tinyNote");
         bendAlreadyPlayed = textdiv.hasClass(lookupUserColorClass(notePlayed));
         textdiv.removeClass().addClass("tinyNote");
@@ -563,20 +559,20 @@ export function replay(){
                     console.log("======================== undefined styleNum =============="+JSON.stringify(script));
                     //remove this if you don't see it in console. I've been on this file format for a while now.
                 }
-                if (script.styleNum == STYLENUM_TINY && !hideTinyNotes){
+                if (script.styleNum == Note.STYLENUM_TINY && !hideTinyNotes){
                     textdiv = $(this).find(".tinyNote");
                     textdiv.addClass("tinyNotePlayed");
                     textdiv.css("opacity",  getSong().tinyNoteOpacity);
-                } else if (script.styleNum == STYLENUM_SINGLE && !hideSingleNotes){
+                } else if (script.styleNum == Note.STYLENUM_SINGLE && !hideSingleNotes){
                     textdiv = $(this).find(".singleNote");
                     textdiv.addClass("singleNotePlayed");
                     textdiv.css("opacity",  getSong().singleNoteOpacity);
-                } else if (script.styleNum == STYLENUM_BEND && !hideTinyNotes){
+                } else if (script.styleNum == Note.STYLENUM_BEND && !hideTinyNotes){
                     textdiv = $(this).find(".tinyNote");
                     textdiv.addClass("tinyNotePlayedBend");
                     textdiv.addClass(script.bendValue);
                     textdiv.css("opacity",  getSong().tinyNoteOpacity);//tiny and bends go together on visibility and opacity
-                } else if (script.styleNum == STYLENUM_FINGERING && !hideFingering){
+                } else if (script.styleNum == Note.STYLENUM_FINGERING && !hideFingering){
                     textdiv = $(this).find(".Fingering");
                     if (script.finger){
                         textdiv.html(script.finger);
@@ -636,13 +632,13 @@ export function showHighlightsForBeat(nBeat){
         if (arrForBeat) {
             arrForBeat.forEach(note => {
                 var tdNote = $("td.note[midinum='"+note.midinum+"'][cellrow='"+note.row+"']");
-                if (note.styleNum == STYLENUM_MIDIPITCHES){
+                if (note.styleNum == Note.STYLENUM_MIDIPITCHES){
                     $("td.note[midinum='"+note.midinum+"']")
                         .addClass("noteHighlight");
-                } else if (note.styleNum == STYLENUM_MIDIPITCHESSINGLE){
+                } else if (note.styleNum == Note.STYLENUM_MIDIPITCHESSINGLE){
                     tdNote
                         .addClass("noteHighlightSingle");
-                } else if (note.styleNum == STYLENUM_FINGERING){
+                } else if (note.styleNum == Note.STYLENUM_FINGERING){
                     tdNote
                         .find("div.Fingering")
                         .addClass("FingeringPlayed")
@@ -650,21 +646,21 @@ export function showHighlightsForBeat(nBeat){
                         .addClass(lookupUserColorClass(note))
                         .html(note.finger)  //finger (1234T) shown in cell here.
                         .show();
-                }  else if (note.styleNum == STYLENUM_SINGLE){
+                }  else if (note.styleNum == Note.STYLENUM_SINGLE){
                     tdNote
                         .find("div.singleNote")
                         .addClass("singleNotePlayed")
                         .addClass("Playback")
                         .addClass(lookupUserColorClass(note))
                         .show();
-                }  else if (note.styleNum == STYLENUM_TINY){
+                }  else if (note.styleNum == Note.STYLENUM_TINY){
                     tdNote
                         .find("div.tinyNote")
                         .addClass("tinyNotePlayed")
                         .addClass("Playback")
                         .addClass(lookupUserColorClass(note))
                         .show();
-                }  else if (note.styleNum == STYLENUM_BEND){
+                }  else if (note.styleNum == Note.STYLENUM_BEND){
                     tdNote
                         .find("div.tinyNote")
                         .addClass("tinyNotePlayedBend")

@@ -7,7 +7,9 @@ import {
 import {
 	gColorPickerColors
 } from './colorPickerColors.js';
-import { txtCmdLine_keypress } from './command-line.js';
+import { 
+	txtCmdLine_keypress 
+} from './command-line.js';
 import './display-options.js';
 import {
 	draggable
@@ -25,7 +27,12 @@ import {
 } from './key-handlers.js';
 import './looper.js';
 import './menu.js';
-import { NoteTableFacade } from './NoteTableFacade.js';
+import {
+	Note
+} from 'note.js';
+import { 
+	NoteTableFacade 
+} from './NoteTableFacade.js';
 import {
 	makeSong
 } from './song.js';
@@ -79,13 +86,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	const NATURAL = "&nbsp;";
 	const TUNINGS_PFX = "tunings-";
 
-	const STYLENUM_NAMED = 0;
-	const STYLENUM_TINY = 1;
-	const STYLENUM_SINGLE = 2;
-	const STYLENUM_MIDIPITCHES = 3;
-	const STYLENUM_MIDIPITCHESSINGLE = 4;
-	const STYLENUM_BEND = 5;
-	const STYLENUM_FINGERING = 6;
+	
 
 	//was: const NUM_FRETS_MAX = 108;
 	export const NUM_FRETS_MAX = 108;
@@ -101,19 +102,19 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	function styleNumToCaption(styleNum){
 		switch(styleNum){
-			case STYLENUM_NAMED:
+			case Note.STYLENUM_NAMED:
 				return "Named";
-			case STYLENUM_TINY:
+			case Note.STYLENUM_TINY:
 				return "Tiny";
-			case STYLENUM_SINGLE:
+			case Note.STYLENUM_SINGLE:
 				return "Single";
-			case STYLENUM_MIDIPITCHES:
+			case Note.STYLENUM_MIDIPITCHES:
 				return "Pitch";
-			case STYLENUM_MIDIPITCHESSINGLE:
+			case Note.STYLENUM_MIDIPITCHESSINGLE:
 				return "Multi";
-			case STYLENUM_BEND:
+			case Note.STYLENUM_BEND:
 				return "Bend";
-			case STYLENUM_FINGERING:
+			case Note.STYLENUM_FINGERING:
 				return "Fingering";
 		}
 		return "Unknown"+styleNum;

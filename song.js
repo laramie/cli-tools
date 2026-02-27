@@ -5,11 +5,15 @@ import {
     showBeats
 } from './infinite-neck.js';
 import {
+    cloneNote
+} from './note.js';
+import {
 	allTunings
 } from './tunings.js';
 import {
 	toInt
 } from './utils.js';
+
 
 
 /**
@@ -904,11 +908,8 @@ export function makeSong(){
             var transposedNoteName = constNoteNamesArr[index];
             var otherNote = namedNotes[noteName];
             if (otherNote.colorClass){
-                var clonedNote = newNote();
-                clonedNote.cloneFrom(otherNote);
+                var clonedNote = cloneNote(otherNote);
                 clonedNote.noteName = transposedNoteName;
-                //clonedNote.noteNameClass = ".note"+transposedNoteName;
-                //delete clonedNote.noteNameClass;
                 namedNotesClone[transposedNoteName] = clonedNote;
             }
         });

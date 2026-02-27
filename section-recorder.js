@@ -6,6 +6,9 @@ import {
 	getSong,
 	getCurrentSection
 } from './infinite-neck.js';
+import {
+    newNote
+} from './note.js';
 
 
 
@@ -21,11 +24,9 @@ import {
 	}
 
     function recordHighlight(doEraseHighlight, styleNum, sBeatNum, midinum, cellrow, noteName) {
-        var recNote = newNote();
+        var recNote = newNote(noteName, styleNum);
         recNote.midinum = midinum;
         recNote.row = cellrow;
-        recNote.styleNum = styleNum;
-		recNote.noteName = noteName; //automaticColorScheme
 
         var recordedNotes = getRecordedNotesForSection();
         var notesInBeatArr = recordedNotes[sBeatNum];
@@ -40,11 +41,9 @@ import {
     }
 
     function recordHighlightSingle(doEraseHighlightSingle, styleNum, sBeatNum, midinum, cellrow, noteName){
-        var recNote = newNote();
+        var recNote = newNote(noteName, styleNum);
         recNote.midinum = midinum;
         recNote.row = cellrow;
-        recNote.styleNum = styleNum;
-		recNote.noteName = noteName; //automaticColorScheme
 
         var recordedNotes = getRecordedNotesForSection();
         var notesInBeatArr = recordedNotes[sBeatNum];
@@ -52,7 +51,7 @@ import {
             recordedNotes[sBeatNum] = [];
         }
         function callbackRemoveMIDIPITCHES(element, index, array){
-            if (element.styleNum == STYLENUM_MIDIPITCHES){
+            if (element.styleNum == Note.STYLENUM_MIDIPITCHES){
                 return false;
             }
             return true;
