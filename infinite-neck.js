@@ -25,13 +25,7 @@ import {
 } from './key-handlers.js';
 import './looper.js';
 import './menu.js';
-import {
-	buildCellsFromSelector,
-	clearAll,
-	fullRepaint,
-	replay,
-	showHighlightsForBeat
-} from './NoteTable.js';
+import { NoteTableFacade } from './NoteTableFacade.js';
 import {
 	makeSong
 } from './song.js';
@@ -380,25 +374,25 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	function buildCells(sharps, options) {
 		if (sharps) {
-			NoteTable.buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
-			NoteTable.buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
-			NoteTable.buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
-			NoteTable.buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
-			NoteTable.buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
 		} else {
-			NoteTable.buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
-			NoteTable.buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
-			NoteTable.buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
-			NoteTable.buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
-			NoteTable.buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
+			NoteTableFacade.buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
 		}
-		NoteTable.buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
-		NoteTable.buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
-		NoteTable.buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
-		NoteTable.buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
-		NoteTable.buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
-		NoteTable.buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
-		NoteTable.buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
+		NoteTableFacade.buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
 	}
 
 	//list of menu divs, accessed through .entries(), and associated button names,
@@ -809,14 +803,14 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			installAllTuningsTables();
 			installTDNoteClick();
 			installBtnHamburgerClicks();
-			NoteTable.clearAll();
+			NoteTableFacade.clearAll();
 			resetNoteNames();
 			TableBuilder.showHideTunings();
 	}
 
 	function installTDNoteClick(){
 		$('td.note').off('click').click(function(event) {
-			NoteTable.colorNote($(this));
+			NoteTableFacade.colorNote($(this));
 			event.stopPropagation();
 		});
 	}

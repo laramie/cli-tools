@@ -1,5 +1,3 @@
-
-
 import {
 	colorNote,
 	buildCellsFromSelector,
@@ -9,7 +7,7 @@ import {
 	clearAll
 } from './notetable.js';
 
-class NoteTable {
+class NoteTableFacade {
 	static colorNote(cell) {
 		return colorNote(cell);
 	}
@@ -35,4 +33,4 @@ class NoteTable {
 	}
 }
 
-export { NoteTable };
+export { NoteTableFacade };
