@@ -1,3 +1,5 @@
+//=========================From GIT ========================================================
+
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
 
@@ -9,6 +11,7 @@
 *   Output is all for the instrument noteTables built and inserted into index.html.
 */
 
+
 import {
 	getSong,
 	getCurrentSection,
@@ -16,73 +19,77 @@ import {
     resetNoteNames,
     showBeats
 } from './infinite-neck.js';
-    if (!hideNamedNotes){
-        var clone = {};
-        Object.keys(currSection.namedNotes).forEach(noteName => {
-            //   every G cell has a class "noteG" --> however, as stored,
-            //   namedNote.noteNameClass is ".noteG", to make it a selector
-            //       ==> Construct jQuery with ".noteG"
-            var namedNote = currSection.namedNotes[noteName];
-            var theSelect;
-            if (namedNote.noteName){
-                theSelect = ".note"+namedNote.noteName;
-            } else {
-                theSelect = namedNote.noteNameClass; //old style before 20240324
-            }
-            var theClass = $(theSelect);
-            if (!theSelect){
-                console.log("undef:"+JSON.stringify(namedNote));
-            }
-            //console.log("named:"+theSelect+":"+theClass.length);
-            var theColorClass = lookupUserColorClass(namedNote);
-            styleNamedNote(theClass, theColorClass, noteName); // sets opacity.
-        });
-    } else {
-        $('.namedNote').hide();
+
+import {
+    TableBuilder
+} from './TableBuilder.js';
+import {
+	toInt
+} from './utils.js';
+
+function isRecording(){
+    var btn = $("#btnRecord");
+    var recording = btn.attr("recording");
+    return ((recording != undefined) && recording == "true");
+}
+
+
+function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
+    var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
+    var noteFnBase = getSong().noteNamesFuncArr[relNoteNum];
+    var noteFn = noteFnBase;
+    var displayPitch = relNoteNum + 1; //1-based: 1==first note of scale.
+    var enharmonicName = "<span class='enharmonicName'>"+noteNameBase + "<small>" + sharpFlat + "</small></span>"
+    var enharmonicNameRaw = noteNameBase + sharpFlat;
+
+    var result = "";
     var cell = "&nbsp;";
     var subleft = "&nbsp;";
     var subright = "&nbsp;";
 
-        Object.keys(tablearr).forEach(scriptIndex => {
-            var script = tablearr[scriptIndex];
-            var jtdselector = "#"+tablename +" td[cellrow="+script.row+"][midiNum="+script.midinum+"]";
-            var jtd = $(jtdselector);
-            console.log("select:"+jtdselector+":"+jtd.length);
-            jtd.each(function(i, obj){
-                var textdiv;
-                if (script.styleNum == undefined){
-                    script.styleNum = 1;//legacy files not saved with styleNum attr.
-                    console.log("======================== undefined styleNum =============="+JSON.stringify(script));
-                    //remove this if you don't see it in console. I've been on this file format for a while now.
-                }
-                if (script.styleNum == STYLENUM_TINY && !hideTinyNotes){
-                    textdiv = $(this).find(".tinyNote");
-                    textdiv.addClass("tinyNotePlayed");
-                    textdiv.css("opacity",  getSong().tinyNoteOpacity);
-                } else if (script.styleNum == STYLENUM_SINGLE && !hideSingleNotes){
-                    textdiv = $(this).find(".singleNote");
-                    textdiv.addClass("singleNotePlayed");
-                    textdiv.css("opacity",  getSong().singleNoteOpacity);
-                } else if (script.styleNum == STYLENUM_BEND && !hideTinyNotes){
-                    textdiv = $(this).find(".tinyNote");
-                    textdiv.addClass("tinyNotePlayedBend");	//MOJO  replay
-                    textdiv.addClass(script.bendValue);
-                    textdiv.css("opacity",  getSong().tinyNoteOpacity);//tiny and bends go together on visibility and opacity
-                } else if (script.styleNum == STYLENUM_FINGERING && !hideFingering){
-                    textdiv = $(this).find(".Fingering");
-                    if (script.finger){
-                        textdiv.html(script.finger);
-                    }
-                    textdiv.addClass("FingeringPlayed");
-                    textdiv.show();
-                }
-                if (textdiv && script.colorClass) {
-                    textdiv.addClass(lookupUserColorClass(script));
-                }
-            });
-        });
+    if (options.showCellNotes) {
+        if (options.cellIsFunction) {
+            cell = noteFn;
+        } else {
+            cell = enharmonicName;
+        }
+    }
+    if (options.showSubscriptFunctions) {
+        if (options.cellIsFunction) {
+            subright = enharmonicName; //already showed noteFn, so swap to enharmonicName
+        } else {
+            subright = noteFn;
+        }
+    }
+	var noteFunctionClass = "tinyscriptR";
+	if (options.useCenterForRightFunction) {
+			noteFunctionClass = "CenterCell";
+	}
+	var midinum = "";
+	if (options.showMidiNum){
+		if (theMidinum) {
+		  midinum = theMidinum;
+		  if(!midinum){
+		      midinum="xx";
+		   }
+		}
+	}
+
+	var noteFnForHighlight = noteFn;
+	if (options.rootIDLead > -1){ //-1 is select option value for "follow rootID".
+		var relNoteNumLead = (12 + noteNum - options.rootIDLead) % 12; //0-based: 0==first note of scale
+	 	noteFnForHighlight = getSong().noteNamesFuncArr[relNoteNumLead];
+	}
+
+	result = "<div class='NoteDisplay'>"
+            +buildFloatingNotes(cell, subright, subleft, noteFnForHighlight, midinum, noteFunctionClass)
+            +buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFunctionClass)
+			+"</div>";
+
     return result;
 }
+
+//=================================================================================
 
 function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFunctionClass){
     return "<div class='namedNote'>"

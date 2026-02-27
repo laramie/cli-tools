@@ -148,9 +148,9 @@ export function makeGraveyard(flatObj){
             var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:getSong().graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
             var row2 = "<tr><td><span onclick='$(\"#grave"+record.timestamp+"\").toggle();'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
             resultBody.unshift(row2);
-        });
             resultBody.unshift(row);
-        }
+        });
+           
         result.push("<table class='tblGraveyard'>");
         result.push("<caption>The Graveyard - deleted Sections, Stylesheets etc.  Click <b>raise</b> to revive one.&nbsp;&nbsp;&nbsp;"+closeBtn+" </caption>");
         result.push("<tr><th>id</th><th>type</th><th>timestamp</th><th>date</th><th>time</th><th>context</th><th>lastRevived</th><th>ACTION</th></tr>");

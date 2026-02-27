@@ -62,7 +62,7 @@ import {gUserColorDict} from './userColors.js';
 					defClone.colorClass = res.colorClass;
 					colorDict[noteKey] = defClone;
 				}
-			}
+			});
 		}
 
 		if (doPickerChoices){
