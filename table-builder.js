@@ -10,6 +10,28 @@ import {
 	allTunings
 } from './tunings.js';
 
+
+/* TODO: refactor imports of 
+	reloadAllTuningsDisplay,
+  and 
+  	reinstallAllTuningsTables
+  into 
+    event-bus.js calls to decouple this file from infinite-neck.js
+
+	From CoPilot: 
+					For functions like reloadAllTuningsDisplay and reinstallAllTuningsTables, which are imported from infinite-neck.js and affect global UI or app state, it's best to decouple them from direct imports and instead trigger them via your new event-bus.js interface.
+
+				This means:
+
+				TableBuilder should not directly import or call infinite-neck.js functions.
+				Instead, TableBuilder (or any module) can emit events (e.g., "ReloadTunings", "ReinstallTuningsTables") on the EventBus.
+				infinite-neck.js (or other listeners) will subscribe to these events and handle the UI updates or state changes.
+				This approach keeps TableBuilder modular and stateless, and centralizes app-wide actions through EventBus, improving maintainability and testability.
+
+				GPT-4.1 • 0x
+*/
+
+
 // From one revision back, 
 //        then added back imports, 
 //        and re-replaced resinstallAllTuningsTables 

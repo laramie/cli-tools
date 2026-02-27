@@ -18,8 +18,8 @@ import {
 } from './infinite-neck.js';
 
 import {
-    findTuningForName
-} from './table-builder.js';
+    TableBuilder
+} from './TableBuilder.js';
 import {
 	toInt
 } from './utils.js';
@@ -119,9 +119,6 @@ function buildFloatingNotes(cell, subright, subleft, noteFn, midinum, noteFuncti
      return result;
 }
 
-//global:
-var tinyNote = 1;
-
 export function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum, options){
     var cellsSet = $(selector);
 	cellsSet.each(function(i, obj){
@@ -131,7 +128,7 @@ export function buildCellsFromSelector(selector, noteLetter, sharpflat, noteNum,
 		var cellcol = td.attr("cellcol");
         var celltable = td.attr("celltable");
         if (celltable) {
-			var tuning = findTuningForName(celltable);
+            var tuning = TableBuilder.findTuningForName(celltable);
             cell.html(cellBuilder(noteLetter, sharpflat, noteNum, options, midinum));
 
 			var isNut = (cell.hasClass("nut") || cell.hasClass("nutR"));
