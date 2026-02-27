@@ -1,2 +1,43 @@
+Handy chart here: https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf
+
+Ctrl+Shift+\    : Jump to Matching-Brace
 Ctrl+Alt+D      : Add Selection to Next Find matching
 Ctrl+Shift+L    : Select all occurrences at once.
+Shift+Alt-0     : Toggle editor split between vertical and horizontal
+Ctrl+Shift+i    : Format document
+Alt+Z           : Toggle word-wrap
+Ctrl+[          : Outdent
+Ctrl+]          : Indent
+Ctrl+/          : Toggle line comments (works on blocks)
+Ctrl+Shift -    : Go Forward
+Ctrl+Alt   -    : Go Back
+
+Ctrl+TAB        : Cycle through editor tabs (see list at top)(also Ctrl+Shift+TAB)
+Alt+[0-9]       : Go to editor tab#
+Ctrl+[0-9]       : Go to editor tab group#
+Ctrl+K Ctrl+m   : Maximize/Unmaximize editor tab group (hide/show other group)
+
+Alt+up/down     : Move lines
+Ctrl+d          : Duplicate Line 
+
+Ctrl+Shift+E    : Show Explorer (files)
+Ctrl+w          : Close current file
+
+Ctrl+k p        Copy Path of current document 
+
+Ctrl+Alt+d      : add next selection to multi-cursor
+Ctrl+Shift+L    : add all selection to multi-cursor
+
+
+
+Ones I've Memorized:
+Ctrl+p          : open file by name with hints and history
+Ctrl+g          : goto line (then hit Enter)
+Ctrl-b          : Toggle left side-Bar  (file,search,Git...)
+Ctrl+Alt+b      : Toggle right side-Bar (chat)
+Ctrl +/-        : Zoom fonts
+Ctrl+f       : Search this file
+Ctrl+h          : Replace in this file
+Ctrl+Shift+f    : Search across files dialog (left)
+Ctrl+Shift+h    : Replace across files dialog (left)
+Ctrl+Shift+g    : Show Git (version control)
