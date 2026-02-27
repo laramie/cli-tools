@@ -455,27 +455,22 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	function exportFromTable(tblSource){
 		getSong().markVisibleTablesForFileSave();
-		for (tableDestKey in getSong().visibleNoteTables){
-			var tableDest = getSong().visibleNoteTables[tableDestKey];
+		Object.entries(getSong().visibleNoteTables).forEach(([tableDestKey, tableDest]) => {
 			if (tblSource != tableDest){
 				//console.log("src:"+tblSource+", dest:"+tableDest);
 				exportPlayedNotesToOtherTable(tblSource, tableDest);
 			}
-		}
+		});
 	}
 
 	function exportPlayedNotesToOtherTable(tblSource, tblDest){
 	  var noteArr = getSong().getTableArrInCurrentSection(tblSource);
-	  for (key in noteArr){
-	      var noteCell = noteArr[key];
-	      //console.log("exportPlayedNotesToOtherTable "+noteCell.midinum+","+noteCell.row);
-	      var jtd = showMidiNotesInTable(tblDest, noteCell.midinum, noteCell.row);
-	      //colorNote(jtd);
-
-
-
-	      colorSingleNotes(jtd, noteCell.colorClass, noteCell.styleNum, false);
-	  }
+	  noteArr.forEach(noteCell => {
+		  //console.log("exportPlayedNotesToOtherTable "+noteCell.midinum+","+noteCell.row);
+		  var jtd = showMidiNotesInTable(tblDest, noteCell.midinum, noteCell.row);
+		  //colorNote(jtd);
+		  colorSingleNotes(jtd, noteCell.colorClass, noteCell.styleNum, false);
+	  });
 	}
 
 
