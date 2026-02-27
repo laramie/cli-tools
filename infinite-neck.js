@@ -812,21 +812,21 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	export function reinstallAllTuningsTables(){
-	        var target = $("#tabledest");
-	        target.empty();
-	        installAllTuningsTables();
-	        installTDNoteClick();
+			var target = $("#tabledest");
+			target.empty();
+			installAllTuningsTables();
+			installTDNoteClick();
 			installBtnHamburgerClicks();
-	        clearAll();
-	        resetNoteNames();
+			NoteTable.clearAll();
+			resetNoteNames();
 			TableBuilder.showHideTunings();
 	}
 
 	function installTDNoteClick(){
-	    $('td.note').off('click').click(function() {
-	        colorNote($(this));
-	        event.stopPropagation();
-	    });
+		$('td.note').off('click').click(function(event) {
+			NoteTable.colorNote($(this));
+			event.stopPropagation();
+		});
 	}
 
 	function installRBColorChangeEvents(){
