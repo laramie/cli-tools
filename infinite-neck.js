@@ -47,12 +47,8 @@ import {
 	themeToControls
 } from './themeFunctions.js';
 import {
-	buildNoteTable,
-	bindFormTuningsEvents,
-	dumpTuningsToTable,
-	showDefaultTuning,
-	showHideTunings
-} from './table-builder.js';
+	TableBuilder
+	} from './TableBuilder.js';
 import {
 	allTunings
 } from './tunings.js';
@@ -306,8 +302,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	export function reloadAllTuningsDisplay(){
 	    var div = $('#divAllTunings');
 	    div.empty();
-	    div.append(dumpTuningsToTable(getSong().getTuningHashInMemoryModel()));
-	    bindFormTuningsEvents();
+		div.append(TableBuilder.dumpTuningsToTable(getSong().getTuningHashInMemoryModel()));
+		TableBuilder.bindFormTuningsEvents();
 	}
 
 	function resetSharpsControls() {
@@ -545,7 +541,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		
 		getSong().userColors = gUserColorDict.dict;
 		getSong().theme = $('#selThemes').val();
-		var theUSERTuning = findTuningForID("USER");
+		var theUSERTuning = TableBuilder.findTuningForID("USER");
 		if (theUSERTuning){
 			getSong().userInstrumentTuning = theUSERTuning;  //This is just persistence.  The allTunings.tunings with id="USER" is the live object that is consulted for building noteTables at runtime.
 		}
@@ -554,7 +550,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	function downloadBackupThenClearGraveyard(){
 		downloadPlayedNotes();
 		getSong().graveyard.clear();
-		showMessages(getSong().graveyard.buildNoteTable());
+		showMessages(getSong().graveyard.buildNoteTable()); // No change: buildNoteTable is not a TableBuilder method here
 	}
 
 	//Use this function to skip saving the ColorDics, because they get generated anyway.
@@ -654,18 +650,18 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	function openSong(str){
-		var numFoundBeforeFileLoad = showTuningsForTablesInFile();
+		var numFoundBeforeFileLoad = TableBuilder.showTuningsForTablesInFile();
 		if (numFoundBeforeFileLoad==0){
-		  hideAllTunings();
+			TableBuilder.hideAllTunings();
 		}
 		var jsonObj = JSON.parse(str);
 		Object.assign(gSong, jsonObj);
 		getSong().fixupCurrentIndexForLoadedSong();
 
 		if (getSong().userInstrumentTuning){
-			var theUSERTuning = findTuningForID("USER");
+			var theUSERTuning = TableBuilder.findTuningForID("USER");
 			if (theUSERTuning){
-				hideAllTunings();
+				TableBuilder.hideAllTunings();
 				Object.assign(theUSERTuning, getSong().userInstrumentTuning);  //the version in the song model is just used for persistence. allTunings.tunings array keeps the USER tuning that is used at runtime.
 			}
 		}
@@ -741,10 +737,10 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		buildColorDicts();
 
 
-		var tuningsShowing = showTuningsForTablesInFile();
+		var tuningsShowing = TableBuilder.showTuningsForTablesInFile();
 		if (tuningsShowing == 0){
 			console.log("showDefaultTuning because file load found none");
-			showDefaultTuning();
+			TableBuilder.showDefaultTuning();
 		}
 
 		replay();
@@ -791,7 +787,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	function installAllTuningsTables(){
 		var count = 0;
 		for (let i = 0; i < allTunings.tunings.length; i++) {
-			var div = buildNoteTable(allTunings.tunings[i]);
+			var div = TableBuilder.buildNoteTable(allTunings.tunings[i]);
 			if (div){
 		        $('#tabledest')
 				    .append(div)
@@ -823,7 +819,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			installBtnHamburgerClicks();
 	        clearAll();
 	        resetNoteNames();
-	        showHideTunings();
+			TableBuilder.showHideTunings();
 	}
 
 	function installTDNoteClick(){
@@ -1997,9 +1993,9 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		buildUserColors();
 		installRBColorChangeEvents();
 
-	    reloadAllTuningsDisplay();
-	    showDefaultTuning();//calls showHideTunings and shows S6 if none found.
-	    bindFormTuningsEvents();
+		reloadAllTuningsDisplay();
+		TableBuilder.showDefaultTuning();//calls showHideTunings and shows S6 if none found.
+		TableBuilder.bindFormTuningsEvents();
 		bindDataActionHandlers();
 
 
