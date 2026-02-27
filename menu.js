@@ -1,3 +1,5 @@
+import { setMenuAtRoot } from './menu';
+
 var gMenuFile =    {
   "name": "root",
   "parent": null,
@@ -910,7 +912,7 @@ var gMenuPointer = gMenuFile;
 var gCurrentMenuStack = [];
 
 
-function setMenuAtRoot(){
+export function setMenuAtRoot(){
     gMenuPointer = gMenuFile;
     gCurrentMenuStack = [gMenuPointer];
 }

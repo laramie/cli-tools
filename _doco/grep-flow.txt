@@ -1,0 +1,25 @@
+
+Use find to print out the filename of every file found,
+then grep that file using -f flag  : Find all identifiers listed in identifiers.txt
+
+find . -maxdepth 1 -type f -name "*.js" -exec sh -c 'echo "$1"; grep -f identifiers.txt "$1"' _ {} \; >> foo.txt
+
+
+ find . -maxdepth 1 -type f -name "*.js" -exec sh -c 'echo "$1"; ./grepit "$1"' _ {} \;
+
+ laramie@penguin:~/infinite-neck$ find . -maxdepth 1 -type f -name "*.js" -exec sh -c 'echo "$1"; ./grepit "$1"' _ {} \;c^C
+laramie@penguin:~/infinite-neck$ cat grepit
+echo "===========$1"
+grep -o   -f identifiers.txt "$*"  | sort | uniq
+
+In VS Code:
+  search for: ^(\s*)(function) <------there's one space at the end of this line
+  replace: $1export $2 
+
+First run grep:
+  grep "export function" colorFunctions.js > fns.txt
+
+then in vs code, To find the function identifier:
+  search: ^(\s*)(export function) (\w*)(.*)
+  replace: $3
+

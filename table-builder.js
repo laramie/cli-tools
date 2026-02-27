@@ -2,10 +2,13 @@
 
 import {
 	NUM_FRETS_MAX,
-	constNoteNamesArr,
-	reloadAllTuningsDisplay,
-	reinstallAllTuningsTables
+	getSong,
+	reinstallAllTuningsTables,
+	reloadAllTuningsDisplay
 } from './infinite-neck.js';
+import {
+	constNoteNamesArr
+} from './song.js';
 import {
 	allTunings
 } from './tunings.js';

@@ -4,17 +4,21 @@ import {
 } from './colorPickerColors.js';
 import {
 	getSong,
-	getCurrentSection
+	getCurrentSection,
+	doingAutomaticColor
 } from './infinite-neck.js';
 import {
 	Note
-} from 'note.js';
+} from './note.js';
+import {
+	constNoteNamesArr
+} from './song.js';
 import {gUserColorDict} from './userColors.js';
 
 
 //================== colorDicts ================================================
 
-	function clean_ColorSchemeName(colorSchemeName){
+	export function clean_ColorSchemeName(colorSchemeName){
 		var result = {};
 		colorSchemeName = colorSchemeName.replace(/([^a-z0-9]+)/gi, '-');
 		if (colorSchemeName.trim().length == 0){
@@ -33,7 +37,7 @@ import {gUserColorDict} from './userColors.js';
 		return result;
 	}
 
-	function recordUserColorsBoth(doSampleSection, doPickerChoices){
+	export function recordUserColorsBoth(doSampleSection, doPickerChoices){
 		var colorSchemeName = $('#txtColorSchemeName').val();
 		var chosenSystemSchemeName = $('#txtColorSchemeName').attr('systemSchemeName');
 		var cleanResult = clean_ColorSchemeName(colorSchemeName);
@@ -117,16 +121,16 @@ import {gUserColorDict} from './userColors.js';
 		buildUserColors();
 	}
 
-	function recordUserColors(){
+	export function recordUserColors(){
 		recordUserColorsBoth(false, true);
 	}
 
-	function recordUserColorsFromSection(){
+	export function recordUserColorsFromSection(){
 		recordUserColorsBoth(true, false);
 	}
 
 
-	 function saveUserColorChoices(){
+	 export function saveUserColorChoices(){
 		 var dict = {};
 	 	$("#UserColorsEditorDest td[id^='colorDestRole']").each(function(i, TD){
 		    var jTD = $(TD);
@@ -187,7 +191,7 @@ import {gUserColorDict} from './userColors.js';
 		registerColorSchemeCBEventSelectors(eventSelectors);
 	}
 
-	function colorDictDisplayRow(dictkey, schemeObj, doChuseLink, eventSelectors){
+	export function colorDictDisplayRow(dictkey, schemeObj, doChuseLink, eventSelectors){
 		const CB = '<input id="cbWhichColorDict'+dictkey+'"	type="checkbox" name="cbnWhichColorDict" value="'+dictkey+'" CHECKY_CHECKED>';
 		const SP = "&nbsp;";
 		var row = $('<tr>');
@@ -270,7 +274,7 @@ import {gUserColorDict} from './userColors.js';
 		return row;
 	}
 
-	function registerColorSchemeCBEventSelectorsFAILED(eventSelectors){
+	export function registerColorSchemeCBEventSelectorsFAILED(eventSelectors){
 		if (!eventSelectors){
 			console.warn("ERROR getting event selectors, which should look like:" 
 				+"0:#cbWhichColorDictAll-Clear,1:#cbWhichColorDictCycleOfColors,2:#cbWhichColorDictRoles,3:#cbWhichColorDictFingerings,4:#cbWhichColorDictDefault"
@@ -291,7 +295,7 @@ import {gUserColorDict} from './userColors.js';
 		});
 	}
 
-	function registerColorSchemeCBEventSelectors(eventSelectors){
+	export function registerColorSchemeCBEventSelectors(eventSelectors){
 		eventSelectors.forEach(function(selector){
 			$(selector).change(function(){
 				var cb = $(this);
@@ -305,7 +309,7 @@ import {gUserColorDict} from './userColors.js';
 		});
 	}
 
-	function moveStylesheetToEnd(lastDictkey){
+	export function moveStylesheetToEnd(lastDictkey){
 		function remainingChecked(scheme){
 			if (remainingCheckedVal == null){
 				return scheme.checked;
@@ -355,7 +359,7 @@ import {gUserColorDict} from './userColors.js';
 		getSong().colorDicts = temp;
 	}
 
-	function chuseStylesheet(dictkey){
+	export function chuseStylesheet(dictkey){
 		var colorScheme = getSong().colorDicts[dictkey];
 		if (colorScheme){
 			getSong().currentColorDict = dictkey;
@@ -379,14 +383,14 @@ import {gUserColorDict} from './userColors.js';
 		}
 	}
 
-	function refreshStylesheets(){
+	export function refreshStylesheets(){
 		applyStylesheetsTo_gUserColorDict();
 		buildUserColors();
 		buildColorDicts();
 		fullRepaint();
 	}
 
-	function flashLabel(lblSelector){
+	export function flashLabel(lblSelector){
 		$(lblSelector).addClass('basicBackground');
 		setTimeout(function() {
 	   		$(lblSelector).removeClass('basicBackground');
@@ -399,7 +403,7 @@ import {gUserColorDict} from './userColors.js';
 		}, 1000);
 	}
 
-	function deleteUserStylesheet(dictkey){
+	export function deleteUserStylesheet(dictkey){
 		var obj = getSong().colorDicts[dictkey];
 		context = {"dictkey": dictkey, "which": "UserStylesheet"};
         getSong().graveyard.bury(GraveType.STYLESHEET, obj, context);
@@ -411,7 +415,7 @@ import {gUserColorDict} from './userColors.js';
 		fullRepaint();
 	}
 
-	function updateCurrentColorDictStrip(dictLabel, colorScheme){
+	export function updateCurrentColorDictStrip(dictLabel, colorScheme){
 		var row = colorDictDisplayRow(dictLabel, colorScheme, false);
 		var newRow = $('<tr>');
 		newRow.html(row.html());
@@ -429,7 +433,7 @@ import {gUserColorDict} from './userColors.js';
 		}
 	}
 
-	function calculateActiveStylesheets(){
+	export function calculateActiveStylesheets(){
 		var result = [];
 		for (const [key, scheme] of Object.entries(getSong().colorDicts)) {
 			if (scheme.checked){
@@ -482,7 +486,7 @@ import {gUserColorDict} from './userColors.js';
     }
 
 //================== Pickers ===================================================
-	function buildColorPicker(){
+	export function buildColorPicker(){
 		var CELL = '<td onclick="colorPickerClicked(this)" colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
 		var result = [];
 		var groups = gColorPickerColors.groups;
@@ -501,7 +505,7 @@ import {gUserColorDict} from './userColors.js';
 		return result.join(''); //Return just TRs not TABLE.
 	}
 
-	function buildUserColorsEditor() {
+	export function buildUserColorsEditor() {
 		function buildOneColor(role, obj, checkedString){
 			  if (obj.readonly){   // e.g. noteTransparent and noteAutomatic are not user-editable and are marked thusly.
 				  return null;
@@ -537,18 +541,18 @@ import {gUserColorDict} from './userColors.js';
 	 const COLOR_PICKER_DEST = "colorClassDestSel";
 	 const HATCH_PICKER_DEST = "hatchClassDestSel";
 
-	 function showColorPicker(btnElement, selector){
+	 export function showColorPicker(btnElement, selector){
 		 $('#hatchPicker').hide();
 		 var colorPicker  = $('#colorPicker');
 		 showPicker(btnElement, selector, colorPicker, COLOR_PICKER_DEST);
 	 }
-	 function showHatchPicker(btnElement, selector){
+	 export function showHatchPicker(btnElement, selector){
 		 $('#colorPicker').hide();
 		 var hatchPicker = $('#hatchPicker');
 		 showPicker(btnElement, selector, hatchPicker, HATCH_PICKER_DEST);
 	 }
 
-	 function showPicker(t, selector, picker, pickerDestSel){
+	 export function showPicker(t, selector, picker, pickerDestSel){
 		 if (picker[0].lastCaller && picker[0].lastCaller == t){  //DOM added-attributes set on real DOM obj, not jQuery collection.
 			 picker.hide();
 			 picker[0].lastCaller = null;
@@ -596,13 +600,13 @@ import {gUserColorDict} from './userColors.js';
 		 lastPickedKey: 'hatchClassPicked',
 		 otherPickedKey: 'colorClassPicked'
 	 }
-	 function colorPickerClicked(t){
+	 export function colorPickerClicked(t){
 		 genericPickerClicked(t, optionsColorPicker);
 	 }
-	 function hatchPickerClicked(t){
+	 export function hatchPickerClicked(t){
 		 genericPickerClicked(t, optionsHatchPicker);
 	 }
-	 function genericPickerClicked(t, options){
+	 export function genericPickerClicked(t, options){
 		 var colorClass = $(t).attr("colorClass");
 		 var picker = $(options.pickerSelector);
 		 var selector = picker.attr(options.dest);
@@ -638,10 +642,10 @@ import {gUserColorDict} from './userColors.js';
      *       Source in "userColors.js" to get gUserColorDict.dict.
      *****/
 
-	function lookupUserColorClass(note){  //automaticColorScheme
+	export function lookupUserColorClass(note){  //automaticColorScheme
 		return lookupUserColor(note).colorClass;
 	}
-	function lookupUserColor(note){  //automaticColorScheme
+	export function lookupUserColor(note){  //automaticColorScheme
 		if (doingAutomaticColor()){
 			var res = lookupClassForNote(note);
 			if (res) {
@@ -654,7 +658,7 @@ import {gUserColorDict} from './userColors.js';
 		return {"colorClass":lookupUserColorClassByClass(note.colorClass), "functionNum":null};
 	}
 
-	function lookupUserColorClassByClass(theColorClass){
+	export function lookupUserColorClassByClass(theColorClass){
 		var userColor = gUserColorDict.dict[theColorClass];
 		if (!userColor){
 			//console.log("userColor["+theColorClass+"]==null -->"+theColorClass);
@@ -664,7 +668,7 @@ import {gUserColorDict} from './userColors.js';
 		return userColor.colorClass;
 	}
 
-	function lookupClassForNote(note){
+	export function lookupClassForNote(note){
 		var result = {};
 		var theRootID;
 		switch (note.styleNum){

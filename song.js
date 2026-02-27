@@ -1,12 +1,9 @@
 import { 
     NUM_FRETS_MAX, 
-    getCurrentSection,
+    clearAndReplaySection,
     resetNoteNames,
     showBeats
 } from './infinite-neck.js';
-import {
-    Note
-} from './note.js';
 import {
 	allTunings
 } from './tunings.js';
@@ -14,6 +11,30 @@ import {
 	toInt
 } from './utils.js';
 
+export const constNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
+
+const constNoteNamesArrFlats = "A,B<small>&#9837;</small>,B,C,D<small>&#9837;</small>,D,E<small>&#9837;</small>,E,F,G<small>&#9837;</small>,G,A<small>&#9837;</small>".split(',');
+
+const constNoteNamesArrSharps = "A,A<small>&#9839;</small>,B,C,C<small>&#9839;</small>,D,D<small>&#9839;</small>,E,F,F<small>&#9839;</small>,G,G<small>&#9839;</small>".split(',');
+
+//Don't export this one, it uses "this" and must be used through the method.
+function noteIDToNoteName(noteIndex){
+    var noteName;
+    if (this.getCurrentSection().sharps){
+        noteName = constNoteNamesArrSharps[noteIndex];
+    } else {
+        noteName = constNoteNamesArrFlats[noteIndex];
+    }
+    return noteName;
+}
+
+function noteIDToNoteNameRaw(noteIndex){
+    return constNoteNamesArr[noteIndex];
+}
+
+function noteNameToNoteID(noteName){
+		return constNoteNamesArr.indexOf(noteName);
+	}
 
 
 /**
@@ -135,7 +156,12 @@ export function makeSong(){
             getRootKey: song_getRootKey,
             getLeadKey: song_getRootKeyLead,
             getLeadNoteName: song_getLeadNoteName,
-            getRootNoteName: song_getRootNoteName
+            getRootNoteName: song_getRootNoteName,
+
+            // Expose noteIDToNoteName and noteIDToNoteNameRaw as methods
+            noteIDToNoteName: noteIDToNoteName,
+            noteIDToNoteNameRaw: noteIDToNoteNameRaw,
+            noteNameToNoteID: noteNameToNoteID
     }
     obj.make();
     return obj;

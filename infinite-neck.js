@@ -1,5 +1,9 @@
-// ES6 module imports for all dependencies
+/*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
+
 import {
+	chuseStylesheet,
+	recordUserColors,
+	recordUserColorsFromSection,
 	applyStylesheetsTo_gUserColorDict,
 	buildColorDicts,
 	buildUserColors
@@ -29,7 +33,7 @@ import './looper.js';
 import './menu.js';
 import {
 	Note
-} from 'note.js';
+} from './note.js'; 
 import { 
 	NoteTableFacade 
 } from './NoteTableFacade.js';
@@ -44,6 +48,7 @@ import {
 	getDefaultTheme,
 	getThemes,
 	getWidget_SelectThemes,
+	setOneCssVar,
 	theme,
 	themeToControls
 } from './themeFunctions.js';
@@ -76,90 +81,43 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		if (typeof appInit === 'function') appInit();
 	});
 }
-/*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-	// You can draw lines using SVG!
-	//  https://stackoverflow.com/questions/56722754/draw-a-line-from-one-element-to-another
-
+	
 	const SHARP = "&#9839;";
 	const FLAT = "&#9837;";
 	const NATURAL = "&nbsp;";
 	const TUNINGS_PFX = "tunings-";
 
-	
-
-	//was: const NUM_FRETS_MAX = 108;
 	export const NUM_FRETS_MAX = 108;
 
 	const gBEND_CLASSES = "semitone1 semitone2 semitone3 prebend1 prebend2 prebend3 updown1 updown2 updown3"
 						  +" semitone1LH semitone2LH semitone3LH prebend1LH prebend2LH prebend3LH updown1LH updown2LH updown3LH";
 
-	export const constNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
-
-	const constNoteNamesArrFlats = "A,B<small>&#9837;</small>,B,C,D<small>&#9837;</small>,D,E<small>&#9837;</small>,E,F,G<small>&#9837;</small>,G,A<small>&#9837;</small>".split(',');
-
-	const constNoteNamesArrSharps = "A,A<small>&#9839;</small>,B,C,C<small>&#9839;</small>,D,D<small>&#9839;</small>,E,F,F<small>&#9839;</small>,G,G<small>&#9839;</small>".split(',');
-
-	function styleNumToCaption(styleNum){
-		switch(styleNum){
-			case Note.STYLENUM_NAMED:
-				return "Named";
-			case Note.STYLENUM_TINY:
-				return "Tiny";
-			case Note.STYLENUM_SINGLE:
-				return "Single";
-			case Note.STYLENUM_MIDIPITCHES:
-				return "Pitch";
-			case Note.STYLENUM_MIDIPITCHESSINGLE:
-				return "Multi";
-			case Note.STYLENUM_BEND:
-				return "Bend";
-			case Note.STYLENUM_FINGERING:
-				return "Fingering";
-		}
-		return "Unknown"+styleNum;
-	}
-
-	function noteNameToNoteID(noteName){
-		return constNoteNamesArr.indexOf(noteName);
-	}
-
-	function noteIDToNoteName(noteIndex){
-		var noteName;
-		if (getSong().getCurrentSection().sharps){
-	        noteName = constNoteNamesArrSharps[noteIndex];
-	    } else {
-	        noteName = constNoteNamesArrFlats[noteIndex];
-	    }
-		return noteName;
-	}
-
-	function noteIDToNoteNameRaw(noteIndex){
-		return constNoteNamesArr[noteIndex];
-	}
-
 	//==========================================================================
 
 	var gSong = null;  //constructed in document ready.
+	export function getSong(){
+		return gSong;
+	}
 
 	export function getCurrentSection(){
 	    return getSong().getCurrentSection();
 	}
 
-	function getSectionsCurrentIndex(){
+	export function getSectionsCurrentIndex(){
 	    return getSong().getSectionsCurrentIndex();
 	}
 
-	function getSections(){
+	export function getSections(){
 	    return getSong().getSections();
 	}
-	export function getSong(){
-		return gSong;
-	}
-
 	//==========================================================================
 
-	function buildDropDownSectionOrderOptions(){
+	export function checkRB(id){
+		$(id).prop("checked", true);
+	}
+	
+	export function buildDropDownSectionOrderOptions(){
 		var len = getSong().getSections().length;
 		var curr = getSong().getSectionsCurrentIndex();
 		var result = "<option value='BEGIN'>BEGIN</option>";
@@ -175,7 +133,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		return result;
 	}
 
-	function showHideDisplayOptionsPresent(){
+	export function showHideDisplayOptionsPresent(){
 		var options = getCurrentSection().displayOptions;
 		if (options){
 			$('#btnDeleteDisplayOptions,#btnDeleteDisplayOptions2').prop("disabled",false);
@@ -184,7 +142,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 	}
 
-	function sectionChanged(){
+	export function sectionChanged(){
 		$('#dropDownSectionOrder').html(buildDropDownSectionOrderOptions());
 		$("#dropDownRoot").val(getCurrentSection().rootID);
 	    $("#dropDownRootLead").val(getCurrentSection().rootIDLead);
@@ -222,8 +180,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		var rootIndex = toInt(getSong().getCurrentSection().rootID, 0);
 	    var rootIndexLead = toInt(getSong().getCurrentSection().rootIDLead, 0);
-		var keyname = noteIDToNoteName(rootIndex);
-		var keynameLead = noteIDToNoteName(rootIndexLead);
+		var keyname = getSong().noteIDToNoteName(rootIndex);
+		var keynameLead = getSong().noteIDToNoteName(rootIndexLead);
 
 	    $(".lblRootID").html(keyname);
 
@@ -239,7 +197,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		showHideDisplayOptionsPresent();
 	}
 
-	function clearAndReplaySection(){
+	export function clearAndReplaySection(){
 		getSong().gotoFirstBeat();
 		NoteTableFacade.clearAll();
 		resetNoteNames(); //calls NoteTableFacade.replay()
@@ -256,7 +214,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		NoteTableFacade.showHighlightsForBeat(beat);
 	}
 
-	function getMillisForCurrentSection(){
+	export function getMillisForCurrentSection(){
 	    var beats = DEFAULT_BEATS_PER;
 	    var sBeats = getCurrentSection().beats;
 	    if (sBeats){
@@ -268,17 +226,17 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    return millisNextTimeout;
 	}
 
-	function showBPM(){
+	export function showBPM(){
 		$(".bpm").html(getSong().defaultBPM+"<small>bpm</small>");
 	}
 
-	function setBPM(newValue){
+	export function setBPM(newValue){
 		$("#txtBPM").val(newValue);
 		getSong().defaultBPM = ""+newValue;
 		showBPM();
 	}
 
-	function getBPM(){
+	export function getBPM(){
 	    var sBpm = $("#txtBPM").val();
 	    var bpm = parseInt(sBpm);
 	    if (Number.isNaN(bpm) || bpm == 0){
@@ -288,7 +246,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    return bpm;
 	}
 
-	function getMillisForBeatClock(){
+	export function getMillisForBeatClock(){
 	    var bpm = getBPM();
 	    var fBpm =  (1/bpm)*60*1000;
 	    return fBpm;
@@ -301,7 +259,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		TableBuilder.bindFormTuningsEvents();
 	}
 
-	function resetSharpsControls() {
+	export function resetSharpsControls() {
 	    //turn all to sharps
 	    $(".ddnAb").html("G<small>&#9839;&nbsp;</small>");
 	    $(".ddnBb").html("A<small>&#9839;&nbsp;</small>");
@@ -310,7 +268,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    $(".ddnGb").html("F<small>&#9839;&nbsp;</small>");
 	}
 
-	function resetFlatsControls() {
+	export function resetFlatsControls() {
 	    //turn all to flats
 	    $(".ddnAb").html("A<small>&#9837;</small>");
 	    $(".ddnBb").html("B<small>&#9837;</small>");
@@ -319,12 +277,12 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    $(".ddnGb").html("G<small>&#9837;</small>");
 	}
 
-	function resetSharps(options) {
+	export function resetSharps(options) {
 		buildCells(getSong().sharps, options);
 		resetSharpsControls();
 	}
 
-	function resetFlats(options) {
+	export function resetFlats(options) {
 		buildCells(getSong().sharps, options);
 		resetFlatsControls();
 	}
@@ -373,7 +331,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		NoteTableFacade.replay();
 	}
 
-	function buildCells(sharps, options) {
+	export function buildCells(sharps, options) {
 		if (sharps) {
 			NoteTableFacade.buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
 			NoteTableFacade.buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
@@ -409,7 +367,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		"#divDesktop": "#btnDesktop"
 	}
 
-	function hideAllMenuDivs(){
+	export function hideAllMenuDivs(){
 		for (const [key, value] of Object.entries(AllMenuDivs)){
 			$(key).hide();
 		}
@@ -417,7 +375,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    //$("#topControlsCaptions").show();
 	 }
 
-	 function showOneMenu(strMenuDiv){
+	 export function showOneMenu(strMenuDiv){
 		 var wasFull = leaveFullscreen();
 		 var jStrMenuDiv = $(strMenuDiv);
 		 if (wasFull){
@@ -436,7 +394,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		 scrollToTop();
 	 }
 
-	 function getHelpTopic(){
+	 export function getHelpTopic(){
 		 var anchor = "";
 		 for (const [key, value] of Object.entries(AllMenuDivs)){
 			 var jStrMenuDiv = $(key);
@@ -448,7 +406,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		 return  'help.html'+anchor;
 	 }
 
-	function exportFromTable(tblSource){
+	export function exportFromTable(tblSource){
 		getSong().markVisibleTablesForFileSave();
 		Object.entries(getSong().visibleNoteTables).forEach(([tableDestKey, tableDest]) => {
 			if (tblSource != tableDest){
@@ -458,7 +416,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		});
 	}
 
-	function exportPlayedNotesToOtherTable(tblSource, tblDest){
+	export function exportPlayedNotesToOtherTable(tblSource, tblDest){
 	  var noteArr = getSong().getTableArrInCurrentSection(tblSource);
 	  noteArr.forEach(noteCell => {
 		  //console.log("exportPlayedNotesToOtherTable "+noteCell.midinum+","+noteCell.row);
@@ -470,7 +428,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 
 
-  function turnOnKeep(){
+  export function turnOnKeep(){
       $("#idKeep").prop("checked", true);
   }
 
@@ -478,7 +436,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
      $(".lblNoteClickedCaption").hide();
   }
 
-  function setNoteClickedCaption(cell, theColorClass, styleNum){
+  export function setNoteClickedCaption(cell, theColorClass, styleNum){
       var caption = "";
       if (cell.attr('midinum')){
           $(".lblNoteClickedCaption").show();
@@ -491,20 +449,20 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	                 +(parseInt(cell.attr('cellrow'))+1)+','
 	                 +cell.attr('cellcol')+']&nbsp;<small>midi:</small>'
 	                 +cell.attr('midinum')
-					 +'&nbsp;<small>'+styleNumToCaption(styleNum)+':'+theColorClass+'</small>' ;
+					 +'&nbsp;<small>'+Note.styleNumToCaption(styleNum)+':'+theColorClass+'</small>' ;
 	    }
       $(".lblNoteClickedCaption").html(caption);
    }
 
-  	function getBeatNumber(){
+  	export function getBeatNumber(){
 		return $("#lblCurrentBeat").text();
 	}
 
-	function doingAutomaticColor(){
+	export function doingAutomaticColor(){
 		return $("#cbAutomaticColor").prop("checked");  //automaticColorScheme
 	}
 
-	function turnOffHiding(){
+	export function turnOffHiding(){
 	    var hideNamedNotes = $("#cbHideNamedNotes").prop("checked");
 	    var hideTinyNotes = $("#cbHideTinyNotes").prop("checked");
 	    var hideSingleNotes = $("#cbHideSingleNotes").prop("checked");
@@ -520,7 +478,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    }
   	}
 
-	function updateMemoryModelPreFileSave(){
+	export function updateMemoryModelPreFileSave(){
 	    getSong().markVisibleTablesForFileSave();
 	    getSong().removeUnusedTablesFromMemoryModel();
 	    getBPM();
@@ -537,7 +495,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 	}
 
-	function downloadBackupThenClearGraveyard(){
+	export function downloadBackupThenClearGraveyard(){
 		downloadPlayedNotes();
 		getSong().graveyard.clear();
 		showMessages(getSong().graveyard.buildNoteTable()); // No change: buildNoteTable is not a TableBuilder method here
@@ -547,7 +505,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	// Ultimately, only user-customized dicts should be saved, but right now it is doing 
 	// all the default run-time generated dicts, bloating the file.
 	// And other run-time props are removed.
-	function skipColorDictsReplacer(key, value){
+	export function skipColorDictsReplacer(key, value){
 		console.log("key: "+key);
 		if (   key === 'userColors' 
 			|| key === 'colorDicts' 
@@ -559,7 +517,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
     // file save / save file / saveFile event
-	function downloadPlayedNotes(){
+	export function downloadPlayedNotes(){
 	    updateMemoryModelPreFileSave();
 	    //var text = JSON.stringify(getSong(), null, 2); // Create element. (with 2 spaces indentation)
 	    var text = JSON.stringify(getSong(), skipColorDictsReplacer, 2); // Create element. (with 2 spaces indentation)
@@ -582,7 +540,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
     // file open / open file / openFile event
-	function setupOpenFileHAL(){
+	export function setupOpenFileHAL(){
 		var fileInput = document.getElementById('fileInput');
 		fileInput.addEventListener('change', function(e) {  //click works, but is too jumpy. change doesn't work when you apply same file.
 			var file = fileInput.files[0];
@@ -619,7 +577,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	// file open / open file / openFile event
-	function setupOpenFile(){
+	export function setupOpenFile(){
 	  	var fileInput = document.getElementById('fileInput');
 		fileInput.addEventListener('change', function(e) {  //click works, but is too jumpy. change doesn't work when you apply same file.
 		    var file = fileInput.files[0];
@@ -638,7 +596,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
         });
 	}
 
-	function openSong(str){
+	export function openSong(str){
 		var numFoundBeforeFileLoad = TableBuilder.showTuningsForTablesInFile();
 		if (numFoundBeforeFileLoad==0){
 			TableBuilder.hideAllTunings();
@@ -711,7 +669,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 
-	function updateAfterOpenSong(){
+	export function updateAfterOpenSong(){
 		hideGraveyard();
 		installDefaultColorDicts();
 
@@ -735,7 +693,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		sectionChanged();
 	}
 
-	function installDefaultColorDicts(){
+	export function installDefaultColorDicts(){
 		getSong().colorDicts["All-Clear"] = gAllClear;
 		getSong().colorDicts["CycleOfColors"] = gDefault_CycleOfColors;
 		getSong().colorDicts["Roles"] = gUserColorDictRolesDefault;
@@ -744,7 +702,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 
-	function loadSong(songName){
+	export function loadSong(songName){
 		$.get( "songs/"+songName, function( data ) {  //jQuery automatically calls something like JSON.parse and turns the result into a real javascript Object.
 			if (!getSong().isEmpty(getSong().getCurrentSection())){
 				var yes = confirm("Keep previous Song Sections? ( 'Cancel' deletes !! Otherwise, 'OK' adds new Song Sections at end of current Song Sections.)");
@@ -756,7 +714,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		});
 	}
 
-	function songLibrary(){
+	export function songLibrary(){
 		var divSongList = $('#divSongList');
 		if (divSongList.is(":visible") && divSongList.html().trim().length > 0){
 			divSongList.hide();
@@ -771,7 +729,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 	}
 
-	function installAllTuningsTables(){
+	export function installAllTuningsTables(){
 		var count = 0;
 		for (let i = 0; i < allTunings.tunings.length; i++) {
 			var div = TableBuilder.buildNoteTable(allTunings.tunings[i]);
@@ -809,14 +767,14 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			TableBuilder.showHideTunings();
 	}
 
-	function installTDNoteClick(){
+	export function installTDNoteClick(){
 		$('td.note').off('click').click(function(event) {
 			NoteTableFacade.colorNote($(this));
 			event.stopPropagation();
 		});
 	}
 
-	function installRBColorChangeEvents(){
+	export function installRBColorChangeEvents(){
 		$( 'input[name="rbColor"]:radio' ).change(function() {
 			if ("noteKeep" === $(this).val()){
 			} else if ("noteDropper" === $(this).val()){
@@ -833,7 +791,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 
-  function addBeat(){
+  export function addBeat(){
           clearHighlights();
           var jLblCurrentBeat = $("#lblCurrentBeat");
 	        var sBeats = $("#txtBeatsPer").val();
@@ -866,7 +824,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
   }
 
 	// see also: song.js :: cycleThruKeysAllSections()
-	function cycleThruKeys(amount){
+	export function cycleThruKeys(amount){
 		var curr = toInt(getCurrentSection().rootID, 0);
 		curr=(12+curr + amount) % 12;
 		getCurrentSection().rootID = curr;
@@ -876,14 +834,14 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		updateSectionsStatus();
 	}
 
-	function leaveFullscreen(){
+	export function leaveFullscreen(){
 		var wasVisible =  $('.container').is(':visible');
 		$('.container').show();
 		$("#tabledestTopPad").hide();
 		$("#divESCAPE").hide();
 		return !wasVisible;
 	}
-	function enterFullscreen(showESCButton){
+	export function enterFullscreen(showESCButton){
 		$('.container').hide();
 		$("#tabledestTopPad").show();
 		if (showESCButton){ // undefined ==> false
@@ -891,7 +849,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 	}
 	
-	function toggleFullscreen(){
+	export function toggleFullscreen(){
 		var wasVisible =  $('.container').is(':visible');  //container holds the menu buttons, so NOT fullscreen when visible.
 		$('.container').toggle();
 		if (wasVisible){
@@ -908,21 +866,21 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			$("#divESCAPE").hide();
 		}
 	}
-	function toggleTransport(){
+	export function toggleTransport(){
 		//var wasVisible =  $('.transport').is(':visible');
 		$('#transport').toggle();
 	}
-	function toggleCaption(){
+	export function toggleCaption(){
 		$('#topControlsCaptions').toggle();
 	}
-	function toggleInstrumentCaptionRow(){
+	export function toggleInstrumentCaptionRow(){
 		$('.captionRow').toggle();
 	}
 
 	
 	
 
-	function transpose(amount){
+	export function transpose(amount){
 		cycleThruKeys(amount);
 		var namedNoteName = getSong().moveNamedNotes(amount);
 
@@ -934,7 +892,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		highlightOneNote(namedNoteName);
 	}
 
-	function transposeSong(amount){
+	export function transposeSong(amount){
 		getSong().cycleThruKeysAllSections(amount);
 		var namedNoteName = getSong().moveNamedNotesAllSections(amount);
 		NoteTableFacade.fullRepaint();
@@ -946,13 +904,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		*/
 	}
 
-	function transposeSongKeys(amount){
+	export function transposeSongKeys(amount){
 		getSong().cycleThruKeysAllSections(amount);
 		NoteTableFacade.fullRepaint();
 		showBeats();
 	}
 
-		function printTablesStats(noteTables){
+		export function printTablesStats(noteTables){
 			let result = "";
 			const B = "<br />";
 			Object.entries(noteTables).forEach(([key, tableArr]) => {
@@ -961,7 +919,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			return result;
 		}
 
-		function printSections(){
+		export function printSections(){
 			const sections = getSections();
 			const B = "<br />";
 			let result = "<table border='1' cellspacing='0'><tr><th>ID</th><th>beats</th><th>KEY</th><th>&sharp;/&flat;</th><th>Caption</th><th>Details</th>";
@@ -973,7 +931,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				result += "<tr><td>"
 					+ "<a href=\"javascript:linkToSection('" + idx + "');\">" + (toInt(idx, 0) + 1) + "</a>" + SEP
 					+ section.beats + SEP
-					+ "<B style='font-size: 130%;'>" + noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
+					+ "<B style='font-size: 130%;'>" + getSong().noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
 					+ (section.sharps ? " &sharp; " : " &flat; ") + SEP
 					+ "<b style='font-size: 130%;'>" + section.caption + "</b>" + SEP
 					+ namedNotes
@@ -983,17 +941,17 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			return result + "</table>";
 		}
 
-		function linkToSection(idx){
+		export function linkToSection(idx){
 			getSong().gotoSection(idx);
 			hideCmdLine();
 		}
 
-		function rangeNamedNoteSlide(element_id, value) {  //called when someone drags the slider--fires javascript onChange from html.
+		export function rangeNamedNoteSlide(element_id, value) {  //called when someone drags the slider--fires javascript onChange from html.
 	        //console.log("rangeSlide:"+element_id+" value: "+value);
 			setNamedNoteOpacity_inner(element_id, value);
 	    }
 
-		function setNamedNoteOpacity_inner(element_id, newValue){
+		export function setNamedNoteOpacity_inner(element_id, newValue){
 			getSong().namedNoteOpacity = newValue;
 			//console.log("setNamedNoteOpacity_inner element_id:"+element_id+" value: "+newValue);
 			NoteTableFacade.clearAll();
@@ -1001,56 +959,56 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		    updateSectionsStatus();
 		}
 
-		function getNamedNoteOpacity(){
+		export function getNamedNoteOpacity(){
 			return $("#rangeNamedNoteOpacity").attr("value");
 		}
 
-		function setNamedNoteOpacity(newValue){
+		export function setNamedNoteOpacity(newValue){
 			$("#rangeNamedNoteOpacity").attr("value", (newValue));
 			setNamedNoteOpacity_inner(null, newValue);
 		}
 
 		//======== SingleNote opacity ==========
 
-		function getSingleNoteOpacity(){
+		export function getSingleNoteOpacity(){
 			return $("#rangeSingleNoteOpacity").attr("value");
 		}
 
-		function setSingleNoteOpacity(newValue){
+		export function setSingleNoteOpacity(newValue){
 			$("#rangeSingleNoteOpacity").attr("value", (newValue));
 			setSingleNoteOpacity_inner(null, newValue);
 		}
 
-		function setSingleNoteOpacity_inner(element_id, newValue){
+		export function setSingleNoteOpacity_inner(element_id, newValue){
 			getSong().singleNoteOpacity = newValue;
 			NoteTableFacade.clearAll();
 		    NoteTableFacade.replay();
 		    updateSectionsStatus();
 		}
 
-		function rangeSingleNoteOpacitySlide(element_id, value) {
+		export function rangeSingleNoteOpacitySlide(element_id, value) {
 			setSingleNoteOpacity_inner(element_id, value);
 	    }
 
 		//======== TinyNote opacity ==========
 
-		function getTinyNoteOpacity(){
+		export function getTinyNoteOpacity(){
 			return $("#rangeTinyNoteOpacity").attr("value");
 		}
 
-		function setTinyNoteOpacity(newValue){
+		export function setTinyNoteOpacity(newValue){
 			$("#rangeTinyNoteOpacity").attr("value", (newValue));
 			setTinyNoteOpacity_inner(null, newValue);
 		}
 
-		function setTinyNoteOpacity_inner(element_id, newValue){
+		export function setTinyNoteOpacity_inner(element_id, newValue){
 			getSong().tinyNoteOpacity = newValue;
 			NoteTableFacade.clearAll();
 			NoteTableFacade.replay();
 			updateSectionsStatus();
 		}
 
-		function rangeTinyNoteOpacitySlide(element_id, value) {
+		export function rangeTinyNoteOpacitySlide(element_id, value) {
 			setTinyNoteOpacity_inner(element_id, value);
 		}
 
@@ -1058,7 +1016,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 
 	//This is a Closure state machine
-	const cycleThruNutWidths = (() => {
+	export const cycleThruNutWidths = (() => {
 		let gNutSizeState = -1; 
 		const arr = ["0", "30px", "60px", "100px", "140px", "220px", "340px", "800px"];
 		return function(direction) {
@@ -1084,7 +1042,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	//=============== Misc functions under development  ===========================================
 
-	function updateFontLabel(){
+	export function updateFontLabel(){
 			$('#lblUIFontSize').html(""+getFontSize()).show();
 			$('#lblCellFontSize').html(""+getNoteFontSize()).show();
 	}
@@ -1094,7 +1052,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	//var gLastWhiteBackgroundColor = null;
 	//var gLastBlackBackgroundColor = null;
-	function showAllNoteNames(show){
+	export function showAllNoteNames(show){
 		if (show){
 			var LastBlackBackgroundColor = $('.noteBlackKey').css("background-color");
 			var LastWhiteBackgroundColor  = $('.noteWhiteKey').css("background-color");
@@ -1120,11 +1078,11 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 
-	function automateDisplay(){
+	export function automateDisplay(){
 
 	}
 
-	function displayOptionsToControls(options){
+	export function displayOptionsToControls(options){
 
 		if (getSong().presentationMode){
 			var sizesObj = options.NoteDisplaySizes;
@@ -1198,7 +1156,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		$("#selTinyNoteMaxHeight").val(options.tinyNoteMaxHeight);
 	}
 
-	function controlsToDisplayOptions(){
+	export function controlsToDisplayOptions(){
 		var options = {};
 		options.autoColor = $("#cbAutomaticColor").prop("checked");
 		options.showCellNotes = $("#cbShowCellNotes").prop("checked");
@@ -1244,7 +1202,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		return options;
 	}
 
-	function installBtnHamburgerClicks(){
+	export function installBtnHamburgerClicks(){
 		$(".showsubcaption").click(function() {
 			$(".subcaption").toggle();
 		});
@@ -1263,7 +1221,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		});
 	}
 
-	function transportResize(){
+	export function transportResize(){
 		//if at top, use this: var left = $('#transportLeftPoint').position().left;
 		var tHeight = $('#transport').outerHeight()
 		var tWidth = $('#transport').outerWidth()
@@ -1275,13 +1233,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		$('#transport').css({"left": left+"px", "top": top+"px"});
 	}
 
-	function toggleAutoColorCheckbox(){
+	export function toggleAutoColorCheckbox(){
 		var cbac = $("#cbAutomaticColor");
 		cbac.prop("checked", !cbac.prop("checked"));
 		$("#cbAutomaticColor").trigger("change");
 		resetNoteNames();
 	}
-	function turnOffAutoColorCheckbox(){
+	export function turnOffAutoColorCheckbox(){
 		var cbac = $("#cbAutomaticColor");
 		cbac.prop("checked", false);
 		$("#cbAutomaticColor").trigger("change");
@@ -1293,7 +1251,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	//=============== document.ready event Binding ==========================
 
-	function bindDesktopEvents(){
+	export function bindDesktopEvents(){
 
 		$("#btnPalette").click(function() {
 			showOneMenu("#palette");
@@ -1796,7 +1754,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		});
 	}
 
-	function bindThemeEvents(){
+	export function bindThemeEvents(){
 		//======= themes  =======
 		$('#btnTheme').click(function() {
 			var newTheme = controlsToTheme();
@@ -1824,7 +1782,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		});
 	}
 
-	function bindDataActionHandlers(){
+	export function bindDataActionHandlers(){
 		// Generate code here for all the Event Handlers:
 		$(document).on('click', '[data-action]', function(e) {
 			const action = $(this).data('action');
@@ -1848,13 +1806,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	//=============== document.ready HELPER functions ==========================
 
-	function ChromeFullscreen() {
+	export function ChromeFullscreen() {
 	  document.documentElement.webkitRequestFullScreen();
 	}
 
 	const SCALING_PREFS = "ScalingPrefs";
 
-	function saveScalingPrefs(){
+	export function saveScalingPrefs(){
 		var scalingPrefs = {
 			UIFontSize:   getUIFontSize(),
 			NoteFontSize: getNoteFontSize(),
@@ -1865,7 +1823,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		$("#divScalingPrefs").html(JSON.stringify(scalingPrefs));
 	}
 
-	function applyScalingPrefs(noSnark){
+	export function applyScalingPrefs(noSnark){
 		var scalingPrefsStr = localStorage.getItem(SCALING_PREFS);
 		if (scalingPrefsStr){
 			var scalingPrefs = JSON.parse(scalingPrefsStr);
@@ -1883,13 +1841,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 	}
 
-	function clearScalingPrefs(){
+	export function clearScalingPrefs(){
 		localStorage.removeItem(SCALING_PREFS);
 		$("#divScalingPrefs").html("ScalingPrefs: "+JSON.stringify(localStorage.getItem(SCALING_PREFS)));
 	}
 
 	/** After calling this, choose a theme either by default or by looking in song you just opened for USER theme. */
-	function rebuildThemesDropdown(){
+	export function rebuildThemesDropdown(){
 		$('#SelectThemesDest').html(getWidget_SelectThemes());  //must come before bindThemeEvents()
 		bindThemeEvents();
 		auditThemes();//sends WARN messages, so hide after.
@@ -1898,7 +1856,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	//=============== Headless replacement for document.ready for testing ===========================================
-	function setupSongTests() {
+	export function setupSongTests() {
 		gSong = makeSong();  //var song global in this file (at top).
 		
 		getSong().graveyard = makeGraveyard();
@@ -1910,7 +1868,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	
 	//=============== new appInit() called by document.ready ===========================================
 	// File-level appInit for browser startup
-	function appInit() {
+	export function appInit() {
 		window.onerror = function (message, url, lineNo, colno, error){
 			alert('window.onerror: ' + message
 				+ '\r\n URL:'+url

@@ -1,5 +1,4 @@
-
- export class Note {
+export class Note {
     static STYLENUM_NAMED = 0;
     static STYLENUM_TINY = 1;
     static STYLENUM_SINGLE = 2;
@@ -17,6 +16,26 @@
             this.noteName = noteNameOrOther;
             this.styleNum = styleNum;
         }
+    }
+
+    static styleNumToCaption(styleNum){
+        switch(styleNum){
+            case Note.STYLENUM_NAMED:
+                return "Named";
+            case Note.STYLENUM_TINY:
+                return "Tiny";
+            case Note.STYLENUM_SINGLE:
+                return "Single";
+            case Note.STYLENUM_MIDIPITCHES:
+                return "Pitch";
+            case Note.STYLENUM_MIDIPITCHESSINGLE:
+                return "Multi";
+            case Note.STYLENUM_BEND:
+                return "Bend";
+            case Note.STYLENUM_FINGERING:
+                return "Fingering";
+        }
+        return "Unknown"+styleNum;
     }
 
     static newNote(noteName, styleNum) {

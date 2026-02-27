@@ -1,3 +1,8 @@
+import {
+    controlsToDisplayOptions,
+    getSong
+} from './infinite-neck.js';
+
 
 function displayOptionsTable(){
     var optionsPrototype = controlsToDisplayOptions();

@@ -1,12 +1,42 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 import {
-	getSong,
+	addBeat,
+	checkRB,
+	clearAndReplaySection,
+	cycleThruKeys,
+	cycleThruNutWidths,
+	downloadBackupThenClearGraveyard,
+	downloadPlayedNotes,
+	enterFullscreen,
+	getBPM,
 	getCurrentSection,
+	getSectionsCurrentIndex,
+	getSong,
+	hideAllMenuDivs,
+	leaveFullscreen,
+	printSections,
 	resetNoteNames,
+	sectionChanged,
+	setBPM,
+	setNamedNoteOpacity,
+	setSingleNoteOpacity,
+	setTinyNoteOpacity,
+	showOneMenu,
+	skipColorDictsReplacer,
+	toggleCaption,
+	toggleFullscreen,
+	toggleInstrumentCaptionRow,
+	toggleTransport,
+	transpose,
+	transposeSong,
+	transposeSongKeys,
+	updateFontLabel,
+	updateMemoryModelPreFileSave,
 	updateSectionsStatus
 } from './infinite-neck.js';
+import { setOneCssVar } from './themeFunctions.js';
 
-export { document_keyup, document_keypress };
+export { document_keypress, document_keyup };
 
 
 const FONT_INCREMENT = 1;
@@ -26,9 +56,10 @@ function document_keyup(evt) {
 
 
 function document_keypress(e) {
-    if (event.keyCode == 13) {
+
+    if (e.keyCode == 13) {
         //alert(this.value);
-        event.preventDefault();
+        e.preventDefault();
     }
     var tag = e.target.tagName.toLowerCase();
     if ( tag != 'input' && tag != 'textarea'){
@@ -155,11 +186,11 @@ function document_keypress(e) {
             case "/":
                 setMenuAtRoot();
                 clearCmdResults();
-                showCmdLine();
+                showCmdLinw();
                 var menu = gMenuPointer;
                 var childCaptions = buildChildMenuCaptionsRow(menu);
                 updateCmdLineView();
-                event.preventDefault();
+                e.preventDefault();
                 break;
             case "o":
 				//the letter 'o' because '0' (zero) is for the nut width.
@@ -200,7 +231,7 @@ function document_keypress(e) {
                 checkRB("#rbBend");
                 break;
             case "0":
-                cycleThruNutWidths(-1);
+            	cycleThruNutWidths(-1);
                 break;
             case "=":
                 increaseUIFont();

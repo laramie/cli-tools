@@ -1,8 +1,11 @@
 import {
-	showBeats
+    getMillisForBeatClock,
+    getSong,
+    showBeats,
+    showBPM
 } from './infinite-neck.js';
 
-	var showBeatsIntervalPointer = null;
+    var showBeatsIntervalPointer = null;
 
 	const LOOPING_FRAMES_CAPTION        = "LOOPING...";
 	const LOOPING_FRAMES_CAPTION_RANDOM = "RANDOM....";

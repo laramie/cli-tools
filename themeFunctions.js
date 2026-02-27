@@ -35,7 +35,7 @@ import { gThemes } from './themes.js';
 	  * produces this rule on the document:
 	  *    :root { --cell-spacing: 30px; }
 	  */
-	function setOneCssVar(varname, value){
+	export function setOneCssVar(varname, value){
 		document.body.style.setProperty(varname, value);
 	}
 	/** send this to the DOM but as a variable in an existing stylesheet created by theme().

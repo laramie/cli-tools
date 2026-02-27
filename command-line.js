@@ -48,21 +48,18 @@ function stringifyMenuItem(menuItem){
     return JSON.stringify(menuItem, rep, 3);
 }
 
-function checkRB(id){
-    $(id).prop("checked", true);
-}
 
 export function txtCmdLine_keypress(e) {
     if (gMenuPointer.type && gMenuPointer.type == "input" && event.keyCode != 13){
         return;
     }
-    if (event.keyCode == 13) {  // ENTER key : means value has been entered.
-        event.preventDefault();
+    if (e.keyCode == 13) {  // ENTER key : means value has been entered.
+        e.preventDefault();
         var inputval = $("#txtCmdLine").val();
         if (inputval == "X"){
             hideCmdLine();
             clearCmdLine();
-            event.preventDefault();
+            e.preventDefault();
             return;
         } else if (inputval == "..") {
             clearCmdLine();
@@ -111,14 +108,14 @@ export function txtCmdLine_keypress(e) {
         if (e.key == "x"){  //every menu gets an automatically generated eXit item.
             hideCmdLine();
             clearCmdLine();
-            event.preventDefault();
+            e.preventDefault();
             return;
         }
         if (e.key == "/"){
             setMenuAtRoot();
             clearCmdResults();
             clearCmdLine();
-            event.preventDefault();
+            e.preventDefault();
             updateCmdLineView();
             return;
         }
@@ -152,7 +149,7 @@ export function txtCmdLine_keypress(e) {
                     return;
 
                 }
-                event.preventDefault();
+                e.preventDefault();
                 clearCmdLine();
                 updateCmdLineView();
                 return;

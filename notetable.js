@@ -9,13 +9,20 @@
 *   Output is all for the instrument noteTables built and inserted into index.html.
 */
 
+import {
+    lookupClassForNote,
+    lookupUserColorClass
+} from './colorFunctions.js';
 
 import {
-	getSong,
-	getCurrentSection,
+    getBeatNumber,
+    getCurrentSection,
+    getSong,
     hideNoteClickedCaption,
     resetNoteNames,
-    showBeats
+    setNoteClickedCaption,
+    showBeats,
+    turnOffHiding,
 } from './infinite-neck.js';
 import {
     Note
@@ -332,7 +339,7 @@ export function colorNote(cell) {
         */
 
 
-		if (theColoClass == "noteClear"){  //color "noteClear" is hardcoded to mean actually clear/delete the note.
+		if (theColorClass == "noteClear"){  //color "noteClear" is hardcoded to mean actually clear/delete the note.
 			getCurrentSection().namedNotes[noteName] = {};
             clearNamedNoteDivs(namedNoteDiv);
             noteNameElements.find(".NoteDisplay").removeClass().addClass("NoteDisplay");;

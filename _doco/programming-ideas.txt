@@ -32,6 +32,21 @@ Status:
 
 
 ============================================
+Idea: Draw lines using SVG
+Summary:
+   The idea was so I could draw flow lines from one note to the other,
+     but this was handled with Bends.  Also, other lines, such as the polygons in theme "Blade" were simply done with 
+     background-image of type PNG which supports transparent backgrounds.
+Status:   
+   Seemed like a cool idea, but not worth the work.
+============================================
+
+// You can draw lines using SVG!
+	//  https://stackoverflow.com/questions/56722754/draw-a-line-from-one-element-to-another
+
+
+
+============================================
 Idea: Using navigator.mediaDevices.getDisplayMedia() to attempt screen captureStreamCaptures
 Summary:
    Created a sample implementation here, recordy()
