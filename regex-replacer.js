@@ -56,7 +56,8 @@ const regexReplacerSuites = [
         regex: FIND_FUNCTION_INVOCATIONS,
         description: 'invocations(noLang):',
         expression: '${match[1]}',
-        keywords: SUPPRESS_IDENTIFIERS
+        keywords: SUPPRESS_IDENTIFIERS,
+        frameworkFunctions: []
     },
     {
         name: '6:function-invocations-no-lang-no-framework',
