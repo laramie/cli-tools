@@ -7,7 +7,7 @@ import {
 	getCurrentSection
 } from './infinite-neck.js';
 import {
-    newNote
+    Note
 } from './note.js';
 
 
@@ -24,7 +24,7 @@ import {
 	}
 
     function recordHighlight(doEraseHighlight, styleNum, sBeatNum, midinum, cellrow, noteName) {
-        var recNote = newNote(noteName, styleNum);
+        var recNote = Note.newNote(noteName, styleNum);
         recNote.midinum = midinum;
         recNote.row = cellrow;
 
@@ -41,7 +41,7 @@ import {
     }
 
     function recordHighlightSingle(doEraseHighlightSingle, styleNum, sBeatNum, midinum, cellrow, noteName){
-        var recNote = newNote(noteName, styleNum);
+        var recNote = Note.newNote(noteName, styleNum);
         recNote.midinum = midinum;
         recNote.row = cellrow;
 

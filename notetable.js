@@ -18,7 +18,6 @@ import {
     showBeats
 } from './infinite-neck.js';
 import {
-    newNote,
     Note
 } from './note.js';
 import {
@@ -339,7 +338,7 @@ export function colorNote(cell) {
             noteNameElements.find(".NoteDisplay").removeClass().addClass("NoteDisplay");;
 		} else {
 
-            var note = newNote(noteName, styleNum);
+            var note = Note.newNote(noteName, styleNum);
             note.colorClass = theColorClass;
 
             var automaticColorClass = lookupUserColorClass(note);
@@ -437,7 +436,7 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
     var c = jCell.attr("cellcol");
     var noteName = jCell.attr("noteName"); //could also get this from caller colorNote().
 
-    var notePlayed = newNote(noteName, styleNum);
+    var notePlayed = Note.newNote(noteName, styleNum);
     notePlayed.midinum = midinum;
     notePlayed.row = r;
     notePlayed.col = c;

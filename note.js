@@ -1,5 +1,5 @@
 
-export class Note {
+ export class Note {
     static STYLENUM_NAMED = 0;
     static STYLENUM_TINY = 1;
     static STYLENUM_SINGLE = 2;
@@ -18,12 +18,14 @@ export class Note {
             this.styleNum = styleNum;
         }
     }
+
+    static newNote(noteName, styleNum) {
+        return new Note(noteName, styleNum);
+    }
+
+    static cloneNote(other) {
+        return new Note(other);
+    }
 }
 
-export function newNote(noteName, styleNum) {
-    return new Note(noteName, styleNum);
-}
 
-export function cloneNote(other) {
-    return new Note(other);
-}

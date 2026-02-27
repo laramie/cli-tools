@@ -5,7 +5,7 @@ import {
     showBeats
 } from './infinite-neck.js';
 import {
-    cloneNote
+    Note
 } from './note.js';
 import {
 	allTunings
