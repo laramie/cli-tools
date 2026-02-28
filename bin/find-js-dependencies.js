@@ -19,23 +19,25 @@ const FRAMEWORK_FUNCTIONS = [       // List of more identifiers to suppress base
     'test', '$', 'rgb', 'makeSong' 
 ];
 
-const FIND_FUNCTIONS =            /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
-const FIND_NON_EXPORT_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
-const FIND_EXPORT_FUNCTIONS =     /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
-const FIND_INVOCATIONS =          /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
+const FIND_FUNCTIONS =            /^(\s*(?:export\s+)?)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
+const FIND_NON_EXPORT_FUNCTIONS = /^(\s*)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
+const FIND_EXPORT_FUNCTIONS =     /^(\s*export\s+)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
+const FIND_ALL_EXPORTS =          /^(\s*export\s+)\s*(const|var|let|class|default|function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
+const FIND_INVOCATIONS =          /(?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
+const FIND_INVOCATION_LINES =     /^.*(?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
 
 const SUITES = [
     {     
         name: 'functions',
         regex: FIND_FUNCTIONS,
         description: 'Find functions in file',
-        expression: '${match[1]}'
+        expression: '${match[1]}${match[2]} ${match[3]}'
     },
     {     
         name: 'functions-no-exports',
         regex: FIND_NON_EXPORT_FUNCTIONS,
         description: 'Find functions in file',
-        expression: '${match[1]}'
+        expression: '${match[1]}${match[2]} ${match[3]}'
     },
     {   
         name: 'function-lines',
@@ -44,14 +46,20 @@ const SUITES = [
         expression: '${match[0]}'
     },
     {   
-        name: 'exports',
+        name: 'export-functions',
         regex: FIND_EXPORT_FUNCTIONS,
         description: '[export] function <function-name>',
-        expression: '${match[1]} function ${match[2]}'
+        expression: '${match[1]}${match[2]} ${match[3]}'
+    },
+    {   
+        name: 'exports',
+        regex: FIND_ALL_EXPORTS,
+        description: '[export] function <function-name>',
+        expression: '${match[1]}${match[2]} ${match[3]}'
     },
     {   
         name: 'invocation-lines',
-        regex: FIND_INVOCATIONS,
+        regex: FIND_INVOCATION_LINES,
         description: 'Find invocations in file (whole line)',
         expression: '${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
@@ -89,6 +97,10 @@ function printSuites(){
         printHelpDivider();
 }
 
+function printSuiteNames(){
+    SUITES.forEach((oneSuite) => {console.log(oneSuite.name)});
+}
+
 function printHelp(){
     console.log(
              "Command-line options:\n"
@@ -101,6 +113,8 @@ function printHelp(){
             +"  --sort      |  --so    :sort lines.\n"
             +"  --summary   |  --su    :ouput summary (true if no --lines or --filenames output\n"
             +"  --tests     |  --te    :print suites of tests.\n"
+            +"  --suites               :print suites of tests.\n"
+            +"  --suitenames           :print suites.name only.\n"
             +"  --verbose   |  --v     :extra debugging information.\n"
             +"\n"
             +"  --dir=/my/dir          :dir to run in [ /my/dir ], else run in the current directory.\n"
@@ -167,10 +181,14 @@ args.forEach(arg => {
         options.outputSortedLines = true;    
     } else if (arg.startsWith("--sum")) {     //--summary
         options.outputSummary = true;    
-    } else if (arg.startsWith("--te")) {      //--testSuites
-        printHelpDivider();                      // if you want to quit after seeing suites, run with: --suites --h
+    } else if (arg.startsWith("--te")         //--tests
+             ||arg.startsWith("--suites")) {  //--suites
+        printHelpDivider();                   // if you want to quit after seeing suites, run with: --suites --h
         printSuites();
-    } else if (arg.startsWith("--v")) {        //--verbose
+    } else if (arg.startsWith("--suitenames")) { //--suitenames
+        printSuiteNames();
+        process.exit(1);
+    } else if (arg.startsWith("--v")) {       //--verbose
         options.verbose = true;
     } else if (arg.startsWith("--h")) {       //--help
         printHelp();
