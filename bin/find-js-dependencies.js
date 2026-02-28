@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // Node.js utility to search files in a directory with regex suites
-const fs = require('fs');
-const path = require('path');
+import { readdir, readFileSync } from 'fs';
+import { extname, join } from 'path';
 
 const FIND_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
 
 const FIND_EXPORT_FUNCTIONS = /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
 
 const FIND_INVOCATIONS = /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
+
 
 // List of keywords and identifiers to suppress (can include regex patterns)
 const SUPPRESS_IDENTIFIERS = [
@@ -193,7 +194,7 @@ if (!options.quiet){
 
 if (options.verbose) console.log("\n********* Directory ************"+dir+"************\n");
 // --- Main logic ---
-fs.readdir(dir, (err, files) => {
+readdir(dir, (err, files) => {
     if (options.verbose) console.log("********* Files in Dir **********"+files+"\n*****************************************************\n");
     if (err) {
         console.error('Error reading directory:', err);
@@ -204,7 +205,7 @@ fs.readdir(dir, (err, files) => {
     if (singleFile) {
         targetFiles = [singleFile];
     } else {
-        targetFiles = files.filter(file => extensions.includes(path.extname(file)));
+        targetFiles = files.filter(file => extensions.includes(extname(file)));
     }
     if (options.verbose)     console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
     targetFiles.forEach(file => {
@@ -212,8 +213,8 @@ fs.readdir(dir, (err, files) => {
         let state = new State();
         states.push(state);
         state.filename = file;
-        const filePath = singleFile ? file : path.join(dir, file);
-        const content = fs.readFileSync(filePath, 'utf8');
+        const filePath = singleFile ? file : join(dir, file);
+        const content = readFileSync(filePath, 'utf8');
         let match;
         let found = false;
 

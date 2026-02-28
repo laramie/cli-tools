@@ -1,4 +1,3 @@
-import { setMenuAtRoot } from './menu';
 
 var gMenuFile =    {
   "name": "root",

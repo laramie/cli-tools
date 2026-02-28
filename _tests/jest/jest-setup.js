@@ -1,12 +1,12 @@
 // _tests/jest/jest-setup.js
 // Loads all JS dependencies in browser order for Jest tests
 
-import { gColorPickerColors } from '../../colorPickerColors.js';
+// Import any ES modules directly (if needed)
+// import { gColorPickerColors } from '../../colorPickerColors.js'; // Only if you need it directly
 
-
-const fs = require('fs');
-const vm = require('vm');
-const path = require('path');
+import fs from 'fs';
+import vm from 'vm';
+import path from 'path';
 
 // List of JS files in the order from index.html
 const jsFiles = [
@@ -46,29 +46,29 @@ jsFiles.forEach(file => {
 });
 
 // Attach important globals for test access
-global.gAutocolors = typeof gAutocolors !== 'undefined' ? gAutocolors : undefined;
-global.gColorPickerColors = typeof gColorPickerColors !== 'undefined' ? gColorPickerColors : undefined;
-global.gMenuFile = typeof gMenuFile !== 'undefined' ? gMenuFile : undefined;
-global.gThemes = typeof gThemes !== 'undefined' ? gThemes : undefined;
-global.allTunings = typeof allTunings !== 'undefined' ? allTunings : undefined;
-global.gUserColorDict = typeof gUserColorDict !== 'undefined' ? gUserColorDict : undefined;
-global.gUserColorDictRolesDefault = typeof gUserColorDictRolesDefault !== 'undefined' ? gUserColorDictRolesDefault : undefined;
-global.gUserColorDictFingeringsDefault = typeof gUserColorDictFingeringsDefault !== 'undefined' ? gUserColorDictFingeringsDefault : undefined;
-global.gDefault_CycleOfColors = typeof gDefault_CycleOfColors !== 'undefined' ? gDefault_CycleOfColors : undefined;
-global.gAllClear = typeof gAllClear !== 'undefined' ? gAllClear : undefined;
+global.gAutocolors = context.gAutocolors;
+global.gColorPickerColors = context.gColorPickerColors;
+global.gMenuFile = context.gMenuFile;
+global.gThemes = context.gThemes;
+global.allTunings = context.allTunings;
+global.gUserColorDict = context.gUserColorDict;
+global.gUserColorDictRolesDefault = context.gUserColorDictRolesDefault;
+global.gUserColorDictFingeringsDefault = context.gUserColorDictFingeringsDefault;
+global.gDefault_CycleOfColors = context.gDefault_CycleOfColors;
+global.gAllClear = context.gAllClear;
 
 // Now setupSongTests should be available globally
-if (typeof setupSongTests === 'function') {
-  global.setupSongTests = setupSongTests;
-  setupSongTests();
+if (typeof context.setupSongTests === 'function') {
+  global.setupSongTests = context.setupSongTests;
+  context.setupSongTests();
 }
 
-if (typeof makeSong === 'function') {
-  global.makeSong = makeSong;
+if (typeof context.makeSong === 'function') {
+  global.makeSong = context.makeSong;
 }
 
 // Export globals if needed (optional)
-module.exports = {
-  setupSongTests: typeof setupSongTests === 'function' ? setupSongTests : undefined,
-  makeSong: typeof makeSong === 'function' ? makeSong : undefined,
+export default {
+  setupSongTests: typeof context.setupSongTests === 'function' ? context.setupSongTests : undefined,
+  makeSong: typeof context.makeSong === 'function' ? context.makeSong : undefined,
 };
