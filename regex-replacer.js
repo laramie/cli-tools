@@ -243,7 +243,7 @@ fs.readdir(dir, (err, files) => {
     states.forEach(theState => {
         if (theState.quantifyFound()>0){
              if (options.outputSummary){
-                console.log(theState.printSummary(suite));
+                console.log(theState.printSummary());
              }
             if (options.outputLines){
                 if (options.outputFilename){
@@ -311,7 +311,7 @@ class State {
         return this.filename;
     }
     printSummary(){
-        return JSON.stringify(this, null, 4);
+        return JSON.stringify(this.toJSON(), null, 4);
     }
 
     filename = "";
@@ -323,6 +323,22 @@ class State {
     }
     foundEnd() {
         this.#foundEnd = true;
+    }
+    toJSON(){
+        if (options.outputSourceLocation){
+            return {
+                    filename: this.filename,
+                    quantifyFound: this.#lines.length,
+                    lines: this.#lines
+            };
+        } else {
+            return {
+                filename: this.filename,
+                quantifyFound: this.#lines.length,
+                lines: this.#lines,
+                foo: "bar"
+            }
+        }
     }
     toFilteredObject() {  //   this.toFilteredObject()
         if (this.#lines.length === 0) {
