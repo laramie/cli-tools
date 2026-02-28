@@ -4,33 +4,34 @@ const fs = require('fs');
 const path = require('path');
 const { IndentStyle } = require('./node_modules/typescript/lib/typescript');
 
-const FIND_FUNCTIONS = /\s+export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/g;
+const FIND_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
 
-const FIND_EXPORT_FUNCTIONS = /\s+(export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/g;
+//const FIND_EXPORT_FUNCTIONS = /^\s*(export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
 
-const FIND_FUNCTION_INVOCATIONS = /(?<!\.)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b\s*(?=\(|;|$)/g;
+//const FIND_FUNCTION_INVOCATIONS = /(?<!\.)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b\s*(?=\(|;|$)/g;
 
-// TODO: don't need this any more because it's identical to FIND_FUNCTION_INVOCATIONS 
-//      and we deal with NO_LANG with SUPPRESS_IDENTIFIERS and FRAMEWORK_FUNCTIONS
-const FIND_FUNCTION_INVOCATIONS_NO_LANG = /(?<!\.)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b\s*(?=\(|;|$)/g;
+const FIND_EXPORT_FUNCTIONS = /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
+
+const FIND_INVOCATIONS = /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
 
 // List of keywords and identifiers to suppress (can include regex patterns)
 const SUPPRESS_IDENTIFIERS = [
-    'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
+    'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
 ];
 
+// List of more identifiers to suppress based on frameworks used (can include regex patterns)
 const FRAMEWORK_FUNCTIONS = [
-    'test', '$'
+    'test', '$', 'rgb', 'makeSong' 
 ];
 
-const IMPORTS_SUITE = 0;
-// --- Regex suites ---
-const regexReplacerSuites = [
+const DEFAULT_SUITE = 0;
+
+const SUITES = [
     {
         name: '0:IMPORT_SUITE',
         regex: FIND_FUNCTIONS,
         description: 'Functions in file:',
-        expression: '${match[1]},'
+        expression: '${match[1]}'
     },
     {
         name: '1:function-lines',
@@ -46,22 +47,22 @@ const regexReplacerSuites = [
     },
     {
         name: '3:function-invocation-lines',
-        regex: FIND_FUNCTION_INVOCATIONS,
+        regex: FIND_INVOCATIONS,
         description: 'Lines with invocations:',
         expression: '${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
     },
     {
-        name: '5:function-invocations-nolang',
-        regex: FIND_FUNCTION_INVOCATIONS,
+        name: '4:function-invocations-nolang',
+        regex: FIND_INVOCATIONS,
         description: 'invocations(noLang):',
         expression: '${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: []
     },
     {
-        name: '6:function-invocations-no-lang-no-framework',
-        regex: FIND_FUNCTION_INVOCATIONS,
+        name: '5:function-invocations-no-lang-no-framework',
+        regex: FIND_INVOCATIONS,
         description: 'invocations(noLang,noFramework):',
         expression: '${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
@@ -69,10 +70,49 @@ const regexReplacerSuites = [
     }
 ];
 
+function formatSuite(oneSuite, sIDx){
+    return "Suite["+sIDx+"]:\n" + JSON.stringify(oneSuite, (key, value) =>
+                value instanceof RegExp ? value.toString() : value, 4)
+
+}
+
+function printHelpDivider(){
+    console.log("==================================================\n");
+}
+
+function printSuites(){
+        SUITES.forEach((oneSuite, sIDx) => {console.log(formatSuite(oneSuite, sIDx))});
+        printHelpDivider();
+}
+
+function printHelp(){
+    console.log(
+             "Command-line options:\n"
+            +"  --filenames  --fi    :ouput filenames\n"
+            +"  --help       --h     :show this message and quit\n"
+            +"  --lines      --li    :ouput line\n"
+            +"  --location   --lo    :out source character location\n"
+            +"  --quiet      --q     :no info messages\n"
+            +"  --sort       --so    :sort lines\n"
+            +"  --tests      --te    :print suites of tests\n"
+            +"  --summary    --sum   :ouput summary (default, or if no lines or filenames output\n"
+        );
+}
+
 const args = process.argv.slice(2);
-let suiteIdx = 3;
+let suiteIdx = DEFAULT_SUITE;
 let extensions = ['.js', '.txt'];
 let dir = process.cwd();
+let singleFile = null;
+
+let options = {
+    quiet : false,
+    outputFilename : false,
+    outputLines : false,
+    outputSummary : false,   
+    outputSourceLocation : false,
+    outputSortedLines : false
+}
 
 args.forEach(arg => {
     if (arg.startsWith('--suite=')) {
@@ -81,20 +121,63 @@ args.forEach(arg => {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
         dir = arg.split('=')[1];
+    } else if (arg.startsWith("--li")) {      //-lines
+        options.outputLines = true;
+    } else if (arg.startsWith("--sum")) {     //--summary
+        options.outputSummary = true;    
+    } else if (arg.startsWith("--so")) {      //--sort
+        options.outputSortedLines = true;    
+    } else if (arg.startsWith("--lo")) {      //--location
+        options.outputSourceLocation = true;
+    } else if (arg.startsWith("--fi")) {      //--filenames
+        options.outputFilename = true;
+    } else if (arg.startsWith("--q")) {       //--quiet
+        options.quiet = true;
+    } else if (arg.startsWith("--te")) {     //--testSuites
+        printHelpDivider();                   // if you want to quit after seeing suites, run with: --suites --h
+        printSuites();
+    } else if (arg.startsWith("--h")) {      //--help
+        printHelp();
+        process.exit(1);
     }
 });
+if (options.outputLines == false && options.outputFilename == false){
+    options.outputSummary = true;
+}
 
-if (!regexReplacerSuites[suiteIdx]) {
-    console.error('Invalid suite index.');
-    regexReplacerSuites
+// If the last argument is not an option, treat it as a filename
+if (args.length > 0) {
+    const lastArg = args[args.length - 1];
+    if (!lastArg.startsWith('--')) {
+        singleFile = lastArg;
+    }
+}
+
+if (!SUITES[suiteIdx]) {
+    console.error('Invalid suite index: '+suiteIdx);
+    console.log("Please choose from the following:");
+    printHelpDivider();
+    printSuites();
     process.exit(1);
 }
 
-const { regex, name, description, expression } = regexReplacerSuites[suiteIdx];
+const { regex, name, description, expression } = SUITES[suiteIdx];
 
-console.log(`Running suite: ${name} (${description})`);
-console.log(`Directory: ${dir}`);
-console.log(`Extensions: ${extensions.join(', ')}`);
+const suite = SUITES[suiteIdx];
+            
+
+if (!options.quiet){
+    console.log(`Running suite[${suiteIdx}]: ${name} (${description})`);
+    console.log(`Directory: ${dir}`);
+    if(singleFile){
+        console.log(`Single file: ${singleFile}`);
+    } else {
+        console.log(`Extensions: ${extensions.join(', ')}`);
+    }
+    console.log("Suite:\n" + JSON.stringify(SUITES[suiteIdx], (key, value) =>
+                value instanceof RegExp ? value.toString() : value, 4));
+    console.log("Options:\n" + JSON.stringify(options,null,4));
+}
 
 // --- Main logic ---
 fs.readdir(dir, (err, files) => {
@@ -103,63 +186,133 @@ fs.readdir(dir, (err, files) => {
         process.exit(1);
     }
     const states = [];
-    files.filter(file => extensions.includes(path.extname(file)))
-        .forEach(file => {
-            let state = new State();
-            states.push(state);
-            state.filename = file;
-            const filePath = path.join(dir, file);
-            const content = fs.readFileSync(filePath, 'utf8');
-            let match;
-            let found = false;
+    let targetFiles;
+    if (singleFile) {
+        targetFiles = [singleFile];
+    } else {
+        targetFiles = files.filter(file => extensions.includes(path.extname(file)));
+    }
+    targetFiles.forEach(file => {
+        let state = new State();
+        states.push(state);
+        state.filename = file;
+        const filePath = singleFile ? file : path.join(dir, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+        let match;
+        let found = false;
 
-            while ((match = regex.exec(content)) !== null) {
-                // Suppress unwanted identifiers for FIND_FUNCTION_INVOCATIONS_NO_LANG
-                let suppress = false;
-                if (regex === FIND_FUNCTION_INVOCATIONS_NO_LANG) {
-                    const identifier = match[1];
-                    suppress = SUPPRESS_IDENTIFIERS.some(kw => {
-                        if (kw.startsWith('/') && kw.endsWith('/')) {
-                            // Treat as regex
-                            const re = new RegExp(kw.slice(1, -1));
-                            return re.test(identifier);
-                        } else {
-                            return kw === identifier;
-                        }
-                    });
+        while ((match = regex.exec(content)) !== null) {
+            let suppress = false;
+            const identifier = match[1];
+            let suppressList = [];
+            if (suite.keywords && Array.isArray(suite.keywords)) {
+                suppressList = suppressList.concat(suite.keywords);
+            }
+            if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
+                suppressList = suppressList.concat(suite.frameworkFunctions);
+            }
+            if (suppressList.length > 0 && identifier) {
+                suppress = suppressList.some(kw => {
+                    if (typeof kw === 'string' && kw.startsWith('/') && kw.endsWith('/')) {
+                        // Treat as regex
+                        const re = new RegExp(kw.slice(1, -1));
+                        return re.test(identifier);
+                    } else {
+                        return kw === identifier;
+                    }
+                });
+            }
+            if (!suppress) {
+                if (!found) {
+                    state.foundBegin();
+                    found = true;
                 }
-                if (!suppress) {
-                    if (!found) {
-                        state.foundBegin();
-                        console.log(`\nFile: ${file}`);
-                        found = true;
-                    }
-                    if (expression) {
-                        const output = expression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
-                        console.log(`  ${output}`);
-                        state.addLine(`${output}`);
-                    }
+                if (expression) {
+                    const output = expression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
+                    //if (output&&output.trim().length) {
+                        const startIndex = regex.lastIndex - match[0].length;
+                        const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
+                        const lineNumber = upToMatch.split('\n').length;
+                        state.addLine(output.trim(), lineNumber, startIndex);
+                    //}
                 }
             }
-            state.foundEnd();
-        });
-    //END files.filter.
+        }
+        state.foundEnd();
+    });
     states.forEach(theState => {
         if (theState.quantifyFound()>0){
-            console.log(description + theState.dump());
+             if (options.outputSummary){
+                console.log(theState.printSummary(suite));
+             }
+            if (options.outputLines){
+                if (options.outputFilename){
+                    console.log("\n\n====filename====:"+theState.printFilename());
+                }
+                if (options.outputSortedLines){
+                    console.log(theState.printLinesSorted());
+                } else {
+                    console.log(theState.printLines());
+                }
+            }
         }
     });
+    let notFoundHeaderPrinted = false;
     states.forEach(theState => {
-        if (theState.quantifyFound()===0){
-            console.log("None found in: " + theState.filename);
+        if (theState.quantifyFound()===0 && options.outputFilename){
+            if (!notFoundHeaderPrinted){
+                console.log("\n\n============= None found in these files ==========");
+                notFoundHeaderPrinted = true;
+            }
+            console.log(theState.printFilename());
         }
     });
+    if (notFoundHeaderPrinted){
+        printHelpDivider();
+    }
+    console.log("");
 });
 
 class State {
     #foundBegin = false;
     #foundEnd = false;
     #lines = [];
+    #lineSet = new Set();
+
+    addLine(line, linenum, startIndex) {
+        if (!this.#lineSet.has(line)) {
+            this.#lines.push({ line, linenum, startIndex });
+            this.#lineSet.add(line);
+        }
+    }
+    printLines() {
+        return this.#lines.map(obj =>
+            options.outputSourceLocation
+                ? 
+                `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
+                : obj.line
+        ).join('\n');
+    }
+    printLinesSorted() {
+        // Sort a copy of #lines by line content, do not mutate #lines
+        const sorted = [...this.#lines].sort((a, b) => {
+            if (a.line < b.line) return -1;
+            if (a.line > b.line) return 1;
+            return 0;
+        });
+        return sorted.map(obj =>
+            options.outputSourceLocation
+                ? 
+                `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
+                : obj.line
+        ).join('\n');
+    }
+    printFilename(){
+        return this.filename;
+    }
+    printSummary(){
+        return JSON.stringify(this, null, 4);
+    }
 
     filename = "";
     quantifyFound() {
@@ -171,23 +324,28 @@ class State {
     foundEnd() {
         this.#foundEnd = true;
     }
-    addLine(line) {
-        this.#lines.push(line);
-    }
-    toJSON() {
+    toFilteredObject() {  //   this.toFilteredObject()
         if (this.#lines.length === 0) {
             return {
                 filename: this.filename
             };
         } else {
-            return {
-                filename: this.filename,
-                quantifyFound: this.#lines.length,
-                lines: this.#lines
-            };
+            if (options.outputSourceLocation){
+                return {
+                    filename: this.filename,
+                    quantifyFound: this.#lines.length,
+                    lines: this.#lines,
+                };
+            } else {
+                return {
+                    filename: this.filename,
+                    quantifyFound: this.#lines.length,
+                    lines: this.#lines.filter(obj => {
+                                                obj.line
+                                             })
+                };
+            }
         }
     }
-    dump() {
-        return JSON.stringify(this, null, 4);
-    }
+    
 }
