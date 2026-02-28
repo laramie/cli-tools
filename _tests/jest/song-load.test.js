@@ -1,4 +1,5 @@
-require('./jest-setup.js');
+import './jest-setup.js';
+
 const fs = require('fs');
 const path = require('path');
 
