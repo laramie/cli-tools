@@ -1,0 +1,17 @@
+# source this in from .bashrc
+
+#These are separate: prompt sets the terminal prompt, caption sets the window title and hoses the prompt
+#   so set caption first, then set prompt to get a colored prompt back.
+prompt() {
+    export CAPTION_LAR="$*"
+
+    PS1='${debian_chroot:+($debian_chroot)}${CAPTION_LAR}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$'
+}
+
+
+caption() {
+        echo "To get your prompt back after setting Terminal tab caption to $*, next call prompt '$*' (include a space if you want)"
+    export CAPTION_LAR="$*"
+    export PS1='\[\033]0;$(echo -n $CAPTION_LAR)\007\]\u@\h:\w\$ '
+}
+
