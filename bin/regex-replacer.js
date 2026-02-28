@@ -2,7 +2,7 @@
 // Node.js utility to search files in a directory with regex suites
 const fs = require('fs');
 const path = require('path');
-const { IndentStyle } = require('./node_modules/typescript/lib/typescript');
+const { IndentStyle } = require('typescript');
 
 const FIND_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
 
