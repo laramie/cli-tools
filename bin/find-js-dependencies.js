@@ -23,41 +23,41 @@ const FRAMEWORK_FUNCTIONS = [
 const DEFAULT_SUITE = 0;
 
 const SUITES = [
-    {
-        name: '0:find-functions',
+    {     
+        name: 'functions',
         regex: FIND_FUNCTIONS,
         description: 'Find functions in file',
         expression: '${match[1]}'
     },
-    {
-        name: '1:find-function-lines',
+    {   
+        name: 'function-lines',
         regex: FIND_FUNCTIONS,
         description: 'Lines with functions in file',
         expression: '${match[0]}'
     },
-    {
-        name: '2:exported-functions-keyword',
+    {   
+        name: 'exports',
         regex: FIND_EXPORT_FUNCTIONS,
         description: '[export] function <function-name>',
         expression: '${match[1]}function ${match[2]}'
     },
-    {
-        name: '3:function-invocation-lines',
+    {   
+        name: 'invocation-lines',
         regex: FIND_INVOCATIONS,
         description: 'Find invocations in file (whole line)',
         expression: '${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
     },
-    {
-        name: '4:function-invocations-nolang',
+    {   
+        name: 'invocations',
         regex: FIND_INVOCATIONS,
         description: 'Find invocations in file (noLang)',
         expression: '${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: []
     },
-    {
-        name: '5:function-invocations-no-lang-no-framework',
+    {   
+        name: 'invocations-no-framework',
         regex: FIND_INVOCATIONS,
         description: 'Find invocations in file (noLang,noFramework)',
         expression: '${match[1]}',
