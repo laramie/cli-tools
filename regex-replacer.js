@@ -6,10 +6,6 @@ const { IndentStyle } = require('./node_modules/typescript/lib/typescript');
 
 const FIND_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
 
-//const FIND_EXPORT_FUNCTIONS = /^\s*(export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
-
-//const FIND_FUNCTION_INVOCATIONS = /(?<!\.)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b\s*(?=\(|;|$)/g;
-
 const FIND_EXPORT_FUNCTIONS = /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
 
 const FIND_INVOCATIONS = /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
@@ -28,34 +24,34 @@ const DEFAULT_SUITE = 0;
 
 const SUITES = [
     {
-        name: '0:IMPORT_SUITE',
+        name: '0:find-functions',
         regex: FIND_FUNCTIONS,
-        description: 'Functions in file:',
+        description: 'Find functions in file',
         expression: '${match[1]}'
     },
     {
-        name: '1:function-lines',
+        name: '1:find-function-lines',
         regex: FIND_FUNCTIONS,
-        description: 'Lines with functions:',
+        description: 'Lines with functions in file',
         expression: '${match[0]}'
     },
     {
         name: '2:exported-functions-keyword',
         regex: FIND_EXPORT_FUNCTIONS,
-        description: '[export] function <function-name>:',
+        description: '[export] function <function-name>',
         expression: '${match[1]}function ${match[2]}'
     },
     {
         name: '3:function-invocation-lines',
         regex: FIND_INVOCATIONS,
-        description: 'Lines with invocations:',
+        description: 'Find invocations in file (whole line)',
         expression: '${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
     },
     {
         name: '4:function-invocations-nolang',
         regex: FIND_INVOCATIONS,
-        description: 'invocations(noLang):',
+        description: 'Find invocations in file (noLang)',
         expression: '${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: []
@@ -63,7 +59,7 @@ const SUITES = [
     {
         name: '5:function-invocations-no-lang-no-framework',
         regex: FIND_INVOCATIONS,
-        description: 'invocations(noLang,noFramework):',
+        description: 'Find invocations in file (noLang,noFramework)',
         expression: '${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: FRAMEWORK_FUNCTIONS
@@ -77,7 +73,7 @@ function formatSuite(oneSuite, sIDx){
 }
 
 function printHelpDivider(){
-    console.log("==================================================\n");
+    console.log("==================================================");
 }
 
 function printSuites(){
@@ -88,14 +84,21 @@ function printSuites(){
 function printHelp(){
     console.log(
              "Command-line options:\n"
-            +"  --filenames  --fi    :ouput filenames\n"
-            +"  --help       --h     :show this message and quit\n"
-            +"  --lines      --li    :ouput line\n"
-            +"  --location   --lo    :out source character location\n"
-            +"  --quiet      --q     :no info messages\n"
-            +"  --sort       --so    :sort lines\n"
-            +"  --tests      --te    :print suites of tests\n"
-            +"  --summary    --sum   :ouput summary (default, or if no lines or filenames output\n"
+            +"  --all                  :all lines, including duplicates.\n"
+            +"  --filenames |  --fi    :ouput filenames.\n"
+            +"  --help      |  --h     :show this message and quit.\n"
+            +"  --lines     |  --li    :ouput lines.\n"
+            +"  --location  |  --lo    :out source character location.\n"
+            +"  --quiet     |  --q     :no info messages\n"
+            +"  --sort      |  --so    :sort lines.\n"
+            +"  --summary   |  --su    :ouput summary (true if no --lines or --filenames output\n"
+            +"  --tests     |  --te    :print suites of tests.\n"
+            +"  --verbose   |  --v     :extra debugging information.\n"
+            +"\n"
+            +"  --dir=/my/dir          :dir to run in [ /my/dir ], else run in the current directory.\n"
+            +"  --ext='*.js,*.txt'     :extensions to run [ *.js,*.txt ].\n"
+            +"  --suite=0              :which test suite to run, [ 0 ] in this case.\n"
+            +"                             Run with --tests --help to show suites and quit.\n"
         );
 }
 
@@ -111,7 +114,8 @@ let options = {
     outputLines : false,
     outputSummary : false,   
     outputSourceLocation : false,
-    outputSortedLines : false
+    outputSortedLines : false,
+    verbose: false
 }
 
 args.forEach(arg => {
@@ -121,22 +125,26 @@ args.forEach(arg => {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
         dir = arg.split('=')[1];
-    } else if (arg.startsWith("--li")) {      //-lines
-        options.outputLines = true;
-    } else if (arg.startsWith("--sum")) {     //--summary
-        options.outputSummary = true;    
-    } else if (arg.startsWith("--so")) {      //--sort
-        options.outputSortedLines = true;    
-    } else if (arg.startsWith("--lo")) {      //--location
-        options.outputSourceLocation = true;
+    } else if (arg.startsWith("--all")) {      //--all
+        options.outputAll = true;
     } else if (arg.startsWith("--fi")) {      //--filenames
         options.outputFilename = true;
+    } else if (arg.startsWith("--li")) {      //--lines
+        options.outputLines = true;
+    } else if (arg.startsWith("--lo")) {      //--location
+        options.outputSourceLocation = true;
     } else if (arg.startsWith("--q")) {       //--quiet
         options.quiet = true;
-    } else if (arg.startsWith("--te")) {     //--testSuites
-        printHelpDivider();                   // if you want to quit after seeing suites, run with: --suites --h
+    } else if (arg.startsWith("--so")) {      //--sort
+        options.outputSortedLines = true;    
+    } else if (arg.startsWith("--sum")) {     //--summary
+        options.outputSummary = true;    
+    } else if (arg.startsWith("--te")) {      //--testSuites
+        printHelpDivider();                      // if you want to quit after seeing suites, run with: --suites --h
         printSuites();
-    } else if (arg.startsWith("--h")) {      //--help
+    } else if (arg.startsWith("--v")) {        //--verbose
+        options.verbose = true;
+    } else if (arg.startsWith("--h")) {       //--help
         printHelp();
         process.exit(1);
     }
@@ -177,10 +185,17 @@ if (!options.quiet){
     console.log("Suite:\n" + JSON.stringify(SUITES[suiteIdx], (key, value) =>
                 value instanceof RegExp ? value.toString() : value, 4));
     console.log("Options:\n" + JSON.stringify(options,null,4));
+} else if (options.outputFilename || options.outputSummary){
+    //We are not doing lines-only output destined for text processing, so at least print out the suite description:
+    printHelpDivider()
+    console.log("Suite: "+suiteIdx + "  "+ suite.description ); 
+    printHelpDivider()
 }
 
+if (options.verbose) console.log("\n********* Directory ************"+dir+"************\n");
 // --- Main logic ---
 fs.readdir(dir, (err, files) => {
+    if (options.verbose) console.log("********* Files in Dir **********"+files+"\n*****************************************************\n");
     if (err) {
         console.error('Error reading directory:', err);
         process.exit(1);
@@ -192,7 +207,9 @@ fs.readdir(dir, (err, files) => {
     } else {
         targetFiles = files.filter(file => extensions.includes(path.extname(file)));
     }
+    if (options.verbose)     console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
     targetFiles.forEach(file => {
+        if (options.verbose) console.log("********* Processing ******"+file+"************");
         let state = new State();
         states.push(state);
         state.filename = file;
@@ -233,7 +250,7 @@ fs.readdir(dir, (err, files) => {
                         const startIndex = regex.lastIndex - match[0].length;
                         const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
                         const lineNumber = upToMatch.split('\n').length;
-                        state.addLine(output.trim(), lineNumber, startIndex);
+                        state.addLine(output.trim(), lineNumber, startIndex, options.outputAll);
                     //}
                 }
             }
@@ -242,19 +259,19 @@ fs.readdir(dir, (err, files) => {
     });
     states.forEach(theState => {
         if (theState.quantifyFound()>0){
-             if (options.outputSummary){
-                console.log(theState.printSummary());
-             }
             if (options.outputLines){
                 if (options.outputFilename){
-                    console.log("\n\n====filename====:"+theState.printFilename());
+                    console.log("\n\n💾 ===========  file: "+theState.printFilename() + "  =====================\n");
                 }
                 if (options.outputSortedLines){
-                    console.log(theState.printLinesSorted());
+                    console.log(theState.printLinesSorted(options));
                 } else {
-                    console.log(theState.printLines());
+                    console.log(theState.printLines(options));
                 }
             }
+            if (options.outputSummary){
+                console.log("\n👉 Summary: "+theState.printSummary(options));
+             }
         }
     });
     let notFoundHeaderPrinted = false;
@@ -279,21 +296,21 @@ class State {
     #lines = [];
     #lineSet = new Set();
 
-    addLine(line, linenum, startIndex) {
-        if (!this.#lineSet.has(line)) {
+    addLine(line, linenum, startIndex, all) {
+        if (all || !this.#lineSet.has(line)) {
             this.#lines.push({ line, linenum, startIndex });
             this.#lineSet.add(line);
         }
     }
-    printLines() {
+    printLines(outputOptions) {
         return this.#lines.map(obj =>
-            options.outputSourceLocation
+            outputOptions.outputSourceLocation
                 ? 
                 `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
                 : obj.line
         ).join('\n');
     }
-    printLinesSorted() {
+    printLinesSorted(outputOptions) {
         // Sort a copy of #lines by line content, do not mutate #lines
         const sorted = [...this.#lines].sort((a, b) => {
             if (a.line < b.line) return -1;
@@ -301,7 +318,7 @@ class State {
             return 0;
         });
         return sorted.map(obj =>
-            options.outputSourceLocation
+            outputOptions.outputSourceLocation
                 ? 
                 `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
                 : obj.line
@@ -310,8 +327,8 @@ class State {
     printFilename(){
         return this.filename;
     }
-    printSummary(){
-        return JSON.stringify(this.toJSON(), null, 4);
+    printSummary(outputOptions){
+        return JSON.stringify(this.toJSON(outputOptions), null, 4);
     }
 
     filename = "";
@@ -324,8 +341,8 @@ class State {
     foundEnd() {
         this.#foundEnd = true;
     }
-    toJSON(){
-        if (options.outputSourceLocation){
+    toJSON(outputOptions){
+        if (outputOptions.outputSourceLocation){
             return {
                     filename: this.filename,
                     quantifyFound: this.#lines.length,
@@ -335,31 +352,7 @@ class State {
             return {
                 filename: this.filename,
                 quantifyFound: this.#lines.length,
-                lines: this.#lines,
-                foo: "bar"
-            }
-        }
-    }
-    toFilteredObject() {  //   this.toFilteredObject()
-        if (this.#lines.length === 0) {
-            return {
-                filename: this.filename
-            };
-        } else {
-            if (options.outputSourceLocation){
-                return {
-                    filename: this.filename,
-                    quantifyFound: this.#lines.length,
-                    lines: this.#lines,
-                };
-            } else {
-                return {
-                    filename: this.filename,
-                    quantifyFound: this.#lines.length,
-                    lines: this.#lines.filter(obj => {
-                                                obj.line
-                                             })
-                };
+                lines: this.#lines.map(obj => obj.line),
             }
         }
     }
