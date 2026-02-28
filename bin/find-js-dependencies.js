@@ -1,31 +1,39 @@
 #!/usr/bin/env node
-// Node.js utility to search files in a directory with regex suites
+/* Node.js utility to search files in a directory with regex suites
+    Run on the bash command line like so, since ths file has a shebang.
+        cd ~/infinite-neck
+        ./bin/find-js-dependencies.js --h
+    e.g.
+        laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies.js --h
+*/
+
 import { readdir, readFileSync } from 'fs';
 import { extname, join } from 'path';
 
-const FIND_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
+const DEFAULT_SUITE = 0;
 
-const FIND_EXPORT_FUNCTIONS = /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
-
-const FIND_INVOCATIONS = /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
-
-
-// List of keywords and identifiers to suppress (can include regex patterns)
-const SUPPRESS_IDENTIFIERS = [
+const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
     'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
 ];
-
-// List of more identifiers to suppress based on frameworks used (can include regex patterns)
-const FRAMEWORK_FUNCTIONS = [
+const FRAMEWORK_FUNCTIONS = [       // List of more identifiers to suppress based on frameworks used (can include regex patterns)
     'test', '$', 'rgb', 'makeSong' 
 ];
 
-const DEFAULT_SUITE = 0;
+const FIND_FUNCTIONS =            /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
+const FIND_NON_EXPORT_FUNCTIONS = /^\s*export\s+function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*.*)/gm;
+const FIND_EXPORT_FUNCTIONS =     /^\s*(?:export\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
+const FIND_INVOCATIONS =          /(?<!\.|\'|\")\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
 
 const SUITES = [
     {     
         name: 'functions',
         regex: FIND_FUNCTIONS,
+        description: 'Find functions in file',
+        expression: '${match[1]}'
+    },
+    {     
+        name: 'functions-no-exports',
+        regex: FIND_NON_EXPORT_FUNCTIONS,
         description: 'Find functions in file',
         expression: '${match[1]}'
     },
@@ -39,7 +47,7 @@ const SUITES = [
         name: 'exports',
         regex: FIND_EXPORT_FUNCTIONS,
         description: '[export] function <function-name>',
-        expression: '${match[1]}function ${match[2]}'
+        expression: '${match[1]} function ${match[2]}'
     },
     {   
         name: 'invocation-lines',
@@ -98,7 +106,10 @@ function printHelp(){
             +"  --dir=/my/dir          :dir to run in [ /my/dir ], else run in the current directory.\n"
             +"  --ext='*.js,*.txt'     :extensions to run [ *.js,*.txt ].\n"
             +"  --suite=0              :which test suite to run, [ 0 ] in this case.\n"
-            +"                             Run with --tests --help to show suites and quit.\n"
+            +"  --suite=functions      :which test suite to run, [ functions ] in this case.\n"
+            +"                             - may use indices [ 0 ]\n"
+            +'                             - may use "name" as shown with --tests\n'
+            +"                             - Run with --tests --help to show suites and quit.\n"
         );
 }
 
@@ -120,7 +131,24 @@ let options = {
 
 args.forEach(arg => {
     if (arg.startsWith('--suite=')) {
-        suiteIdx = parseInt(arg.split('=')[1], 10);
+        let suiteArg = arg.split('=')[1];
+        // Try integer first
+        let idx = Number(suiteArg);
+        if (Number.isInteger(idx) && idx >= 0 && idx < SUITES.length) {
+            suiteIdx = idx;
+        } else {
+            // Only allow hyphenated identifiers, ignore spaces in SUITES.name
+            let foundIdx = SUITES.findIndex(suite => suite.name.replace(/\s+/g, '') === suiteArg);
+            if (foundIdx !== -1) {
+                suiteIdx = foundIdx;
+            } else {
+                console.error('Invalid suite identifier: ' + suiteArg);
+                console.log('Please choose from the following:');
+                printHelpDivider();
+                printSuites();
+                process.exit(1);
+            }
+        }
     } else if (arg.startsWith('--ext=')) {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
@@ -175,7 +203,7 @@ const suite = SUITES[suiteIdx];
             
 
 if (!options.quiet){
-    console.log(`Running suite[${suiteIdx}]: ${name} (${description})`);
+    console.log(`Running suite[${suiteIdx}]:${name} (${description})`);
     console.log(`Directory: ${dir}`);
     if(singleFile){
         console.log(`Single file: ${singleFile}`);
