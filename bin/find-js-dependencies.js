@@ -419,12 +419,10 @@ readdir(dir, (err, files) => {
                 }
                 if (theExpression) {
                     const output = theExpression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
-                    //if (output&&output.trim().length) {
-                        const startIndex = regex.lastIndex - match[0].length;
-                        const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
-                        const lineNumber = upToMatch.split('\n').length;
-                        state.addLine(output.trim(), lineNumber, startIndex, options.outputAll);
-                    //}
+                    const startIndex = regex.lastIndex - match[0].length;
+                    const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
+                    const lineNumber = upToMatch.split('\n').length;
+                    state.addLine(output.trim(), lineNumber, startIndex, options.outputAll);
                 }
             }
         }
@@ -473,6 +471,8 @@ class State {
     
     addLine(line, linenum, startIndex, all) {
         if (all || !this.#lineSet.has(line)) {
+            //let rawLine = ""; //TODO: have the caller send in the full line.
+            //let replacedLine = "";
             this.#lines.push({ line, linenum, startIndex });
             this.#lineSet.add(line);
         }

@@ -1,0 +1,184 @@
+So this is a stand-alone unit.  It takes opitons from the command line, and runs one of the "SUITE"s.  Each suite encapsulates a strategy for something to find in a JavaScript file: a function call, or a function invocation.  The program is designed to run on all .js files in a directory, to help migrate our codebase in the project root, infinite-neck/ which is written in old-school javascript, and is being migrated to ES6.
+
+It produces adorned output, and also raw, organized output like grep.
+
+The code runs, and produces the expected outputs: lists of global namespace javascript invocations in source files, and lists of exported and non-exported functions in the source files.
+
+It also produces a structured runtime output array of objects that encapsulate state about the lines found in every source file.
+
+    Summary: {
+        "suite": "exports",
+        "filename": "song.js",
+        "quantifyFound": 2,
+        "lines": [
+            {
+                "line": "constNoteNamesArr",
+                "linenum": 13,
+                "startIndex": 201,
+                "rawLine": "",
+                "replacedLine": ""
+            },
+            {
+                "line": "makeSong",
+                "linenum": 51,
+                "startIndex": 1387,
+                "rawLine": "",
+                "replacedLine": ""
+            }
+        ]
+    }
+
+    
+
+It is designed to help migrate old code to ES6.  So it looks for exported functions and non-exported functions.  It looks for invocations that are file-scope or global scope, so no invocations have dots in front of the identifiers. The intention is to output these to std out for analysis and use by other tools.  Any javascript caller could get back all the State objects in the per-file states array, and have full information about the parse: text lines found, reasons, regex-used etc.
+
+program
+    one-file-read
+        one State object
+            filename
+            lines[]
+                Line object (unnamed literal right now, will become "class Line{}" )
+                {
+                    line
+                    linenumber
+                    startIndex
+                    rawLine
+                    replacedLine
+                }
+
+
+I have two features to add: 
+
+1) store the raw lines in the lines[] data structures.  Currently the regex throws away the rest of the found line.  It should be simple to grab all the text and preserve the raw line in the Line object.
+
+2) do a search and replace on these raw/original lines and output the result for a new patched file.  
+
+The replacement will be delegated to another function, which for now would be hardwired to one implementation.
+
+For right now, I would just make a call to this function in the point in the existing code where I call state.addLine(), and State could even be taught how to be the Delegate.  Especially if I can pass in the raw line or buffer to State.addLine(), along with the regex to use to find the identifier (again?).
+
+The source files of the target project in the project root are half-way migrated to ES6, so only some of the functions have exports, and there's not a consistent Namespace yet.  However, many of the files are utility classes, so can be used as Namespaces until a more class-oriented refactoring is done.  However, even then many of these functions are stateless utility functions, and would be useable in an ES6 environment with namespace strategy, which would keep the code clean by having every invocation prepended with the Namespace alias object.
+
+So the first runs of  find-js-dependencies.js are used to produce listings of identifiers:
+
+    -- non-exported functions that should be reviewed for a need to be exported.
+
+    -- exports from a file that will be transformed into a Module Namespace.
+
+    -- invocation of these functions from other files currently using old-school JavaScript global namespace.
+ 
+
+A human reviews this list and the source file, and with the help of find-js-dependencies.js output, compiles the list into a JSON list of valid identifiers to qualify with the namespace.  
+
+The the program is run again, passed in this list in a structured JSON object.  It processes the source file, prepending the Namespace to the selected identifiers.
+
+I won't support code that chains calls by putting object calls on separate lines like how jQuery calls are often formatted.  That will be handled by the human looking at the output of the first run (the search-only run) and looking at the codebase to find good candidates for replacement.  Messy chained calls will simply be excluded from the list of replacement candidates passed to the program on the second run (the search and replacement run)
+
+Eventually, the search-and-replace function is called:
+            Line.replacedLine = searchAndReplaceOne(
+                    Line.rawLine, 
+                    Line.identifier, 
+                    `.${newNamespaceName}.${Line.identifier}`, 
+                    Line.regexUsed);
+        );
+
+So my questions are:
+
+1) what high-level utilities already do the heavy lifting and could be re-used.
+
+2) can you do a code walkthrough of the existing code for quality and ability to be extended in this way.
+
+3) what elements of the existing code need to be changed to either grab the whole lines or whole file.
+
+
+================= 20260301 ==============================
+
+So I'd like to drill down into the strategy for actually doing the replace.  In our case, the "First Pass" through the program (find-js-dependencies.js) has produced two structures:
+1) an array of Line objects for invocations, where a Line object has these properties:
+     a) a bare identifier
+     b) the actual start index of the identifier exactly pointing to the code before any replacement.
+     c) the entire line for context, which can be displayed to the software developer and even wrapped in html tags for colored display if needed. (Grabbing the entire line is not properly implemented in the code yet.)
+
+2) a list of functions and exports that are candidates for the identifier based on what javascript file they came from.  These also have Line objects for displaying to the developer.  They don't need to be reference by the program on the "Second Pass" where replacement occurs, because the input to the "Second Pass" will just be a list of Namespace qualifiers for each invocation identifier.
+
+So when the developer has reviewed the side-by-side or hierachically nested display of issues, he can choose the invocation identifiers and associate them with the Namespace qualifier.  This would be an input data structure to the "Second Pass" when the program is run in replacement mode.
+
+So it seems that the replacement strategy is to rip through the source file with the invocations, one by one from the list of identifiers and their locations, and build a reference to source line and replaced line.
+
+Then the process is repeated for the next identifier. Hopefully in the same run so we don't get into higher order search time inefficiencies.  The issue becomes how to build up the output, because every search and replace would change the source file if we did a brute force approach.  
+
+Instead, it seems it would be better to insert a magic tag in the source that gets replaced as the new file is rebuilt.  The magic tag is effectively a reference to the replacement point, and all replacement points are accumulated and replaced on final output once.  This would be in a data structure, not an actual string.
+
+Old file:
+
+    bla bla bla invocationOne() bla bla bla
+    foo foo foo invocationTwo()  foo foo foo invocationThree() foo foo
+    bar bar bar
+
+
+Let's say that in my pseudo code that follows, that @{location,newNamespaceName} is a reference pointer stored in a data structure of Line object.
+
+Reference-fixed file (in memory in a structure, not stored as an actual string):
+
+    bla bla bla @{location,"newNamespaceName1"}invocationOne() bla bla bla
+    foo foo foo  @{location,"newNamespaceName2"}invocationTwo()  foo foo foo  @{location,"newNamespaceName3"}invocationThree() foo foo
+    bar bar bar
+
+It's not clear to me exactly what properties @{location,newNamespaceName} would need yet. The variable <location> here represents whatever knowledge is needed in the @{location,newNamespaceName} structure.  Whereas newNamespaceName is known to be the new Namespace identifier, shown as actual strings ("newNamespaceName1", "newNamespaceName2", "newNamespaceName3") in this example. 
+
+Output file:
+
+    bla bla bla newNamespaceName1.invocationOne() bla bla bla
+    foo foo foo  newNamespaceName2.invocationTwo()  foo foo foo  newNamespaceName3.invocationThree() foo foo
+    bar bar bar
+
+We can simplify the use case by stating a rule:
+
+   "No method invocations that are flagged for inclusion will span more than one line of source code."
+
+This rule will be enforced by the developer by lint'ing the file before submission.
+
+It's not a lexical parser, so this would violate the rule, but may work anyway:
+
+    invocationOne(  "argument1",
+        "argument2",
+        argument3);
+    invocation2();
+
+This next examplle would violate the rule, and the developer would ensure that some other strategy is used by changing the source file first, because the code is messy anyway:
+
+    invocationOne( `${invocationTwo()} baz baz`, 
+                   invocationThree());
+
+It's not clear if this would actually present a problem, but let's assume that we'll enforce such rules in developer best practices, not in code.
+
+But lets assume that we will handle these cases correctly:
+
+    invocationOne(invocationTwo());
+
+because this becomes
+
+    newNamespaceName1.invocationOne(newNamespaceName2.invocationTwo());
+
+We can also assume that the following rule will be lint'd by the developer:
+
+    "All method invocations will be removed from comments prior to submission."
+
+The existing regular expressions helpfully enforce that the following will *not* be found in the first pass:
+
+    var myString = "invocationOne() foo foo";
+
+The top questions becomes:
+
+   1) How do we preserve the Line object so that it contains the entire line of text found in the source file?  
+    
+    
+    2) How do we make the regular expressions that find the identifier capture the entire line perfectly (from ^ to $ in the regex).   
+
+
+
+
+
+
+
+ 
