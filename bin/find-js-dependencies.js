@@ -10,7 +10,7 @@
 import { readdir, readFileSync } from 'fs';
 import { extname, join } from 'path';
 
-const DEFAULT_SUITE = 0;
+const DEFAULT_SUITE = -1;
 
 const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
     'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
@@ -30,38 +30,44 @@ const SUITES = [
     {     
         name: 'functions',
         regex: FIND_FUNCTIONS,
-        description: 'Find functions in file',
-        expression: '${match[1]}${match[2]} ${match[3]}'
+        description: '[export] function <function-name>',
+        expression: '${match[1]}${match[2]} ${match[3]}',
+        bareExpression:'${match[3]}' 
     },
     {     
         name: 'functions-no-exports',
         regex: FIND_NON_EXPORT_FUNCTIONS,
-        description: 'Find functions in file',
-        expression: '${match[1]}${match[2]} ${match[3]}'
+        description: 'function <function-name>',
+        expression: '${match[1]}${match[2]} ${match[3]}',
+        bareExpression:'${match[3]}' 
     },
     {   
         name: 'function-lines',
         regex: FIND_FUNCTIONS,
         description: 'Lines with functions in file',
-        expression: '${match[0]}'
+        expression: '${match[0]}',
+        bareExpression:'${match[0]}' 
     },
     {   
         name: 'export-functions',
         regex: FIND_EXPORT_FUNCTIONS,
-        description: '[export] function <function-name>',
-        expression: '${match[1]}${match[2]} ${match[3]}'
+        description: 'export function <function-name>',
+        expression: '${match[1]}${match[2]} ${match[3]}',
+        bareExpression:'${match[3]}' 
     },
     {   
         name: 'exports',
         regex: FIND_ALL_EXPORTS,
-        description: '[export] function <function-name>',
-        expression: '${match[1]}${match[2]} ${match[3]}'
+        description: 'export (const|var|let|class|default|function) <function-name>',
+        expression: '${match[1]}${match[2]} ${match[3]}',
+        bareExpression:'${match[3]}' 
     },
     {   
         name: 'invocation-lines',
         regex: FIND_INVOCATION_LINES,
         description: 'Find invocations in file (whole line)',
         expression: '${match[0]}',
+        bareExpression:'${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
     },
     {   
@@ -69,14 +75,16 @@ const SUITES = [
         regex: FIND_INVOCATIONS,
         description: 'Find invocations in file (noLang)',
         expression: '${match[1]}',
+        bareExpression:'${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: []
     },
     {   
-        name: 'invocations-no-framework',
+        name: 'invocations-no-frameworks',
         regex: FIND_INVOCATIONS,
-        description: 'Find invocations in file (noLang,noFramework)',
+        description: 'Find invocations in file (noLang, no framework functions)',
         expression: '${match[1]}',
+        bareExpression:'${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: FRAMEWORK_FUNCTIONS
     }
@@ -88,8 +96,13 @@ function formatSuite(oneSuite, sIDx){
 
 }
 
+function printHelpBox(msg){
+    console.log("╔════════════════════════════════════════════════════════════════════════════");
+    console.log("║     "+msg);
+    console.log("╚════════════════════════════════════════════════════════════════════════════");
+}
 function printHelpDivider(){
-    console.log("==================================================");
+    console.log("═════════════════════════════════════════════════");
 }
 
 function printSuites(){
@@ -100,30 +113,33 @@ function printSuites(){
 function printSuiteNames(){
     SUITES.forEach((oneSuite) => {console.log(oneSuite.name)});
 }
+function printSuiteNumbers(){
+    SUITES.forEach((oneSuite, sIDx) => {console.log(`${sIDx}: ${oneSuite.name}`)});
+}
 
 function printHelp(){
     console.log(
              "Command-line options:\n"
             +"  --all                  :all lines, including duplicates.\n"
+            +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --filenames |  --fi    :ouput filenames.\n"
             +"  --help      |  --h     :show this message and quit.\n"
             +"  --lines     |  --li    :ouput lines.\n"
             +"  --location  |  --lo    :out source character location.\n"
             +"  --quiet     |  --q     :no info messages\n"
             +"  --sort      |  --so    :sort lines.\n"
-            +"  --summary   |  --su    :ouput summary (true if no --lines or --filenames output\n"
+            +"  --summary   |  --sum   :ouput summary (true if no --lines or --filenames output\n"
             +"  --tests     |  --te    :print suites of tests.\n"
-            +"  --suites               :print suites of tests.\n"
-            +"  --suitenames           :print suites.name only.\n"
-            +"  --verbose   |  --v     :extra debugging information.\n"
+            +"  --suites               :print suites of tests and quit.\n"
+            +"  --suitenames           :print suites.name only and quit.\n"
+            +"  --suitenumbers         :print [index]: suites[index].name and quit.\n"
+            +"  --verbose   |  --v     :extra test information.\n"
+            +"  --debug     |  --d     :extra debugging information.\n"
             +"\n"
             +"  --dir=/my/dir          :dir to run in [ /my/dir ], else run in the current directory.\n"
             +"  --ext='*.js,*.txt'     :extensions to run [ *.js,*.txt ].\n"
             +"  --suite=0              :which test suite to run, [ 0 ] in this case.\n"
             +"  --suite=functions      :which test suite to run, [ functions ] in this case.\n"
-            +"                             - may use indices [ 0 ]\n"
-            +'                             - may use "name" as shown with --tests\n'
-            +"                             - Run with --tests --help to show suites and quit.\n"
         );
 }
 
@@ -135,12 +151,14 @@ let singleFile = null;
 
 let options = {
     quiet : false,
+    bareExpressions : false,
     outputFilename : false,
     outputLines : false,
     outputSummary : false,   
     outputSourceLocation : false,
     outputSortedLines : false,
-    verbose: false
+    verbose: false,
+    debug: false
 }
 
 args.forEach(arg => {
@@ -157,9 +175,9 @@ args.forEach(arg => {
                 suiteIdx = foundIdx;
             } else {
                 console.error('Invalid suite identifier: ' + suiteArg);
-                console.log('Please choose from the following:');
+                console.log('Please choose from the following, or run with --suites to see the full suite info:');
                 printHelpDivider();
-                printSuites();
+                printSuiteNames();
                 process.exit(1);
             }
         }
@@ -167,7 +185,9 @@ args.forEach(arg => {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
         dir = arg.split('=')[1];
-    } else if (arg.startsWith("--all")) {      //--all
+    } else if (arg.startsWith("--b")) {       //--bare
+        options.bareExpressions = true;
+    } else if (arg.startsWith("--all")) {     //--all
         options.outputAll = true;
     } else if (arg.startsWith("--fi")) {      //--filenames
         options.outputFilename = true;
@@ -183,13 +203,19 @@ args.forEach(arg => {
         options.outputSummary = true;    
     } else if (arg.startsWith("--te")         //--tests
              ||arg.startsWith("--suites")) {  //--suites
-        printHelpDivider();                   // if you want to quit after seeing suites, run with: --suites --h
+        printHelpDivider();                   
         printSuites();
+        process.exit(1);
+    } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
+        printSuiteNumbers();
+        process.exit(1);
     } else if (arg.startsWith("--suitenames")) { //--suitenames
         printSuiteNames();
         process.exit(1);
     } else if (arg.startsWith("--v")) {       //--verbose
         options.verbose = true;
+    } else if (arg.startsWith("--d")) {       //--debug
+        options.debug = true;
     } else if (arg.startsWith("--h")) {       //--help
         printHelp();
         process.exit(1);
@@ -207,21 +233,39 @@ if (args.length > 0) {
     }
 }
 
-if (!SUITES[suiteIdx]) {
-    console.error('Invalid suite index: '+suiteIdx);
-    console.log("Please choose from the following:");
+if (   suiteIdx == -1
+    || !SUITES[suiteIdx] ) {
+    function miniHelp(){
+         console.error("Please run with the following options:"
+            +"\n  --suites         (to see full suite info)"
+            +"\n  --suitenames     (to see the bare list of suite names)"
+            +"\n  --suitenumbers   (to see the list of suite numbers and names)"
+            +"\n  For example run with:"
+            +"\n    --suite=0"
+            +"\n    --suite=functions"
+            +"\n  or one of these other tests, shown by number and name:");
+    }
+    if (suiteIdx === -1) {
+    
+        console.error("No suite/test provided.");
+        miniHelp();
+    } else {
+        console.error('Invalid suite index: '+suiteIdx);
+        miniHelp();
+    }
+    
     printHelpDivider();
-    printSuites();
+    printSuiteNumbers();
+    printHelpDivider();
     process.exit(1);
 }
 
-const { regex, name, description, expression } = SUITES[suiteIdx];
+const { regex, name, description, expression, bareExpression } = SUITES[suiteIdx];
 
 const suite = SUITES[suiteIdx];
-            
 
-if (!options.quiet){
-    console.log(`Running suite[${suiteIdx}]:${name} (${description})`);
+if (options.verbose){
+    printHelpBox(`👉 Running suite[${suiteIdx}]:${name} (${description})`);
     console.log(`Directory: ${dir}`);
     if(singleFile){
         console.log(`Single file: ${singleFile}`);
@@ -231,17 +275,25 @@ if (!options.quiet){
     console.log("Suite:\n" + JSON.stringify(SUITES[suiteIdx], (key, value) =>
                 value instanceof RegExp ? value.toString() : value, 4));
     console.log("Options:\n" + JSON.stringify(options,null,4));
-} else if (options.outputFilename || options.outputSummary){
-    //We are not doing lines-only output destined for text processing, so at least print out the suite description:
     printHelpDivider()
-    console.log("Suite: "+suiteIdx + "  "+ suite.description ); 
-    printHelpDivider()
+} else if (options.quiet){
+    //do nothing
+} else {
+    // not --quiet and not --verbose gets minimal
+    if (options.outputFilename || options.outputSummary){
+        //We are not doing lines-only output destined for text processing, so at least print out the suite description:
+        printHelpDivider()
+        console.log("Suite: "+suiteIdx + "  "+ suite.description ); 
+        printHelpDivider()
+    }
 }
 
-if (options.verbose) console.log("\n********* Directory ************"+dir+"************\n");
 // --- Main logic ---
+
+if (options.debug) console.log("\n********* Directory ************"+dir+"************\n");
+
 readdir(dir, (err, files) => {
-    if (options.verbose) console.log("********* Files in Dir **********"+files+"\n*****************************************************\n");
+    if (options.debug) console.log("********* Files in Dir **********"+files+"\n*****************************************************\n");
     if (err) {
         console.error('Error reading directory:', err);
         process.exit(1);
@@ -253,9 +305,9 @@ readdir(dir, (err, files) => {
     } else {
         targetFiles = files.filter(file => extensions.includes(extname(file)));
     }
-    if (options.verbose)     console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
+    if (options.debug)     console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
     targetFiles.forEach(file => {
-        if (options.verbose) console.log("********* Processing ******"+file+"************");
+        if (options.debug) console.log("********* Processing ******"+file+"************");
         let state = new State();
         states.push(state);
         state.filename = file;
@@ -289,6 +341,9 @@ readdir(dir, (err, files) => {
                 if (!found) {
                     state.foundBegin();
                     found = true;
+                }
+                if (options.bareExpressions){
+                    expression = bareExpression;
                 }
                 if (expression) {
                     const output = expression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
