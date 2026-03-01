@@ -10,6 +10,43 @@
 import { readdir, readFileSync } from 'fs';
 import { extname, join } from 'path';
 
+
+const COLORS = {
+    //Reset/General',
+    Reset: '\x1b[0m', 
+    //Text Decorations',
+    Bold: '\x1b[1m',
+    Dim:  '\x1b[2m',
+    Underline: '\x1b[4m',
+    Inverse: '\x1b[7m',
+    //Foreground Colors',
+    Black: '\x1b[30m',
+    Red: '\x1b[31m',
+    Green: '\x1b[32m',
+    Yellow: '\x1b[33m',
+    Blue: '\x1b[34m',
+    Magenta: '\x1b[35m',
+    Cyan: '\x1b[36m',
+    White: '\x1b[37m',
+    //Background Colors',
+    BgBlack: '\x1b[40m',
+    BgRed: '\x1b[41m',
+    BgGreen: '\x1b[42m',
+    BgYellow: '\x1b[43m',
+    BgBlue: '\x1b[44m',
+    BgMagenta: '\x1b[45m',
+    BgCyan: '\x1b[46m',
+    BgWhite: '\x1b[47m'
+}
+
+function testColors(){
+    COLORS.forEach((prop, val) => {
+        console.log(val, "Test Me");
+    });
+}
+testColors();
+
+
 const DEFAULT_SUITE = -1;
 
 const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
@@ -97,31 +134,45 @@ function formatSuite(oneSuite, sIDx){
 }
 
 function printHelpBox(msg){
-    console.log("╔════════════════════════════════════════════════════════════════════════════");
-    console.log("║     "+msg);
-    console.log("╚════════════════════════════════════════════════════════════════════════════");
+    console.log(colorANSI(COLORS.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
+    console.log(colorANSI(COLORS.Cyan+"║     "));
+    console.log(colorANSI(COLORS.Cyan+"╚════════════════════════════════════════════════════════════════════════════"));
 }
 function printHelpDivider(){
-    console.log("═════════════════════════════════════════════════");
+    console.log(colorANSI(COLORS.Cyan,"═════════════════════════════════════════════════"));
 }
 
 function printSuites(){
-        SUITES.forEach((oneSuite, sIDx) => {console.log(formatSuite(oneSuite, sIDx))});
+        SUITES.forEach((oneSuite, sIDx) => {printInfo(formatSuite(oneSuite, sIDx))});
         printHelpDivider();
+}
+function printInfo(str){
+   console.log(colorANSI(COLORS.Green,str)); 
 }
 
 function printSuiteNames(){
-    SUITES.forEach((oneSuite) => {console.log(oneSuite.name)});
+    SUITES.forEach((oneSuite) => {printInfo(oneSuite.name)});
 }
 function printSuiteNumbers(){
-    SUITES.forEach((oneSuite, sIDx) => {console.log(`${sIDx}: ${oneSuite.name}`)});
+    SUITES.forEach((oneSuite, sIDx) => {printInfo(`${sIDx}: ${oneSuite.name}`)});
 }
 
+function colorANSI(aColor, str){
+    const RESET = '\x1b[0m';
+    if (options.color) {
+        return aColor + str + RESET;
+    } else {
+        return str;
+    }
+}
+
+
 function printHelp(){
-    console.log(
-             "Command-line options:\n"
+    console.log( colorANSI(COLORS.Cyan,"Command-line options:\n"
             +"  --all                  :all lines, including duplicates.\n"
             +"  --bare      |  --b     :bare expressions without keywords\n"
+            +"  --color     |  --c     :color output for DOS glory.\n"
+            +"                            (Must be first arg if you want --help or suite listings in color.)\n"
             +"  --filenames |  --fi    :ouput filenames.\n"
             +"  --help      |  --h     :show this message and quit.\n"
             +"  --lines     |  --li    :ouput lines.\n"
@@ -140,6 +191,7 @@ function printHelp(){
             +"  --ext='*.js,*.txt'     :extensions to run [ *.js,*.txt ].\n"
             +"  --suite=0              :which test suite to run, [ 0 ] in this case.\n"
             +"  --suite=functions      :which test suite to run, [ functions ] in this case.\n"
+            )
         );
 }
 
@@ -151,6 +203,7 @@ let singleFile = null;
 
 let options = {
     quiet : false,
+    color : false,
     bareExpressions : false,
     outputFilename : false,
     outputLines : false,
@@ -187,6 +240,8 @@ args.forEach(arg => {
         dir = arg.split('=')[1];
     } else if (arg.startsWith("--b")) {       //--bare
         options.bareExpressions = true;
+    } else if (arg.startsWith("--c")) {       //--color
+        options.color = true;
     } else if (arg.startsWith("--all")) {     //--all
         options.outputAll = true;
     } else if (arg.startsWith("--fi")) {      //--filenames
@@ -280,13 +335,10 @@ if (options.verbose){
     //do nothing
 } else {
     // not --quiet and not --verbose gets minimal
-    if (options.outputFilename || options.outputSummary){
-        //We are not doing lines-only output destined for text processing, so at least print out the suite description:
-        printHelpDivider()
-        console.log("Suite: "+suiteIdx + "  "+ suite.description ); 
-        printHelpDivider()
-    }
+    printHelpBox("Suite: "+suiteIdx + "  "+colorANSI(COLORS.Red, suite.name)+"  "+ colorANSI(COLORS.Cyan, suite.description) ); 
+
 }
+
 
 // --- Main logic ---
 
@@ -342,11 +394,14 @@ readdir(dir, (err, files) => {
                     state.foundBegin();
                     found = true;
                 }
+                let theExpression;
                 if (options.bareExpressions){
-                    expression = bareExpression;
+                    theExpression = bareExpression;
+                } else {
+                    theExpression = expression;
                 }
-                if (expression) {
-                    const output = expression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
+                if (theExpression) {
+                    const output = theExpression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
                     //if (output&&output.trim().length) {
                         const startIndex = regex.lastIndex - match[0].length;
                         const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex

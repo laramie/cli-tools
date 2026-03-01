@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-DEBUG_TESTS=1
-FIND_DEPENDENCIES_OPTIONS=' --sort --lines --bare '
-#FIND_DEPENDENCIES_OPTIONS=' --q --sort --lines --bare'
+DEBUG_TESTS=0
+FIND_DEPENDENCIES_OPTIONS=' --sort --lines --bare --color '
 
 printHeader() {
-    echo 
-    echo 
-    echo "▛▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▜ "
-    echo "▌   💾     $1"     
-    echo "▙▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▟ "
-    echo 
+    CYAN='\033[1;36m'
+    RESET='\033[0m'
+    echo
+    echo -e "${CYAN}▛▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▜${RESET}"
+    echo -e "${CYAN}▌   💾     $1${RESET}"
+    echo -e "${CYAN}▙▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▟${RESET}"
+    echo
     echo
 }
 
 
-testEm() {
+testHelpSystem() {
     set +x
     if [ "$#" -eq 0 ]; then
         echo "testEm() :: No files specified.  Exiting."
@@ -23,20 +23,25 @@ testEm() {
     fi
 
     printHeader "First running --suites" 
-    echo 
-    echo 
-    ./bin/find-js-dependencies.js --suites
-    echo 
-    printHeader "Now running --suitenumbers"
-    ./bin/find-js-dependencies.js --suitenumbers
-    echo 
-    printHeader "Now running --suitenames"
-    ./bin/find-js-dependencies.js --suitenames
-    echo 
-    printHeader "Now running --help"
-    ./bin/find-js-dependencies.js --help
-
+    ./bin/find-js-dependencies.js --color --suites
     
+    printHeader "Now running --suitenumbers"
+    ./bin/find-js-dependencies.js --color --suitenumbers
+    
+    printHeader "Now running --suitenames"
+    ./bin/find-js-dependencies.js --color --suitenames
+    
+    printHeader "Now running --help"
+    ./bin/find-js-dependencies.js --color --help
+
+}
+
+testEm() {
+    set +x
+    if [ "$#" -eq 0 ]; then
+        echo "testEm() :: No files specified.  Exiting."
+        exit
+    fi
 
     printHeader "Testing functions and exports"
     if [ "$DEBUG_TESTS" -eq 1 ]; then
@@ -63,8 +68,16 @@ testEm() {
 if [ "$DEBUG_TESTS" -eq 1 ]; then
   set -x
 fi
-testEm $FIND_DEPENDENCIES_OPTIONS "userColors.js"
+
+
+testHelpSystem $FIND_DEPENDENCIES_OPTIONS
+
+#testEm $FIND_DEPENDENCIES_OPTIONS "userColors.js"
+
 #testEm $FIND_DEPENDENCIES_OPTIONS "utils.js"
+
+
+
 set +x
 
 echo 
