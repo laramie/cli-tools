@@ -53,7 +53,7 @@ const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to supp
     'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
 ];
 const FRAMEWORK_FUNCTIONS = [       // List of more identifiers to suppress based on frameworks used (can include regex patterns)
-    'test', '$', 'rgb', 'makeSong' 
+    'alert', 'test', '$', 'rgb', 'makeSong' 
 ];
 
 const FIND_FUNCTIONS =            /^(\s*(?:export\s+)?)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
