@@ -1,15 +1,30 @@
 #!/usr/bin/env bash
 
 DEBUG_TESTS=0
-FIND_DEPENDENCIES_OPTIONS=' --sort --lines --bare --color '
-
+COLOR_HELP_TESTS=' --color '
+########COLOR_HELP_TESTS=''
+###FIND_DEPENDENCIES_OPTIONS=' --sort --color   --lines --filenames --short  '
+FIND_DEPENDENCIES_OPTIONS=' --sort --color   --lines --filenames --short  --bare --quiet  '
+DISK=" --💾 "
+CYAN='\033[1;36m'
+RESET='\033[0m'
+    
 printHeader() {
-    CYAN='\033[1;36m'
-    RESET='\033[0m'
     echo
-    echo -e "${CYAN}▛▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▜${RESET}"
-    echo -e "${CYAN}▌   💾     $1${RESET}"
-    echo -e "${CYAN}▙▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▟${RESET}"
+    echo -e "${CYAN}▛▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▜${RESET}"
+    echo -e "${CYAN}▌   ♺     $1${RESET}  "
+    echo -e "${CYAN}▌            $2${RESET}  "
+    echo -e "${CYAN}▌            $3${RESET}  "
+    echo -e "${CYAN}▙▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▟${RESET}"
+    echo
+    echo
+}
+
+printHeaderOneline() {
+    echo
+    echo -e "${CYAN}▛▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▜${RESET}"
+    echo -e "${CYAN}▌        $1${RESET}  "
+    echo -e "${CYAN}▙▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▟${RESET}"
     echo
     echo
 }
@@ -22,17 +37,17 @@ testHelpSystem() {
         exit
     fi
 
-    printHeader "First running --suites" 
-    ./bin/find-js-dependencies.js --color --suites
+    printHeaderOneline "Now running --suites" 
+    ./bin/find-js-dependencies.js $COLOR_HELP_TESTS --suites
     
-    printHeader "Now running --suitenumbers"
-    ./bin/find-js-dependencies.js --color --suitenumbers
+    printHeaderOneline "Now running --suitenumbers"
+    ./bin/find-js-dependencies.js $COLOR_HELP_TESTS --suitenumbers
     
-    printHeader "Now running --suitenames"
-    ./bin/find-js-dependencies.js --color --suitenames
+    printHeaderOneline "Now running --suitenames"
+    ./bin/find-js-dependencies.js $COLOR_HELP_TESTS --suitenames
     
-    printHeader "Now running --help"
-    ./bin/find-js-dependencies.js --color --help
+    printHeaderOneline "Now running --help"
+    ./bin/find-js-dependencies.js $COLOR_HELP_TESTS --help
 
 }
 
@@ -43,18 +58,19 @@ testEm() {
         exit
     fi
 
-    printHeader "Testing functions and exports"
+    FOO="$@"
+    printHeader "Testing functions and exports" "$FOO"
     if [ "$DEBUG_TESTS" -eq 1 ]; then
     set -x
     fi
-    ./bin/find-js-dependencies.js --suite=function-lines $@ 
-    ./bin/find-js-dependencies.js --suite=functions  $@ 
-    ./bin/find-js-dependencies.js --suite=functions-no-exports $@ 
-    ./bin/find-js-dependencies.js --suite=export-functions $@ 
-    ./bin/find-js-dependencies.js --suite=exports $@ 
+    #./bin/find-js-dependencies.js --suite=function-lines $@ 
+    #./bin/find-js-dependencies.js --suite=functions  $@ 
+    #./bin/find-js-dependencies.js --suite=functions-no-exports $@ 
+    #./bin/find-js-dependencies.js --suite=export-functions $@ 
+    #./bin/find-js-dependencies.js --suite=exports $@ 
     set +x
     
-    printHeader "Testing invocations"
+    printHeader "Testing invocations" "$FOO"
 
     if [ "$DEBUG_TESTS" -eq 1 ]; then
     set -x
@@ -70,17 +86,31 @@ if [ "$DEBUG_TESTS" -eq 1 ]; then
 fi
 
 
-testHelpSystem $FIND_DEPENDENCIES_OPTIONS
+#testHelpSystem $FIND_DEPENDENCIES_OPTIONS
 
-#testEm $FIND_DEPENDENCIES_OPTIONS "userColors.js"
+testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "song.js"
 
-#testEm $FIND_DEPENDENCIES_OPTIONS "utils.js"
+#testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "userColors.js"
+
+## this tests everything in the directory:
+#  testEm $FIND_DEPENDENCIES_OPTIONS $DISK 
 
 
 
 set +x
 
 echo 
- printHeader "Tests complete."
+ printHeaderOneline " 🛈     Individual command line examples:"
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=function-lines $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions  $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions-no-exports $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=export-functions $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=exports $@ 
 echo 
-
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocation-lines $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations $@ 
+echo     ./bin/find-js-dependencies.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations-no-frameworks $@ 
+echo 
+echo 
+ printHeaderOneline "👍   Tests complete."
+echo 

@@ -394,3 +394,6 @@ Object.assign(gUserColorDictOEM.dict, gUserColorDict.dict);
 function resetUserColorsToDefault(){
     Object.assign(gUserColorDict.dict, gUserColorDictOEM.dict);
 }
+export function test(hex, bw) {
+  //no impl.  Just for grep'ing.
+}

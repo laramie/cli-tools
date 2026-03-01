@@ -40,11 +40,11 @@ const COLORS = {
 }
 
 function testColors(){
-    COLORS.forEach((prop, val) => {
-        console.log(val, "Test Me");
+    Object.entries(COLORS).forEach(([prop, val]) => {
+        console.log(val, "   "+prop+"   "+COLORS.Reset);
     });
 }
-testColors();
+//testColors();
 
 
 const DEFAULT_SUITE = -1;
@@ -61,8 +61,10 @@ const FIND_NON_EXPORT_FUNCTIONS = /^(\s*)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$
 const FIND_EXPORT_FUNCTIONS =     /^(\s*export\s+)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
 const FIND_ALL_EXPORTS =          /^(\s*export\s+)\s*(const|var|let|class|default|function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
 const FIND_INVOCATIONS =          /(?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
-const FIND_INVOCATION_LINES =     /^.*(?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm
+const FIND_INVOCATION_LINES =     /^((?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+).*[a-zA-Z_$][a-zA-Z0-9_$]*\s*\()/gm
 
+const BQ = COLORS.Magenta+'❝'+COLORS.Reset;
+const EQ = COLORS.Magenta+'❞'+COLORS.Reset;
 const SUITES = [
     {     
         name: 'functions',
@@ -82,7 +84,7 @@ const SUITES = [
         name: 'function-lines',
         regex: FIND_FUNCTIONS,
         description: 'Lines with functions in file',
-        expression: '${match[0]}',
+        expression: BQ+'${match[0]}'+EQ,
         bareExpression:'${match[0]}' 
     },
     {   
@@ -101,17 +103,17 @@ const SUITES = [
     },
     {   
         name: 'invocation-lines',
-        regex: FIND_INVOCATION_LINES,
-        description: 'Find invocations in file (whole line)',
-        expression: '${match[0]}',
+        regex: FIND_INVOCATION_LINES, 
+        description: 'Find top-level invocations (whole line)',
+        expression: BQ+'${match[0]}'+EQ,
         bareExpression:'${match[0]}',
         keywords: SUPPRESS_IDENTIFIERS
     },
     {   
         name: 'invocations',
         regex: FIND_INVOCATIONS,
-        description: 'Find invocations in file (noLang)',
-        expression: '${match[1]}',
+        description: 'Find top-level invocations (noLang)',
+        expression: BQ+'${match[0]}'+EQ,
         bareExpression:'${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: []
@@ -119,8 +121,8 @@ const SUITES = [
     {   
         name: 'invocations-no-frameworks',
         regex: FIND_INVOCATIONS,
-        description: 'Find invocations in file (noLang, no framework functions)',
-        expression: '${match[1]}',
+        description: 'Find top-level invocations (noLang,noFrameworks)',
+        expression: BQ+'${match[0]}'+EQ,
         bareExpression:'${match[1]}',
         keywords: SUPPRESS_IDENTIFIERS,
         frameworkFunctions: FRAMEWORK_FUNCTIONS
@@ -135,8 +137,8 @@ function formatSuite(oneSuite, sIDx){
 
 function printHelpBox(msg){
     console.log(colorANSI(COLORS.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
-    console.log(colorANSI(COLORS.Cyan+"║     "));
-    console.log(colorANSI(COLORS.Cyan+"╚════════════════════════════════════════════════════════════════════════════"));
+    console.log(colorANSI(COLORS.Cyan,"║     "+msg));
+    console.log(colorANSI(COLORS.Cyan,"╚════════════════════════════════════════════════════════════════════════════"));
 }
 function printHelpDivider(){
     console.log(colorANSI(COLORS.Cyan,"═════════════════════════════════════════════════"));
@@ -144,10 +146,10 @@ function printHelpDivider(){
 
 function printSuites(){
         SUITES.forEach((oneSuite, sIDx) => {printInfo(formatSuite(oneSuite, sIDx))});
-        printHelpDivider();
+        //printHelpDivider();
 }
 function printInfo(str){
-   console.log(colorANSI(COLORS.Green,str)); 
+   console.log(colorANSI(COLORS.Bold+COLORS.Yellow,str)); 
 }
 
 function printSuiteNames(){
@@ -160,7 +162,7 @@ function printSuiteNumbers(){
 function colorANSI(aColor, str){
     const RESET = '\x1b[0m';
     if (options.color) {
-        return aColor + str + RESET;
+        return aColor + str + COLORS.Reset;
     } else {
         return str;
     }
@@ -168,19 +170,20 @@ function colorANSI(aColor, str){
 
 
 function printHelp(){
-    console.log( colorANSI(COLORS.Cyan,"Command-line options:\n"
+    console.log( colorANSI(COLORS.Bold+COLORS.Cyan,"Command-line options:\n"
             +"  --all                  :all lines, including duplicates.\n"
             +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --color     |  --c     :color output for DOS glory.\n"
             +"                            (Must be first arg if you want --help or suite listings in color.)\n"
             +"  --filenames |  --fi    :ouput filenames.\n"
             +"  --help      |  --h     :show this message and quit.\n"
-            +"  --lines     |  --li    :ouput lines.\n"
-            +"  --location  |  --lo    :out source character location.\n"
+            +"  --lines     |  --li    :output lines.\n"
+            +"  --location  |  --lo    :output source character location.\n"
             +"  --quiet     |  --q     :no info messages\n"
+            +"  --short     |  --sh    :short summaries, run with --summary too.\n"
             +"  --sort      |  --so    :sort lines.\n"
-            +"  --summary   |  --sum   :ouput summary (true if no --lines or --filenames output\n"
-            +"  --tests     |  --te    :print suites of tests.\n"
+            +"  --summary   |  --sum   :output summary.\n"
+            +"  --tests     |  --te    :print suites of tests and quit.\n"
             +"  --suites               :print suites of tests and quit.\n"
             +"  --suitenames           :print suites.name only and quit.\n"
             +"  --suitenumbers         :print [index]: suites[index].name and quit.\n"
@@ -208,6 +211,7 @@ let options = {
     outputFilename : false,
     outputLines : false,
     outputSummary : false,   
+    shortSummary : false,   
     outputSourceLocation : false,
     outputSortedLines : false,
     verbose: false,
@@ -238,13 +242,13 @@ args.forEach(arg => {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
         dir = arg.split('=')[1];
+    } else if (arg.startsWith("--all")) {     //--all
+        options.outputAll = true;
     } else if (arg.startsWith("--b")) {       //--bare
         options.bareExpressions = true;
     } else if (arg.startsWith("--c")) {       //--color
         options.color = true;
-    } else if (arg.startsWith("--all")) {     //--all
-        options.outputAll = true;
-    } else if (arg.startsWith("--fi")) {      //--filenames
+   } else if (arg.startsWith("--fi")) {      //--filenames
         options.outputFilename = true;
     } else if (arg.startsWith("--li")) {      //--lines
         options.outputLines = true;
@@ -254,11 +258,13 @@ args.forEach(arg => {
         options.quiet = true;
     } else if (arg.startsWith("--so")) {      //--sort
         options.outputSortedLines = true;    
+    } else if (arg.startsWith("--sh")) {      //--short (shortSummary)
+        options.shortSummary = true;    
     } else if (arg.startsWith("--sum")) {     //--summary
         options.outputSummary = true;    
     } else if (arg.startsWith("--te")         //--tests
              ||arg.startsWith("--suites")) {  //--suites
-        printHelpDivider();                   
+        //printHelpDivider();                   
         printSuites();
         process.exit(1);
     } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
@@ -320,7 +326,9 @@ const { regex, name, description, expression, bareExpression } = SUITES[suiteIdx
 const suite = SUITES[suiteIdx];
 
 if (options.verbose){
-    printHelpBox(`👉 Running suite[${suiteIdx}]:${name} (${description})`);
+    printHelpBox(`👉 Running suite[${suiteIdx}]`
+                +`:${colorANSI(COLORS.Bold+COLORS.Red, name)} `
+                +`  ${colorANSI(COLORS.Cyan, description)}`);
     console.log(`Directory: ${dir}`);
     if(singleFile){
         console.log(`Single file: ${singleFile}`);
@@ -335,7 +343,9 @@ if (options.verbose){
     //do nothing
 } else {
     // not --quiet and not --verbose gets minimal
-    printHelpBox("Suite: "+suiteIdx + "  "+colorANSI(COLORS.Red, suite.name)+"  "+ colorANSI(COLORS.Cyan, suite.description) ); 
+    printHelpBox(    "Suite: "+suiteIdx 
+                    +"  "+ colorANSI(COLORS.Bold+COLORS.Red, name)
+                    +"  "+ colorANSI(COLORS.Cyan, description) ); 
 
 }
 
@@ -357,12 +367,19 @@ readdir(dir, (err, files) => {
     } else {
         targetFiles = files.filter(file => extensions.includes(extname(file)));
     }
-    if (options.debug)     console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
+    if (options.debug){
+               console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
+    }   
+    if (options.verbose) {
+        console.log("Files:" + targetFiles);
+        printHelpDivider()
+    }
     targetFiles.forEach(file => {
         if (options.debug) console.log("********* Processing ******"+file+"************");
         let state = new State();
         states.push(state);
         state.filename = file;
+        state.suite = name;
         const filePath = singleFile ? file : join(dir, file);
         const content = readFileSync(filePath, 'utf8');
         let match;
@@ -417,7 +434,7 @@ readdir(dir, (err, files) => {
         if (theState.quantifyFound()>0){
             if (options.outputLines){
                 if (options.outputFilename){
-                    console.log("\n\n💾 ===========  file: "+theState.printFilename() + "  =====================\n");
+                    console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+theState.printFilename() + "  ━━━━━━━━━━━━━━━━━━━━━\n");
                 }
                 if (options.outputSortedLines){
                     console.log(theState.printLinesSorted(options));
@@ -434,14 +451,14 @@ readdir(dir, (err, files) => {
     states.forEach(theState => {
         if (theState.quantifyFound()===0 && options.outputFilename){
             if (!notFoundHeaderPrinted){
-                console.log("\n\n============= None found in these files ==========");
+                console.log("\n\n━━━━━━━━   "+colorANSI(COLORS.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━");
                 notFoundHeaderPrinted = true;
             }
             console.log(theState.printFilename());
         }
     });
     if (notFoundHeaderPrinted){
-        printHelpDivider();
+        console.log(             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
     console.log("");
 });
@@ -451,7 +468,9 @@ class State {
     #foundEnd = false;
     #lines = [];
     #lineSet = new Set();
-
+    filename = "";
+    suite = "";
+    
     addLine(line, linenum, startIndex, all) {
         if (all || !this.#lineSet.has(line)) {
             this.#lines.push({ line, linenum, startIndex });
@@ -487,7 +506,6 @@ class State {
         return JSON.stringify(this.toJSON(outputOptions), null, 4);
     }
 
-    filename = "";
     quantifyFound() {
         return this.#lines.length;
     }
@@ -500,15 +518,25 @@ class State {
     toJSON(outputOptions){
         if (outputOptions.outputSourceLocation){
             return {
+                    suite: this.suite,
                     filename: this.filename,
                     quantifyFound: this.#lines.length,
                     lines: this.#lines
             };
         } else {
-            return {
-                filename: this.filename,
-                quantifyFound: this.#lines.length,
-                lines: this.#lines.map(obj => obj.line),
+            if (options.shortSummary){
+                return {
+                    suite: this.suite,
+                    filename: this.filename,
+                    quantifyFound: this.#lines.length                    
+                }
+            } else {
+                return {
+                    suite: this.suite,
+                    filename: this.filename,
+                    quantifyFound: this.#lines.length,
+                    lines: this.#lines.map(obj => obj.line)
+                }
             }
         }
     }
