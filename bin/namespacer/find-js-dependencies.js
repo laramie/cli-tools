@@ -380,7 +380,8 @@ readdir(dir, (err, files) => {
         states.push(state);
         state.filename = file;
         state.suite = name;
-        const filePath = singleFile ? file : join(dir, file);
+        //const filePath = singleFile ? file : join(dir, file);
+        const filePath = join(dir, file);
         const content = readFileSync(filePath, 'utf8');
         let match;
         let found = false;

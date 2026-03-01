@@ -7,6 +7,9 @@
         laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies.js --h
 */
 
+import { readdir, readFileSync, writeFileSync } from 'fs' ;
+import { extname, join } from 'path';
+
 class Line {
     constructor({ identifier, startIndex, linenum, rawLine, replacedLine = '', namespace = '', regexUsed = null }) {
         this.identifier = identifier;      // The bare identifier matched
@@ -16,15 +19,18 @@ class Line {
         this.replacedLine = replacedLine;  // The line after replacement (optional)
         this.namespace = namespace;        // Namespace to prepend (optional)
         this.regexUsed = regexUsed;        // Regex used for matching (optional)
+        this.replacementCount = 0;
     }
 }
 
-const PLANS_DIRPATH =  "./data/plans";
-const TMP_DIRPATH =    "./data/tmp";
-const OUT_DIRPATH =    "./data/out/";
+const PLANS_DIRPATH =   "./data/plans";
+const TMP_DIRPATH =     "./data/tmp";
+const OUT_DIRPATH =     "./data/out/";
 
-const SRC_FILEPATH =   "./data/src/song.js";
-const OUTPUT_FILEPATH =   "./data/out/generated-song.js";
+const SRC_FILEPATH_1 =    "./data/src/song.js";
+const SRC_FILEPATH_2 =    "./data/src/notetable.js";
+const OUTPUT_FILEPATH = "./data/out/generated-song.js";
+const PLAN_FILEPATH =   "./data/plans/infinite-neck-functions.txt";
 
 // ====== Already kinda handled =======
 // song.js            :: [trigger]                [EventBus]            (song.js imports EventBus explicity so can modularly call EventBus.trigger()  == .trigger() should not be scanned because it is already invoke on an object/class/namespace with a dot. 
@@ -37,7 +43,7 @@ const OUTPUT_FILEPATH =   "./data/out/generated-song.js";
 
 const IDENTIFIERS = ["clearAll", "clearAndReplaySection", "replay", "resetNoteNames"];
 
-const namespaceMap = {
+const NAMESPACE_MAP_DEFAULT = {
     clearAll:               'NoteTableFacade',
     replay:                 'InfiniteNeckFacade',
     clearAndReplaySection:  'InfiniteNeckFacade',
@@ -45,19 +51,59 @@ const namespaceMap = {
 };
 
 
+
+
 function main(){
-    let content = readSourceFile(SRC_FILEPATH);
-    let inMemStruct = createLinesDataStructure(content, IDENTIFIERS);
-    console.log("output data struct:\n"+JSON.stringify(inMemStruct,null,4));
+    console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+SRC_FILEPATH_1+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+    processInvokerFile(SRC_FILEPATH_1);
+    
+    console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+SRC_FILEPATH_2+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+    processInvokerFile(SRC_FILEPATH_2);
+    
+    console.log("\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+}
+
+function processInvokerFile(invokerFilename){
+    let theIdentifiers = IDENTIFIERS;
+    let theNamespaceMap = NAMESPACE_MAP_DEFAULT;
+    let plan = readSourceFile(PLAN_FILEPATH);
+    if (plan){
+        // Split by lines, trim each identifier
+        theIdentifiers = plan.split('\n').map(id => id.trim()).filter(id => id.length > 0);
+        const theNamespaceString = "InfiniteNeckFacade";
+        theNamespaceMap = {};
+        theIdentifiers.forEach(id => {
+            theNamespaceMap[id] = theNamespaceString;
+        });
+    }
+
+    let content = readSourceFile(invokerFilename);
+    const linesArr = content.split('\n');
+    let lineObjectsArray = createLineObjectsArray(content, linesArr, IDENTIFIERS); 
+    generateReplacedLines(lineObjectsArray, theNamespaceMap);
+    writeOutReplacedLines(lineObjectsArray, linesArr)    //  linesArr will be modified!
+
+
+    console.log("output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+
+    //Todo, emit a filtered array based on Line.replacementCount > 0: 
+    console.log("\n\n👍   replacements only :\n"+JSON.stringify(lineObjectsArray,null,4));
+    
+    //Todo, emit a filtered array based on Line.replacementCount === 0: 
+    console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(lineObjectsArray,null,4));
+}
+
+function loadPlan(listingFile){
+
 }
 
 function readSourceFile(filePath){
-    return fs.readFileSync(filePath, 'utf8');
+    return readFileSync(filePath, 'utf8');
 }
 
 
-function createLinesDataStructure(content, identifiers){
-    const linesArr = content.split('\n');
+function createLineObjectsArray(content, linesArr, identifiers){
+    
 
     const identifierPattern = identifiers.join('|');
     const lineRegex = new RegExp(`^.*\\b(${identifierPattern})\\b\\s*\\(.*$`, 'gm');
@@ -84,8 +130,8 @@ function createLinesDataStructure(content, identifiers){
 }
 
 
-function generateReplacedLines(lineObjects){
-    lineObjects.forEach(lineObj => {
+function generateReplacedLines(theLineObjectsArray, namespaceMap){
+    theLineObjectsArray.forEach(lineObj => {
         if (namespaceMap[lineObj.identifier]) {
             // Replace only the first occurrence in the line
             const pattern = new RegExp(`\\b${lineObj.identifier}\\b`);
@@ -94,20 +140,22 @@ function generateReplacedLines(lineObjects){
                 `${namespaceMap[lineObj.identifier]}.${lineObj.identifier}`
             );
             lineObj.namespace = namespaceMap[lineObj.identifier];
+            lineObj.replacementCount++;
         } else {
             lineObj.replacedLine = lineObj.rawLine;
+            lineObj.replacementCount = 0;
         }
     });
 }
 
 
 
-function writeOutReplacedLines(){
-    lineObjects.forEach(lineObj => {
+function writeOutReplacedLines(theLineObjectsArray, linesArr){
+    theLineObjectsArray.forEach(lineObj => {
         linesArr[lineObj.linenum - 1] = lineObj.replacedLine;
     });
     const newContent = linesArr.join('\n');
-    fs.writeFileSync(OUTPUT_FILEPATH, newContent, 'utf8');
+    writeFileSync(OUTPUT_FILEPATH, newContent, 'utf8');
 }
 
 //==========  Do it! ================
