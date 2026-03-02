@@ -42,21 +42,29 @@ class Line {
         this.replacementCount = 0;
     }
 }
+function logError(message){
+    console.error(message);
+}
+function log(flag, message, flagObj = LOG_FLAGS) {
+    if (typeof flag === 'string') {
+        if (flagObj[flag]) {
+            console.log(message);
+        }
+    } else if (flag) {
+        console.log(message);
+    }
+}
 
-const LOG_INTERFACE_GENS = false;
-const LOG_MASTER_NAMESPACE_MAP = false;
-const LOG_OUTPUT = false;
-const LOG_OUTPUT_REPLACEMENTS = false;
-const LOG_OUTPUT_NOOP_REPLACEMENTS = false;
-const LOG_OUTPUT_REPLACEMENTS_LINENUM = true;
+const VERBOSE_INTERFACE_GENS = true;  //used to have Generator also print out output
 
-const IDENTIFIERS = ["clearAll", "clearAndReplaySection", "replay", "resetNoteNames"];
-
-const NAMESPACE_MAP_DEFAULT = {
-    clearAll:               'NoteTableFacade',
-    replay:                 'InfiniteNeckFacade',
-    clearAndReplaySection:  'InfiniteNeckFacade',
-    resetNoteNames:         'InfiniteNeckFacade'
+const LOG_FLAGS = {
+    FILE_WRITES: true,
+    INTERFACE_GENS: false,
+    MASTER_NAMESPACE_MAP: false,
+    OUTPUT: false,
+    OUTPUT_REPLACEMENTS: false,
+    OUTPUT_NOOP_REPLACEMENTS: false,
+    OUTPUT_REPLACEMENTS_LINENUM: true
 };
 
 
@@ -110,28 +118,32 @@ const NamespacerPlan = {
 
 
 function main(){
-    let masterNamespaceMap = {}; //was NAMESPACE_MAP_DEFAULT for testing, now will be loaded for real.
+    let masterNamespaceMap = {};
     NamespacerPlan.namespaces.forEach(namespaceObj => {
-        addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
+        const { added } = addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
+        if (added === 0) {
+            logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
+            return;
+        }
         let gen = new Generator();
-        let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, LOG_INTERFACE_GENS);
-        if (LOG_INTERFACE_GENS) console.log("🎲  ---\n"+interface_gen+"\n---  🎲");
-        console.log("\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+        let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, VERBOSE_INTERFACE_GENS);
+        log('INTERFACE_GENS', "🎲  ---\n"+interface_gen+"\n---  🎲");
+        log('FILE_WRITES', "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
         writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
     });
 
-    if (LOG_MASTER_NAMESPACE_MAP) console.log("🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+    log('MASTER_NAMESPACE_MAP', "🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
 
     // Loop over all sources in NamespacerPlan and process each
     NamespacerPlan.sources.forEach(sourceObj => {
         logFilename(sourceObj.src);
         processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
     });
-    console.log("\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+    log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
 }
 
 function logFilename(filename){
-        console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+        log(true, "\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
 }
 function dump(obj){
     return JSON.stringify(obj,null,4);
@@ -152,37 +164,37 @@ function processFileWithInvocations(fileWithInvocations_Name, outputFilePath, ma
     writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
-    if (LOG_OUTPUT) console.log("🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+    log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
 
     const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-    if (LOG_OUTPUT_REPLACEMENTS) console.log("\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-    if (LOG_OUTPUT_REPLACEMENTS_LINENUM) {
-        console.log( JSON.stringify(   replacementsOnly, 
-                                       ((key, value)=> {
-                                          if (Array.isArray(value)) {
-                                            return value.map(o => `${o.linenum}:${o.replacedLine}`);
-                                          }
-                                          return value;
-                                        }), 
-                                       4
-                                    )
-        );
-    } 
+    log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+    if (LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
+        log(true, JSON.stringify(
+            replacementsOnly,
+            ((key, value)=> {
+                if (Array.isArray(value)) {
+                    return value.map(o => `${o.linenum}:${o.replacedLine}`);
+                }
+                return value;
+            }),
+            4
+        ));
+    }
 
 
     const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-     if (LOG_OUTPUT_NOOP_REPLACEMENTS) console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+    log('OUTPUT_NOOP_REPLACEMENTS', "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
 }
 
 function loadPlan(listingFile){
 
 }
 
-function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap){
+function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap) {
     let theExcludes = [];
-    if (excludesFilepath){
+    if (excludesFilepath) {
         let excludesLines = readSourceFile(excludesFilepath);
-        if (excludesLines){
+        if (excludesLines) {
             theExcludes = excludesLines
                 .split('\n')
                 .map(id => id.trim())
@@ -191,9 +203,9 @@ function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString,
     }
 
     let plan = readSourceFile(planFilepath);
-    if (!plan){
-        console.error("🛑  No plan file found, or file empty: "+planFilepath);
-        process.exit(1);
+    if (!plan) {
+        logError("🛑  No plan file found, or file empty: " + planFilepath);
+        return { added: 0 };
     }
 
     let theIdentifiers = plan
@@ -201,19 +213,20 @@ function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString,
         .map(id => id.trim())
         .filter(id => id.length > 0 && !theExcludes.includes(id));
 
+    let added = 0;
     theIdentifiers.forEach(id => {
-        if (masterNamespaceMap[id]){
-            console.error(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`); 
+        if (masterNamespaceMap[id]) {
+            logError(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`);
         } else {
             masterNamespaceMap[id] = theNamespaceString;
+            added++;
         }
     });
+    return { added };
 }
 
 
 function createLineObjectsArray(content, linesArr, identifiers){
-    //console.log("\n\n\n******************* linesArray:"+JSON.stringify(linesArr)+"***************\n\n");
-    //console.log("\n\n\n******************* identifiers:"+JSON.stringify(identifiers)+"***************\n\n");
     const identifierPattern = identifiers.join('|');
     const lineRegex = new RegExp(`^.*\\b(${identifierPattern})\\b\\s*\\(.*$`, 'gm');
 
