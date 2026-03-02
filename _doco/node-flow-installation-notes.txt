@@ -25,3 +25,12 @@ laramie@penguin:~/infinite-neck$ npx jest _tests/jest/song-load.test.js
 Knip
 =========
 npm init @knip/config
+
+=========
+  Updating node
+=========
+Here's what I did (20260302): 
+ 1372  sudo npm install -g n
+ 1374  sudo n lts
+So now n is installed. Here's how to updated it, which updates to latest node:
+sudo n latest

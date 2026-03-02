@@ -31,3 +31,6 @@ coverage/
 package-lock.json
 package.json
 package-lock.json
+bin/namespacer/data/src
+bin/namespacer/data/plans
+bin/namespacer/data/out

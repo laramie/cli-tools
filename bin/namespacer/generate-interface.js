@@ -14,10 +14,13 @@ function test(){
     const LEGACY_IMPL_NAME =  "colorFunctionsImpl";
 
     let methods_plan = readSourceFile(PLAN_FILEPATH);
-    console.log("methods_plan==>"+methods_plan+"<==");
+    const methodLinesArray = methods_plan.split(/\r?\n/).filter(line => line.trim());
+    methodLinesArray.map(methodName =>
+        console.log(" in map methodName==>"+methodName+"<==")
+    );
 
     let gen = new Generator();
-    let output = gen.generateInterface(LEGACY_FILEPATH, LEGACY_IMPL_NAME, methods_plan, INTERFACE_NAME);
+    let output = gen.generateInterface(LEGACY_FILEPATH, LEGACY_IMPL_NAME, methodLinesArray, INTERFACE_NAME);
 
     console.log("======New IColorFunction class ======\n"+output);
 }
@@ -31,115 +34,9 @@ function readSourceFile(filePath){
 }
 
 export class Generator{
-    generateInterface(legacyFilePath, legacyImplName, methods_plan, interfaceName) {
-        const j = jscodeshift;
-        const methodLines = methods_plan.split(/\r?\n/).filter(line => line.trim());
-        console.log("LEN: "+methodLines.length);
-
-        // Import statement
-        const importDecl = j.importDeclaration(
-            [j.importNamespaceSpecifier(j.identifier(legacyImplName))],
-            j.literal(legacyFilePath.replace(/^\.\/?/, './'))
-        );
-
-        // Method definitions
-        const methodDefs = methodLines.map(methodName =>
-            j.methodDefinition(
-                'method',
-                j.identifier(methodName),
-                j.functionExpression(
-                    null,
-                    [j.restElement(j.identifier('args'))],
-                    j.blockStatement([
-                        j.returnStatement(
-                            j.callExpression(
-                                j.memberExpression(
-                                    j.identifier(legacyImplName),
-                                    j.identifier(methodName)
-                                ),
-                                [j.spreadElement(j.identifier('args'))]
-                            )
-                        )
-                    ])
-                )
-            )
-        );
-
-        // Class declaration
-        const cls = j.classDeclaration(
-            j.identifier(interfaceName),
-            null,
-            j.classBody(methodDefs)
-        );
-
-        // Compose the program
-        const ast = j.program([
-            importDecl,
-            cls
-        ]);
-
-        // Print the code
-        return j(ast).toSource({quote: 'single'});
+    generateInterface(legacyFilePath, legacyImplName, methodLinesArray, interfaceName) {
+        return "not implemented";
     }
-
-
-   generateInterface_RecastExampleFailed(legacyFilePath, legacyImplName, methods_plan, interfaceName) {
-       const b = recast.types.builders;
-
-       // Generate import statement
-       const importDecl = b.importDeclaration(
-           [b.importNamespaceSpecifier(b.identifier(legacyImplName))],
-           b.literal(legacyFilePath.replace(/^\.\/?/, './'))
-       );
-
-       // Prepare method definitions
-       const methodLines = methods_plan.split(/\r?\n/).filter(line => line.trim());
-       console.log("LEN: "+methodLines.length);
-
-       methodLines.map(methodName =>
-        console.log(" in map methoName==>"+methodName+"<==")
-       );
-
-       const methodDefs = methodLines.map(methodName => {
-            console.log("in methodLines.map loop:"+methodName);
-            b.methodDefinition(
-               'method',
-               b.identifier(methodName),
-               b.functionExpression(
-                   null,
-                   [b.restElement(b.identifier('args'))],
-                   b.blockStatement([
-                       b.returnStatement(
-                           b.callExpression(
-                               b.memberExpression(
-                                   b.identifier(legacyImplName),
-                                   b.identifier(methodName),
-                                   false
-                               ),
-                               [b.spreadElement(b.identifier('args'))]
-                           )
-                       )
-                   ])
-               )
-           )
-        });
-
-       console.log("b:"+JSON.stringify(b,null,2));
-       // Generate class declaration
-       const cls = b.classDeclaration(
-           b.identifier(interfaceName),
-           null,
-           b.classBody(methodDefs)
-       );
-
-       // Compose the program
-       const ast = b.program([
-           importDecl,
-           cls
-       ]);
-
-       return recast.print(ast).code;
-   }
 }
 
 //=========== Do it! ===================
