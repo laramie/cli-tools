@@ -19,7 +19,7 @@ function test(){
     const methodLinesArray = Generator.methodListToArray(methods_plan);
 
     let gen = new Generator();
-    let output = gen.generateInterface(LEGACY_FILEPATH, LEGACY_IMPL_NAME, methodLinesArray, INTERFACE_NAME);
+    let output = gen.generateInterface(LEGACY_FILEPATH, LEGACY_IMPL_NAME, methodLinesArray, INTERFACE_NAME, true);
 
     console.log("======New IColorFunction class ======\n"+output);
 }
@@ -37,14 +37,15 @@ export class Generator{
         return methods_onePerLine.split(/\r?\n/).filter(line => line.trim());
     }
 
-    generateInterfaceFromNamespaceObj(namespaceObj){
+    generateInterfaceFromNamespaceObj(namespaceObj, LOG_DEBUG){
         let methods_plan = Generator.readSourceFileFromCWD(namespaceObj.interface);
         const methodLinesArray = Generator.methodListToArray(methods_plan);
 
-        return this.generateInterface(  namespaceObj.source, 
+        return this.generateInterface(  namespaceObj.sourceout, 
                                         namespaceObj.legacyImpl, 
                                         methodLinesArray, 
-                                        namespaceObj.namespace);
+                                        namespaceObj.namespace,
+                                        LOG_DEBUG);
     }
 
     /**
@@ -56,12 +57,13 @@ export class Generator{
      * @param {string} interfaceName - Name of the generated class/interface.
      * @returns {string} The generated JavaScript source code.
      */
-    generateInterface(legacyFilePath, legacyImpl, methodLines, interfaceName) {
+    generateInterface(legacyFilePath, legacyImpl, methodLines, interfaceName, LOG_DEBUG) {
 
-        console.log("\nlegacyImpl:"+legacyImpl
-                   +"\ninterfaceName:"+interfaceName
-                   +"\nlegacyFilePath:"+legacyFilePath
-                   +"methodLines.length: "+methodLines.length
+        if (LOG_DEBUG) console.log("🌐  Generating Interface for:"
+                   +"\n\tlegacyImpl:\t"+legacyImpl
+                   +"\n\tinterfaceName:\t"+interfaceName
+                   +"\n\tlegacyFilePath:\t"+legacyFilePath
+                   +"\n\tmethods:\t"+methodLines.length
         );
 
         // Import statement: import * as legacyImplName from 'legacyFilePath';

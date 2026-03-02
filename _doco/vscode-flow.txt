@@ -1,0 +1,10 @@
+{
+  "editor.lineNumbers": "off",
+  "editor.folding": false,
+  "editor.glyphMargin": false
+}
+
+Settings, search for 
+   folding
+   glyph Margin
+   lineNumbers

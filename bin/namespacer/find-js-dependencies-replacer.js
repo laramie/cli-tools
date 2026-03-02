@@ -24,6 +24,10 @@ class Line {
     }
 }
 
+const LOG_INTERFACE_GENS = true;
+const DUMP_INTERFACE_GENS = false;
+const DUMP_MASTER_NAMESPACE_MAP = false;
+
 const PLANS_DIRPATH =   "./data/plans";
 const TMP_DIRPATH =     "./data/tmp";
 const OUT_DIRPATH =     "./data/out/";
@@ -78,15 +82,15 @@ const NamespacerPlan = {
             bareList:  "./data/plans/infinite-neck.js.functions.gen",
             excludes:  "",
             interface: "./data/plans/infinite-neck.js.functions.gen",
-            source:    "./data/out/IInfiniteNeck.js"
+            sourceout:    "./data/out/IInfiniteNeck.js"
         },
         {
             namespace: "ISong",
             legacyImpl: "songImpl",
             bareList:  "./data/plans/song.js.functions.gen",
-            excludes:  "",
+            excludes:  "./data/plans/ISong.js.excludes.plan",
             interface: "./data/plans/song.js.functions.gen",
-            source:    "./data/out/ISong.js"
+            sourceout:    "./data/out/ISong.js"
         },
         {
             namespace: "INoteTable",
@@ -94,7 +98,7 @@ const NamespacerPlan = {
             bareList:  "./data/plans/notetable.js.functions.gen",
             excludes:  "",
             interface: "./data/plans/notetable.js.functions.gen",
-            source:    "./data/out/INoteTable.js"
+            sourceout:    "./data/out/INoteTable.js"
         },
         {
             namespace: "IColorFunctions",
@@ -102,7 +106,7 @@ const NamespacerPlan = {
             bareList:  "./data/plans/colorFunctions.js.functions.gen",
             excludes:  "",
             interface: "./data/plans/IColorFunctions.js.interface.plan",
-            source:    "./data/out/IColorFunctions.js"
+            sourceout:    "./data/out/IColorFunctions.js"
         }
     ]
     
@@ -139,6 +143,9 @@ function dump(obj){
 function readSourceFile(filePath){
     return readFileSync(filePath, 'utf8');
 }
+function saveFile(filePath, content){
+
+}
 
 //=======================================================================
 
@@ -152,11 +159,13 @@ function main(){
     NamespacerPlan.namespaces.forEach(namespaceObj => {
         addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
         let gen = new Generator();
-        let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj);
-        console.log("🎲------\n"+interface_gen+"\n------🎲");
+        let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, LOG_INTERFACE_GENS);
+        if (DUMP_INTERFACE_GENS) console.log("🎲  ---\n"+interface_gen+"\n---  🎲");
+        console.log("\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+        writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
     });
 
-    console.log("🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+    if (DUMP_MASTER_NAMESPACE_MAP) console.log("🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
 
     // Loop over all sources in NamespacerPlan and process each
     NamespacerPlan.sources.forEach(sourceObj => {
@@ -242,7 +251,7 @@ function loadPlan(listingFile){
     // Do not add the conflicting key.  
     // TODO: Accumulate this log message in an array to be dumped again at the end of main().
 // MODIFIES masterNamespaceMap passed in by adding entries, but not hosing any keys or allowing duplicates.
-function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap){
+function addIdentifiersToMapOLD(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap){
     
     let theExcludes = null;
     let excludesLines = readSourceFile(excludesFilepath);
@@ -258,12 +267,44 @@ function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString,
         console.error("🛑  No plan file found, or file empty: "+planFilepath);
         process.exit(1);
     }
-    
+
     let theIdentifiers = plan.split('\n').map(id => id.trim()).filter(id => id.length > 0);
 
     
 
     
+    theIdentifiers.forEach(id => {
+        if (masterNamespaceMap[id]){
+            console.error(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`); 
+        } else {
+            masterNamespaceMap[id] = theNamespaceString;
+        }
+    });
+}
+
+function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap){
+    let theExcludes = [];
+    if (excludesFilepath){
+        let excludesLines = readSourceFile(excludesFilepath);
+        if (excludesLines){
+            theExcludes = excludesLines
+                .split('\n')
+                .map(id => id.trim())
+                .filter(id => id.length > 0);
+        }
+    }
+
+    let plan = readSourceFile(planFilepath);
+    if (!plan){
+        console.error("🛑  No plan file found, or file empty: "+planFilepath);
+        process.exit(1);
+    }
+
+    let theIdentifiers = plan
+        .split('\n')
+        .map(id => id.trim())
+        .filter(id => id.length > 0 && !theExcludes.includes(id));
+
     theIdentifiers.forEach(id => {
         if (masterNamespaceMap[id]){
             console.error(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`); 
