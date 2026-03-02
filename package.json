@@ -22,7 +22,11 @@
   "devDependencies": {
     "@types/node": "^25.3.2",
     "jest": "^30.2.0",
+    "jscodeshift": "^17.3.0",
     "knip": "^5.85.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "recast": "^0.23.11"
   }
 }
