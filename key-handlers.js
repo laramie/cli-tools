@@ -186,7 +186,7 @@ function document_keypress(e) {
             case "/":
                 setMenuAtRoot();
                 clearCmdResults();
-                showCmdLinw();
+                showCmdLine();
                 var menu = gMenuPointer;
                 var childCaptions = buildChildMenuCaptionsRow(menu);
                 updateCmdLineView();
