@@ -144,7 +144,7 @@ function processFileWithInvocations(fileWithInvocations_Name, outputFilePath, ma
 
     const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
      if (DEBUG_LEVEL>=1) console.log("\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-     if (DEBUG_LEVEL=0){
+     if (DEBUG_LEVEL === 0) {
 
 
 
@@ -166,11 +166,23 @@ function processFileWithInvocations(fileWithInvocations_Name, outputFilePath, ma
 
             [
               "695:INoteTable.clearAll();",
-              "696:    IInfiniteNeck.resetNoteNames();"
-            ]
-
+        // JSON.stringify replacer to emit array of strings in format '{linenum}:{replacedLine}'
+        function replacer(key, value) {
+            if (Array.isArray(value)) {
+                return value.map(o => `${o.linenum}:${o.replacedLine}`);
+            }
+            return value;
+        }
+        console.log(JSON.stringify(replacementsOnly, replacer, 4));
         */
-       console.log(
+
+        function replacer(key, value) {
+            if (Array.isArray(value)) {
+                return value.map(o => `${o.linenum}:${o.replacedLine}`);
+            }
+            return value;
+        }
+        console.log(
             JSON.stringify(replacementsOnly, replacer, 4)
         );
 
