@@ -28,3 +28,5 @@ coverage/
 /infinite-neck/nbproject/private/
 .vscode/settings.json
 /_TEMP_ONLY/
+package-lock.json
+package.json

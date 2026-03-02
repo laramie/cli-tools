@@ -1,10 +1,20 @@
 #!/usr/bin/env node
 
-import { readdir, readFileSync, writeFileSync } from 'fs' ;
-import { extname, join } from 'path';
-//import recast from 'recast';
-import * as recast from 'recast';
-
+const { readdir, readFileSync, writeFileSync } = require('fs');
+const { extname, join } = require('path');
+const recast = require('recast');
+ /**
+  * 
+  * 
+  * 
+  * 
+  * 
+  *     THIS IS THE COMMON JS VERSION OF THIS FILE !!!!!!!!!!!!!
+  * 
+  * 
+  * 
+  * 
+  */
        
 
 function test(){
@@ -30,7 +40,7 @@ function readSourceFile(filePath){
     return readFileSync(absPath, 'utf8');
 }
 
-export class Generator{
+class Generator{
    generateInterface(legacyFilePath, legacyImplName, methods_plan, interfaceName) {
        const b = recast.types.builders;
 
