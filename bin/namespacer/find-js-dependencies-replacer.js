@@ -150,12 +150,7 @@ function main(){
 
     let masterNamespaceMap = {}; //was NAMESPACE_MAP_DEFAULT for testing, now will be loaded for real.
     NamespacerPlan.namespaces.forEach(namespaceObj => {
-
-        let interfaceList = removeExcludesFromBareList(namespaceObj.bareList, namespaceObj.excludes);
-
-
-
-        addIdentifiersToMap(interfaceList, namespaceObj.namespace, masterNamespaceMap);
+        addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
         let gen = new Generator();
         let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj);
         console.log("🎲------\n"+interface_gen+"\n------🎲");
@@ -247,13 +242,27 @@ function loadPlan(listingFile){
     // Do not add the conflicting key.  
     // TODO: Accumulate this log message in an array to be dumped again at the end of main().
 // MODIFIES masterNamespaceMap passed in by adding entries, but not hosing any keys or allowing duplicates.
-function addIdentifiersToMap(planFilepath, theNamespaceString, masterNamespaceMap){
+function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap){
+    
+    let theExcludes = null;
+    let excludesLines = readSourceFile(excludesFilepath);
+    if (excludesLines){
+        let theExcludes = excludesLines
+            .split('\n')
+            .map(id => id.trim())
+            .filter(id => id.length > 0);
+    }
+    
     let plan = readSourceFile(planFilepath);
     if (!plan){
         console.error("🛑  No plan file found, or file empty: "+planFilepath);
         process.exit(1);
     }
+    
     let theIdentifiers = plan.split('\n').map(id => id.trim()).filter(id => id.length > 0);
+
+    
+
     
     theIdentifiers.forEach(id => {
         if (masterNamespaceMap[id]){
