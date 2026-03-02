@@ -27,9 +27,6 @@ const PLANS_DIRPATH =   "./data/plans";
 const TMP_DIRPATH =     "./data/tmp";
 const OUT_DIRPATH =     "./data/out/";
 
-const SRC_FILEPATH_1 =    "./data/src/song.js";
-const SRC_FILEPATH_2 =    "./data/src/notetable.js";
-const OUTPUT_FILEPATH = "./data/out/generated-song.js";
 const PLAN_FILEPATH =   "./data/plans/infinite-neck-functions.txt";
 
 // ====== Already kinda handled =======
@@ -51,19 +48,73 @@ const NAMESPACE_MAP_DEFAULT = {
 };
 
 
-
+// Every one of the sources in NamespacerPlan.sources[i].src 
+//     will get replacements from the map built by joining all the *.interface.gen files
+//     which collectively represent the global namespace.  That map will need to be uniq'd because there can't be conflicts in the global space either.
+// After this process we will be in Namespace listed in NamespacerPlan.namespaces[namespaceKey]
+//     and all invocations that are now like clearAll() will become IInfiniteNeck.clearAll().
+const NamespacerPlan = {
+    sources:[
+        {
+            src:  "./data/src/song.js",
+            out:  "./data/out/generated-song.js"
+        },
+        {
+            src:  "./data/src/notetable.js",
+            out:  "./data/out/generated-notetable.js"
+        }
+    ],
+    namespaces: {
+        "IInfiniteNeck": {
+            namespace: "IInfiniteNeck",
+            bareList:  "./data/plans/infinite-neck.js.functions.gen",
+            interface: "./data/plan/infinite-neck.js.interface.gen",
+            source:    "./data/out/IInfiniteNeck.js"
+        },
+        "INoteTable":  {
+            namespace: "INoteTable",
+            bareList:  "./data/plans/notetable.js.functions.gen",
+            interface: "./data/plan/notetable.js.interface.gen",
+            source:    "./data/out/INoteTable.js"
+        },
+        "IColorFunctions": {
+            namespace: "IColorFunctions",
+            bareList:  "./data/plans/colorFunctions.js.functions.gen",
+            interface: "./data/plan/colorFunctions.js.interface.gen",
+            source:    "./data/out/colorFunctions.js"
+        }
+    }
+    
+}
+    
 
 function main(){
-    console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+SRC_FILEPATH_1+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
-    processInvokerFile(SRC_FILEPATH_1);
-    
-    console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+SRC_FILEPATH_2+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
-    processInvokerFile(SRC_FILEPATH_2);
+    function log(filename){
+         console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+    }
+
+    // TODO: Following this pattern for two source files: 
+    const SRC_FILEPATH_1 =    "./data/src/song.js";
+    const SRC_FILEPATH_2 =    "./data/src/notetable.js";
+    const OUTPUT_FILEPATH_1 = "./data/out/generated-song.js";
+    const OUTPUT_FILEPATH_2 = "./data/out/generated-notetable.js";
+    log(SRC_FILEPATH_1);
+    processInvokerFile(SRC_FILEPATH_1, OUTPUT_FILEPATH_1);
+    log(SRC_FILEPATH_2);
+    processInvokerFile(SRC_FILEPATH_2, OUTPUT_FILEPATH_2);
+    // TODO (continued):  .... and instead, implement this pseudo-code loop with the following calls:
+        NamespacerPlan.sources.forEach {
+             log() ;
+             processInvokerFile(sources[i].src, sources[i].out) ;
+        }
+    // END TODO.         
     
     console.log("\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
 }
 
-function processInvokerFile(invokerFilename){
+
+
+function processInvokerFile(invokerFilename, outputFilePath){
     let theIdentifiers = IDENTIFIERS;
     let theNamespaceMap = NAMESPACE_MAP_DEFAULT;
     let plan = readSourceFile(PLAN_FILEPATH);
@@ -81,16 +132,18 @@ function processInvokerFile(invokerFilename){
     const linesArr = content.split('\n');
     let lineObjectsArray = createLineObjectsArray(content, linesArr, IDENTIFIERS); 
     generateReplacedLines(lineObjectsArray, theNamespaceMap);
-    writeOutReplacedLines(lineObjectsArray, linesArr)    //  linesArr will be modified!
+    writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
     console.log("output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
 
-    //Todo, emit a filtered array based on Line.replacementCount > 0: 
-    console.log("\n\n👍   replacements only :\n"+JSON.stringify(lineObjectsArray,null,4));
-    
-    //Todo, emit a filtered array based on Line.replacementCount === 0: 
-    console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(lineObjectsArray,null,4));
+    // Emit a filtered array based on Line.replacementCount > 0:
+    const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
+    console.log("\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+
+    // Emit a filtered array based on Line.replacementCount === 0:
+    const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
+    console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
 }
 
 function loadPlan(listingFile){
@@ -150,12 +203,12 @@ function generateReplacedLines(theLineObjectsArray, namespaceMap){
 
 
 
-function writeOutReplacedLines(theLineObjectsArray, linesArr){
+function writeOutReplacedLines(theLineObjectsArray, linesArr, outputFilePath){
     theLineObjectsArray.forEach(lineObj => {
         linesArr[lineObj.linenum - 1] = lineObj.replacedLine;
     });
     const newContent = linesArr.join('\n');
-    writeFileSync(OUTPUT_FILEPATH, newContent, 'utf8');
+    writeFileSync(outputFilePath, newContent, 'utf8');
 }
 
 //==========  Do it! ================
