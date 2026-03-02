@@ -48,6 +48,12 @@ const NAMESPACE_MAP_DEFAULT = {
 };
 
 
+/*
+   export FIND_DEPENDENCIES_OPTS='  --dir='./data/src/' --suite=functions --quiet --bare --lines  '
+   ./find-js-dependencies.js $FIND_DEPENDENCIES_OPTS  infinite-neck.js > ./data/plans/infinite-neck.js.functions.gen
+   But this is now all done in bin/namespacer/run-ALL-find-js-dependencies.bash
+ */
+
 // Every one of the sources in NamespacerPlan.sources[i].src 
 //     will get replacements from the map built by joining all the *.interface.gen files
 //     which collectively represent the global namespace.  That map will need to be uniq'd because there can't be conflicts in the global space either.
@@ -64,100 +70,148 @@ const NamespacerPlan = {
             out:  "./data/out/generated-notetable.js"
         }
     ],
-    namespaces: {
-        "IInfiniteNeck": {
+    namespaces: [
+        {
             namespace: "IInfiniteNeck",
             bareList:  "./data/plans/infinite-neck.js.functions.gen",
             interface: "./data/plan/infinite-neck.js.interface.gen",
             source:    "./data/out/IInfiniteNeck.js"
         },
-        "INoteTable":  {
+        {
+            namespace: "ISong",
+            bareList:  "./data/plans/song.js.functions.gen",
+            interface: "./data/plan/song.js.interface.gen",
+            source:    "./data/out/ISong.js"
+        },
+        {
             namespace: "INoteTable",
             bareList:  "./data/plans/notetable.js.functions.gen",
             interface: "./data/plan/notetable.js.interface.gen",
             source:    "./data/out/INoteTable.js"
         },
-        "IColorFunctions": {
+        {
             namespace: "IColorFunctions",
             bareList:  "./data/plans/colorFunctions.js.functions.gen",
             interface: "./data/plan/colorFunctions.js.interface.gen",
-            source:    "./data/out/colorFunctions.js"
+            source:    "./data/out/IColorFunctions.js"
         }
-    }
+    ]
     
 }
     
-
-function main(){
-    function log(filename){
-         console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
-    }
-
-    // TODO: Following this pattern for two source files: 
-    const SRC_FILEPATH_1 =    "./data/src/song.js";
-    const SRC_FILEPATH_2 =    "./data/src/notetable.js";
-    const OUTPUT_FILEPATH_1 = "./data/out/generated-song.js";
-    const OUTPUT_FILEPATH_2 = "./data/out/generated-notetable.js";
-    log(SRC_FILEPATH_1);
-    processInvokerFile(SRC_FILEPATH_1, OUTPUT_FILEPATH_1);
-    log(SRC_FILEPATH_2);
-    processInvokerFile(SRC_FILEPATH_2, OUTPUT_FILEPATH_2);
-    // TODO (continued):  .... and instead, implement this pseudo-code loop with the following calls:
-        NamespacerPlan.sources.forEach {
-             log() ;
-             processInvokerFile(sources[i].src, sources[i].out) ;
-        }
-    // END TODO.         
-    
-    console.log("\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
-}
-
-
-
-function processInvokerFile(invokerFilename, outputFilePath){
-    let theIdentifiers = IDENTIFIERS;
-    let theNamespaceMap = NAMESPACE_MAP_DEFAULT;
-    let plan = readSourceFile(PLAN_FILEPATH);
-    if (plan){
-        // Split by lines, trim each identifier
-        theIdentifiers = plan.split('\n').map(id => id.trim()).filter(id => id.length > 0);
-        const theNamespaceString = "InfiniteNeckFacade";
-        theNamespaceMap = {};
-        theIdentifiers.forEach(id => {
-            theNamespaceMap[id] = theNamespaceString;
-        });
-    }
-
-    let content = readSourceFile(invokerFilename);
-    const linesArr = content.split('\n');
-    let lineObjectsArray = createLineObjectsArray(content, linesArr, IDENTIFIERS); 
-    generateReplacedLines(lineObjectsArray, theNamespaceMap);
-    writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
-
-
-    console.log("output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
-
-    // Emit a filtered array based on Line.replacementCount > 0:
-    const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-    console.log("\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-
-    // Emit a filtered array based on Line.replacementCount === 0:
-    const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-    console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
-}
-
-function loadPlan(listingFile){
-
+function dump(obj){
+    return JSON.stringify(obj,null,4);
 }
 
 function readSourceFile(filePath){
     return readFileSync(filePath, 'utf8');
 }
 
+//=======================================================================
+
+function main(){
+    function log(filename){
+         console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+    }
+
+    let masterNamespaceMap = {}; //was NAMESPACE_MAP_DEFAULT for testing, now will be loaded for real.
+    NamespacerPlan.namespaces.forEach(namespaceObj => {
+        addIdentifiersToMap(namespaceObj.bareList, namespaceObj.namespace, masterNamespaceMap);
+    });
+
+    console.log("🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+
+    // Loop over all sources in NamespacerPlan and process each
+    NamespacerPlan.sources.forEach(sourceObj => {
+        log(sourceObj.src);
+        processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
+    });
+    console.log("\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+}
+
+
+var DEBUG_LEVEL=0;
+
+function processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
+    let content = readSourceFile(fileWithInvocations_Name);
+    const linesArr = content.split('\n');
+    let lineObjectsArray = createLineObjectsArray(content, linesArr, IDENTIFIERS); 
+    generateReplacedLines(lineObjectsArray, masterNamespaceMap);
+    writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
+
+
+    if (DEBUG_LEVEL>=2) console.log("🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+
+    const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
+     if (DEBUG_LEVEL>=1) console.log("\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+     if (DEBUG_LEVEL=0){
+
+
+
+        /*
+        given replacementsOnly is an array of these: 
+                {
+                    "identifier": "clearAll",
+                    "startIndex": 27469,
+                    "linenum": 695,
+                    "rawLine": "    clearAll();",
+                    "replacedLine": "    INoteTable.clearAll();",
+                    "namespace": "INoteTable",
+                    "regexUsed": {},
+                    "replacementCount": 1
+                }
+        write a function to act as the JSON.stringify replacer to emit the string  
+                 `{o.linenum}:{replacedLine}`
+           so it turn into a javascript array of strings, and thus, with the indentation of 4, should be an array item per line:
+
+            [
+              "695:INoteTable.clearAll();",
+              "696:    IInfiniteNeck.resetNoteNames();"
+            ]
+
+        */
+       console.log(
+            JSON.stringify(replacementsOnly, replacer, 4)
+        );
+
+
+
+    } 
+
+
+    const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
+     if (DEBUG_LEVEL>=2) console.log("\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+}
+
+function loadPlan(listingFile){
+
+}
+
+//Set up the Map of all functions in all Interface providers, 
+    // checking for conflicts: if the map already contains the identifier as key,
+    // Then log a WARN with the identifier, the existing entry's Namespace, and the newcomer's Namespace.
+    // Do not add the conflicting key.  
+    // TODO: Accumulate this log message in an array to be dumped again at the end of main().
+// MODIFIES masterNamespaceMap passed in by adding entries, but not hosing any keys or allowing duplicates.
+function addIdentifiersToMap(planFilepath, theNamespaceString, masterNamespaceMap){
+    let plan = readSourceFile(planFilepath);
+    if (!plan){
+        console.error("🛑  No plan file found, or file empty: "+planFilepath);
+        process.exit(1);
+    }
+    let theIdentifiers = plan.split('\n').map(id => id.trim()).filter(id => id.length > 0);
+    
+    theIdentifiers.forEach(id => {
+        if (masterNamespaceMap[id]){
+            console.error(`❌ duplicate key found in map[${id}]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}`); 
+        } else {
+            masterNamespaceMap[id] = theNamespaceString;
+        }
+    });
+}
+
 
 function createLineObjectsArray(content, linesArr, identifiers){
-    
-
     const identifierPattern = identifiers.join('|');
     const lineRegex = new RegExp(`^.*\\b(${identifierPattern})\\b\\s*\\(.*$`, 'gm');
 
