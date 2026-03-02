@@ -9,6 +9,7 @@
 
 import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
+import {Generator} from './generate-interface.js';
 
 class Line {
     constructor({ identifier, startIndex, linenum, rawLine, replacedLine = '', namespace = '', regexUsed = null }) {
@@ -73,32 +74,64 @@ const NamespacerPlan = {
     namespaces: [
         {
             namespace: "IInfiniteNeck",
+            legacyImpl: "infiniteNeckImpl",
             bareList:  "./data/plans/infinite-neck.js.functions.gen",
-            interface: "./data/plan/infinite-neck.js.interface.gen",
+            excludes:  "",
+            interface: "./data/plans/infinite-neck.js.functions.gen",
             source:    "./data/out/IInfiniteNeck.js"
         },
         {
             namespace: "ISong",
+            legacyImpl: "songImpl",
             bareList:  "./data/plans/song.js.functions.gen",
-            interface: "./data/plan/song.js.interface.gen",
+            excludes:  "",
+            interface: "./data/plans/song.js.functions.gen",
             source:    "./data/out/ISong.js"
         },
         {
             namespace: "INoteTable",
+            legacyImpl: "notetableImpl",
             bareList:  "./data/plans/notetable.js.functions.gen",
-            interface: "./data/plan/notetable.js.interface.gen",
+            excludes:  "",
+            interface: "./data/plans/notetable.js.functions.gen",
             source:    "./data/out/INoteTable.js"
         },
         {
             namespace: "IColorFunctions",
+            legacyImpl: "colorFunctionsImpl",
             bareList:  "./data/plans/colorFunctions.js.functions.gen",
-            interface: "./data/plan/colorFunctions.js.interface.gen",
+            excludes:  "",
+            interface: "./data/plans/IColorFunctions.js.interface.plan",
             source:    "./data/out/IColorFunctions.js"
         }
     ]
     
 }
+
+/*
+
+Now we would call: 
+
+
+    const PLAN_FILEPATH =     "./data/plans/IColorFunction.js.functions.plan";
+    const LEGACY_FILEPATH =   "./data/src/colorFunction.js";
+    const INTERFACE_NAME =    "IColorFunctions";
+    const LEGACY_IMPL_NAME =  "colorFunctionsImpl";
+   
+   generateInterfaceFromNamespaceObj()
+
+
+   TODO: ******************* I
+
+   This is the only one that does a .interface.plan  the idea was to have the .interface.plan be a human-edited version 
+       of .functions.gen, so do the others this way too, or default to the barelist if not present.
+
+            bareList:  "./data/plans/colorFunctions.js.functions.gen",
+            interface: "./data/plans/IColorFunctions.js.interface.plan",
+    */
+  
     
+
 function dump(obj){
     return JSON.stringify(obj,null,4);
 }
@@ -114,9 +147,18 @@ function main(){
          console.log("\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
     }
 
+
     let masterNamespaceMap = {}; //was NAMESPACE_MAP_DEFAULT for testing, now will be loaded for real.
     NamespacerPlan.namespaces.forEach(namespaceObj => {
-        addIdentifiersToMap(namespaceObj.bareList, namespaceObj.namespace, masterNamespaceMap);
+
+        let interfaceList = removeExcludesFromBareList(namespaceObj.bareList, namespaceObj.excludes);
+
+
+
+        addIdentifiersToMap(interfaceList, namespaceObj.namespace, masterNamespaceMap);
+        let gen = new Generator();
+        let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj);
+        console.log("🎲------\n"+interface_gen+"\n------🎲");
     });
 
     console.log("🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
@@ -215,7 +257,7 @@ function addIdentifiersToMap(planFilepath, theNamespaceString, masterNamespaceMa
     
     theIdentifiers.forEach(id => {
         if (masterNamespaceMap[id]){
-            console.error(`❌ duplicate key found in map[${id}]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}`); 
+            console.error(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`); 
         } else {
             masterNamespaceMap[id] = theNamespaceString;
         }
