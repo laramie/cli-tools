@@ -5,7 +5,6 @@ import { readdir, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
 import * as t from '@babel/types';
-//import generate from '@babel/generator';
 import { generate } from '@babel/generator';
        
 
@@ -109,7 +108,3 @@ export class Generator{
         return generate(ast, { quotes: 'single' }).code;
     }
 }
-
-
-//=========== Do it! ===================
-//test();
