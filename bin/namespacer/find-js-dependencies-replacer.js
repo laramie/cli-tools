@@ -54,6 +54,14 @@ function log(flag, message, flagObj = LOG_FLAGS) {
         console.log(message);
     }
 }
+/**
+ * Escape special regex characters in a string for safe use in RegExp.
+ * @param {string} str
+ * @returns {string}
+ */
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 const VERBOSE_INTERFACE_GENS = true;  //used to have Generator also print out output
 
@@ -116,7 +124,11 @@ const NamespacerPlan = {
     
 }
 
-
+/**
+ * Main entry point for the dependency replacer script.
+ * Loads namespace plans, generates interfaces, and processes source files.
+ * Mutates masterNamespaceMap in place.
+ */
 function main(){
     let masterNamespaceMap = {};
     NamespacerPlan.namespaces.forEach(namespaceObj => {
@@ -142,15 +154,33 @@ function main(){
     log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
 }
 
+/**
+ * Log the filename being processed.
+ * @param {string} filename
+ */
 function logFilename(filename){
-        log(true, "\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+    log(true, "\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
 }
+
+
 function dump(obj){
     return JSON.stringify(obj,null,4);
 }
 
+/**
+ * Read a file and return its contents as a string. Returns empty string if file is missing or empty.
+ * @param {string} filePath
+ * @returns {string}
+ */
 function readSourceFile(filePath){
-    return readFileSync(filePath, 'utf8');
+    try {
+        if (!filePath) return '';
+        const data = readFileSync(filePath, 'utf8');
+        return data || '';
+    } catch (err) {
+        logError(`File not found or unreadable: ${filePath}`);
+        return '';
+    }
 }
 
 function processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
@@ -225,9 +255,17 @@ function addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString,
     return { added };
 }
 
-
+/**
+ * Create an array of Line objects for each matched identifier in the content.
+ * Escapes regex special characters in identifiers.
+ * @param {string} content
+ * @param {string[]} linesArr
+ * @param {string[]} identifiers
+ * @returns {Line[]}
+ */
 function createLineObjectsArray(content, linesArr, identifiers){
-    const identifierPattern = identifiers.join('|');
+    if (!identifiers || identifiers.length === 0) return [];
+    const identifierPattern = identifiers.map(escapeRegex).join('|');
     const lineRegex = new RegExp(`^.*\\b(${identifierPattern})\\b\\s*\\(.*$`, 'gm');
 
     let match;
@@ -250,7 +288,6 @@ function createLineObjectsArray(content, linesArr, identifiers){
     }
     return lineObjects;
 }
-
 
 function generateReplacedLines(theLineObjectsArray, namespaceMap){
     theLineObjectsArray.forEach(lineObj => {
