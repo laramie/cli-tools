@@ -7,7 +7,7 @@
         laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies.js --h
 */
 
-import { readdir, readFileSync } from 'fs';
+import { existsSync, readdir, readFileSync,writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
 const COLORS = {
@@ -37,13 +37,6 @@ const COLORS = {
     BgCyan: '\x1b[46m',
     BgWhite: '\x1b[47m'
 }
-
-function testColors(){
-    Object.entries(COLORS).forEach(([prop, val]) => {
-        console.log(val, "   "+prop+"   "+COLORS.Reset);
-    });
-}
-//testColors();
 
 const BQ = COLORS.Magenta+'❝'+COLORS.Reset;
 const EQ = COLORS.Magenta+'❞'+COLORS.Reset;
@@ -152,6 +145,43 @@ function testColors(){
 }
 //testColors();
 
+function readConfig(configFilename){
+    try {
+        if (!existsSync(configFilename)) {
+            printError(`Config file not found: ${configFilename}`);
+            return null;
+        }
+        const data = readFileSync(configFilename, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        printError(`Error reading config file: ${err}`);
+        return null;
+    }
+}
+
+
+function writeConfigFile(writeConfigFilename, options){
+    try {
+        // Remove any non-serializable or runtime-only properties
+        const toWrite = { ...options };
+        // Remove properties that shouldn't be saved
+        delete toWrite.writeConfigFilename;
+        delete toWrite.runconfigObj;
+        delete toWrite.runconfig;
+        if (!options.dirSpecified){
+            delete toWrite.dir;
+            delete toWrite.dirSpecified;
+        }
+        // Write as pretty JSON
+        writeFileSync(writeConfigFilename, JSON.stringify(toWrite, null, 4), 'utf8');
+        if (!options.quiet) printInfo(`Config written to ${writeConfigFilename}`);
+    } catch (err) {
+        printError(`Error writing config file: ${err}`);
+    }
+}
+
+
+
 function printHelpBox(msg){
     console.log(colorANSI(COLORS.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
     console.log(colorANSI(COLORS.Cyan,"║     "+msg));
@@ -185,6 +215,7 @@ function printHelp(){
             +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --color     |  --c     :color output for DOS glory.\n"
             +"                            (Must be first arg if you want --help or suite listings in color.)\n"
+            +"  --debug     |  --d     :extra debugging information.\n"
             +"  --filenames |  --fi    :ouput filenames.\n"
             +"  --help      |  --h     :show this message and quit.\n"
             +"  --lines     |  --li    :output lines.\n"
@@ -198,33 +229,22 @@ function printHelp(){
             +"  --suitenames           :print suites.name only and quit.\n"
             +"  --suitenumbers         :print [index]: suites[index].name and quit.\n"
             +"  --verbose   |  --v     :extra test information.\n"
-            +"  --debug     |  --d     :extra debugging information.\n"
             +"\n"
             +"  --dir=/my/dir          :dir to run in [ /my/dir ], else run in the current directory.\n"
             +"  --ext='*.js,*.txt'     :extensions to run [ *.js,*.txt ].\n"
+            +"  --writeconfig=path     :path/to/file.json to write options used.\n"
+            +"  --runconfig=path       :path/to/file.json to use all options from.\n"
+            +"                            [exclusive, no other args allowed]\n"
             +"  --suite=0              :which test suite to run, [ 0 ] in this case.\n"
             +"  --suite=functions      :which test suite to run, [ functions ] in this case.\n"
             )
         );
 }
 
-function writeConfigFile(writeConfigFilename, options){
-
-}
-
-function readConfig(configFilename){
-
-}
-
 const args = process.argv.slice(2);
-let suiteIdx = DEFAULT_SUITE;
-let extensions = ['.js', '.txt'];
-let dir = process.cwd();
-let singleFile = null;
-let configFilename = null;
+
 
 let options = {
-    quit : false,
     quiet : false,
     color : false,
     bareExpressions : false,
@@ -237,8 +257,20 @@ let options = {
     verbose: false,
     debug: false,
     configSource: "command-line",
-    writeConfigFilename: null
+    writeConfigFilename: null,
+    suiteIdx: DEFAULT_SUITE,
+    extensions: ['.js', '.txt'],
+    singleFile: null,
+    configFilename: null,
+    dir: "",
+    dirSpecified: false
 }
+
+
+
+options.dir = process.cwd();
+
+let quit = false;
 
 args.forEach(arg => {
     if (arg.startsWith('--suite=')) {
@@ -246,48 +278,52 @@ args.forEach(arg => {
         // Try integer first
         let idx = Number(suiteArg);
         if (Number.isInteger(idx) && idx >= 0 && idx < SUITES.length) {
-            suiteIdx = idx;
+            options.suiteIdx = idx;
         } else {
             // Only allow hyphenated identifiers, ignore spaces in SUITES.name
             let foundIdx = SUITES.findIndex(suite => suite.name.replace(/\s+/g, '') === suiteArg);
             if (foundIdx !== -1) {
-                suiteIdx = foundIdx;
+                options.suiteIdx = foundIdx;
+                options.suite = SUITES[options.suiteIdx].name;
             } else {
                 console.error('Invalid suite identifier: ' + suiteArg);
                 console.log('Please choose from the following, or run with --suites to see the full suite info:');
                 printHelpDivider();
                 printSuiteNames();
-                process.exit(1);
+                quit = true;
             }
         }
     } else if (arg.startsWith('--ext=')) {
-        extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
+        options.extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
-        dir = arg.split('=')[1];
+        options.dir = arg.split('=')[1];
+        options.dirSpecified = true;
     } else if (arg.startsWith('--runconfig=')) {
-        configFilename = arg.split('=')[1];
+        let configFilename = arg.split('=')[1];
         options.runconfigObj = readConfig(configFilename);
         if (!options.runconfigObj){
             printError("--runconfig= specified, but config not found");
-            options.quit = true;
+            quit = true;
         } else {
             // Only allow --runconfig, no other options
             let otherArgs = args.filter(a => !a.startsWith('--runconfig='));
             let anyOtherArgs = otherArgs.length > 0;
             if (anyOtherArgs){
                 printError("Running with --runconfig= means no other options may be used. Exiting.");
-                options.quit = true;
+                quit = true;
             }
             options.runconfigObj.configSource = configFilename;
+            options.runconfig = true;
+            quit = false; //all configs come from file.  Ignore any other bugaboos.
         }
     } else if (arg.startsWith('--writeconfig=')) {
-        configFilename = arg.split('=')[1];
+        let configFilename = arg.split('=')[1];
         if (configFilename){
-            printInfo("config file will be written: "+configFilename);
+            if (options.debug) printInfo("config file will be written: "+configFilename);
             options.writeConfigFilename = configFilename
         } else {
             printError("--writeconfig= specified, but no config filename was given.");
-            config.quit = true;
+            quit = true;
         }
     } else if (arg.startsWith("--all")) {     //--all
         options.outputAll = true;
@@ -312,47 +348,50 @@ args.forEach(arg => {
     } else if (arg.startsWith("--te")         //--tests
              ||arg.startsWith("--suites")) {  //--suites
         printSuites();
-        options.quit = true;
+        quit = true;
     } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
         printSuiteNumbers();
-        options.quit = true;
+        quit = true;
     } else if (arg.startsWith("--suitenames")) { //--suitenames
         printSuiteNames();
-        options.quit = true;
+        quit = true;
     } else if (arg.startsWith("--v")) {       //--verbose
         options.verbose = true;
     } else if (arg.startsWith("--d")) {       //--debug
         options.debug = true;
     } else if (arg.startsWith("--h")) {       //--help
         printHelp();
-        options.quit = true;
+        quit = true;
     }
 });
 
-if (options.quit){
+if (quit){
     process.exit(1);
 }
 
 if (options.runconfig){
     options = options.runconfigObj;
-} else if (options.writeConfigFilename){
-    writeConfigFile(options.writeConfigFilename, options);
+} else {
+    // If the last argument is not an option, treat it as a filename
+    if (args.length > 0) {
+        const lastArg = args[args.length - 1];
+        if (!lastArg.startsWith('--')) {
+            options.singleFile = lastArg;
+        }
+    }
+    if (options.writeConfigFilename){
+        writeConfigFile(options.writeConfigFilename, options);
+    }
 }
 
 if (options.outputLines == false && options.outputFilename == false){
     options.outputSummary = true;
 }
 
-// If the last argument is not an option, treat it as a filename
-if (args.length > 0) {
-    const lastArg = args[args.length - 1];
-    if (!lastArg.startsWith('--')) {
-        singleFile = lastArg;
-    }
-}
 
-if (   suiteIdx == -1
-    || !SUITES[suiteIdx] ) {
+
+if (   options.suiteIdx == -1
+    || !SUITES[options.suiteIdx] ) {
     function miniHelp(){
          console.error("Please run with the following options:"
             +"\n  --suites         (to see full suite info)"
@@ -363,12 +402,12 @@ if (   suiteIdx == -1
             +"\n    --suite=functions"
             +"\n  or one of these other tests, shown by number and name:");
     }
-    if (suiteIdx === -1) {
+    if (options.suiteIdx === -1) {
     
-        console.error("No suite/test provided.");
+        console.error("No suite/test provided:"+options.suiteIdx);
         miniHelp();
     } else {
-        console.error('Invalid suite index: '+suiteIdx);
+        console.error('Invalid suite index: '+options.suiteIdx);
         miniHelp();
     }
     
@@ -378,21 +417,21 @@ if (   suiteIdx == -1
     process.exit(1);
 }
 
-const { regex, name, description, expression, bareExpression } = SUITES[suiteIdx];
+const { regex, name, description, expression, bareExpression } = SUITES[options.suiteIdx];
 
-const suite = SUITES[suiteIdx];
+const suite = SUITES[options.suiteIdx];
 
 if (options.verbose){
-    printHelpBox(`👉 Running suite[${suiteIdx}]`
+    printHelpBox(`👉 Running suite[${options.suiteIdx}]`
                 +`:${colorANSI(COLORS.Bold+COLORS.Red, name)} `
                 +`  ${colorANSI(COLORS.Cyan, description)}`);
     console.log(`Directory: ${dir}`);
-    if(singleFile){
-        console.log(`Single file: ${singleFile}`);
+    if(options.singleFile){
+        console.log(`Single file: ${options.singleFile}`);
     } else {
-        console.log(`Extensions: ${extensions.join(', ')}`);
+        console.log(`Extensions: ${options.extensions.join(', ')}`);
     }
-    console.log("Suite:\n" + JSON.stringify(SUITES[suiteIdx], (key, value) =>
+    console.log("Suite:\n" + JSON.stringify(SUITES[options.suiteIdx], (key, value) =>
                 value instanceof RegExp ? value.toString() : value, 4));
     console.log("Options:\n" + JSON.stringify(options,null,4));
     printHelpDivider()
@@ -400,33 +439,17 @@ if (options.verbose){
     //do nothing
 } else {
     // not --quiet and not --verbose gets minimal
-    printHelpBox(    "Suite: "+suiteIdx 
+    printHelpBox(    "Suite: "+options.suiteIdx 
                     +"  "+ colorANSI(COLORS.Bold+COLORS.Red, name)
                     +"  "+ colorANSI(COLORS.Cyan, description) ); 
 
 }
-function writeConfigFile(writeConfigFilename, options){
-    const fs = require('fs');
-    try {
-        // Remove any non-serializable or runtime-only properties
-        const toWrite = { ...options };
-        // Remove properties that shouldn't be saved
-        delete toWrite.writeConfigFilename;
-        delete toWrite.runconfigObj;
-        // Write as pretty JSON
-        fs.writeFileSync(writeConfigFilename, JSON.stringify(toWrite, null, 4), 'utf8');
-        printInfo(`Config written to ${writeConfigFilename}`);
-    } catch (err) {
-        printError(`Error writing config file: ${err}`);
-    }
-}
-
 
 // --- Main logic ---
 
 if (options.debug) console.log("\n********* Directory ************"+dir+"************\n");
 
-readdir(dir, (err, files) => {
+readdir(options.dir, (err, files) => {
     if (options.debug) console.log("********* Files in Dir **********"+files+"\n*****************************************************\n");
     if (err) {
         console.error('Error reading directory:', err);
@@ -434,10 +457,10 @@ readdir(dir, (err, files) => {
     }
     const states = [];
     let targetFiles;
-    if (singleFile) {
-        targetFiles = [singleFile];
+    if (options.singleFile) {
+        targetFiles = [options.singleFile];
     } else {
-        targetFiles = files.filter(file => extensions.includes(extname(file)));
+        targetFiles = files.filter(file => options.extensions.includes(extname(file)));
     }
     if (options.debug){
                console.log("********* Files for Processing*************"+targetFiles+"\n*****************************************************\n");
@@ -452,8 +475,7 @@ readdir(dir, (err, files) => {
         states.push(state);
         state.filename = file;
         state.suite = name;
-        //const filePath = singleFile ? file : join(dir, file);
-        const filePath = join(dir, file);
+        const filePath = join(options.dir, file);
         const content = readFileSync(filePath, 'utf8');
         let match;
         let found = false;
@@ -615,17 +637,4 @@ class State {
     }
     
 }
-    function readConfig(configFilename){
-        const fs = require('fs');
-        try {
-            if (!fs.existsSync(configFilename)) {
-                printError(`Config file not found: ${configFilename}`);
-                return null;
-            }
-            const data = fs.readFileSync(configFilename, 'utf8');
-            return JSON.parse(data);
-        } catch (err) {
-            printError(`Error reading config file: ${err}`);
-            return null;
-        }
-    }
+   
