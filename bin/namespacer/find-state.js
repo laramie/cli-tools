@@ -61,7 +61,7 @@ export class State {
                     lines: this.#lines
             };
         } else {
-            if (options.shortSummary){
+            if (outputOptions.shortSummary){
                 return {
                     suite: this.suite,
                     filename: this.filename,
