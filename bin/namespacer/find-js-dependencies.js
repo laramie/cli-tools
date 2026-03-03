@@ -268,11 +268,12 @@ args.forEach(arg => {
         configFilename = arg.split('=')[1];
         options.runconfigObj = readConfig(configFilename);
         if (!options.runconfigObj){
-            logError("--runconfig= specified, but config not found");
+            printError("--runconfig= specified, but config not found");
             options.quit = true;
         } else {
-            //TODO:  fix this conditional:
-            let anyOtherArgs = "boolean: true if *any* other args are present.... ";
+            // Only allow --runconfig, no other options
+            let otherArgs = args.filter(a => !a.startsWith('--runconfig='));
+            let anyOtherArgs = otherArgs.length > 0;
             if (anyOtherArgs){
                 printError("Running with --runconfig= means no other options may be used. Exiting.");
                 options.quit = true;
@@ -285,7 +286,7 @@ args.forEach(arg => {
             printInfo("config file will be written: "+configFilename);
             options.writeConfigFilename = configFilename
         } else {
-            logError("--writeconfig= specified, but no config filename was given.");
+            printError("--writeconfig= specified, but no config filename was given.");
             config.quit = true;
         }
     } else if (arg.startsWith("--all")) {     //--all
@@ -403,6 +404,21 @@ if (options.verbose){
                     +"  "+ colorANSI(COLORS.Bold+COLORS.Red, name)
                     +"  "+ colorANSI(COLORS.Cyan, description) ); 
 
+}
+function writeConfigFile(writeConfigFilename, options){
+    const fs = require('fs');
+    try {
+        // Remove any non-serializable or runtime-only properties
+        const toWrite = { ...options };
+        // Remove properties that shouldn't be saved
+        delete toWrite.writeConfigFilename;
+        delete toWrite.runconfigObj;
+        // Write as pretty JSON
+        fs.writeFileSync(writeConfigFilename, JSON.stringify(toWrite, null, 4), 'utf8');
+        printInfo(`Config written to ${writeConfigFilename}`);
+    } catch (err) {
+        printError(`Error writing config file: ${err}`);
+    }
 }
 
 
@@ -599,3 +615,17 @@ class State {
     }
     
 }
+    function readConfig(configFilename){
+        const fs = require('fs');
+        try {
+            if (!fs.existsSync(configFilename)) {
+                printError(`Config file not found: ${configFilename}`);
+                return null;
+            }
+            const data = fs.readFileSync(configFilename, 'utf8');
+            return JSON.parse(data);
+        } catch (err) {
+            printError(`Error reading config file: ${err}`);
+            return null;
+        }
+    }
