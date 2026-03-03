@@ -34,13 +34,6 @@ export class Colors {
     static BQ = Colors.Magenta+'❝'+Colors.Reset;
     static EQ = Colors.Magenta+'❞'+Colors.Reset;
 
-    static colorANSI(aColor, str){
-        if (options.color) {
-            return aColor + str + Colors.Reset;
-        } else {
-            return str;
-        }
-    }
 
     static testColors(){
         Object.entries(Colors).forEach(([prop, val]) => {

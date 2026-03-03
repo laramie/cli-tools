@@ -1,0 +1,25 @@
+{
+    "quiet": true,
+    "color": true,
+    "bareExpressions": true,
+    "outputFilename": true,
+    "outputLines": true,
+    "outputSummary": false,
+    "shortSummary": false,
+    "outputSourceLocation": true,
+    "outputSortedLines": true,
+    "verbose": true,
+    "debug": true,
+    "configSource": "command-line",
+    "suiteIdx": 0,
+    "extensions": [
+        ".js",
+        ".txt"
+    ],
+    "singleFile": null,
+    "configFilename": null,
+    "dir": "data/src",
+    "dirSpecified": true,
+    "datadir": "data",
+    "datadirSpecified": true
+}
