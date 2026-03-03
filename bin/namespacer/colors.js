@@ -1,0 +1,56 @@
+export class Colors {
+    constructor() {
+    }
+
+    //Reset/General';
+    static Reset = '\x1b[0m'; 
+
+    //Text Decorations';
+    static Bold = '\x1b[1m';
+    static Dim =  '\x1b[2m';
+    static Underline = '\x1b[4m';
+    static Inverse = '\x1b[7m';
+    
+    //Foreground Colors';
+    static Blackreaddir = '\x1b[30m';
+    static Red = '\x1b[31m';
+    static Green = '\x1b[32m';
+    static Yellow = '\x1b[33m';
+    static Blue = '\x1b[34m';
+    static Magenta = '\x1b[35m';
+    static Cyan = '\x1b[36m';
+    static White = '\x1b[37m';
+    
+    //Background Colors';
+    static BgBlack = '\x1b[40m';
+    static BgRed = '\x1b[41m';
+    static BgGreen = '\x1b[42m';
+    static BgYellow = '\x1b[43m';
+    static BgBlue = '\x1b[44m';
+    static BgMagenta = '\x1b[45m';
+    static BgCyan = '\x1b[46m';
+    static BgWhite = '\x1b[47m'
+
+    static BQ = Colors.Magenta+'❝'+Colors.Reset;
+    static EQ = Colors.Magenta+'❞'+Colors.Reset;
+
+    static colorANSI(aColor, str){
+        if (options.color) {
+            return aColor + str + Colors.Reset;
+        } else {
+            return str;
+        }
+    }
+
+    static testColors(){
+        Object.entries(Colors).forEach(([prop, val]) => {
+            console.log(val, "   "+prop+"   "+Colors.Reset);
+        });
+    }
+
+}
+
+function test(){
+    Colors.testColors();
+}
+

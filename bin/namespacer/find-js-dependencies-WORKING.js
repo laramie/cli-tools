@@ -10,37 +10,6 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
-const COLORS = {
-    //Reset/General',
-    Reset: '\x1b[0m', 
-    //Text Decorations',
-    Bold: '\x1b[1m',
-    Dim:  '\x1b[2m',
-    Underline: '\x1b[4m',
-    Inverse: '\x1b[7m',
-    //Foreground Colors',
-    Black: '\x1b[30m',
-    Red: '\x1b[31m',
-    Green: '\x1b[32m',
-    Yellow: '\x1b[33m',
-    Blue: '\x1b[34m',
-    Magenta: '\x1b[35m',
-    Cyan: '\x1b[36m',
-    White: '\x1b[37m',
-    //Background Colors',
-    BgBlack: '\x1b[40m',
-    BgRed: '\x1b[41m',
-    BgGreen: '\x1b[42m',
-    BgYellow: '\x1b[43m',
-    BgBlue: '\x1b[44m',
-    BgMagenta: '\x1b[45m',
-    BgCyan: '\x1b[46m',
-    BgWhite: '\x1b[47m'
-}
-
-const BQ = COLORS.Magenta+'❝'+COLORS.Reset;
-const EQ = COLORS.Magenta+'❞'+COLORS.Reset;
-
 const DEFAULT_SUITE = -1;
 
 const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
@@ -130,105 +99,10 @@ function formatSuite(oneSuite, sIDx){
 
 
 
-function colorANSI(aColor, str){
-    if (options.color) {
-        return aColor + str + COLORS.Reset;
-    } else {
-        return str;
-    }
-}
-
-function testColors(){
-    Object.entries(COLORS).forEach(([prop, val]) => {
-        console.log(val, "   "+prop+"   "+COLORS.Reset);
-    });
-}
-//testColors();
 
 
 
 //===============================================================================================
-class State {
-    #foundBegin = false;
-    #foundEnd = false;
-    #lines = [];
-    #lineSet = new Set();
-    filename = "";
-    suite = "";
-    
-    addLine(line, linenum, startIndex, all) {
-        if (all || !this.#lineSet.has(line)) {
-            //let rawLine = ""; //TODO: have the caller send in the full line.
-            //let replacedLine = "";
-            this.#lines.push({ line, linenum, startIndex });
-            this.#lineSet.add(line);
-        }
-    }
-    printLines(outputOptions) {
-        return this.#lines.map(obj =>
-            outputOptions.outputSourceLocation
-                ? 
-                `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
-                : obj.line
-        ).join('\n');
-    }
-    printLinesSorted(outputOptions) {
-        // Sort a copy of #lines by line content, do not mutate #lines
-        const sorted = [...this.#lines].sort((a, b) => {
-            if (a.line < b.line) return -1;
-            if (a.line > b.line) return 1;
-            return 0;
-        });
-        return sorted.map(obj =>
-            outputOptions.outputSourceLocation
-                ? 
-                `${obj.linenum.toString().padStart(6, ' ')}\t[${obj.startIndex.toString().padStart(6, ' ')}]:\t${obj.line}`
-                : obj.line
-        ).join('\n');
-    }
-    printFilename(){
-        return this.filename;
-    }
-    printSummary(outputOptions){
-        return JSON.stringify(this.toJSON(outputOptions), null, 4);
-    }
-
-    quantifyFound() {
-        return this.#lines.length;
-    }
-    foundBegin() {
-        this.#foundBegin = true;
-    }
-    foundEnd() {
-        this.#foundEnd = true;
-    }
-    toJSON(outputOptions){
-        if (outputOptions.outputSourceLocation){
-            return {
-                    suite: this.suite,
-                    filename: this.filename,
-                    quantifyFound: this.#lines.length,
-                    lines: this.#lines
-            };
-        } else {
-            if (options.shortSummary){
-                return {
-                    suite: this.suite,
-                    filename: this.filename,
-                    quantifyFound: this.#lines.length                    
-                }
-            } else {
-                return {
-                    suite: this.suite,
-                    filename: this.filename,
-                    quantifyFound: this.#lines.length,
-                    lines: this.#lines.map(obj => obj.line)
-                }
-            }
-        }
-    }
-    
-}
 //===============================================================================================
 
 function readConfig(configFilename){
