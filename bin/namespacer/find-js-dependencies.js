@@ -266,8 +266,8 @@ args.forEach(arg => {
         dir = arg.split('=')[1];
     } else if (arg.startsWith('--runconfig=')) {
         configFilename = arg.split('=')[1];
-        options.runconfig = readConfig(configFilename);
-        if (!options.runconfig){
+        options.runconfigObj = readConfig(configFilename);
+        if (!options.runconfigObj){
             logError("--runconfig= specified, but config not found");
             options.quit = true;
         } else {
@@ -277,12 +277,13 @@ args.forEach(arg => {
                 printError("Running with --runconfig= means no other options may be used. Exiting.");
                 options.quit = true;
             }
-            options.runconfig.configSource = configFilename;
+            options.runconfigObj.configSource = configFilename;
         }
     } else if (arg.startsWith('--writeconfig=')) {
         configFilename = arg.split('=')[1];
         if (configFilename){
             printInfo("config file will be written: "+configFilename);
+            options.writeConfigFilename = configFilename
         } else {
             logError("--writeconfig= specified, but no config filename was given.");
             config.quit = true;
@@ -332,14 +333,13 @@ if (options.quit){
 }
 
 if (options.runconfig){
-    options = options.runconfig;
+    options = options.runconfigObj;
+} else if (options.writeConfigFilename){
+    writeConfigFile(options.writeConfigFilename, options);
 }
 
 if (options.outputLines == false && options.outputFilename == false){
     options.outputSummary = true;
-}
-if (options.writeConfigFilename){
-    writeConfigFile(options.writeConfigFilename, options);
 }
 
 // If the last argument is not an option, treat it as a filename
@@ -385,7 +385,7 @@ if (options.verbose){
     printHelpBox(`👉 Running suite[${suiteIdx}]`
                 +`:${colorANSI(COLORS.Bold+COLORS.Red, name)} `
                 +`  ${colorANSI(COLORS.Cyan, description)}`);
-    console.log(`Directory: ${dir}`);B
+    console.log(`Directory: ${dir}`);
     if(singleFile){
         console.log(`Single file: ${singleFile}`);
     } else {
