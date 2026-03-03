@@ -10,7 +10,6 @@
 import { readdir, readFileSync } from 'fs';
 import { extname, join } from 'path';
 
-
 const COLORS = {
     //Reset/General',
     Reset: '\x1b[0m', 
@@ -46,6 +45,8 @@ function testColors(){
 }
 //testColors();
 
+const BQ = COLORS.Magenta+'❝'+COLORS.Reset;
+const EQ = COLORS.Magenta+'❞'+COLORS.Reset;
 
 const DEFAULT_SUITE = -1;
 
@@ -63,8 +64,8 @@ const FIND_ALL_EXPORTS =          /^(\s*export\s+)\s*(const|var|let|class|defaul
 const FIND_INVOCATIONS =          /(?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+)\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g
 const FIND_INVOCATION_LINES =     /^((?<!\.|'|"|\b(?:export|const|var|let|class|default|function)\s+).*[a-zA-Z_$][a-zA-Z0-9_$]*\s*\()/gm
 
-const BQ = COLORS.Magenta+'❝'+COLORS.Reset;
-const EQ = COLORS.Magenta+'❞'+COLORS.Reset;
+
+
 const SUITES = [
     {     
         name: 'functions',
@@ -128,12 +129,28 @@ const SUITES = [
         frameworkFunctions: FRAMEWORK_FUNCTIONS
     }
 ];
-
 function formatSuite(oneSuite, sIDx){
     return "Suite["+sIDx+"]:\n" + JSON.stringify(oneSuite, (key, value) =>
                 value instanceof RegExp ? value.toString() : value, 4)
-
 }
+
+
+
+
+function colorANSI(aColor, str){
+    if (options.color) {
+        return aColor + str + COLORS.Reset;
+    } else {
+        return str;
+    }
+}
+
+function testColors(){
+    Object.entries(COLORS).forEach(([prop, val]) => {
+        console.log(val, "   "+prop+"   "+COLORS.Reset);
+    });
+}
+//testColors();
 
 function printHelpBox(msg){
     console.log(colorANSI(COLORS.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
@@ -151,6 +168,9 @@ function printSuites(){
 function printInfo(str){
    console.log(colorANSI(COLORS.Bold+COLORS.Yellow,str)); 
 }
+function printError(str){
+   console.log(colorANSI(COLORS.Bold+COLORS.Yellow,str)); 
+}
 
 function printSuiteNames(){
     SUITES.forEach((oneSuite) => {printInfo(oneSuite.name)});
@@ -158,16 +178,6 @@ function printSuiteNames(){
 function printSuiteNumbers(){
     SUITES.forEach((oneSuite, sIDx) => {printInfo(`${sIDx}: ${oneSuite.name}`)});
 }
-
-function colorANSI(aColor, str){
-    const RESET = '\x1b[0m';
-    if (options.color) {
-        return aColor + str + COLORS.Reset;
-    } else {
-        return str;
-    }
-}
-
 
 function printHelp(){
     console.log( colorANSI(COLORS.Bold+COLORS.Cyan,"Command-line options:\n"
@@ -198,13 +208,23 @@ function printHelp(){
         );
 }
 
+function writeConfigFile(writeConfigFilename, options){
+
+}
+
+function readConfig(configFilename){
+
+}
+
 const args = process.argv.slice(2);
 let suiteIdx = DEFAULT_SUITE;
 let extensions = ['.js', '.txt'];
 let dir = process.cwd();
 let singleFile = null;
+let configFilename = null;
 
 let options = {
+    quit : false,
     quiet : false,
     color : false,
     bareExpressions : false,
@@ -215,7 +235,9 @@ let options = {
     outputSourceLocation : false,
     outputSortedLines : false,
     verbose: false,
-    debug: false
+    debug: false,
+    configSource: "command-line",
+    writeConfigFilename: null
 }
 
 args.forEach(arg => {
@@ -242,6 +264,29 @@ args.forEach(arg => {
         extensions = arg.split('=')[1].split(',').map(e => e.startsWith('.') ? e : '.' + e);
     } else if (arg.startsWith('--dir=')) {
         dir = arg.split('=')[1];
+    } else if (arg.startsWith('--runconfig=')) {
+        configFilename = arg.split('=')[1];
+        options.runconfig = readConfig(configFilename);
+        if (!options.runconfig){
+            logError("--runconfig= specified, but config not found");
+            options.quit = true;
+        } else {
+            //TODO:  fix this conditional:
+            let anyOtherArgs = "boolean: true if *any* other args are present.... ";
+            if (anyOtherArgs){
+                printError("Running with --runconfig= means no other options may be used. Exiting.");
+                options.quit = true;
+            }
+            options.runconfig.configSource = configFilename;
+        }
+    } else if (arg.startsWith('--writeconfig=')) {
+        configFilename = arg.split('=')[1];
+        if (configFilename){
+            printInfo("config file will be written: "+configFilename);
+        } else {
+            logError("--writeconfig= specified, but no config filename was given.");
+            config.quit = true;
+        }
     } else if (arg.startsWith("--all")) {     //--all
         options.outputAll = true;
     } else if (arg.startsWith("--b")) {       //--bare
@@ -264,26 +309,37 @@ args.forEach(arg => {
         options.outputSummary = true;    
     } else if (arg.startsWith("--te")         //--tests
              ||arg.startsWith("--suites")) {  //--suites
-        //printHelpDivider();                   
         printSuites();
-        process.exit(1);
+        options.quit = true;
     } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
         printSuiteNumbers();
-        process.exit(1);
+        options.quit = true;
     } else if (arg.startsWith("--suitenames")) { //--suitenames
         printSuiteNames();
-        process.exit(1);
+        options.quit = true;
     } else if (arg.startsWith("--v")) {       //--verbose
         options.verbose = true;
     } else if (arg.startsWith("--d")) {       //--debug
         options.debug = true;
     } else if (arg.startsWith("--h")) {       //--help
         printHelp();
-        process.exit(1);
+        options.quit = true;
     }
 });
+
+if (options.quit){
+    process.exit(1);
+}
+
+if (options.runconfig){
+    options = options.runconfig;
+}
+
 if (options.outputLines == false && options.outputFilename == false){
     options.outputSummary = true;
+}
+if (options.writeConfigFilename){
+    writeConfigFile(options.writeConfigFilename, options);
 }
 
 // If the last argument is not an option, treat it as a filename
@@ -329,7 +385,7 @@ if (options.verbose){
     printHelpBox(`👉 Running suite[${suiteIdx}]`
                 +`:${colorANSI(COLORS.Bold+COLORS.Red, name)} `
                 +`  ${colorANSI(COLORS.Cyan, description)}`);
-    console.log(`Directory: ${dir}`);
+    console.log(`Directory: ${dir}`);B
     if(singleFile){
         console.log(`Single file: ${singleFile}`);
     } else {
