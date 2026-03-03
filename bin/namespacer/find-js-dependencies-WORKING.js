@@ -10,7 +10,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
-const DEFAULT_SUITE = -1;
+
 
 const SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
     'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
@@ -237,29 +237,8 @@ function main(){
     const args = process.argv.slice(2);
 
 
-    let options = {
-        quiet : false,
-        color : false,
-        bareExpressions : false,
-        outputFilename : false,
-        outputLines : false,
-        outputSummary : false,   
-        shortSummary : false,   
-        outputSourceLocation : false,
-        outputSortedLines : false,
-        verbose: false,
-        debug: false,
-        configSource: "command-line",
-        writeConfigFilename: null,
-        suiteIdx: DEFAULT_SUITE,
-        extensions: ['.js', '.txt'],
-        singleFile: null,
-        configFilename: null,
-        dir: "",
-        dirSpecified: false,
-        datadir: "data",
-        datadirSpecified: false
-    }
+    // Use FindOptions class for options
+    let options = new FindOptions();
 
 
 
