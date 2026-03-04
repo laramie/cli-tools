@@ -1,5 +1,5 @@
-import { ANSIColors } from './ansi-colors.js';
-import { RegexSuites} from './regex-suites.js';
+import { ANSIColors } from './ANSIColors.js';
+import { RegexSuites} from './RegexSuites.js';
 
 /** This class manages command-line options to run FindMain, and marries it to RegexSuites.
  *  The command-line flags are transformed into properties of an options object.

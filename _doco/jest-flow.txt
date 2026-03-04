@@ -36,4 +36,10 @@ Do NOT do this:
 DO do this: 
     node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/regex-suites.test.js
     You must run with that flag because jest is all out of date 'nshit.
+
+this worked:
+    laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/ANSIColors.test.js
+this worked: 
+     laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/RegexSuites.test.js
+     
     

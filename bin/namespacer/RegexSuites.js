@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { ANSIColors } from './ansi-colors.js';
+import { ANSIColors } from './ANSIColors.js';
 
 export class RegexSuites {
     constructor(installOtherSuites) {

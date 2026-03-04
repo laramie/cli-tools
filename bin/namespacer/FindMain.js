@@ -11,10 +11,10 @@
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, join } from 'path';
-import { FindOptions } from './find-options.js';
-import { SourceLines } from './source-lines.js';
-import { ANSIColors } from './ansi-colors.js';
-import { RegexSuites} from './regex-suites.js';
+import { FindOptions } from './FindOptions.js';
+import { SourceLines } from './SourceLines.js';
+import { ANSIColors } from './ANSIColors.js';
+import { RegexSuites} from './RegexSuites.js';
 
 /** This class is driven from command-line parameters and files or globs passed to 
  *   process a number of source Javascript files, scanning for functions, exports, and invocations.
@@ -167,6 +167,23 @@ export class FindMain {
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
                 this.accumulatePlan("Processing file: "+file);
+
+                //TODO:suppressList moved from inside while match....
+                    let suppressList = [];
+                    if (suite.keywords && Array.isArray(suite.keywords)) {
+                        suppressList = suppressList.concat(suite.keywords);
+                    }
+                    if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
+                        suppressList = suppressList.concat(suite.frameworkFunctions);
+                    }
+                    /** Load per-file suppressions and add them */
+                    const perFileSuppressions = this.loadFrameworkSuppressionsForFile(file, options.datadir);
+                    if (perFileSuppressions.length > 0) {
+                        console.log("**************************** found suppressions for file<"+file+">: ["+perFileSuppressions+"]");
+                        suppressList = suppressList.concat(perFileSuppressions);
+                    }
+                    //END TODO:suppressList moved ...
+
                 let state = new SourceLines();
                 states.push(state);
                 state.filename = file;
@@ -179,21 +196,10 @@ export class FindMain {
                 while ((match = regex.exec(content)) !== null) {
                     let suppress = false;
                     const identifier = match[1];
-                    let suppressList = [];
-                    if (suite.keywords && Array.isArray(suite.keywords)) {
-                        suppressList = suppressList.concat(suite.keywords);
-                    }
-                    if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
-                        suppressList = suppressList.concat(suite.frameworkFunctions);
-                    }
 
 
-                    /** Load per-file suppressions and add them */
-                    const perFileSuppressions = this.loadFrameworkSuppressionsForFile(file, options.datadir);
-                    if (perFileSuppressions.length > 0) {
-                        console.log("**************************** found suppressions for file<"+file+">: ["+perFileSuppressions+"]");
-                        suppressList = suppressList.concat(perFileSuppressions);
-                    }
+
+                   
 
 
 

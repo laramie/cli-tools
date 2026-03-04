@@ -41,6 +41,7 @@ export class ANSIColors {
         Object.entries(ANSIColors).forEach(([prop, val]) => {
             console.log(val, "   "+prop+"   "+ANSIColors.Reset);
         });
+        return Object.entries(ANSIColors).length;
     }
 
 }
