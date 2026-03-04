@@ -28,7 +28,7 @@
 
 import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
-import {Generator} from './GenerateInterface.js';
+import {GenerateInterface} from './GenerateInterface.js';
 
 class Line {
     constructor({ identifier, startIndex, linenum, rawLine, replacedLine = '', namespace = '', regexUsed = null }) {
@@ -63,7 +63,7 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-const VERBOSE_INTERFACE_GENS = true;  //used to have Generator also print out output
+const VERBOSE_INTERFACE_GENS = true;  //used to have GenerateInterface also print out output
 
 const LOG_FLAGS = {
     FILE_WRITES: true,
@@ -137,7 +137,7 @@ function main(){
             logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
             return;
         }
-        let gen = new Generator();
+        let gen = new GenerateInterface();
         let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, VERBOSE_INTERFACE_GENS);
         log('INTERFACE_GENS', "🎲  ---\n"+interface_gen+"\n---  🎲");
         log('FILE_WRITES', "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");

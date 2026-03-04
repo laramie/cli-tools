@@ -14,10 +14,10 @@ function test(){
     const INTERFACE_NAME =    "IColorFunctions";
     const LEGACY_IMPL_NAME =  "colorFunctionsImpl";
 
-    let methods_plan = Generator.readSourceFileFromCWD(PLAN_FILEPATH);
-    const methodLinesArray = Generator.methodListToArray(methods_plan);
+    let methods_plan = GenerateInterface.readSourceFileFromCWD(PLAN_FILEPATH);
+    const methodLinesArray = GenerateInterface.methodListToArray(methods_plan);
 
-    let gen = new Generator();
+    let gen = new GenerateInterface();
     let output = gen.generateInterface(LEGACY_FILEPATH, LEGACY_IMPL_NAME, methodLinesArray, INTERFACE_NAME, true);
 
     console.log("======New IColorFunction class ======\n"+output);
@@ -25,7 +25,7 @@ function test(){
 
 
 
-export class Generator{
+export class GenerateInterface{
 
     static readSourceFileFromCWD(relFilePath){
         const absPath = join(process.cwd(), relFilePath);
@@ -37,8 +37,8 @@ export class Generator{
     }
 
     generateInterfaceFromNamespaceObj(namespaceObj, LOG_DEBUG){
-        let methods_plan = Generator.readSourceFileFromCWD(namespaceObj.interface);
-        const methodLinesArray = Generator.methodListToArray(methods_plan);
+        let methods_plan = GenerateInterface.readSourceFileFromCWD(namespaceObj.interface);
+        const methodLinesArray = GenerateInterface.methodListToArray(methods_plan);
 
         return this.generateInterface(  namespaceObj.sourceout, 
                                         namespaceObj.legacyImpl, 
