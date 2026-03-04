@@ -1,6 +1,12 @@
-import { Colors } from './colors.js';
+import { ANSIColors } from './ansi-colors.js';
 import { RegexSuites} from './regex-suites.js';
 
+/** This class manages command-line options to run FindMain, and marries it to RegexSuites.
+ *  The command-line flags are transformed into properties of an options object.
+ *  To extend this class to generically handle command-line options, you'd need to de-couple from RegexSuites,
+ *   either replacing those features with an Angular-style callback/function properties, or and ES6 style filter function 
+ *   to delegate actions for action command-line parameters.
+ */
 export class FindOptions {
     constructor() {
         this.quiet = false;
@@ -79,7 +85,7 @@ export class FindOptions {
             } else if (arg.startsWith('--writeconfig=')) {
                 let configFilename = arg.split('=')[1];
                 if (configFilename){
-                    if (this.debug) this.this.printInfo(options, "config file will be written: "+configFilename);
+                    if (this.debug) this.printInfo(options, "config file will be written: "+configFilename);
                     this.writeConfigFilename = configFilename
                 } else {
                     this.printError(options, "--writeconfig= specified, but no config filename was given.");
@@ -139,7 +145,7 @@ export class FindOptions {
     }
 
     printHelp(){
-        console.log( this.colorANSI(Colors.Bold+Colors.Cyan,"Command-line options:\n"
+        console.log( this.colorANSI(ANSIColors.Bold+ANSIColors.Cyan,"Command-line options:\n"
             +"  --all                  :all lines, including duplicates.\n"
             +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --color     |  --c     :color output for DOS glory.\n"
@@ -178,7 +184,7 @@ export class FindOptions {
 
      colorANSI(aColor, str){
         if (this.color) {
-            return ""+aColor + str + Colors.Reset;
+            return ""+aColor + str + ANSIColors.Reset;
         } else {
             return str;
         }

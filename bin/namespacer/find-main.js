@@ -13,9 +13,21 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 import { FindOptions } from './find-options.js';
 import { SourceLines } from './source-lines.js';
-import { Colors } from './colors.js';
+import { ANSIColors } from './ansi-colors.js';
 import { RegexSuites} from './regex-suites.js';
 
+/** This class is driven from command-line parameters and files or globs passed to 
+ *   process a number of source Javascript files, scanning for functions, exports, and invocations.
+ *   It writes out an accumulation of things it has done in the accumulator,
+ *   and print out many different things on stdout based on options.  So you can use
+ *   it to do grep-like work, making it quiet and printing out bare lists of functions found, identifiers found, etc.,
+ *   or you can run in verbose and see lots of information on stdout.
+ *   You can run it with test-find-main.bash in the same directory.
+ *   It is designed to precede in the shell (or call in Node.js/Javascript) :      
+ *             find-js-dependencies-replacer.js
+ *   Along the way, that module can call to generate Javascript classes to act as Facade Interfaces:
+ *             generate-interface.js
+ */
 export class FindMain {
     constructor() {
         this.planAccumulator = [];
@@ -35,7 +47,7 @@ export class FindMain {
         }
         
         this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                                +"\nAccumulated Plan. Run: "+options.colorANSI(Colors.Cyan, FindMain.getTimeStamp(true))
+                                +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
                                 +(options.color 
                                     ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
                                     :  ""
@@ -87,8 +99,8 @@ export class FindMain {
         const suite = regexSuites.getSuites()[options.suiteIdx];
 
         let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
-                        +`:${options.colorANSI(Colors.Bold+Colors.Red, name)} `
-                        +`  ${options.colorANSI(Colors.Cyan, description)}`);
+                        +`:${options.colorANSI(ANSIColors.Bold+ANSIColors.Red, name)} `
+                        +`  ${options.colorANSI(ANSIColors.Cyan, description)}`);
         this.accumulatePlan(loglineRunning);
         let loglineDirectory= `Directory: ${options.dir}`;
         this.accumulatePlan(loglineDirectory);
@@ -118,8 +130,8 @@ export class FindMain {
         } else {
             // not --quiet and not --verbose gets minimal
             let loglineMinimalSuite = "Suite: "+options.suiteIdx 
-                                        +"  "+ options.colorANSI(Colors.Bold+Colors.Red, name)
-                                        +"  "+ options.colorANSI(Colors.Cyan, description) ; 
+                                        +"  "+ options.colorANSI(ANSIColors.Bold+ANSIColors.Red, name)
+                                        +"  "+ options.colorANSI(ANSIColors.Cyan, description) ; 
             this.printHelpBox(options, loglineMinimalSuite);
         }
 
@@ -174,6 +186,18 @@ export class FindMain {
                     if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
                         suppressList = suppressList.concat(suite.frameworkFunctions);
                     }
+
+
+
+
+                    /** Load per-file suppressions and add them */
+                    const perFileSuppressions = this.loadFrameworkSuppressionsForFile(file, options.datadir);
+                    if (perFileSuppressions.length > 0) {
+                        suppressList = suppressList.concat(perFileSuppressions);
+                    }
+
+
+
                     if (suppressList.length > 0 && identifier) {
                         suppress = suppressList.some(kw => {
                             if (typeof kw === 'string' && kw.startsWith('/') && kw.endsWith('/')) {
@@ -229,7 +253,7 @@ export class FindMain {
             states.forEach(theState => {
                 if (theState.quantifyFound()===0 && options.outputFilename){
                     if (!notFoundHeaderPrinted){
-                        let loglineNone = "\n\n━━━━━━━━   "+options.colorANSI(Colors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
+                        let loglineNone = "\n\n━━━━━━━━   "+options.colorANSI(ANSIColors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                         console.log(loglineNone);
                         this.accumulatePlan(loglineNone);
                         notFoundHeaderPrinted = true;
@@ -246,6 +270,31 @@ export class FindMain {
         this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(options), options);
         console.log(""); 
     } //END main();
+
+
+
+        
+
+    // Helper to load per-file suppressions from a plan file
+    loadFrameworkSuppressionsForFile(sourceFilename, datadir = "data") {
+        const { join, basename } = require('path');
+        const { existsSync, readFileSync } = require('fs');
+        const planFile = join(datadir, "plans", basename(sourceFilename) + ".frameworks.plan");
+        if (!existsSync(planFile)) return [];
+        const lines = readFileSync(planFile, 'utf8')
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line && !line.startsWith('#'));
+        return lines;
+    }
+                            
+
+
+
+
+
+
+
 
     readConfig(configFilename){
         try {
@@ -302,7 +351,7 @@ export class FindMain {
     getAccumulatorPrintout(options){
         return this.planAccumulator.join("\n")
                     +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                    +"\n" + options.colorANSI(Colors.Green, FindMain.getTimeStamp(true))
+                    +"\n" + options.colorANSI(ANSIColors.Green, FindMain.getTimeStamp(true))
                     +"\n\n";
     }
 
@@ -327,21 +376,21 @@ export class FindMain {
 
 
     printHelpBox(options, msg){
-        console.log(options.colorANSI(Colors.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
-        console.log(options.colorANSI(Colors.Cyan,"║     "+msg));
-        console.log(options.colorANSI(Colors.Cyan,"╚════════════════════════════════════════════════════════════════════════════"));
+        console.log(options.colorANSI(ANSIColors.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
+        console.log(options.colorANSI(ANSIColors.Cyan,"║     "+msg));
+        console.log(options.colorANSI(ANSIColors.Cyan,"╚════════════════════════════════════════════════════════════════════════════"));
     }
 
     printHelpDivider(options){
-        console.log(options.colorANSI(Colors.Cyan,"═════════════════════════════════════════════════"));
+        console.log(options.colorANSI(ANSIColors.Cyan,"═════════════════════════════════════════════════"));
     }
 
     printInfo(options, str){
-        console.log(options.colorANSI(Colors.Bold+Colors.Yellow,str)); 
+        console.log(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str)); 
     }
 
     printError(options, str){
-        console.log(options.colorANSI(Colors.Bold+Colors.Yellow,str)); 
+        console.log(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str)); 
     }
 
     static test(){

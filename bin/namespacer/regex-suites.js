@@ -1,12 +1,13 @@
-import { Colors } from './colors.js';
+import { ANSIColors } from './ansi-colors.js';
 
 export class RegexSuites {
     constructor(installOtherSuites) {
         if (installOtherSuites){
             this.suites = installOtherSuites;
         } else {
-            this.suites = RegexSuites.SUITES_LEGACYJS_TO_ES6;
+            this.suites = RegexSuites.LEGACYJS_TO_ES6;
         }
+        this.suites.forEach((suite, idx) => RegexSuites.validateSuite(suite, idx));
     }
 
     getSuites(){
@@ -29,8 +30,11 @@ export class RegexSuites {
     static SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
         'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
     ];
+
+    //TODO: callers must be able to pass in array of more functions that get added to list safely; 
+    //    the list will be saved in data/plans/<source-file>.frameworks.plan files for each source-file's exclusions.
     static FRAMEWORK_FUNCTIONS = [       // List of more identifiers to suppress based on frameworks used (can include regex patterns)
-        'alert', 'test', '$', 'rgb', 'makeSong' 
+        'alert', 'test', '$', 'rgb', 'makeSong'   //TODO: make sure jQuery function $ doesn't need to be escaped.
     ];
     
     static FIND_FUNCTIONS =            /^(\s*(?:export\s+)?)\s*(function)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/gm;
@@ -42,7 +46,7 @@ export class RegexSuites {
     
     
     
-    static SUITES_LEGACYJS_TO_ES6 = [
+    static LEGACYJS_TO_ES6 = [
         {     
             name: 'functions',
             regex: RegexSuites.FIND_FUNCTIONS,
@@ -61,7 +65,7 @@ export class RegexSuites {
             name: 'function-lines',
             regex: RegexSuites.FIND_FUNCTIONS,
             description: 'Lines with functions in file',
-            expression: Colors.BQ+'${match[0]}'+Colors.EQ,
+            expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
             bareExpression:'${match[0]}' 
         },
         {   
@@ -82,7 +86,7 @@ export class RegexSuites {
             name: 'invocation-lines',
             regex: RegexSuites.FIND_INVOCATION_LINES, 
             description: 'Find top-level invocations (whole line)',
-            expression: Colors.BQ+'${match[0]}'+Colors.EQ,
+            expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
             bareExpression:'${match[0]}',
             keywords: RegexSuites.SUPPRESS_IDENTIFIERS
         },
@@ -90,7 +94,7 @@ export class RegexSuites {
             name: 'invocations',
             regex: RegexSuites.FIND_INVOCATIONS,
             description: 'Find top-level invocations (noLang)',
-            expression: Colors.BQ+'${match[0]}'+Colors.EQ,
+            expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
             bareExpression:'${match[1]}',
             keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
             frameworkFunctions: []
@@ -99,7 +103,24 @@ export class RegexSuites {
             name: 'invocations-no-frameworks',
             regex: RegexSuites.FIND_INVOCATIONS,
             description: 'Find top-level invocations (noLang,noFrameworks)',
-            expression: Colors.BQ+'${match[0]}'+Colors.EQ,
+            expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
+            bareExpression:'${match[1]}',
+            keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
+            frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
+        },
+        {   
+            name: 'test-malformed-suite-bad-regex',
+            regex: '/just a string/',
+            description: 'Find top-level invocations (noLang,noFrameworks)',
+            expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
+            bareExpression:'${match[1]}',
+            keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
+            frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
+        },
+        {   
+            name: 'test-malformed-suite-missing-elements',
+            regex: '/just a string/',
+            description: 'Find top-level invocations (noLang,noFrameworks)',
             bareExpression:'${match[1]}',
             keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
             frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
@@ -108,6 +129,33 @@ export class RegexSuites {
     static formatSuite(oneSuite, sIDx){
         return "Suite["+sIDx+"]:\n" + JSON.stringify(oneSuite, (key, value) =>
                     value instanceof RegExp ? value.toString() : value, 4)
+    }
+
+    static validateSuite(suite, index = null) {
+        const requiredFields = [
+            { key: 'name', type: 'string' },
+            { key: 'regex', type: 'object' }, // RegExp is typeof 'object'
+            { key: 'description', type: 'string' },
+            { key: 'expression', type: 'string' },
+            { key: 'bareExpression', type: 'string' }
+        ];
+        for (const field of requiredFields) {
+            if (!(field.key in suite)) {
+                throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} missing required field: ${field.key}`);
+            }
+            if (typeof suite[field.key] !== field.type) {
+                throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field '${field.key}' should be of type ${field.type}`);
+            }
+        }
+        if ('keywords' in suite && !Array.isArray(suite.keywords)) {
+            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'keywords' should be an array`);
+        }
+        if ('frameworkFunctions' in suite && !Array.isArray(suite.frameworkFunctions)) {
+            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'frameworkFunctions' should be an array`);
+        }
+        if (!(suite.regex instanceof RegExp)) {
+            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'regex' should be a RegExp`);
+        }
     }
 
     

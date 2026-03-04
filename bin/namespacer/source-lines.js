@@ -1,3 +1,9 @@
+/** This class encapsulates the state of lines found in a source file,
+ *  as they are matched to regular expressions, and stashed for later in the same runtime,
+ *  to be used as the replace part of search-and-replace.  The maintain information
+ *  about the source locations where identifiers are found on lines, in absolute file byte count, 
+ *  also line numbers, and replacements performed, per line.
+ */
 export class SourceLines {
     #foundBegin = false;
     #foundEnd = false;

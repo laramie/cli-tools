@@ -1,4 +1,6 @@
-export class Colors {
+/** Simple class to encapsulate ANSI terminal colors and escape sequences.
+ */
+export class ANSIColors {
     constructor() {
     }
 
@@ -31,19 +33,19 @@ export class Colors {
     static BgCyan = '\x1b[46m';
     static BgWhite = '\x1b[47m'
 
-    static BQ = Colors.Magenta+'❝'+Colors.Reset;
-    static EQ = Colors.Magenta+'❞'+Colors.Reset;
+    static BQ = ANSIColors.Magenta+'❝'+ANSIColors.Reset;
+    static EQ = ANSIColors.Magenta+'❞'+ANSIColors.Reset;
 
 
     static testColors(){
-        Object.entries(Colors).forEach(([prop, val]) => {
-            console.log(val, "   "+prop+"   "+Colors.Reset);
+        Object.entries(ANSIColors).forEach(([prop, val]) => {
+            console.log(val, "   "+prop+"   "+ANSIColors.Reset);
         });
     }
 
 }
 
 function test(){
-    Colors.testColors();
+    ANSIColors.testColors();
 }
 

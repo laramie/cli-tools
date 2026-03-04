@@ -7,8 +7,12 @@ COLOR_HELP_TESTS=' --color '
 
 ###FIND_DEPENDENCIES_OPTIONS=' --sort --color   --lines --filenames --short  '
 #worked 20260303: FIND_DEPENDENCIES_OPTIONS=' --sort --color   --lines --filenames --short  --bare --verbose --dir=data/src '
-## worked 20260303 with linenumber printouts using --line --locations: FIND_DEPENDENCIES_OPTIONS=' --sort --color  --lines --locations --filenames --short  --bare  --dir=data/src '
-FIND_DEPENDENCIES_OPTIONS=' --sort --color  --filenames --short --summary verbose --bare  --dir=data/src '
+
+## worked 20260303 with linenumber printouts using --line --locations: 
+FIND_DEPENDENCIES_OPTIONS=' --sort --color  --lines --locations --filenames --short  --bare  --dir=data/src '
+
+# worked 20260303 to produce short, minimal stdout noise:
+#FIND_DEPENDENCIES_OPTIONS=' --sort --color  --filenames --short --summary verbose --bare  --dir=data/src '
 
 
 DISK=" --💾 "
@@ -106,7 +110,13 @@ testEm $FIND_DEPENDENCIES_OPTIONS $DISK
 set +x
 
 echo 
- printHeaderOneline " 🛈     Individual command line examples:"
+printHeaderOneline " 🛈     Individual command line examples:"
+
+echo     ./find-main.js $COLOR_HELP_TESTS --suites
+echo     ./find-main.js $COLOR_HELP_TESTS --suitenumbers
+echo     ./find-main.js $COLOR_HELP_TESTS --suitenames
+echo     ./find-main.js $COLOR_HELP_TESTS --help
+echo 
 echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=function-lines $@ 
 echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions  $@ 
 echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions-no-exports $@ 
