@@ -46,18 +46,23 @@ export class FindMain {
             process.exit(1);
         }
         
-        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                                +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
-                                +(options.color 
-                                    ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
-                                    :  ""
-                                )
-                                +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
         console.log(""); 
+        let prePlanActions = [];
         
         if (options.runconfig){
-            options = options.runconfigObj;
+            //there are other reasons to quit above, but this also causes a quit.
+            let flatOptionsObj = null;
+            if (options.configFilename){
+                flatOptionsObj = this.readConfigIntoFindOptionsObject(options.configFilename);
+                if (!flatOptionsObj){
+                    this.printError(options, "--runconfig= specified, but config not found");
+                    process.exit(1);  
+                } 
+                options = new FindOptions(flatOptionsObj);
+            } else {
+                this.printError(options, "--runconfig= specified, but options.configFilename was not set.");//programming error, not user error.
+                process.exit(1); 
+            }    
         } else {
             // If the last argument is not an option, treat it as a filename
             if (args.length > 0) {
@@ -69,7 +74,35 @@ export class FindMain {
             if (options.writeConfigFilename){
                 this.writeConfigFile(options.writeConfigFilename, options);
                 this.accumulatePlan("💾 writeConfigFile: "+options.writeConfigFilename); 
+                prePlanActions.push("💾 writeConfigFile: "+options.writeConfigFilename); 
             }
+        }
+        this.runWithOptions(options, regexSuites, prePlanActions);
+    }
+
+    runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions){
+        flatOptionsObj = this.readConfigIntoFindOptionsObject(configFilename);
+        if (!flatOptionsObj){
+            this.printError(options, "--runconfig= specified, but config not found");
+            process.exit(1);  
+        } 
+        options = new FindOptions(flatOptionsObj);
+        this.runWithOptions(options, regexSuites, prePlanActions);
+    }
+
+    runWithOptions(options, regexSuites, prePlanActions){
+        console.log("options:"+JSON.stringify(options));
+
+        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                                +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
+                                +(options.color 
+                                    ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
+                                    :  ""
+                                )
+                                +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        if (prePlanActions){
+            this.planAccumulator.push(...prePlanActions);
+
         }
 
         if (options.outputLines == false && options.outputFilename == false){
@@ -82,14 +115,13 @@ export class FindMain {
             if (options.suiteIdx === -1) {
             
                 console.error("No suite/test provided:"+options.suiteIdx);
-                miniHelp();
+                options.miniHelp();
             } else {
                 console.error('Invalid suite index: '+options.suiteIdx);
                 options.miniHelp();
             }
-            
             this.printHelpDivider(options);
-            this.printSuiteNumbers(options, this/*printer*/);
+            regexSuites.printSuiteNumbers(options, this/*printer*/);
             this.printHelpDivider(options);
             process.exit(1);
         }
@@ -291,24 +323,33 @@ export class FindMain {
         return lines;
     }
                             
+    readConfigIntoFindOptionsObject(configFilename){
+        let options = null;
+        let flatOptionsObj = null;
+        if (configFilename){
+            flatOptionsObj = this.readConfig(null, configFilename);  //TODO: using printer as a ref to FindMain is really weird.  Fix this.
+            if (!flatOptionsObj){
+                this.printError(null, "--runconfig= specified, but config not found");
+            } 
+            options = new FindOptions(flatOptionsObj);
+        } 
+        return options;
+    }
 
 
 
 
 
-
-
-
-    readConfig(configFilename){
+    readConfig(options, configFilename){
         try {
             if (!existsSync(configFilename)) {
-                printError(options, `Config file not found: ${configFilename}`);
+                this.printError(options, `Config file not found: ${configFilename}`);
                 return null;
             }
             const data = readFileSync(configFilename, 'utf8');
             return JSON.parse(data);
         } catch (err) {
-            printError(options, `Error reading config file: ${err}`);
+            this.printError(options, `Error reading config file: ${err}`);
             return null;
         }
     }
@@ -319,8 +360,8 @@ export class FindMain {
             const toWrite = { ...options };
             // Remove properties that shouldn't be saved
             delete toWrite.writeConfigFilename;
-            delete toWrite.runconfigObj;
             delete toWrite.runconfig;
+            delete toWrite.configFilename;
             if (!options.dirSpecified){
                 delete toWrite.dir;
                 delete toWrite.dirSpecified;
@@ -333,7 +374,7 @@ export class FindMain {
             writeFileSync(writeConfigFilename, JSON.stringify(toWrite, null, 4), 'utf8');
             if (!options.quiet) this.printInfo(options, `Config written to ${writeConfigFilename}`);
         } catch (err) {
-            printError(options, `Error writing config file: ${err}`);
+            this.printError(options, `Error writing config file: ${err}`);
         }
     }
 
@@ -393,7 +434,11 @@ export class FindMain {
     }
 
     printError(options, str){
-        console.log(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str)); 
+        if (options){
+            console.error(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str));
+        } else {
+            console.error(str);
+        }
     }
 
     static test(){

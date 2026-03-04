@@ -8,7 +8,7 @@ import { RegexSuites} from './RegexSuites.js';
  *   to delegate actions for action command-line parameters.
  */
 export class FindOptions {
-    constructor() {
+    constructor(config = {}) {
         this.quiet = false;
         this.color = false;
         this.bareExpressions = false;
@@ -30,7 +30,9 @@ export class FindOptions {
         this.dirSpecified = false;
         this.datadir = "data";
         this.datadirSpecified = false;
+        Object.assign(this, config);
     }
+
     static DEFAULT_SUITE = -1;
 
     processArgs(args, regexSuites, printer){
@@ -51,7 +53,7 @@ export class FindOptions {
                     } else {
                         console.error('Invalid suite identifier: ' + suiteArg);
                         console.log('Please choose from the following, or run with --suites to see the full suite info:');
-                        this.printHelpDivider(options);
+                        this.printHelpDivider(this);
                         regexSuites.printSuiteNames(this,printer);
                         quit = true;
                     }
@@ -65,30 +67,25 @@ export class FindOptions {
                 this.datadir = arg.split('=')[1];
                 this.datadirSpecified = true;
             } else if (arg.startsWith('--runconfig=')) {
-                let configFilename = arg.split('=')[1];
-                this.runconfigObj = readConfig(configFilename);
-                if (!this.runconfigObj){
-                    this.printError(options, "--runconfig= specified, but config not found");
+                this.configFilename = arg.split('=')[1];
+                // Only allow --runconfig, no other options
+                let otherArgs = args.filter(a => !a.startsWith('--runconfig='));
+                let anyOtherArgs = otherArgs.length > 0;
+                if (anyOtherArgs){
+                    printer.printError(this, "Running with --runconfig= means no other options may be used: " + JSON.stringify(otherArgs)+"  Exiting.");
                     quit = true;
                 } else {
-                    // Only allow --runconfig, no other options
-                    let otherArgs = args.filter(a => !a.startsWith('--runconfig='));
-                    let anyOtherArgs = otherArgs.length > 0;
-                    if (anyOtherArgs){
-                        this.printError(options, "Running with --runconfig= means no other options may be used. Exiting.");
-                        quit = true;
-                    }
-                    this.runconfigObj.configSource = configFilename;
                     this.runconfig = true;
                     quit = false; //all configs come from file.  Ignore any other bugaboos.
                 }
+            
             } else if (arg.startsWith('--writeconfig=')) {
                 let configFilename = arg.split('=')[1];
                 if (configFilename){
-                    if (this.debug) this.printInfo(options, "config file will be written: "+configFilename);
+                    if (this.debug) this.printInfo(this, "config file will be written: "+configFilename);
                     this.writeConfigFilename = configFilename
                 } else {
-                    this.printError(options, "--writeconfig= specified, but no config filename was given.");
+                    printer.printError(this, "--writeconfig= specified, but no config filename was given.");
                     quit = true;
                 }
             } else if (arg.startsWith("--all")) {     //--all
@@ -182,7 +179,7 @@ export class FindOptions {
         );
     }
 
-     colorANSI(aColor, str){
+    colorANSI(aColor, str){
         if (this.color) {
             return ""+aColor + str + ANSIColors.Reset;
         } else {

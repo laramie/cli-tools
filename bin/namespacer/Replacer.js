@@ -30,52 +30,7 @@ import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
 
-const NamespacerPlan = {
-    sources:[
-        {
-            src:  "./data/src/song.js",
-            out:  "./data/out/generated-song.js"
-        },
-        {
-            src:  "./data/src/notetable.js",
-            out:  "./data/out/generated-notetable.js"
-        }
-    ],
-    namespaces: [
-        {
-            namespace: "IInfiniteNeck",
-            legacyImpl: "infiniteNeckImpl",
-            bareList:  "./data/plans/infinite-neck.js.functions.gen",
-            excludes:  "",
-            interface: "./data/plans/infinite-neck.js.functions.gen",
-            sourceout:    "./data/out/IInfiniteNeck.js"
-        },
-        {
-            namespace: "ISong",
-            legacyImpl: "songImpl",
-            bareList:  "./data/plans/song.js.functions.gen",
-            excludes:  "./data/plans/ISong.js.excludes.plan",
-            interface: "./data/plans/song.js.functions.gen",
-            sourceout:    "./data/out/ISong.js"
-        },
-        {
-            namespace: "INoteTable",
-            legacyImpl: "notetableImpl",
-            bareList:  "./data/plans/notetable.js.functions.gen",
-            excludes:  "",
-            interface: "./data/plans/notetable.js.functions.gen",
-            sourceout:    "./data/out/INoteTable.js"
-        },
-        {
-            namespace: "IColorFunctions",
-            legacyImpl: "colorFunctionsImpl",
-            bareList:  "./data/plans/colorFunctions.js.functions.gen",
-            excludes:  "",
-            interface: "./data/plans/IColorFunctions.js.interface.plan",
-            sourceout:    "./data/out/IColorFunctions.js"
-        }
-    ]
-}
+
 
 class Line {
     constructor({ identifier, startIndex, linenum, rawLine, replacedLine = '', namespace = '', regexUsed = null }) {
@@ -91,7 +46,10 @@ class Line {
 }
 
 export class Replacer {
-     logError(message){
+    constructor(namespacerPlan) {
+        this.namespacerPlan = namespacerPlan;
+    }
+    logError(message){
         console.error(message);
     }
     log(flag, message, flagObj = Replacer.LOG_FLAGS) {
@@ -296,7 +254,7 @@ export class Replacer {
      */
     main(){
         let masterNamespaceMap = {};
-        NamespacerPlan.namespaces.forEach(namespaceObj => {
+        this.namespacerPlan.namespaces.forEach(namespaceObj => {
             const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
             if (added === 0) {
                 this.logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
@@ -312,7 +270,7 @@ export class Replacer {
         this.log('MASTER_NAMESPACE_MAP', "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
 
         // Loop over all sources in NamespacerPlan and process each
-        NamespacerPlan.sources.forEach(sourceObj => {
+        this.namespacerPlan.sources.forEach(sourceObj => {
             this.logFilename(sourceObj.src);
             this.processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
         });
@@ -321,6 +279,5 @@ export class Replacer {
 
 }
 
-//==========  Do it! ================
-new Replacer().main();
+
 
