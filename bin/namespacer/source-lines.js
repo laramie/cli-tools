@@ -1,4 +1,4 @@
-export class State {
+export class SourceLines {
     #foundBegin = false;
     #foundEnd = false;
     #lines = [];

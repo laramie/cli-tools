@@ -12,7 +12,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 import { FindOptions } from './find-options.js';
-import { State } from './find-state.js';
+import { SourceLines } from './source-lines.js';
 import { Colors } from './colors.js';
 import { RegexSuites} from './regex-suites.js';
 
@@ -155,7 +155,7 @@ export class FindMain {
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
                 this.accumulatePlan("Processing file: "+file);
-                let state = new State();
+                let state = new SourceLines();
                 states.push(state);
                 state.filename = file;
                 state.suite = name;
@@ -345,7 +345,7 @@ export class FindMain {
     }
 
     static test(){
-        let state = new State();
+        let state = new SourceLines();
         state.test();
     }
 }

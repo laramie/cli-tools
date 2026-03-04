@@ -5,7 +5,7 @@ export class RegexSuites {
         if (installOtherSuites){
             this.suites = installOtherSuites;
         } else {
-            this.suites = RegexSuites.SUITES;
+            this.suites = RegexSuites.SUITES_LEGACYJS_TO_ES6;
         }
     }
 
@@ -42,7 +42,7 @@ export class RegexSuites {
     
     
     
-    static SUITES = [
+    static SUITES_LEGACYJS_TO_ES6 = [
         {     
             name: 'functions',
             regex: RegexSuites.FIND_FUNCTIONS,
