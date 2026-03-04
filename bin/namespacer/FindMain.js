@@ -3,9 +3,9 @@
 /* Node.js utility to search files in a directory with regex suites
     Run on the bash command line like so, since ths file has a shebang.
         cd ~/infinite-neck
-        ./bin/find-js-dependencies.js --h
+        ./bin/namespacer/FindMain.js --h
     e.g.
-        laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies.js --h
+        laramie@penguin:~/infinite-neck$ ./bin/namespacer/FindMain --h
 */
 
 
@@ -22,11 +22,11 @@ import { RegexSuites} from './RegexSuites.js';
  *   and print out many different things on stdout based on options.  So you can use
  *   it to do grep-like work, making it quiet and printing out bare lists of functions found, identifiers found, etc.,
  *   or you can run in verbose and see lots of information on stdout.
- *   You can run it with test-find-main.bash in the same directory.
+ *   You can run it with test-FindMain.bash in the same directory.
  *   It is designed to precede in the shell (or call in Node.js/Javascript) :      
  *             find-js-dependencies-replacer.js
  *   Along the way, that module can call to generate Javascript classes to act as Facade Interfaces:
- *             generate-interface.js
+ *             GenerateInterface.js
  */
 export class FindMain {
     constructor() {

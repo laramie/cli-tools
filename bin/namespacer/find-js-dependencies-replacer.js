@@ -7,7 +7,7 @@
         cd ~/infinite-neck/bin/namespacer
         ./find-js-dependencies-replacer.js
     e.g.
-        laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies.js --h
+        laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies-replacer.js --h
 
     Development Notes.
 
@@ -28,7 +28,7 @@
 
 import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
-import {Generator} from './generate-interface.js';
+import {Generator} from './GenerateInterface.js';
 
 class Line {
     constructor({ identifier, startIndex, linenum, rawLine, replacedLine = '', namespace = '', regexUsed = null }) {
