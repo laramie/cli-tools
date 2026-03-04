@@ -9,7 +9,14 @@ export class RegexSuites {
         } else {
             this.suites = RegexSuites.LEGACYJS_TO_ES6;
         }
-        this.suites.forEach((suite, idx) => RegexSuites.validateSuite(suite, idx));
+        const validationResult = RegexSuites.validateSuites(this.suites);
+        if (validationResult.errors.length > 0) {
+            console.log("Suite validation errors:", JSON.stringify(validationResult, null, 4));
+            const err = new Error("RegexSuites validation failed");
+            err.validationErrors = validationResult.errors;
+            err.keyErrorCount = validationResult.keyErrorCount;
+            throw err;
+        }
     }
 
     getSuites(){
@@ -138,7 +145,9 @@ export class RegexSuites {
                     value instanceof RegExp ? value.toString() : value, 4)
     }
 
-    static validateSuite(suite, index = null) {
+    static validateSuites(suites) {
+        const errors = [];
+        let keyErrorCount = 0;
         const requiredFields = [
             { key: 'name', type: 'string' },
             { key: 'regex', type: 'object' }, // RegExp is typeof 'object'
@@ -146,29 +155,65 @@ export class RegexSuites {
             { key: 'expression', type: 'string' },
             { key: 'bareExpression', type: 'string' }
         ];
-        for (const field of requiredFields) {
-            if (!(field.key in suite)) {
-                throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} missing required field: ${field.key}`);
+        suites.forEach((suite, idx) => {
+            const suiteErrors = [];
+            // Check required fields
+            for (const field of requiredFields) {
+                if (!(field.key in suite)) {
+                    suiteErrors.push({
+                        key: field.key,
+                        error: `missing required field: ${field.key}`
+                    });
+                    keyErrorCount++;
+                } else if (typeof suite[field.key] !== field.type) {
+                    suiteErrors.push({
+                        key: field.key,
+                        error: `field '${field.key}' should be of type ${field.type}`
+                    });
+                    keyErrorCount++;
+                }
             }
-            if (typeof suite[field.key] !== field.type) {
-                throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field '${field.key}' should be of type ${field.type}`);
+            // Optional fields
+            if ('keywords' in suite && !Array.isArray(suite.keywords)) {
+                suiteErrors.push({
+                    key: 'keywords',
+                    error: "field 'keywords' should be an array"
+                });
+                keyErrorCount++;
             }
-        }
-        if ('keywords' in suite && !Array.isArray(suite.keywords)) {
-            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'keywords' should be an array`);
-        }
-        if ('frameworkFunctions' in suite && !Array.isArray(suite.frameworkFunctions)) {
-            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'frameworkFunctions' should be an array`);
-        }
-        if (!(suite.regex instanceof RegExp)) {
-            throw new Error(`Suite${index !== null ? ' [' + index + ']' : ''} field 'regex' should be a RegExp`);
-        }
+            if ('frameworkFunctions' in suite && !Array.isArray(suite.frameworkFunctions)) {
+                suiteErrors.push({
+                    key: 'frameworkFunctions',
+                    error: "field 'frameworkFunctions' should be an array"
+                });
+                keyErrorCount++;
+            }
+            // RegExp check
+            if ('regex' in suite && !(suite.regex instanceof RegExp)) {
+                suiteErrors.push({
+                    key: 'regex',
+                    error: "field 'regex' should be a RegExp"
+                });
+                keyErrorCount++;
+            }
+            if (suiteErrors.length > 0) {
+                errors.push({
+                    suiteIdx: idx,
+                    name: suite.name || "(no name)",
+                    errors: suiteErrors
+                });
+            }
+        });
+        return { errors, keyErrorCount };
     }
+    
 
     static testMalformedSuites(){
         let badSuites = new RegexSuites(RegexSuites.TEST_MALFORMED);
     }
-
+    static testDefaultSuites(){
+        let goodSuites = new RegexSuites(RegexSuites.LEGACYJS_TO_ES6);
+    }
     
     
 }
