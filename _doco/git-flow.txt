@@ -11,5 +11,7 @@ tree --gitignore            ## ignore the same way git does
 
 tree --gitignore -d         ## Show directories only ..
 
+tree -I data                ## Ignore patterns, in this case don't show ./data/
+
 =================================
 
