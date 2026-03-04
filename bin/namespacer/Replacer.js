@@ -7,7 +7,7 @@
         cd ~/infinite-neck/bin/namespacer
         ./Replacer.js
     e.g.
-        laramie@penguin:~/infinite-neck$ ./bin/Replacer.js --h
+        laramie@penguin:~/infinite-neck$ ./bin/namespacer/Replacer.js
 
     Development Notes.
 
