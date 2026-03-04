@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+echo '*************** TODO !!!!!!! *****************'
+echo '****  The file find-js-dependencies.js has been migrated to '
+echo '****  FindMain.js'
+echo '***********************************************'
+
+exit
+
 COLOR_HELP_TESTS=' --color '
 DISK=" --💾 "
 CYAN='\033[1;36m'
