@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { ANSIColors } from './ansi-colors.js';
 
 export class RegexSuites {
@@ -107,9 +109,13 @@ export class RegexSuites {
             bareExpression:'${match[1]}',
             keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
             frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
-        },
+        }
+    ];
+
+
+    static TEST_MALFORMED = [
         {   
-            name: 'test-malformed-suite-bad-regex',
+            name: 'malformed-bad-regex',
             regex: '/just a string/',
             description: 'Find top-level invocations (noLang,noFrameworks)',
             expression: ANSIColors.BQ+'${match[0]}'+ANSIColors.EQ,
@@ -118,7 +124,7 @@ export class RegexSuites {
             frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
         },
         {   
-            name: 'test-malformed-suite-missing-elements',
+            name: 'malformed-missing-expression',
             regex: '/just a string/',
             description: 'Find top-level invocations (noLang,noFrameworks)',
             bareExpression:'${match[1]}',
@@ -126,6 +132,7 @@ export class RegexSuites {
             frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
         }
     ];
+    
     static formatSuite(oneSuite, sIDx){
         return "Suite["+sIDx+"]:\n" + JSON.stringify(oneSuite, (key, value) =>
                     value instanceof RegExp ? value.toString() : value, 4)
@@ -158,6 +165,13 @@ export class RegexSuites {
         }
     }
 
+    static testMalformedSuites(){
+        let badSuites = new RegexSuites(RegexSuites.TEST_MALFORMED);
+    }
+
     
     
 }
+
+
+

@@ -1,0 +1,39 @@
+jest.config.js
+    must have: 
+        export default {
+            testEnvironment: 'node',
+            transform: {},
+        };
+    must NOT have:
+        export default {
+            extensionsToTreatAsEsm: ['.js'],
+            transform: {},
+            testEnvironment: 'node',
+        }; 
+
+package.json
+    must have: 
+        "type": "module",
+        ... 
+        "scripts": {
+            "test": "echo \"Error: no test specified\" && exit 1",
+            "knip": "knip"
+        },
+    "scripts" is special section node runs when you say "npx" in a (bash) shell.
+        npx test      --> runs the command in {scripts.test}
+        npx knip      --> runs knip, which I installed with npm.
+    So if I install: 
+        "scripts": {
+            "test": "node --experimental-vm-modules node_modules/.bin/jest",
+            "knip": "knip"
+        }
+    Now npx knows to run my jest tests when I say:
+        npx test
+
+Do NOT do this:
+    npx jest _tests/jest/namespacer/regex-suites.test.js
+
+DO do this: 
+    node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/regex-suites.test.js
+    You must run with that flag because jest is all out of date 'nshit.
+    

@@ -10,7 +10,7 @@
 
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
-import { extname, join } from 'path';
+import { basename, extname, join } from 'path';
 import { FindOptions } from './find-options.js';
 import { SourceLines } from './source-lines.js';
 import { ANSIColors } from './ansi-colors.js';
@@ -188,11 +188,10 @@ export class FindMain {
                     }
 
 
-
-
                     /** Load per-file suppressions and add them */
                     const perFileSuppressions = this.loadFrameworkSuppressionsForFile(file, options.datadir);
                     if (perFileSuppressions.length > 0) {
+                        console.log("**************************** found suppressions for file<"+file+">: ["+perFileSuppressions+"]");
                         suppressList = suppressList.concat(perFileSuppressions);
                     }
 
@@ -277,8 +276,6 @@ export class FindMain {
 
     // Helper to load per-file suppressions from a plan file
     loadFrameworkSuppressionsForFile(sourceFilename, datadir = "data") {
-        const { join, basename } = require('path');
-        const { existsSync, readFileSync } = require('fs');
         const planFile = join(datadir, "plans", basename(sourceFilename) + ".frameworks.plan");
         if (!existsSync(planFile)) return [];
         const lines = readFileSync(planFile, 'utf8')
