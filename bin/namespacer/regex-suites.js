@@ -13,8 +13,16 @@ export class RegexSuites {
         return this.suites;
     }
 
-    printSuites(options,printer){
-        this.forEach((oneSuite, sIDx) => {printer.printInfo(options, formatSuite(oneSuite, sIDx))});
+    printSuites(options, printer){
+        this.getSuites().forEach((oneSuite, sIDx) => {printer.printInfo(options, RegexSuites.formatSuite(oneSuite, sIDx))});
+    }
+
+    printSuiteNames(options, printer){
+        this.getSuites().forEach((oneSuite) => {printer.printInfo(options, oneSuite.name)});
+    }
+
+    printSuiteNumbers(options, printer){
+        this.getSuites().forEach((oneSuite, sIDx) => {printer.printInfo(options, `${sIDx}: ${oneSuite.name}`)});
     }
     
     

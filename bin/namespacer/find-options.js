@@ -46,7 +46,7 @@ export class FindOptions {
                         console.error('Invalid suite identifier: ' + suiteArg);
                         console.log('Please choose from the following, or run with --suites to see the full suite info:');
                         this.printHelpDivider(options);
-                        this.printSuiteNames();
+                        regexSuites.printSuiteNames(this,printer);
                         quit = true;
                     }
                 }
@@ -110,10 +110,10 @@ export class FindOptions {
                 regexSuites.printSuites(this,printer);
                 quit = true;
             } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
-                this.printSuiteNumbers();
+                regexSuites.printSuiteNumbers(this,printer);
                 quit = true;
             } else if (arg.startsWith("--suitenames")) { //--suitenames
-                this.printSuiteNames();
+                regexSuites.printSuiteNames(this,printer);
                 quit = true;
             } else if (arg.startsWith("--v")) {       //--verbose
                 this.verbose = true;

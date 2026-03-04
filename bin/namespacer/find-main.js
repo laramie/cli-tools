@@ -22,12 +22,7 @@ export class FindMain {
     }
 
     main(){
-        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        +"\nThis is the accumulated Plan of what this program is producing."
-                        +"\n  When run with --color it produces ANSI escape sequences."
-                        +"\n  View as 'cat <filename>' to an ANSI terminal, or 'less -R <filename>'"
-                        +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
+        
         let regexSuites = new RegexSuites();
 
         const args = process.argv.slice(2);
@@ -38,6 +33,14 @@ export class FindMain {
         if (quit){
             process.exit(1);
         }
+        
+        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                                +"\nAccumulated Plan. Run: "+options.colorANSI(Colors.Cyan, FindMain.getTimeStamp(true))
+                                +(options.color 
+                                    ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
+                                    :  ""
+                                )
+                                +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         console.log(""); 
         
@@ -74,7 +77,7 @@ export class FindMain {
             }
             
             this.printHelpDivider(options);
-            this.printSuiteNumbers();
+            this.printSuiteNumbers(options, this/*printer*/);
             this.printHelpDivider(options);
             process.exit(1);
         }
@@ -83,7 +86,7 @@ export class FindMain {
 
         const suite = regexSuites.getSuites()[options.suiteIdx];
 
-        let loglineRunning = (`👉 Running suite[${options.suiteIdx}]`
+        let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
                         +`:${options.colorANSI(Colors.Bold+Colors.Red, name)} `
                         +`  ${options.colorANSI(Colors.Cyan, description)}`);
         this.accumulatePlan(loglineRunning);
@@ -107,18 +110,17 @@ export class FindMain {
             console.log(loglineDirectory);
             console.log(loglineFiles);
             console.log(loglineSuite);
-            this.accumulatePlan("verbose: "+loglineSuite);
+            this.accumulatePlan(loglineSuite);
             console.log(this.accumulatePlan("Options:\n" + JSON.stringify(options,null,4)));
             this.printHelpDivider(options)
         } else if (options.quiet){
             //do nothing
         } else {
             // not --quiet and not --verbose gets minimal
-            this.printHelpBox(options,     "Suite: "+options.suiteIdx 
-                            +"  "+ options.colorANSI(Colors.Bold+Colors.Red, name)
-                            +"  "+ options.colorANSI(Colors.Cyan, description) ); 
-            this.accumulatePlan("default verbosity: "+loglineSuite);
-
+            let loglineMinimalSuite = "Suite: "+options.suiteIdx 
+                                        +"  "+ options.colorANSI(Colors.Bold+Colors.Red, name)
+                                        +"  "+ options.colorANSI(Colors.Cyan, description) ; 
+            this.printHelpBox(options, loglineMinimalSuite);
         }
 
         // --- Main logic ---
@@ -219,6 +221,7 @@ export class FindMain {
                     }
                     if (options.outputSummary){
                         console.log("\n👉 Summary: "+theState.printSummary(options));
+                        this.accumulatePlan("👉 Summary: "+theState.filename+" :: "+theState.quantifyFound());
                     }
                 }
             });
@@ -240,7 +243,7 @@ export class FindMain {
             }
             console.log("");
         }
-        this.writeOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(), options);
+        this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(options), options);
         console.log(""); 
     } //END main();
 
@@ -257,7 +260,6 @@ export class FindMain {
             return null;
         }
     }
-
 
     writeConfigFile(writeConfigFilename, options){
         try {
@@ -283,16 +285,25 @@ export class FindMain {
         }
     }
 
-    
-
     accumulatePlan(logline){
         this.planAccumulator.push(logline);
         return logline;
     }
-    getAccumulatorPrintout(){
+    
+    static getTimeStamp(emitSeconds){
+        const now = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const dateStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+        const timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes())  +':'+ (emitSeconds ? pad(now.getSeconds()) : "");
+        const dateTimeStr = dateStr + ' ' + timeStr;
+        return dateTimeStr;  
+    }
+    
+    getAccumulatorPrintout(options){
         return this.planAccumulator.join("\n")
-        +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        +"\n\n";
+                    +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    +"\n" + options.colorANSI(Colors.Green, FindMain.getTimeStamp(true))
+                    +"\n\n";
     }
 
     writeOutputFile(relPath, data, options){
@@ -304,7 +315,15 @@ export class FindMain {
         this.accumulatePlan(logline);
     }
 
-    
+    //   \uD83D\uDCBE == 💾
+    appendOutputFile(relPath, data, options){
+        let logline = "💾  ━━━━━━━━━━━━━━━━━━ File appended: "+relPath+" ━━━━━━━━━━━━━━━━━━";
+        if (!options.quiet){
+            console.log("\n"+logline);
+        }
+        writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
+        this.accumulatePlan(logline);
+    }
 
 
     printHelpBox(options, msg){
@@ -312,28 +331,18 @@ export class FindMain {
         console.log(options.colorANSI(Colors.Cyan,"║     "+msg));
         console.log(options.colorANSI(Colors.Cyan,"╚════════════════════════════════════════════════════════════════════════════"));
     }
+
     printHelpDivider(options){
         console.log(options.colorANSI(Colors.Cyan,"═════════════════════════════════════════════════"));
     }
 
-   
     printInfo(options, str){
         console.log(options.colorANSI(Colors.Bold+Colors.Yellow,str)); 
     }
+
     printError(options, str){
         console.log(options.colorANSI(Colors.Bold+Colors.Yellow,str)); 
     }
-
-    printSuiteNames(){
-        regexSuites.getSuites().forEach((oneSuite) => {this.printInfo(options, oneSuite.name)});
-    }
-    printSuiteNumbers(){
-        regexSuites.getSuites().forEach((oneSuite, sIDx) => {this.printInfo(options, `${sIDx}: ${oneSuite.name}`)});
-    }
-
-    
-
-
 
     static test(){
         let state = new State();
