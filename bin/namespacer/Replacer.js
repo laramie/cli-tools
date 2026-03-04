@@ -90,11 +90,11 @@ class Line {
     }
 }
 
-class Replacer {
+export class Replacer {
      logError(message){
         console.error(message);
     }
-    log(flag, message, flagObj = LOG_FLAGS) {
+    log(flag, message, flagObj = Replacer.LOG_FLAGS) {
         if (typeof flag === 'string') {
             if (flagObj[flag]) {
                 console.log(message);
@@ -112,9 +112,9 @@ class Replacer {
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    const VERBOSE_INTERFACE_GENS = true;  //used to have GenerateInterface also print out output
+    static VERBOSE_INTERFACE_GENS = true;  // used to have GenerateInterface also print out output
 
-    const LOG_FLAGS = {
+    static LOG_FLAGS = {
         FILE_WRITES: true,
         INTERFACE_GENS: false,
         MASTER_NAMESPACE_MAP: false,
@@ -127,41 +127,11 @@ class Replacer {
 
     
     /**
-     * Main entry point for the dependency replacer script.
-     * Loads namespace plans, generates interfaces, and processes source files.
-     * Mutates masterNamespaceMap in place.
-     */
-    main(){
-        let masterNamespaceMap = {};
-        NamespacerPlan.namespaces.forEach(namespaceObj => {
-            const { added } = addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
-            if (added === 0) {
-                logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
-                return;
-            }
-            let gen = new GenerateInterface();
-            let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, VERBOSE_INTERFACE_GENS);
-            log('INTERFACE_GENS', "🎲  ---\n"+interface_gen+"\n---  🎲");
-            log('FILE_WRITES', "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
-            writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
-        });
-
-        log('MASTER_NAMESPACE_MAP', "🧀------------------------- masterNamespaceMap :: \n"+dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
-
-        // Loop over all sources in NamespacerPlan and process each
-        NamespacerPlan.sources.forEach(sourceObj => {
-            logFilename(sourceObj.src);
-            processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
-        });
-        log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
-    }
-
-    /**
      * Log the filename being processed.
      * @param {string} filename
      */
     logFilename(filename){
-        log(true, "\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
+        this.log(true, "\n\n💾 ━━━━━━━━━━━━━━━━━━  file: "+filename+ "  ━━━━━━━━━━━━━━━━━━━━━\n");
     }
 
 
@@ -177,31 +147,31 @@ class Replacer {
     readSourceFile(filePath){
         try {
             if (!filePath) return '';
-            const data = readFileSync(filePath, 'utf8');
+            const data = this.readFileSync(filePath, 'utf8');
             return data || '';
         } catch (err) {
-            logError(`File not found or unreadable: ${filePath}`);
+            this.logError(`File not found or unreadable: ${filePath}`);
             return '';
         }
     }
 
     processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
-        let content = readSourceFile(fileWithInvocations_Name);
+        let content = this.readSourceFile(fileWithInvocations_Name);
         const linesArr = content.split('\n');
         
         // Use all keys from masterNamespaceMap as identifiers
         let identifiersInMasterNamespaceMapKeys = Object.keys(masterNamespaceMap);
-        let lineObjectsArray = createLineObjectsArray(content, linesArr, identifiersInMasterNamespaceMapKeys); 
-        generateReplacedLines(lineObjectsArray, masterNamespaceMap);
-        writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
+        let lineObjectsArray = this.createLineObjectsArray(content, linesArr, identifiersInMasterNamespaceMapKeys); 
+        this.generateReplacedLines(lineObjectsArray, masterNamespaceMap);
+        this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
-        log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        this.log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
 
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-        if (LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
-            log(true, JSON.stringify(
+        this.log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+        if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
+            this.log(true, JSON.stringify(
                 replacementsOnly,
                 ((key, value)=> {
                     if (Array.isArray(value)) {
@@ -215,7 +185,7 @@ class Replacer {
 
 
         const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-        log('OUTPUT_NOOP_REPLACEMENTS', "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.log('OUTPUT_NOOP_REPLACEMENTS', "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
     }
 
     loadPlan(listingFile){
@@ -225,7 +195,7 @@ class Replacer {
     addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap) {
         let theExcludes = [];
         if (excludesFilepath) {
-            let excludesLines = readSourceFile(excludesFilepath);
+            let excludesLines = this.readSourceFile(excludesFilepath);
             if (excludesLines) {
                 theExcludes = excludesLines
                     .split('\n')
@@ -234,9 +204,9 @@ class Replacer {
             }
         }
 
-        let plan = readSourceFile(planFilepath);
+        let plan = this.readSourceFile(planFilepath);
         if (!plan) {
-            logError("🛑  No plan file found, or file empty: " + planFilepath);
+            this.logError("🛑  No plan file found, or file empty: " + planFilepath);
             return { added: 0 };
         }
 
@@ -248,7 +218,7 @@ class Replacer {
         let added = 0;
         theIdentifiers.forEach(id => {
             if (masterNamespaceMap[id]) {
-                logError(`❌ duplicate key found in map["${id}"]:${dump(masterNamespaceMap[id])} when trying to add ${dump(theNamespaceString)}.${id}`);
+                this.logError(`❌ duplicate key found in map["${id}"]:${this.dump(masterNamespaceMap[id])} when trying to add ${this.dump(theNamespaceString)}.${id}`);
             } else {
                 masterNamespaceMap[id] = theNamespaceString;
                 added++;
@@ -318,8 +288,39 @@ class Replacer {
         const newContent = linesArr.join('\n');
         writeFileSync(outputFilePath, newContent, 'utf8');
     }
+
+    /**
+     * Main entry point for the dependency replacer script.
+     * Loads namespace plans, generates interfaces, and processes source files.
+     * Mutates masterNamespaceMap in place.
+     */
+    main(){
+        let masterNamespaceMap = {};
+        NamespacerPlan.namespaces.forEach(namespaceObj => {
+            const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
+            if (added === 0) {
+                this.logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
+                return;
+            }
+            let gen = new GenerateInterface();
+            let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
+            this.log('INTERFACE_GENS', "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.log('FILE_WRITES', "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
+        });
+
+        this.log('MASTER_NAMESPACE_MAP', "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+
+        // Loop over all sources in NamespacerPlan and process each
+        NamespacerPlan.sources.forEach(sourceObj => {
+            this.logFilename(sourceObj.src);
+            this.processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
+        });
+        this.log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+    }
+
 }
 
 //==========  Do it! ================
-main();
+new Replacer().main();
 
