@@ -24,7 +24,7 @@ import { RegexSuites} from './RegexSuites.js';
  *   or you can run in verbose and see lots of information on stdout.
  *   You can run it with test-FindMain.bash in the same directory.
  *   It is designed to precede in the shell (or call in Node.js/Javascript) :      
- *             find-js-dependencies-replacer.js
+ *             Replacer.js
  *   Along the way, that module can call to generate Javascript classes to act as Facade Interfaces:
  *             GenerateInterface.js
  */

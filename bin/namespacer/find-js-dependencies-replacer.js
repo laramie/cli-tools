@@ -5,9 +5,9 @@
 
     Run on the bash command line like so, since ths file has a shebang.
         cd ~/infinite-neck/bin/namespacer
-        ./find-js-dependencies-replacer.js
+        ./Replacer.js
     e.g.
-        laramie@penguin:~/infinite-neck$ ./bin/find-js-dependencies-replacer.js --h
+        laramie@penguin:~/infinite-neck$ ./bin/Replacer.js --h
 
     Development Notes.
 
@@ -22,8 +22,8 @@
 
     How to run the program to generate input files to this program:
         export FIND_DEPENDENCIES_OPTS='  --dir='./data/src/' --suite=functions --quiet --bare --lines  '
-        ./find-js-dependencies.js $FIND_DEPENDENCIES_OPTS  infinite-neck.js > ./data/plans/infinite-neck.js.functions.gen
-        But this is now all done in bin/namespacer/run-ALL-find-js-dependencies.bash
+        ./FindMain.js $FIND_DEPENDENCIES_OPTS  infinite-neck.js > ./data/plans/infinite-neck.js.functions.gen
+        But this is now all done in bin/namespacer/run-ALL-FindMain.bash
 */
 
 import { readdir, readFileSync, writeFileSync } from 'fs' ;
