@@ -1,5 +1,5 @@
 import { Colors } from './colors.js';
-import { FindSuites} from './find-suites.js';
+import { RegexSuites} from './regex-suites.js';
 
 export class FindOptions {
     constructor() {
@@ -27,21 +27,21 @@ export class FindOptions {
     }
     static DEFAULT_SUITE = -1;
 
-    processArgs(args, SUITES){
+    processArgs(args, regexSuites, printer){
         let quit = false;
         args.forEach(arg => {
             if (arg.startsWith('--suite=')) {
                 let suiteArg = arg.split('=')[1];
                 // Try integer first
                 let idx = Number(suiteArg);
-                if (Number.isInteger(idx) && idx >= 0 && idx < SUITES.length) {
+                if (Number.isInteger(idx) && idx >= 0 && idx < regexSuites.getSuites().length) {
                     this.suiteIdx = idx;
                 } else {
-                    // Only allow hyphenated identifiers, ignore spaces in SUITES.name
-                    let foundIdx = SUITES.findIndex(suite => suite.name.replace(/\s+/g, '') === suiteArg);
+                    // Only allow hyphenated identifiers, ignore spaces in regexSuites.getSuites().name
+                    let foundIdx = regexSuites.getSuites().findIndex(suite => suite.name.replace(/\s+/g, '') === suiteArg);
                     if (foundIdx !== -1) {
                         this.suiteIdx = foundIdx;
-                        this.suite = SUITES[this.suiteIdx].name;
+                        this.suite = regexSuites.getSuites()[this.suiteIdx].name;
                     } else {
                         console.error('Invalid suite identifier: ' + suiteArg);
                         console.log('Please choose from the following, or run with --suites to see the full suite info:');
@@ -107,7 +107,7 @@ export class FindOptions {
                 this.outputSummary = true;    
             } else if (arg.startsWith("--te")         //--tests
                     ||arg.startsWith("--suites")) {  //--suites
-                this.printSuites();
+                regexSuites.printSuites(this,printer);
                 quit = true;
             } else if (arg.startsWith("--suitenumbers")) { //--suitenumbers
                 this.printSuiteNumbers();

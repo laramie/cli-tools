@@ -1,7 +1,23 @@
 import { Colors } from './colors.js';
 
-export class FindSuites {
+export class RegexSuites {
+    constructor(installOtherSuites) {
+        if (installOtherSuites){
+            this.suites = installOtherSuites;
+        } else {
+            this.suites = RegexSuites.SUITES;
+        }
+    }
 
+    getSuites(){
+        return this.suites;
+    }
+
+    printSuites(options,printer){
+        this.forEach((oneSuite, sIDx) => {printer.printInfo(options, formatSuite(oneSuite, sIDx))});
+    }
+    
+    
     static SUPPRESS_IDENTIFIERS = [       // List of keywords and identifiers to suppress (can include regex patterns)
         'function', 'if', 'switch', 'case', 'while', 'for', 'return', 'typeof', 'isNaN'
     ];
@@ -21,75 +37,71 @@ export class FindSuites {
     static SUITES = [
         {     
             name: 'functions',
-            regex: FindSuites.FIND_FUNCTIONS,
+            regex: RegexSuites.FIND_FUNCTIONS,
             description: '[export] function <function-name>',
             expression: '${match[1]}${match[2]} ${match[3]}',
             bareExpression:'${match[3]}' 
         },
         {     
             name: 'functions-no-exports',
-            regex: FindSuites.FIND_NON_EXPORT_FUNCTIONS,
+            regex: RegexSuites.FIND_NON_EXPORT_FUNCTIONS,
             description: 'function <function-name>',
             expression: '${match[1]}${match[2]} ${match[3]}',
             bareExpression:'${match[3]}' 
         },
         {   
             name: 'function-lines',
-            regex: FindSuites.FIND_FUNCTIONS,
+            regex: RegexSuites.FIND_FUNCTIONS,
             description: 'Lines with functions in file',
             expression: Colors.BQ+'${match[0]}'+Colors.EQ,
             bareExpression:'${match[0]}' 
         },
         {   
             name: 'export-functions',
-            regex: FindSuites.FIND_EXPORT_FUNCTIONS,
+            regex: RegexSuites.FIND_EXPORT_FUNCTIONS,
             description: 'export function <function-name>',
             expression: '${match[1]}${match[2]} ${match[3]}',
             bareExpression:'${match[3]}' 
         },
         {   
             name: 'exports',
-            regex: FindSuites.FIND_ALL_EXPORTS,
+            regex: RegexSuites.FIND_ALL_EXPORTS,
             description: 'export (const|var|let|class|default|function) <function-name>',
             expression: '${match[1]}${match[2]} ${match[3]}',
             bareExpression:'${match[3]}' 
         },
         {   
             name: 'invocation-lines',
-            regex: FindSuites.FIND_INVOCATION_LINES, 
+            regex: RegexSuites.FIND_INVOCATION_LINES, 
             description: 'Find top-level invocations (whole line)',
             expression: Colors.BQ+'${match[0]}'+Colors.EQ,
             bareExpression:'${match[0]}',
-            keywords: FindSuites.SUPPRESS_IDENTIFIERS
+            keywords: RegexSuites.SUPPRESS_IDENTIFIERS
         },
         {   
             name: 'invocations',
-            regex: FindSuites.FIND_INVOCATIONS,
+            regex: RegexSuites.FIND_INVOCATIONS,
             description: 'Find top-level invocations (noLang)',
             expression: Colors.BQ+'${match[0]}'+Colors.EQ,
             bareExpression:'${match[1]}',
-            keywords: FindSuites.SUPPRESS_IDENTIFIERS,
+            keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
             frameworkFunctions: []
         },
         {   
             name: 'invocations-no-frameworks',
-            regex: FindSuites.FIND_INVOCATIONS,
+            regex: RegexSuites.FIND_INVOCATIONS,
             description: 'Find top-level invocations (noLang,noFrameworks)',
             expression: Colors.BQ+'${match[0]}'+Colors.EQ,
             bareExpression:'${match[1]}',
-            keywords: FindSuites.SUPPRESS_IDENTIFIERS,
-            frameworkFunctions: FindSuites.FRAMEWORK_FUNCTIONS
+            keywords: RegexSuites.SUPPRESS_IDENTIFIERS,
+            frameworkFunctions: RegexSuites.FRAMEWORK_FUNCTIONS
         }
     ];
     static formatSuite(oneSuite, sIDx){
         return "Suite["+sIDx+"]:\n" + JSON.stringify(oneSuite, (key, value) =>
                     value instanceof RegExp ? value.toString() : value, 4)
     }
-    
-    
-    
 
-    constructor() {
-        // Initialize suite properties or methods here
-    }
+    
+    
 }

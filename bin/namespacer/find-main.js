@@ -14,34 +14,33 @@ import { extname, join } from 'path';
 import { FindOptions } from './find-options.js';
 import { State } from './find-state.js';
 import { Colors } from './colors.js';
-import { FindSuites} from './find-suites.js';
+import { RegexSuites} from './regex-suites.js';
 
 export class FindMain {
     constructor() {
-        this.colors = new Colors();
-        this.suites = new FindSuites();
-        this.state = new State();
         this.planAccumulator = [];
     }
 
     main(){
-        this.planAccumulator.push("This is the accumulated Plan of what this program is producing."
-                        +"\n  It is produced with ANSI escape sequences.  Run without --color to suppress,"
-                        +"\n  or view it with an ANSI viewer, such as 'cat <filename>' to an ANSI terminal, "
-                        +"\n  or 'less -R <filename>'");
+        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        +"\nThis is the accumulated Plan of what this program is producing."
+                        +"\n  When run with --color it produces ANSI escape sequences."
+                        +"\n  View as 'cat <filename>' to an ANSI terminal, or 'less -R <filename>'"
+                        +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        let regexSuites = new RegexSuites();
 
         const args = process.argv.slice(2);
-
         let options = new FindOptions();
-
         options.dir = process.cwd();
-
-        let quit = options.processArgs(args, FindSuites.SUITES);
+        let quit = options.processArgs(args, regexSuites, this/*printer*/);
 
         if (quit){
             process.exit(1);
         }
 
+        console.log(""); 
+        
         if (options.runconfig){
             options = options.runconfigObj;
         } else {
@@ -62,10 +61,8 @@ export class FindMain {
             options.outputSummary = true;
         }
 
-
-
         if (   options.suiteIdx == -1
-            || !FindSuites.SUITES[options.suiteIdx] ) {
+            || !regexSuites.getSuites()[options.suiteIdx] ) {
             
             if (options.suiteIdx === -1) {
             
@@ -82,10 +79,9 @@ export class FindMain {
             process.exit(1);
         }
 
-        const { regex, name, description, expression, bareExpression } = FindSuites.SUITES[options.suiteIdx];
+        const { regex, name, description, expression, bareExpression } = regexSuites.getSuites()[options.suiteIdx];
 
-        const suite = FindSuites.SUITES[options.suiteIdx];
-
+        const suite = regexSuites.getSuites()[options.suiteIdx];
 
         let loglineRunning = (`👉 Running suite[${options.suiteIdx}]`
                         +`:${options.colorANSI(Colors.Bold+Colors.Red, name)} `
@@ -100,9 +96,9 @@ export class FindMain {
             loglineFiles = `Extensions: ${options.extensions.join(', ')}`;
         }
         this.accumulatePlan(loglineFiles);
-        let loglineSuite = "Suite:\n" + JSON.stringify(FindSuites.SUITES[options.suiteIdx], (key, value) =>
+        let loglineSuite = "Suite:\n" + JSON.stringify(regexSuites.getSuites()[options.suiteIdx], (key, value) =>
                         value instanceof RegExp ? value.toString() : value, 4);
-        this.accumulatePlan(loglineSuite);
+        
 
                     
                 
@@ -111,6 +107,7 @@ export class FindMain {
             console.log(loglineDirectory);
             console.log(loglineFiles);
             console.log(loglineSuite);
+            this.accumulatePlan("verbose: "+loglineSuite);
             console.log(this.accumulatePlan("Options:\n" + JSON.stringify(options,null,4)));
             this.printHelpDivider(options)
         } else if (options.quiet){
@@ -120,6 +117,7 @@ export class FindMain {
             this.printHelpBox(options,     "Suite: "+options.suiteIdx 
                             +"  "+ options.colorANSI(Colors.Bold+Colors.Red, name)
                             +"  "+ options.colorANSI(Colors.Cyan, description) ); 
+            this.accumulatePlan("default verbosity: "+loglineSuite);
 
         }
 
@@ -228,9 +226,9 @@ export class FindMain {
             states.forEach(theState => {
                 if (theState.quantifyFound()===0 && options.outputFilename){
                     if (!notFoundHeaderPrinted){
-                        let loglineNone1 = "\n\n━━━━━━━━   "+options.colorANSI(Colors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
-                        console.log(" ############################## console.log ############ "+loglineNone1);
-                        this.accumulatePlan(loglineNone1);
+                        let loglineNone = "\n\n━━━━━━━━   "+options.colorANSI(Colors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
+                        console.log(loglineNone);
+                        this.accumulatePlan(loglineNone);
                         notFoundHeaderPrinted = true;
                     }
                     console.log(theState.printFilename());
@@ -242,7 +240,8 @@ export class FindMain {
             }
             console.log("");
         }
-        this.writeOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(), options); 
+        this.writeOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(), options);
+        console.log(""); 
     } //END main();
 
     readConfig(configFilename){
@@ -291,7 +290,9 @@ export class FindMain {
         return logline;
     }
     getAccumulatorPrintout(){
-        return this.planAccumulator.join("\n")+"\n\n";
+        return this.planAccumulator.join("\n")
+        +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        +"\n\n";
     }
 
     writeOutputFile(relPath, data, options){
@@ -315,10 +316,7 @@ export class FindMain {
         console.log(options.colorANSI(Colors.Cyan,"═════════════════════════════════════════════════"));
     }
 
-    printSuites(){
-            FindSuites.SUITES.forEach((oneSuite, sIDx) => {this.printInfo(options, formatSuite(oneSuite, sIDx))});
-            //printHelpDivider(options);
-    }
+   
     printInfo(options, str){
         console.log(options.colorANSI(Colors.Bold+Colors.Yellow,str)); 
     }
@@ -327,10 +325,10 @@ export class FindMain {
     }
 
     printSuiteNames(){
-        FindSuites.SUITES.forEach((oneSuite) => {this.printInfo(options, oneSuite.name)});
+        regexSuites.getSuites().forEach((oneSuite) => {this.printInfo(options, oneSuite.name)});
     }
     printSuiteNumbers(){
-        FindSuites.SUITES.forEach((oneSuite, sIDx) => {this.printInfo(options, `${sIDx}: ${oneSuite.name}`)});
+        regexSuites.getSuites().forEach((oneSuite, sIDx) => {this.printInfo(options, `${sIDx}: ${oneSuite.name}`)});
     }
 
     

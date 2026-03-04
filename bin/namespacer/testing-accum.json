@@ -1,10 +1,10 @@
 {
-    "quiet": true,
+    "quiet": false,
     "color": true,
     "bareExpressions": true,
     "outputFilename": true,
-    "outputLines": true,
-    "outputSummary": true,
+    "outputLines": false,
+    "outputSummary": false,
     "shortSummary": false,
     "outputSourceLocation": false,
     "outputSortedLines": true,
@@ -16,7 +16,7 @@
         ".js",
         ".txt"
     ],
-    "singleFile": "song.js",
+    "singleFile": null,
     "configFilename": null,
     "dir": "data/src",
     "dirSpecified": true,
