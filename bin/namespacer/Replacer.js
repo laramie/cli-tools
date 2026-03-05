@@ -65,6 +65,7 @@ export class Replacer {
     }
     log(flag, message, flagObj = Replacer.LOG_FLAGS) {
         if (typeof flag === 'string') {
+            // Deprecated: string flag usage, prefer direct property access
             if (flagObj[flag]) {
                 console.log(message);
             }
@@ -126,10 +127,10 @@ export class Replacer {
         this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
-        this.log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        this.log(Replacer.LOG_FLAGS.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
 
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        this.log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+        this.log(Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS, "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
         if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
             this.log(true, "replacements:"+JSON.stringify(
                 replacementsOnly,
@@ -145,7 +146,7 @@ export class Replacer {
 
 
         const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-        this.log('OUTPUT_NOOP_REPLACEMENTS', "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.log(Replacer.LOG_FLAGS.OUTPUT_NOOP_REPLACEMENTS, "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
     }
 
     loadPlan(listingFile){
@@ -279,12 +280,12 @@ export class Replacer {
             }
             let gen = new GenerateInterface();
             let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
-            this.log('INTERFACE_GENS', "🎲  ---\n"+interface_gen+"\n---  🎲");
-            this.log('FILE_WRITES', "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+                    this.log(Replacer.LOG_FLAGS.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+                    this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
         });
 
-        this.log('MASTER_NAMESPACE_MAP', "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+        this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
 
         // Loop over all sources in NamespacerPlan and process each
         this.namespacerPlan.sources.forEach(sourceObj => {
