@@ -187,10 +187,22 @@ export class Replacer {
         }
 
         const { status: planStatus, contents: plan } = SourceFile.read(planFilepath);
-        if (planStatus !== Replacer.ReadSourceStatus.FOUND || !plan) {
-            
-            this.logError("🛑  No plan file found, or file empty: " + planFilepath);
-            return { added: 0 };
+        switch (planStatus) {
+            case Replacer.ReadSourceStatus.NOT_FOUND:
+                this.logError(`🛑  Plan file not found: ${planFilepath}`);
+                return { added: 0 };
+            case Replacer.ReadSourceStatus.READ_ERROR:
+                this.logError(`🛑  Error reading plan file: ${planFilepath}`);
+                return { added: 0 };
+            case Replacer.ReadSourceStatus.FOUND:
+                if (!plan) {
+                    this.logError(`🛑  Plan file is empty: ${planFilepath}`);
+                    return { added: 0 };
+                }
+                break;
+            default:
+                this.logError(`🛑  Unknown error reading plan file: ${planFilepath}`);
+                return { added: 0 };
         }
 
         let theIdentifiers = plan
