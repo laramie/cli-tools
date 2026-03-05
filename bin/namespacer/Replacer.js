@@ -30,6 +30,13 @@ import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
 
+// Enum-like object for readSourceFile status codes
+export const ReadSourceStatus = Object.freeze({
+    NO_PATH: 'no-path',
+    FOUND: 'found',
+    NOT_FOUND: 'not-found',
+    READ_ERROR: 'read-error'
+});
 
 
 class Line {
@@ -46,6 +53,9 @@ class Line {
 }
 
 export class Replacer {
+    
+    static ReadSourceStatus = ReadSourceStatus;
+    
     constructor(namespacerPlan) {
         this.namespacerPlan = namespacerPlan;
     }
@@ -102,14 +112,22 @@ export class Replacer {
      * @param {string} filePath
      * @returns {string}
      */
-    readSourceFile(filePath){
+    readSourceFile(filePath) {
+        const Status = Replacer.ReadSourceStatus;
         try {
-            if (!filePath) return '';
+            if (!filePath) {
+                return { status: Status.NO_PATH, error: null, contents: "" };
+            }
             const data = readFileSync(filePath, 'utf8');
-            return data || '';
+            return { status: Status.FOUND, error: null, contents: data || "" };
         } catch (err) {
-            this.logError(`File not found or unreadable: ${filePath}`);
-            return '';
+            if (err.code === 'ENOENT') {
+                this.logError(`File not found: ${filePath}`);
+                return { status: Status.NOT_FOUND, error: err, contents: "" };
+            } else {
+                this.logError(`Error reading file: ${filePath} (${err.message})`);
+                return { status: Status.READ_ERROR, error: err, contents: "" };
+            }
         }
     }
 
