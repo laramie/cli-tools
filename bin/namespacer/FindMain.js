@@ -449,4 +449,6 @@ export class FindMain {
     }
 }
 
-new FindMain().main();
+if (require.main === module) {
+  new FindMain().main();
+}

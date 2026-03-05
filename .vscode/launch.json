@@ -50,6 +50,8 @@
             "cwd": "${workspaceFolder}/bin/namespacer",
             "console": "integratedTerminal",
             "skipFiles": ["<node_internals>/**"]
+            ,"runtimeExecutable": "node"
+            ,"outputCapture": "std"
         }
     ]
 }
