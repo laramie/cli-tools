@@ -29,7 +29,6 @@
 import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
-import {SourceFile} from './SourceFile.js';
 
 // Enum-like object for readSourceFile status codes
 export const ReadSourceStatus = Object.freeze({
@@ -130,31 +129,41 @@ export class Replacer {
                 return { status: Status.READ_ERROR, error: err, contents: "" };
             }
         }
-    }
 
-    processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
-        const { status, error, contents } = SourceFile.read(fileWithInvocations_Name);
-        if (status !== Replacer.ReadSourceStatus.FOUND) {
-            this.logError(`Failed to read file: ${fileWithInvocations_Name} (status: ${status})`);
-            return;
-        }
-        
-        const linesArr = contents.split('\n');
-        
-        // Use all keys from masterNamespaceMap as identifiers
-        let identifiersInMasterNamespaceMapKeys = Object.keys(masterNamespaceMap);
-        let lineObjectsArray = this.createLineObjectsArray(contents, linesArr, identifiersInMasterNamespaceMapKeys); 
-        this.generateReplacedLines(lineObjectsArray, masterNamespaceMap);
-        this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
-
-
-        this.log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
-
-        const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        this.log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-        if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
             this.log(true, JSON.stringify(
-                replacementsOnly,
+                    const { status, error, contents } = SourceFile.read(fileWithInvocations_Name);
+                    if (status !== Replacer.ReadSourceStatus.FOUND) {
+                        this.logError(`Failed to read file: ${fileWithInvocations_Name} (status: ${status})`);
+                        return;
+                    }
+                    const linesArr = contents.split('\n');
+        
+                    // Use all keys from masterNamespaceMap as identifiers
+                    let identifiersInMasterNamespaceMapKeys = Object.keys(masterNamespaceMap);
+                    let lineObjectsArray = this.createLineObjectsArray(contents, linesArr, identifiersInMasterNamespaceMapKeys); 
+                    this.generateReplacedLines(lineObjectsArray, masterNamespaceMap);
+                    this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath); //  linesArr will be modified!
+
+                    this.log('OUTPUT', "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+
+                    const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
+                    this.log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+                    if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
+                        this.log(true, JSON.stringify(
+                            replacementsOnly,
+                            ((key, value)=> {
+                                if (Array.isArray(value)) {
+                                    return value.map(o => `${o.linenum}:${o.replacedLine}`);
+                                }
+                                return value;
+                            }),
+                            4
+                        ));
+                    }
+
+                    const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
+                    this.log('OUTPUT_NOOP_REPLACEMENTS', "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+                }
                 ((key, value)=> {
                     if (Array.isArray(value)) {
                         return value.map(o => `${o.linenum}:${o.replacedLine}`);
@@ -177,18 +186,17 @@ export class Replacer {
     addIdentifiersToMap(planFilepath, excludesFilepath, theNamespaceString, masterNamespaceMap) {
         let theExcludes = [];
         if (excludesFilepath) {
-            const { status: exclStatus, contents: excludesLines } = SourceFile.read(excludesFilepath);
-            if (exclStatus === Replacer.ReadSourceStatus.FOUND && excludesLines) {
-                theExcludes = excludesLines
-                    .split('\n')
-                    .map(id => id.trim())
-                    .filter(id => id.length > 0);
-            }
+                const { status: exclStatus, contents: excludesLines } = SourceFile.read(excludesFilepath);
+                if (exclStatus === Replacer.ReadSourceStatus.FOUND && excludesLines) {
+                    theExcludes = excludesLines
+                        .split('\n')
+                        .map(id => id.trim())
+                        .filter(id => id.length > 0);
+                }
         }
 
-        const { status: planStatus, contents: plan } = SourceFile.read(planFilepath);
-        if (planStatus !== Replacer.ReadSourceStatus.FOUND || !plan) {
-            
+            const { status: planStatus, contents: plan } = SourceFile.read(planFilepath);
+            if (planStatus !== Replacer.ReadSourceStatus.FOUND || !plan) {
             this.logError("🛑  No plan file found, or file empty: " + planFilepath);
             return { added: 0 };
         }
