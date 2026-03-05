@@ -86,7 +86,6 @@ export class FindMain {
             this.printError(options, "--runconfig= specified, but config not found");
             process.exit(1);  
         } 
-        console.log(" ~~~~~~~~~~>  runWithNamedOptionsFile::options: "+JSON.stringify(options,null,6));
         if (!options.dir){
             options.dir = process.cwd();   
         }
@@ -94,8 +93,7 @@ export class FindMain {
     }
 
     runWithOptions(options, regexSuites, prePlanActions){
-        //if (options.debug) 
-            console.log("options:"+JSON.stringify(options));
+        if (options.debug) console.log("options:"+JSON.stringify(options));
 
         this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                                 +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
@@ -274,7 +272,7 @@ export class FindMain {
             states.forEach(theState => {
                 if (theState.quantifyFound()>0){
                     if (options.outputLines){
-                        if (options.outputFilename){              //   💾 📂 📄  🗒  📜 📃 ▤
+                        if (options.outputFilename){
                             console.log("\n\n📄 ━━━━━━━━━━━━━━━━━━  file: "+theState.printFilename() + "  ━━━━━━━━━━━━━━━━━━━━━\n");
                         }
                         if (options.outputSortedLines){

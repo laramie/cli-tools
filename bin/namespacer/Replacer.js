@@ -108,30 +108,7 @@ export class Replacer {
         return JSON.stringify(obj,null,4);
     }
 
-    /**
-     * Read a file and return its contents as a string. Returns empty string if file is missing or empty.
-     * @param {string} filePath
-     * @returns {string}
-     */
-    readSourceFile(filePath) {
-        const Status = Replacer.ReadSourceStatus;
-        try {
-            if (!filePath) {
-                return { status: Status.NO_PATH, error: null, contents: "" };
-            }
-            const data = readFileSync(filePath, 'utf8');
-            return { status: Status.FOUND, error: null, contents: data || "" };
-        } catch (err) {
-            if (err.code === 'ENOENT') {
-                this.logError(`File not found: ${filePath}`);
-                return { status: Status.NOT_FOUND, error: err, contents: "" };
-            } else {
-                this.logError(`Error reading file: ${filePath} (${err.message})`);
-                return { status: Status.READ_ERROR, error: err, contents: "" };
-            }
-        }
-    }
-
+    
     processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
         const { status, error, contents } = SourceFile.read(fileWithInvocations_Name);
         if (status !== Replacer.ReadSourceStatus.FOUND) {
@@ -186,22 +163,22 @@ export class Replacer {
             }
         }
 
-        const { status: planStatus, contents: plan } = SourceFile.read(planFilepath);
+        const { status: planStatus, contents: plan, error: planError } = SourceFile.read(planFilepath);
         switch (planStatus) {
             case Replacer.ReadSourceStatus.NOT_FOUND:
-                this.logError(`🛑  Plan file not found: ${planFilepath}`);
+                this.logError(`🚫  Plan file not found: ${planFilepath}`);
                 return { added: 0 };
             case Replacer.ReadSourceStatus.READ_ERROR:
-                this.logError(`🛑  Error reading plan file: ${planFilepath}`);
+                this.logError(`🛑  Error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
                 return { added: 0 };
             case Replacer.ReadSourceStatus.FOUND:
                 if (!plan) {
-                    this.logError(`🛑  Plan file is empty: ${planFilepath}`);
+                    this.log(`🪲  Plan file found and is empty: ${planFilepath}`);
                     return { added: 0 };
                 }
                 break;
             default:
-                this.logError(`🛑  Unknown error reading plan file: ${planFilepath}`);
+                this.logError(`🛑  Unknown error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
                 return { added: 0 };
         }
 
