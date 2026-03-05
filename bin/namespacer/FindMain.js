@@ -11,6 +11,7 @@
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { FindOptions } from './FindOptions.js';
 import { SourceLines } from './SourceLines.js';
 import { ANSIColors } from './ANSIColors.js';
@@ -449,6 +450,9 @@ export class FindMain {
     }
 }
 
-if (require.main === module) {
+
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  // This file is being run directly
   new FindMain().main();
 }

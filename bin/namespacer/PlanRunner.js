@@ -5,7 +5,8 @@ import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
 import { RegexSuites } from './RegexSuites.js';
 import { readdir, readFileSync, writeFileSync } from 'fs';
-import { extname, join } from 'path';
+import { basename, extname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 const NamespacerPlan = {
     sources:[
@@ -74,4 +75,8 @@ export class PlanRunner {
 }
 
 //====== DO IT! ========
-new PlanRunner().main();
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  // This file is being run directly
+  new PlanRunner().main();
+}
