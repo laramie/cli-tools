@@ -80,17 +80,21 @@ export class FindMain {
     }
 
     runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions){
+        console.log("^^^^^^^^^^^^^^^^"+configFilename);
         flatOptionsObj = this.readConfigIntoFindOptionsObject(configFilename);
+        console.log(" &&&&&&&&&&  runWithNamedOptionsFile::options: "+JSON.stringify(flatOptionsObj,null,6));
         if (!flatOptionsObj){
             this.printError(options, "--runconfig= specified, but config not found");
             process.exit(1);  
         } 
         options = new FindOptions(flatOptionsObj);
+        console.log(" &&&&&&&&&&  runWithNamedOptionsFile::options: "+JSON.stringify(options,null,6));
         this.runWithOptions(options, regexSuites, prePlanActions);
     }
 
     runWithOptions(options, regexSuites, prePlanActions){
-        if (options.debug) console.log("options:"+JSON.stringify(options));
+        //if (options.debug) 
+            console.log("options:"+JSON.stringify(options));
 
         this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                                 +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))

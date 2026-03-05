@@ -74,4 +74,4 @@ export class PlanRunner {
 }
 
 //====== DO IT! ========
-main();
+new PlanRunner().main();

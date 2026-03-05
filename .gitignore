@@ -23,10 +23,7 @@ build/
 # Test coverage
 coverage/
 
-# VS Code settings
-.vscode/
 /infinite-neck/nbproject/private/
-.vscode/settings.json
 /_TEMP_ONLY/
 package-lock.json
 bin/namespacer/data/src
