@@ -105,7 +105,7 @@ export class Replacer {
     readSourceFile(filePath){
         try {
             if (!filePath) return '';
-            const data = this.readFileSync(filePath, 'utf8');
+            const data = readFileSync(filePath, 'utf8');
             return data || '';
         } catch (err) {
             this.logError(`File not found or unreadable: ${filePath}`);

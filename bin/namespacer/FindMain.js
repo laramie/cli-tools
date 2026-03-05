@@ -81,15 +81,15 @@ export class FindMain {
     }
 
     runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions){
-        console.log("^^^^^^^^^^^^^^^^"+configFilename);
-        flatOptionsObj = this.readConfigIntoFindOptionsObject(configFilename);
-        console.log(" &&&&&&&&&&  runWithNamedOptionsFile::options: "+JSON.stringify(flatOptionsObj,null,6));
-        if (!flatOptionsObj){
+        let options = this.readConfigIntoFindOptionsObject(configFilename);
+        if (!options){
             this.printError(options, "--runconfig= specified, but config not found");
             process.exit(1);  
         } 
-        options = new FindOptions(flatOptionsObj);
-        console.log(" &&&&&&&&&&  runWithNamedOptionsFile::options: "+JSON.stringify(options,null,6));
+        console.log(" ~~~~~~~~~~>  runWithNamedOptionsFile::options: "+JSON.stringify(options,null,6));
+        if (!options.dir){
+            options.dir = process.cwd();   
+        }
         this.runWithOptions(options, regexSuites, prePlanActions);
     }
 

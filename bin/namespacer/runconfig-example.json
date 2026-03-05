@@ -1,6 +1,6 @@
 {
     "quiet": false,
-    "color": false,
+    "color": true,
     "bareExpressions": false,
     "outputFilename": false,
     "outputLines": false,
@@ -11,7 +11,7 @@
     "verbose": false,
     "debug": false,
     "configSource": "command-line",
-    "suiteIdx": 0,
+    "suiteIdx": 1,
     "extensions": [
         ".js",
         ".txt"

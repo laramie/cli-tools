@@ -67,14 +67,12 @@ export class PlanRunner {
         // Prepare arguments for FindMain.runWithNamedOptionsFile
         const configFilename = "runconfig-example.json";
         const regexSuites = new RegexSuites();
-        const prePlanActions = ["Running from PlanRunner with "+configFilename];
-
-        // Call the alternate entry point
+        const prePlanActions = ["🗒  Running from PlanRunner with ☛  "+configFilename+" ☚"];
         findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
+
+        replacer.main();
     }
 }
-
-//====== DO IT! ========
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   // This file is being run directly
