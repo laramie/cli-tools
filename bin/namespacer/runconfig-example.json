@@ -1,14 +1,14 @@
 {
     "quiet": false,
-    "color": true,
-    "bareExpressions": true,
-    "outputFilename": true,
-    "outputLines": true,
+    "color": false,
+    "bareExpressions": false,
+    "outputFilename": false,
+    "outputLines": false,
     "outputSummary": false,
     "shortSummary": false,
-    "outputSourceLocation": true,
-    "outputSortedLines": true,
-    "verbose": true,
+    "outputSourceLocation": false,
+    "outputSortedLines": false,
+    "verbose": false,
     "debug": false,
     "configSource": "command-line",
     "suiteIdx": 0,
@@ -16,10 +16,5 @@
         ".js",
         ".txt"
     ],
-    "singleFile": null,
-    "configFilename": null,
-    "dir": "data/src",
-    "dirSpecified": true,
-    "datadir": "data",
-    "datadirSpecified": true
+    "singleFile": null
 }

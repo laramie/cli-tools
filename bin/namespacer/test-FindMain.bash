@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBUG_TESTS=1
+DEBUG_TESTS=0
 COLOR_HELP_TESTS=' --color '
 ########COLOR_HELP_TESTS=''
 
@@ -9,7 +9,7 @@ COLOR_HELP_TESTS=' --color '
 #worked 20260303: FIND_DEPENDENCIES_OPTIONS=' --sort --color   --lines --filenames --short  --bare --verbose --dir=data/src '
 
 ## worked 20260303 with linenumber printouts using --line --locations: 
-FIND_DEPENDENCIES_OPTIONS=' --sort --color  --lines --locations --filenames --short  --bare  --dir=data/src '
+FIND_DEPENDENCIES_OPTIONS=' --color  --quiet --sort --lines --locations --filenames --short  --bare  --dir=data/src '
 
 # worked 20260303 to produce short, minimal stdout noise:
 #FIND_DEPENDENCIES_OPTIONS=' --sort --color  --filenames --short --summary verbose --bare  --dir=data/src '
@@ -48,16 +48,16 @@ testHelpSystem() {
     fi
 
     printHeaderOneline "Now running --suites" 
-    ./find-main.js $COLOR_HELP_TESTS --suites
+    ./FindMain.js $COLOR_HELP_TESTS --suites
     
     printHeaderOneline "Now running --suitenumbers"
-    ./find-main.js $COLOR_HELP_TESTS --suitenumbers
+    ./FindMain.js $COLOR_HELP_TESTS --suitenumbers
     
     printHeaderOneline "Now running --suitenames"
-    ./find-main.js $COLOR_HELP_TESTS --suitenames
+    ./FindMain.js $COLOR_HELP_TESTS --suitenames
     
     printHeaderOneline "Now running --help"
-    ./find-main.js $COLOR_HELP_TESTS --help
+    ./FindMain.js $COLOR_HELP_TESTS --help
 
 }
 
@@ -73,11 +73,11 @@ testEm() {
     if [ "$DEBUG_TESTS" -eq 1 ]; then
     set -x
     fi
-    ./find-main.js --suite=function-lines $@ 
-    ./find-main.js --suite=functions  $@ 
-    ./find-main.js --suite=functions-no-exports $@ 
-    ./find-main.js --suite=export-functions $@ 
-    ./find-main.js --suite=exports $@ 
+    ./FindMain.js --suite=function-lines $@ 
+    ./FindMain.js --suite=functions  $@ 
+    ./FindMain.js --suite=functions-no-exports $@ 
+    ./FindMain.js --suite=export-functions $@ 
+    ./FindMain.js --suite=exports $@ 
     set +x
     
     printHeader "Testing invocations" "$FOO"
@@ -85,9 +85,9 @@ testEm() {
     if [ "$DEBUG_TESTS" -eq 1 ]; then
     set -x
     fi
-    ./find-main.js --suite=invocation-lines $@ 
-    ./find-main.js --suite=invocations $@ 
-    ./find-main.js --suite=invocations-no-frameworks $@ 
+    ./FindMain.js --suite=invocation-lines $@ 
+    ./FindMain.js --suite=invocations $@ 
+    ./FindMain.js --suite=invocations-no-frameworks $@ 
 }
 
 
@@ -96,11 +96,11 @@ if [ "$DEBUG_TESTS" -eq 1 ]; then
 fi
 
 
-#testHelpSystem $FIND_DEPENDENCIES_OPTIONS
+## testHelpSystem $FIND_DEPENDENCIES_OPTIONS
 
-#testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "song.js"
+## testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "song.js"
 
-#testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "userColors.js"
+## testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "userColors.js"
 
 ## this tests everything in the directory:
 testEm $FIND_DEPENDENCIES_OPTIONS $DISK 
@@ -112,20 +112,20 @@ set +x
 echo 
 printHeaderOneline " 🛈     Individual command line examples:"
 
-echo     ./find-main.js $COLOR_HELP_TESTS --suites
-echo     ./find-main.js $COLOR_HELP_TESTS --suitenumbers
-echo     ./find-main.js $COLOR_HELP_TESTS --suitenames
-echo     ./find-main.js $COLOR_HELP_TESTS --help
+echo     ./FindMain.js $COLOR_HELP_TESTS --suites
+echo     ./FindMain.js $COLOR_HELP_TESTS --suitenumbers
+echo     ./FindMain.js $COLOR_HELP_TESTS --suitenames
+echo     ./FindMain.js $COLOR_HELP_TESTS --help
 echo 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=function-lines $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions  $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions-no-exports $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=export-functions $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=exports $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=function-lines $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions  $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions-no-exports $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=export-functions $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=exports $@ 
 echo 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocation-lines $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations $@ 
-echo     ./find-main.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations-no-frameworks $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocation-lines $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations $@ 
+echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=invocations-no-frameworks $@ 
 echo 
 echo 
  printHeaderOneline "👍   Tests complete."

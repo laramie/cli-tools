@@ -1,6 +1,9 @@
+#!/usr/bin/env node
+
 
 import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
+import { RegexSuites } from './RegexSuites.js';
 import { readdir, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
@@ -59,6 +62,16 @@ export class PlanRunner {
     main() {
         const findMain = new FindMain();
         const replacer = new Replacer(this.namespacerPlan);
-        // Optionally, call methods on findMain and replacer here
+
+        // Prepare arguments for FindMain.runWithNamedOptionsFile
+        const configFilename = "runconfig-example.json";
+        const regexSuites = new RegexSuites();
+        const prePlanActions = ["Running from PlanRunner with "+configFilename];
+
+        // Call the alternate entry point
+        findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
     }
 }
+
+//====== DO IT! ========
+main();

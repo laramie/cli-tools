@@ -34,7 +34,6 @@ export class FindMain {
     }
 
     main(){
-        
         let regexSuites = new RegexSuites();
 
         const args = process.argv.slice(2);
@@ -91,7 +90,7 @@ export class FindMain {
     }
 
     runWithOptions(options, regexSuites, prePlanActions){
-        console.log("options:"+JSON.stringify(options));
+        if (options.debug) console.log("options:"+JSON.stringify(options));
 
         this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                                 +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
@@ -102,7 +101,6 @@ export class FindMain {
                                 +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         if (prePlanActions){
             this.planAccumulator.push(...prePlanActions);
-
         }
 
         if (options.outputLines == false && options.outputFilename == false){
@@ -198,7 +196,7 @@ export class FindMain {
             }
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
-                this.accumulatePlan("Processing file: "+file);
+                this.accumulatePlan("FindMain processing file: "+options.colorANSI(ANSIColors.Yellow,file));
 
                 //TODO:suppressList moved from inside while match....
                     let suppressList = [];
