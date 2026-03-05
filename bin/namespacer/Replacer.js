@@ -84,6 +84,7 @@ export class Replacer {
     static VERBOSE_INTERFACE_GENS = true;  // used to have GenerateInterface also print out output
 
     static LOG_FLAGS = {
+        PLAN_INFO: true,
         FILE_WRITES: true,
         INTERFACE_GENS: false,
         MASTER_NAMESPACE_MAP: false,
@@ -130,7 +131,7 @@ export class Replacer {
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
         this.log('OUTPUT_REPLACEMENTS', "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
         if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
-            this.log(true, JSON.stringify(
+            this.log(true, "replacements:"+JSON.stringify(
                 replacementsOnly,
                 ((key, value)=> {
                     if (Array.isArray(value)) {
@@ -173,7 +174,7 @@ export class Replacer {
                 return { added: 0 };
             case Replacer.ReadSourceStatus.FOUND:
                 if (!plan) {
-                    this.log(`🪲  Plan file found and is empty: ${planFilepath}`);
+                    this.log(Replacer.LOG_FLAGS.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
                     return { added: 0 };
                 }
                 break;
@@ -209,7 +210,9 @@ export class Replacer {
      */
     createLineObjectsArray(content, linesArr, identifiers){
         if (!identifiers || identifiers.length === 0) return [];
-        const identifierPattern = identifiers.map(escapeRegex).join('|');
+        //const identifierPattern = identifiers.map(escapeRegex).join('|');
+        const identifierPattern = identifiers.map(str => this.escapeRegex(str)).join('|');
+
         const lineRegex = new RegExp(`^.*\\b(${identifierPattern})\\b\\s*\\(.*$`, 'gm');
 
         let match;
