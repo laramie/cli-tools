@@ -1,6 +1,7 @@
 # namespacer Project Overview
 
-## This document's version: V2
+## This document's version: V3
+- [CHANGELOG.md](./CHANGELOG.md) — Changelog for completed TODOs and version updates
 
 ## Project Purpose
 
@@ -187,6 +188,12 @@ To improve traceability and planning, we propose extending the Accumulator to ca
 4. Would you like to export the accumulator data as a separate JSON artifact for external tools or reporting?
 5. Are there privacy or performance concerns with logging all file operations?
 6. Should the accumulator support hierarchical steps (parent/child relationships) for complex workflows?
+
+---
+
+## TODO
+
+- [TODO.md](./TODO.md) — See outstanding and future TODO items
 
 ---
 
