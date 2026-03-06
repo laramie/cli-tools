@@ -269,11 +269,11 @@ export class Replacer {
     }
 
     /**
-     * Main entry point for the dependency replacer script.
-     * Loads namespace plans, generates interfaces, and processes source files.
-     * Mutates masterNamespaceMap in place.
+     * Loads and processes NamespacerPlan.sources[] files.
+     * Generates interfaces.
+     * Creates masterNamespaceMap, and returns it.
      */
-    main(){
+    processAllNamespaces_ReturnMasterNamespaceMap(){
         let masterNamespaceMap = {};
         this.namespacerPlan.namespaces.forEach(namespaceObj => {
             const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
@@ -287,9 +287,15 @@ export class Replacer {
                     this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
         });
-
         this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+        return masterNamespaceMap;
+    }
 
+     /**
+     * Loads and processes NamespacerPlan.sources[] files, from namespacerPlan set in constructor.
+     * Requires masterNamespaceMap returned from processAllNamespaces_ReturnMap().
+     */
+    processAllSources(masterNamespaceMap){
         // Loop over all sources in NamespacerPlan and process each
         this.namespacerPlan.sources.forEach(sourceObj => {
             this.logFilename(sourceObj.src);

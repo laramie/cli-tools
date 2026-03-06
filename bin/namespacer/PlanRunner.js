@@ -5,7 +5,7 @@ import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
 import { RegexSuites } from './RegexSuites.js';
 import { ANSIColors } from './ANSIColors.js';
-import Accumulator from './Accumulator.js';
+import { Accumulator } from './Accumulator.js';
 import { readdir, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -64,17 +64,20 @@ export class PlanRunner {
 
     main() {
         const accumulator = Accumulator.getInstance();
-        const findMain = new FindMain(accumulator);
-        const replacer = new Replacer(this.namespacerPlan);
-
-        // Prepare arguments for FindMain.runWithNamedOptionsFile
+        
         const configFilename = "runconfig-example.json";
-        const regexSuites = new RegexSuites();
         const prePlanActions = ["🗒  Running from PlanRunner with ☛  "+ANSIColors.green(configFilename)+" ☚"];
+        const regexSuites = new RegexSuites();
+        const findMain = new FindMain(accumulator);
+        //Search:
         findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
-
-        replacer.main();
-        console.log("ANSIColor.geBlame():\n"+ANSIColors.getBlame());
+        
+        const replacer = new Replacer(this.namespacerPlan);
+        //Generate Interfaces:
+        let masterNamespaceMap = replacer.processAllNamespaces_ReturnMasterNamespaceMap();
+        
+        //Replace:
+        replacer.processAllSources(masterNamespaceMap);
     }
 }
 
