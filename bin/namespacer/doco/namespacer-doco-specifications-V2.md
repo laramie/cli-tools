@@ -33,11 +33,12 @@ Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespace
         2. Do not use \n sequence for hard returns, use <br> 
 
      
-# Actions for Copilot
-1. Now, we'd like to update the markdown document ( namespacer-overview.generated.md ), with links to the directories, source files, and plan files and artifacts of namespacer, as you have in previous iterations.  
+# Actions for Copilot, background
+
+1. We'd like you to maintain and update the markdown document ( namespacer-overview.generated.md ), with links to the directories, source files, and plan files and artifacts of namespacer, as you have in previous iterations.  
 
 2. That target markdown document is herein now simply called: namespacer-overview.generated.md 
-    * That document will live in this project in the folder and filename: 
+    * That document lives in this project in the folder and filename: 
         * ~/infinite-neck/bin/namespacer/doco/ 
             * Link: [namespacer documentation (doco) directory](../doco/) 
         * ~/infinite-neck/bin/namespacer/doco/namespacer-overview.generated.md
@@ -46,13 +47,22 @@ Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespace
     * Please consult the existing version to understand the work you've done so far, and preserve any information that is up-to-date.
     * Note that the links in the document work well for us both in VSCode and on GitHub when viewing our project.  Please consult the format you used in this document when making changes.  
 
-3. Please include and update a top-level heading
-3. We have included an example document, with links that work.  You should consult this when making links in your markdown output, especially when calculating relative paths.  The relative paths in this example document work:
-    * bin/namespacer/doco/namespacer-overview-example.md  
+3. Please update the generated document's version, in the beginning of the document where it says: 
+    * This document's version: V2
+    * That version number should match the version number of *this* specifications document, found in the header: 
+        * This document's version: V2
+        
+4. Previously, you took a pass at summarizing our conversation from previous chats. Now, please just consult the generated document and this specifications document as the master documents for your work. Your output should update ( ../doco/namespacer-overview.generated.md ).  What is there is to show what you generated on the last iteration.  We especially like the links to source code and directories as we define what PlanRunner.js will do, and what steps we, as developers, need to do.  We will use the generated markdown document as our roadmap for development, and for running all the tools in namespacer.  
 
-4. Now please take a pass at summarizing our conversation in ( bin/namespacer/doco/namespacer-doco-plan-flow-chat.md ). Please reproduce the report part of that conversation in clean markdown that you will be able to edit in the future to update as we refine our plan. Your output should overwrite ( ../doco/namespacer-overview.generated.md ).  You don't need to preserve what is there.  It is only there to show what you generated on the last iteration.  It currently just contains a cleaned up copy of ( namespacer-overview-example.md ).  We especially want to add links to source code and directories as we define what PlanRunner.js will do, and what steps we, as developers, need to do.  We will use the generated markdown document as our roadmap for development, and for running all the tools in namespacer.  
+5. After reviewing your report produced in ../doco/namespacer-overview.generated.md we will refine the output with future request to you in the section "Current Actions and Updates".  You may ignore any actions listed in "Past Actions and Updates [archived]".  They are there for us to understand only key steps in the evolution of the document.  However, this document and the generated document will be archived in version control.
 
-5. After reviewing your report produced in ../doco/namespacer-overview.generated.md we will refine the output with future request to you.
+# Past Actions and Updates [archived]
 
-6. Thanks!!!!!
+1. Document generation requested, version commit: 56bf6a637d238311c4501e9cf7089c3b8540ff87
+2. Generated document version commit: 
+
+
+# Current Actions and Updates
+
+1. Please 
 
