@@ -1,6 +1,8 @@
 
 # namespacer Project Overview
 
+## This document's version: V2
+
 ## Project Purpose
 
 The **namespacer** project is a migration and refactoring tool designed to scan legacy JavaScript source files, identify global-scope identifiers, and namespace-qualify them for ES6 module compatibility. It automates the generation of Facade Interface files and transforms source code to use proper ES6 import/export patterns.
