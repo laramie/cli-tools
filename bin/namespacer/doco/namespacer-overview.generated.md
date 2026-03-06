@@ -8,6 +8,12 @@ The **namespacer** project is a migration and refactoring tool designed to scan 
 
 ---
 
+## Goals
+
+One of the main goals is to preserve a maintainable branch of the codebase to support the current version.  Every full run of a Plan will transform the existing codebase as copied into data/src to the codebase in data/out.  Any issues found in this process should be addressed in the original source code in the project root, then copied into data/src and the Plan re-run.  In this way, we preserve a maintainable current version until migration is complete and tested.
+
+---
+
 ## Data Flow Diagram
 
 ```mermaid
@@ -58,12 +64,9 @@ graph TD
 
 ## Project Workflow Summary
 
-1. **Configuration**: Edit [runconfig-example.json](../runconfig-example.json) to specify source files, regex suites, and output options.
+1. **Interface Generation**: [GenerateInterface.js](../GenerateInterface.js) creates ES6 Facade Interface files in [out](../data/out/), and updates function exports as needed.
 2. **Source Scanning**: Run [FindMain.js](../FindMain.js) to scan [src](../data/src/) files for functions, exports, and global usages. Outputs plan files in [plans](../data/plans/).
-3. **Plan Management**: Review and, if needed, manually copy or edit `.gen` files to `.plan` or `.interface.plan` files in [plans](../data/plans/).
-4. **Namespace Mapping**: [Replacer.js](../Replacer.js) builds a master namespace map from plan files and applies transformations.
-5. **Interface Generation**: [GenerateInterface.js](../GenerateInterface.js) creates ES6 Facade Interface files in [out](../data/out/).
-6. **Source Transformation**: [Replacer.js](../Replacer.js) rewrites source files with namespace-qualified identifiers and outputs to [out](../data/out/).
+3. **Source Transformation**: [Replacer.js](../Replacer.js) rewrites source files with namespace-qualified identifiers and outputs to [out](../data/out/).
 
 ---
 
@@ -159,6 +162,22 @@ To improve traceability and planning, we propose extending the Accumulator to ca
         }
       }
       ```
+
+### TODO: Dive/Surface API for File I/O Grouping
+
+- Implement a `dive(sourceFileID)` / `surface(sourceFileID)` API pair in the Accumulator.
+    - Every file I/O or plan step should occur within a tracked depth context.
+    - When processing a file (e.g., "song.js"), call `dive('song.js')` before any related file I/O or plan steps.
+    - All file I/O and plan steps are then grouped under the current dive context.
+    - After finishing with the file, call `surface('song.js')`.
+    - If `surface()` is called without a matching `dive()`, log a warning for debugging.
+    - This will help group and visualize all actions related to a specific file, and spot any mismatches or unexpected flows.
+
+- Update workflow steps order:
+    1. Generate Interfaces and function exports
+    2. Search
+    3. Replace
+    - Ensure this order is reflected in documentation and future code updates.
 
 ### Questions for Next Iteration
 
