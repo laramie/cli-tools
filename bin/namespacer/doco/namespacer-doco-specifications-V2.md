@@ -62,19 +62,21 @@ Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespace
 # Current Actions and Updates
 
 1. Please update the generated document's version, in the beginning of the document where it says: 
-    * This document's version: V2
-    * That version number should match the version number of *this* specifications document, found in the header: 
+    * This document's version: V1
+    * After generation, that version number should match the version number of *this* specifications document, which leads, and is found in the header: 
         * This document's version: V2
 
 2. Please add a section called "Experimental Strategies".
 
-3. For this revision, please help us outline a strategy for capturing the information that is currently produced in two places:
+3. For this revision, please add content to this section that contains your analysis and recommendations of the following steps.  
+
+4. Please help us outline a strategy for capturing the information that is currently produced in two places:
     * any calls to Accumulator.accumulate()  These have high-level steps, not detailed dumps or JSON.stringify() calls generally.  Each is supposed to name a single action or start of a plan step, such as read source file from disk, output accumulator output, output .plan files, output .gen files, output .js files and I*.js Interface Facade files.  Many of these are being logged to the Accumulator yet.
     * any calls to file I/O should be tracked somehow in this new Accumulator strategy.
 
-4. Our current request proposes a strategy of adding an Accumulator call called Accumulator.addPlanStep() that would allow us to pass in more information, such as the main source file being processed, and files that are generated while processing this source file.  We like the current accumulate() calls being added to its array and won't be changing that: it functions as a high-level, simple log.  We are talking about a new data structure Accumulator will keep with the objects described below in step 6.
+5. Our current request proposes a strategy of adding an Accumulator call called Accumulator.addPlanStep() that would allow us to pass in more information, such as the main source file being processed, and files that are generated while processing this source file.  We like the current accumulate() calls being added to its array and won't be changing that: it functions as a high-level, simple log.  We are talking about a new data structure Accumulator will keep with the objects described below in step 7.
 
-5. You can see in PlanRunner that there are 3 basic steps:
+6. You can see in PlanRunner that there are 3 basic steps:
     * Search:
         * findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
         
@@ -86,10 +88,16 @@ Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespace
     * Replace:
         * replacer.processAllSources(masterNamespaceMap);
 
-6. We envision a JSON structure like PlanRunner.NamespacerPlan, with structured objects below the .sources and .interfaces objects tracing the calls made to Accumulator.addPlanStep().  We don't really know how this will work, so we are looking for recommendations on 
+7. We envision a JSON structure like PlanRunner.NamespacerPlan, with structured objects below the .sources and .interfaces objects tracing the calls made to Accumulator.addPlanStep().  We don't really know how this will work, so we are looking for recommendations on 
     * the structure of the object
     * the code locations where we might use it
 
-7. When designing this structure/API, please follow the workflow that we will use: For each .sources, there is one source file that is compared to the masterNamespaceMap and will get output eventually.  We can consider everything that happens to this file (reading .plan files, reading .excludes, .interfaces, consulting masterNamespaceMap) to be part of a chain of events we want to plan and track in this output data structure.  Similarly Generator actions from PlanRunner.NamespacerPlan.interfaces should be considered a related yet separate flow.  It may be stored at the top level in the output accumulator datastructure.
+8. When designing this structure/API, please follow the workflow that we will use: For each .sources, there is one source file that is compared to the masterNamespaceMap and will get output eventually.  We can consider everything that happens to this file (reading .plan files, reading .excludes, .interfaces, consulting masterNamespaceMap) to be part of a chain of events we want to plan and track in this output data structure.  Similarly Generator actions from PlanRunner.NamespacerPlan.interfaces should be considered a related yet separate flow.  It may be stored at the top level in the output accumulator datastructure.
+
+9. The final output in this "Experimental Strategies" section should be a proposed JSON/JS object data structure.
+
+10. Please include questions for us that would help us refine our next iteration, based on best practices you see in similar projects out in the world, and your analysis of our request.
+
+11. Thanks, and Good Luck!!!!
 
 
