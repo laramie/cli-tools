@@ -4,6 +4,7 @@
 import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
 import { RegexSuites } from './RegexSuites.js';
+import Accumulator from './Accumulator.js';
 import { readdir, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -61,7 +62,8 @@ export class PlanRunner {
     }
 
     main() {
-        const findMain = new FindMain();
+        const accumulator = Accumulator.getInstance();
+        const findMain = new FindMain(accumulator);
         const replacer = new Replacer(this.namespacerPlan);
 
         // Prepare arguments for FindMain.runWithNamedOptionsFile

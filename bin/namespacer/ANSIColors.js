@@ -14,7 +14,7 @@ export class ANSIColors {
     static Inverse = '\x1b[7m';
     
     //Foreground Colors';
-    static Blackreaddir = '\x1b[30m';
+    static Black = '\x1b[30m';
     static Red = '\x1b[31m';
     static Green = '\x1b[32m';
     static Yellow = '\x1b[33m';

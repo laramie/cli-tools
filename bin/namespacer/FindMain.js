@@ -15,7 +15,8 @@ import { fileURLToPath } from 'url';
 import { FindOptions } from './FindOptions.js';
 import { SourceLines } from './SourceLines.js';
 import { ANSIColors } from './ANSIColors.js';
-import { RegexSuites} from './RegexSuites.js';
+import { RegexSuites } from './RegexSuites.js';
+import Accumulator from './Accumulator.js';
 
 /** This class is driven from command-line parameters and files or globs passed to 
  *   process a number of source Javascript files, scanning for functions, exports, and invocations.
@@ -30,8 +31,9 @@ import { RegexSuites} from './RegexSuites.js';
  *             GenerateInterface.js
  */
 export class FindMain {
-    constructor() {
-        this.planAccumulator = [];
+    constructor(accumulator) {
+        // Use provided accumulator or fallback to singleton
+        this.accumulator = accumulator || Accumulator.getInstance();
     }
 
     main(){
@@ -95,15 +97,15 @@ export class FindMain {
     runWithOptions(options, regexSuites, prePlanActions){
         if (options.debug) console.log("options:"+JSON.stringify(options));
 
-        this.planAccumulator.push("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                                +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
-                                +(options.color 
-                                    ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
-                                    :  ""
-                                )
-                                +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        this.accumulator.accumulate("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
+            +(options.color 
+                ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
+                :  ""
+            )
+            +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         if (prePlanActions){
-            this.planAccumulator.push(...prePlanActions);
+            prePlanActions.forEach(line => this.accumulator.accumulate(line));
         }
 
         if (options.outputLines == false && options.outputFilename == false){
@@ -134,18 +136,18 @@ export class FindMain {
         let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
                         +`:${options.colorANSI(ANSIColors.Bold+ANSIColors.Red, name)} `
                         +`  ${options.colorANSI(ANSIColors.Cyan, description)}`);
-        this.accumulatePlan(loglineRunning);
+        this.accumulator.accumulate(loglineRunning);
         let loglineDirectory= `Directory: ${options.dir}`;
-        this.accumulatePlan(loglineDirectory);
+        this.accumulator.accumulate(loglineDirectory);
         let loglineFiles;
         if(options.singleFile){
             loglineFiles = `Single file: ${options.singleFile}`;
         } else {
             loglineFiles = `Extensions: ${options.extensions.join(', ')}`;
         }
-        this.accumulatePlan(loglineFiles);
+        this.accumulator.accumulate(loglineFiles);
         let loglineSuite = "Suite:\n" + JSON.stringify(regexSuites.getSuites()[options.suiteIdx], (key, value) =>
-                        value instanceof RegExp ? value.toString() : value, 4);
+                value instanceof RegExp ? value.toString() : value, 4);
         
 
                     
@@ -155,8 +157,8 @@ export class FindMain {
             console.log(loglineDirectory);
             console.log(loglineFiles);
             console.log(loglineSuite);
-            this.accumulatePlan(loglineSuite);
-            console.log(this.accumulatePlan("Options:\n" + JSON.stringify(options,null,4)));
+            this.accumulator.accumulate(loglineSuite);
+            console.log(this.accumulator.accumulate("Options:\n" + JSON.stringify(options,null,4)));
             this.printHelpDivider(options)
         } else if (options.quiet){
             //do nothing
@@ -199,7 +201,7 @@ export class FindMain {
             }
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
-                this.accumulatePlan("FindMain processing file: "+options.colorANSI(ANSIColors.Yellow,file));
+                this.accumulator.accumulate("FindMain processing file: "+options.colorANSI(ANSIColors.Yellow,file));
 
                 //TODO:suppressList moved from inside while match....
                     let suppressList = [];
@@ -283,7 +285,7 @@ export class FindMain {
                     }
                     if (options.outputSummary){
                         console.log("\n👉 Summary: "+theState.printSummary(options));
-                        this.accumulatePlan("👉 Summary: "+theState.filename+" :: "+theState.quantifyFound());
+                        this.accumulator.accumulate("👉 Summary: "+theState.filename+" :: "+theState.quantifyFound());
                     }
                 }
             });
@@ -293,11 +295,11 @@ export class FindMain {
                     if (!notFoundHeaderPrinted){
                         let loglineNone = "\n\n━━━━━━━━   "+options.colorANSI(ANSIColors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                         console.log(loglineNone);
-                        this.accumulatePlan(loglineNone);
+                        this.accumulator.accumulate(loglineNone);
                         notFoundHeaderPrinted = true;
                     }
                     console.log(theState.printFilename());
-                    this.accumulatePlan("None found in file: "+theState.printFilename());
+                    this.accumulator.accumulate("None found in file: "+theState.printFilename());
                 }
             });
             if (notFoundHeaderPrinted){
@@ -305,6 +307,7 @@ export class FindMain {
             }
             console.log("");
         }
+        console.log("******************** options: "+JSON.stringify(options,null,4));
         this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(options), options);
         console.log(""); 
     } //END main();
@@ -379,10 +382,7 @@ export class FindMain {
         }
     }
 
-    accumulatePlan(logline){
-        this.planAccumulator.push(logline);
-        return logline;
-    }
+    // accumulatePlan is now handled by Accumulator
     
     static getTimeStamp(emitSeconds){
         const now = new Date();
@@ -394,10 +394,7 @@ export class FindMain {
     }
     
     getAccumulatorPrintout(options){
-        return this.planAccumulator.join("\n")
-                    +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                    +"\n" + options.colorANSI(ANSIColors.Green, FindMain.getTimeStamp(true))
-                    +"\n\n";
+        return this.accumulator.getAccumulatorPrintout(options);
     }
 
     writeOutputFile(relPath, data, options){
@@ -406,7 +403,7 @@ export class FindMain {
             console.log("\n"+logline);
         }
         writeFileSync(relPath, data, 'utf8');
-        this.accumulatePlan(logline);
+        this.accumulator.accumulate(logline);
     }
 
     //   \uD83D\uDCBE == 💾
@@ -416,7 +413,7 @@ export class FindMain {
             console.log("\n"+logline);
         }
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
-        this.accumulatePlan(logline);
+        this.accumulator.accumulate(logline);
     }
 
 
@@ -451,6 +448,6 @@ export class FindMain {
 
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  // This file is being run directly
-  new FindMain().main();
+    // This file is being run directly
+    new FindMain().main();
 }

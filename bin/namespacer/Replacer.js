@@ -30,6 +30,7 @@ import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
 import {SourceFile} from './SourceFile.js';
+import Accumulator from './Accumulator.js';
 
 // Enum-like object for readSourceFile status codes
 export const ReadSourceStatus = Object.freeze({
@@ -59,6 +60,7 @@ export class Replacer {
     
     constructor(namespacerPlan) {
         this.namespacerPlan = namespacerPlan;
+        this.accumulator = Accumulator.getInstance();
     }
     logError(message){
         console.error(message);
@@ -112,6 +114,8 @@ export class Replacer {
 
     
     processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% processFileWithInvocations %%%%%%%%%%%%%%%%%%%%");
+        this.accumulator.accumulate("processFileWithInvocations::file:"+fileWithInvocations_Name+", outputFilePath:"+outputFilePath);
         const { status, error, contents } = SourceFile.read(fileWithInvocations_Name);
         if (status !== Replacer.ReadSourceStatus.FOUND) {
             this.logError(`Failed to read file: ${fileWithInvocations_Name} (status: ${status})`);
