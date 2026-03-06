@@ -25,6 +25,8 @@ class ANSIColor {
     static BgWhite = '\x1b[47m';
     static BQ = ANSIColor.Magenta + '❝' + ANSIColor.Reset;
     static EQ = ANSIColor.Magenta + '❞' + ANSIColor.Reset;
+    static BQ_NOCOLOR = '❝';
+    static EQ_NOCOLOR = '❞';
 
     // Singleton instance
     static #instance = null;
@@ -147,29 +149,47 @@ class ANSIColor {
         const inst = ANSIColor.#getInstance();
         return inst.#nocolor ? m : ANSIColor.BgWhite + m + ANSIColor.Reset;
     }
-    // Decorations
-    static bold(m = '') {
+    // Decorations: open/close and message-wrapping
+    static bold(message) {
         const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Bold + m + ANSIColor.Reset;
+        if (typeof message === 'undefined') {
+            return inst.#nocolor ? '' : ANSIColor.Bold;
+        }
+        return inst.#nocolor ? message : ANSIColor.Bold + message + ANSIColor.Reset;
     }
-    static dim(m = '') {
+    static dim(message) {
         const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Dim + m + ANSIColor.Reset;
+        if (typeof message === 'undefined') {
+            return inst.#nocolor ? '' : ANSIColor.Dim;
+        }
+        return inst.#nocolor ? message : ANSIColor.Dim + message + ANSIColor.Reset;
     }
-    static underline(m = '') {
+    static underline(message) {
         const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Underline + m + ANSIColor.Reset;
+        if (typeof message === 'undefined') {
+            return inst.#nocolor ? '' : ANSIColor.Underline;
+        }
+        return inst.#nocolor ? message : ANSIColor.Underline + message + ANSIColor.Reset;
     }
-    static inverse(m = '') {
+    static inverse(message) {
         const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Inverse + m + ANSIColor.Reset;
+        if (typeof message === 'undefined') {
+            return inst.#nocolor ? '' : ANSIColor.Inverse;
+        }
+        return inst.#nocolor ? message : ANSIColor.Inverse + message + ANSIColor.Reset;
+    }
+    static reset() {
+        const inst = ANSIColor.#getInstance();
+        return inst.#nocolor ? '' : ANSIColor.Reset;
     }
     // Special quote accessors
     static bq() {
-        return ANSIColor.BQ;
+        const inst = ANSIColor.#getInstance();
+        return inst.#nocolor ? ANSIColor.BQ_NOCOLOR : ANSIColor.BQ;
     }
     static eq() {
-        return ANSIColor.EQ;
+        const inst = ANSIColor.#getInstance();
+        return inst.#nocolor ? ANSIColor.EQ_NOCOLOR : ANSIColor.EQ;
     }
     // For testing
     static testColors() {
