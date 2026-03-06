@@ -22,15 +22,9 @@ class Accumulator {
     getAccumulatorPrintout(options) {
         return this._planAccumulator.join("\n")
             + "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            + "\n" + (options && options.colorANSI 
-                     ? options.colorANSI(ANSIColors.Green, options.getTimeStamp ? options.getTimeStamp(true) : "") 
-                     : "no-color->no-date")
-
+            + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
             + "\n_ID:"+this._ID
             + "\n\n";
-
-            //TODO: the accumulator is barfing on options.colorANSI so we are going to fix colorANSI to look at the env var.
-            
     }
 
     clear() {
@@ -39,6 +33,15 @@ class Accumulator {
 
     getAll() {
         return [...this._planAccumulator];
+    }
+
+    static getTimeStamp(emitSeconds){
+        const now = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const dateStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+        const timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes())  +':'+ (emitSeconds ? pad(now.getSeconds()) : "");
+        const dateTimeStr = dateStr + ' ' + timeStr;
+        return dateTimeStr;  
     }
 
     static getInstance() {

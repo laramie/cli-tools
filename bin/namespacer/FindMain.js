@@ -96,10 +96,11 @@ export class FindMain {
 
     runWithOptions(options, regexSuites, prePlanActions){
         if (options.debug) console.log("options:"+JSON.stringify(options));
+        ANSIColors.setColor(options.color);
 
         this.accumulator.accumulate("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            +"\nAccumulated Plan. Run: "+options.colorANSI(ANSIColors.Cyan, FindMain.getTimeStamp(true))
-            +(options.color 
+            +"\nAccumulated Plan. Run: "+ANSIColors.cyan(Accumulator.getTimeStamp(true))
+            +(ANSIColors.isColoring() 
                 ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
                 :  ""
             )
@@ -134,8 +135,8 @@ export class FindMain {
         const suite = regexSuites.getSuites()[options.suiteIdx];
 
         let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
-                        +`:${options.colorANSI(ANSIColors.Bold+ANSIColors.Red, name)} `
-                        +`  ${options.colorANSI(ANSIColors.Cyan, description)}`);
+                        +`:${ANSIColors.bold()+ANSIColors.red(name)} `
+                        +`  ${ANSIColors.cyan(description)}`);
         this.accumulator.accumulate(loglineRunning);
         let loglineDirectory= `Directory: ${options.dir}`;
         this.accumulator.accumulate(loglineDirectory);
@@ -165,8 +166,8 @@ export class FindMain {
         } else {
             // not --quiet and not --verbose gets minimal
             let loglineMinimalSuite = "Suite: "+options.suiteIdx 
-                                        +"  "+ options.colorANSI(ANSIColors.Bold+ANSIColors.Red, name)
-                                        +"  "+ options.colorANSI(ANSIColors.Cyan, description) ; 
+                                        +"  "+ ANSIColors.bold()+ANSIColors.red(name)
+                                        +"  "+ ANSIColors.cyan(description) ; 
             this.printHelpBox(options, loglineMinimalSuite);
         }
 
@@ -201,7 +202,7 @@ export class FindMain {
             }
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
-                this.accumulator.accumulate("FindMain processing file: "+options.colorANSI(ANSIColors.Yellow,file));
+                this.accumulator.accumulate("FindMain processing file: "+ANSIColors.yellow(file));
 
                 //TODO:suppressList moved from inside while match....
                     let suppressList = [];
@@ -293,7 +294,7 @@ export class FindMain {
             states.forEach(theState => {
                 if (theState.quantifyFound()===0 && options.outputFilename){
                     if (!notFoundHeaderPrinted){
-                        let loglineNone = "\n\n━━━━━━━━   "+options.colorANSI(ANSIColors.Green,"🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
+                        let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                         console.log(loglineNone);
                         this.accumulator.accumulate(loglineNone);
                         notFoundHeaderPrinted = true;
@@ -382,16 +383,7 @@ export class FindMain {
         }
     }
 
-    // accumulatePlan is now handled by Accumulator
     
-    static getTimeStamp(emitSeconds){
-        const now = new Date();
-        const pad = n => n.toString().padStart(2, '0');
-        const dateStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
-        const timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes())  +':'+ (emitSeconds ? pad(now.getSeconds()) : "");
-        const dateTimeStr = dateStr + ' ' + timeStr;
-        return dateTimeStr;  
-    }
     
     getAccumulatorPrintout(options){
         return this.accumulator.getAccumulatorPrintout(options);
@@ -418,22 +410,22 @@ export class FindMain {
 
 
     printHelpBox(options, msg){
-        console.log(options.colorANSI(ANSIColors.Cyan,"╔════════════════════════════════════════════════════════════════════════════"));
-        console.log(options.colorANSI(ANSIColors.Cyan,"║     "+msg));
-        console.log(options.colorANSI(ANSIColors.Cyan,"╚════════════════════════════════════════════════════════════════════════════"));
+        ANSIColors.cyan("╔════════════════════════════════════════════════════════════════════════════");
+        ANSIColors.cyan("║     "+msg);
+        ANSIColors.cyan("╚════════════════════════════════════════════════════════════════════════════");
     }
 
     printHelpDivider(options){
-        console.log(options.colorANSI(ANSIColors.Cyan,"═════════════════════════════════════════════════"));
+        console.log(ANSIColors.cyan("═════════════════════════════════════════════════"));
     }
 
     printInfo(options, str){
-        console.log(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str)); 
+        console.log(ANSIColors.bold()+ANSIColors.yellow(str)); 
     }
 
     printError(options, str){
         if (options){
-            console.error(options.colorANSI(ANSIColors.Bold+ANSIColors.Yellow,str));
+            console.error(ANSIColors.bold()+ANSIColors.yellow(str));
         } else {
             console.error(str);
         }

@@ -1,6 +1,6 @@
 {
     "quiet": false,
-    "color": true,
+    "color": false,
     "bareExpressions": false,
     "outputFilename": false,
     "outputLines": false,

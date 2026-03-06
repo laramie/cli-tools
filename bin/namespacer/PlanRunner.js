@@ -4,6 +4,7 @@
 import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
 import { RegexSuites } from './RegexSuites.js';
+import { ANSIColors } from './ANSIColors.js';
 import Accumulator from './Accumulator.js';
 import { readdir, readFileSync, writeFileSync } from 'fs';
 import { basename, extname, join } from 'path';
@@ -69,10 +70,11 @@ export class PlanRunner {
         // Prepare arguments for FindMain.runWithNamedOptionsFile
         const configFilename = "runconfig-example.json";
         const regexSuites = new RegexSuites();
-        const prePlanActions = ["🗒  Running from PlanRunner with ☛  "+configFilename+" ☚"];
+        const prePlanActions = ["🗒  Running from PlanRunner with ☛  "+ANSIColors.green(configFilename)+" ☚"];
         findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
 
         replacer.main();
+        console.log("ANSIColor.geBlame():\n"+ANSIColors.getBlame());
     }
 }
 

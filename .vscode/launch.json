@@ -49,9 +49,12 @@
             "program": "${workspaceFolder}/bin/namespacer/PlanRunner.js",
             "cwd": "${workspaceFolder}/bin/namespacer",
             "console": "integratedTerminal",
-            "skipFiles": ["<node_internals>/**"]
-            ,"runtimeExecutable": "node"
-            ,"outputCapture": "std"
+            "skipFiles": ["<node_internals>/**"],
+            "runtimeExecutable": "node",
+            "outputCapture": "std",
+            "env": {
+                "NO_COLOR": "1"
+            }
         }
     ]
 }

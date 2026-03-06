@@ -10,7 +10,7 @@ import { RegexSuites} from './RegexSuites.js';
 export class FindOptions {
     constructor(config = {}) {
         this.quiet = false;
-        this.color = false;
+        this.color = ANSIColors.isColoring();
         this.bareExpressions = false;
         this.outputFilename = false;
         this.outputLines = false;
@@ -142,7 +142,7 @@ export class FindOptions {
     }
 
     printHelp(){
-        console.log( this.colorANSI(ANSIColors.Bold+ANSIColors.Cyan,"Command-line options:\n"
+        console.log( ANSIColors.bold()+ANSIColors.cyan("Command-line options:\n"
             +"  --all                  :all lines, including duplicates.\n"
             +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --color     |  --c     :color output for DOS glory.\n"
@@ -179,13 +179,5 @@ export class FindOptions {
         );
     }
 
-    colorANSI(aColor, str){
-        if (this.color) {
-            return ""+aColor + str + ANSIColors.Reset;
-        } else {
-            return str;
-        }
-    }
-    
 
 }
