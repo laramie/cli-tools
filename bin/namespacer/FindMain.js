@@ -14,9 +14,9 @@ import { basename, extname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { FindOptions } from './FindOptions.js';
 import { SourceLines } from './SourceLines.js';
-import { ANSIColors } from './ANSIColors.js';
+import { ANSIColors }  from './ANSIColors.js';
 import { RegexSuites } from './RegexSuites.js';
-import Accumulator from './Accumulator.js';
+import { Accumulator } from './Accumulator.js';
 
 /** This class is driven from command-line parameters and files or globs passed to 
  *   process a number of source Javascript files, scanning for functions, exports, and invocations.
@@ -308,7 +308,6 @@ export class FindMain {
             }
             console.log("");
         }
-        console.log("******************** options: "+JSON.stringify(options,null,4));
         this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(options), options);
         console.log(""); 
     } //END main();

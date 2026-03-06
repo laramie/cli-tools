@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 DEBUG_TESTS=0
-COLOR_HELP_TESTS=' --color '
+COLOR_HELP_TESTS=' --color=false '
+#COLOR_HELP_TESTS=' --color '
+#COLOR_HELP_TESTS=''
 ########COLOR_HELP_TESTS=''
 
 
@@ -71,7 +73,7 @@ testEm() {
     FOO="$@"
     printHeader "Testing functions and exports" "$FOO"
     if [ "$DEBUG_TESTS" -eq 1 ]; then
-    set -x
+        set -x
     fi
     ./FindMain.js --suite=function-lines $@ 
     ./FindMain.js --suite=functions  $@ 
@@ -83,7 +85,7 @@ testEm() {
     printHeader "Testing invocations" "$FOO"
 
     if [ "$DEBUG_TESTS" -eq 1 ]; then
-    set -x
+        set -x
     fi
     ./FindMain.js --suite=invocation-lines $@ 
     ./FindMain.js --suite=invocations $@ 
@@ -96,14 +98,14 @@ if [ "$DEBUG_TESTS" -eq 1 ]; then
 fi
 
 
-## testHelpSystem $FIND_DEPENDENCIES_OPTIONS
+ testHelpSystem $FIND_DEPENDENCIES_OPTIONS
 
 ## testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "song.js"
 
 ## testEm $FIND_DEPENDENCIES_OPTIONS "$DISK" "userColors.js"
 
 ## this tests everything in the directory:
-testEm $FIND_DEPENDENCIES_OPTIONS $DISK 
+##testEm $FIND_DEPENDENCIES_OPTIONS $DISK 
 
 
 
@@ -116,6 +118,7 @@ echo     ./FindMain.js $COLOR_HELP_TESTS --suites
 echo     ./FindMain.js $COLOR_HELP_TESTS --suitenumbers
 echo     ./FindMain.js $COLOR_HELP_TESTS --suitenames
 echo     ./FindMain.js $COLOR_HELP_TESTS --help
+echo     ./FindMain.js --color=false --help
 echo 
 echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=function-lines $@ 
 echo     ./FindMain.js  $FIND_DEPENDENCIES_OPTIONS  --suite=functions  $@ 

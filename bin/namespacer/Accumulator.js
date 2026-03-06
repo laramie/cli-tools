@@ -3,7 +3,7 @@ import { ANSIColors } from './ANSIColors.js';
 
 let _GID = 1;
 
-class Accumulator {
+export class Accumulator {
     constructor() {
         if (Accumulator._instance) {
             return Accumulator._instance;
@@ -14,7 +14,6 @@ class Accumulator {
     }
 
     accumulate(logline) {
-        console.log(" ~~~~~~~ Accumulator["+this._ID+"].accumulate ~~~~~~: "+logline);
         this._planAccumulator.push(logline);
         return logline;
     }
@@ -52,4 +51,3 @@ class Accumulator {
     }
 }
 
-export default Accumulator;

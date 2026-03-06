@@ -50,15 +50,12 @@ class ANSIColors {
     static #checkColorSupport() {
         if (typeof process !== 'undefined' && process.env) {
             if (process.env.FORCE_COLOR !== undefined) {
-                console.log('FORCE_COLOR:'+process.env.FORCE_COLOR);
+                console.log('>>>>>>>>>>>>>>FORCE_COLOR:'+process.env.FORCE_COLOR+">>>>>>>>>"+(parseInt(process.env.FORCE_COLOR) > 0));
                 return parseInt(process.env.FORCE_COLOR) > 0;
             }
             if (process.env.NO_COLOR !== undefined || process.env.NODE_DISABLE_COLORS !== undefined) {
-                console.log('NO_COLOR:'+process.env.NO_COLOR);
+                console.log('>>>>>>>>>>>>>>>>>>>>>>NO_COLOR:'+process.env.NO_COLOR);
                 return false;
-            }
-            if (process.stdout && typeof process.stdout.isTTY === 'boolean') {
-                return process.stdout.isTTY;
             }
         }
         return false;
@@ -200,15 +197,28 @@ class ANSIColors {
         const names = [
             'Black','Red','Green','Yellow','Blue','Magenta','Cyan','White',
             'BgBlack','BgRed','BgGreen','BgYellow','BgBlue','BgMagenta','BgCyan','BgWhite',
-            'Bold','Dim','Underline','Inverse'
+            'Bold','Underline','Dim','Inverse'
         ];
+        const fgnames = ['Black','Red','Green','Yellow','Blue','Magenta','Cyan','White'];
+        let accum = [];
         let count = 0;
+
         names.forEach(name => {
             if (ANSIColors[name]) {
                 count++;
-                console.log(ANSIColors[name] + name + ANSIColors.Reset);
+                accum.push(ANSIColors[name] + name + ANSIColors.Reset);
             }
         });
+
+        fgnames.forEach(name => {
+            if (ANSIColors[name]) {
+                accum.push(ANSIColors.Bold + ANSIColors[name] + "Bold + " + name + ANSIColors.Reset);
+            }
+        });
+
+        console.log(accum.join('\n'));
+
+
         return count;
     }
 }

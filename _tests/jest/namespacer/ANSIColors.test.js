@@ -2,16 +2,6 @@
 
 import { ANSIColors } from '@/bin/namespacer/ANSIColors.js';
 
-describe('ANSIColors static tests', () => {
-    test('testColors works as expected', () => {
-        expect(() => {
-            ANSIColors.testColors();
-        }).not.toThrow();
-        const result = ANSIColors.testColors();
-        expect(typeof result).toBe('number');
-        expect(result).toBe(20);
-    });
-});
 
 describe('ANSIColors static tests', () => {
     afterEach(() => {
@@ -19,10 +9,13 @@ describe('ANSIColors static tests', () => {
         ANSIColors.setColor(true);
     });
 
-    test('testColors does not throw', () => {
+    test('testColors works as expected', () => {
         expect(() => {
-            ANSIColors.testColors();
+            const result = ANSIColors.testColors();
+            expect(typeof result).toBe('number');
+            expect(result).toBe(20);
         }).not.toThrow();
+        
     });
 
     test('setColor(true) enables coloring, color methods wrap with escapes', () => {

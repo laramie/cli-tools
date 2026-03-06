@@ -93,8 +93,14 @@ export class FindOptions {
             } else if (arg.startsWith("--b")) {       //--bare
                 this.bareExpressions = true;
             } else if (arg.startsWith("--c")) {       //--color
-                this.color = true;
-        } else if (arg.startsWith("--fi")) {      //--filenames
+                if (arg.startsWith("--color=false")){
+                    this.color = false;
+                    ANSIColors.setColor(false);
+                } else {
+                    this.color = true;
+                    ANSIColors.setColor(true);
+                }
+            } else if (arg.startsWith("--fi")) {      //--filenames
                 this.outputFilename = true;
             } else if (arg.startsWith("--li")) {      //--lines
                 this.outputLines = true;
@@ -147,6 +153,7 @@ export class FindOptions {
             +"  --bare      |  --b     :bare expressions without keywords\n"
             +"  --color     |  --c     :color output for DOS glory.\n"
             +"                            (Must be first arg if you want --help or suite listings in color.)\n"
+            +"  --color=false          :exactly like this to turn off, or in shell use: export NO_COLOR=1\n"
             +"  --debug     |  --d     :extra debugging information.\n"
             +"  --filenames |  --fi    :ouput filenames.\n"
             +"  --help      |  --h     :show this message and quit.\n"
