@@ -1,6 +1,6 @@
 
 // Singleton ANSIColor with static API and environment detection
-class ANSIColor {
+class ANSIColors {
     // Static color codes
     static Reset = '\x1b[0m';
     static Bold = '\x1b[1m';
@@ -23,8 +23,8 @@ class ANSIColor {
     static BgMagenta = '\x1b[45m';
     static BgCyan = '\x1b[46m';
     static BgWhite = '\x1b[47m';
-    static BQ = ANSIColor.Magenta + '❝' + ANSIColor.Reset;
-    static EQ = ANSIColor.Magenta + '❞' + ANSIColor.Reset;
+    static BQ = ANSIColors.Magenta + '❝' + ANSIColors.Reset;
+    static EQ = ANSIColors.Magenta + '❞' + ANSIColors.Reset;
     static BQ_NOCOLOR = '❝';
     static EQ_NOCOLOR = '❞';
 
@@ -36,14 +36,14 @@ class ANSIColor {
     #blame = [];
 
     constructor() {
-        this.#nocolor = !ANSIColor.#checkColorSupport();
+        this.#nocolor = !ANSIColors.#checkColorSupport();
     }
 
     static #getInstance() {
-        if (!ANSIColor.#instance) {
-            ANSIColor.#instance = new ANSIColor();
+        if (!ANSIColors.#instance) {
+            ANSIColors.#instance = new ANSIColors();
         }
-        return ANSIColor.#instance;
+        return ANSIColors.#instance;
     }
 
     // Environment color support detection
@@ -64,9 +64,9 @@ class ANSIColor {
 
     // API: setColor(yes)
     static setColor(yes) {
-        const inst = ANSIColor.#getInstance();
+        const inst = ANSIColors.#getInstance();
         try {
-            throw new Error('ANSIColor.setColor called');
+            throw new Error('ANSIColors.setColor called');
         } catch (e) {
             inst.#blame.push(e.stack);
         }
@@ -75,121 +75,121 @@ class ANSIColor {
 
     // API: isColoring()
     static isColoring() {
-        return !ANSIColor.#getInstance().#nocolor;
+        return !ANSIColors.#getInstance().#nocolor;
     }
 
     // API: getBlame()
     static getBlame() {
-        return ANSIColor.#getInstance().#blame.join("\n\n");
+        return ANSIColors.#getInstance().#blame.join("\n\n");
     }
 
     // Color methods (camelCase)
     static red(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Red + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Red + m + ANSIColors.Reset;
     }
     static green(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Green + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Green + m + ANSIColors.Reset;
     }
     static yellow(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Yellow + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Yellow + m + ANSIColors.Reset;
     }
     static blue(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Blue + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Blue + m + ANSIColors.Reset;
     }
     static magenta(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Magenta + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Magenta + m + ANSIColors.Reset;
     }
     static cyan(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Cyan + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Cyan + m + ANSIColors.Reset;
     }
     static white(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.White + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.White + m + ANSIColors.Reset;
     }
     static black(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.Black + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.Black + m + ANSIColors.Reset;
     }
     // Backgrounds
     static bgBlack(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgBlack + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgBlack + m + ANSIColors.Reset;
     }
     static bgRed(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgRed + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgRed + m + ANSIColors.Reset;
     }
     static bgGreen(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgGreen + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgGreen + m + ANSIColors.Reset;
     }
     static bgYellow(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgYellow + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgYellow + m + ANSIColors.Reset;
     }
     static bgBlue(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgBlue + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgBlue + m + ANSIColors.Reset;
     }
     static bgMagenta(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgMagenta + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgMagenta + m + ANSIColors.Reset;
     }
     static bgCyan(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgCyan + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgCyan + m + ANSIColors.Reset;
     }
     static bgWhite(m) {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? m : ANSIColor.BgWhite + m + ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? m : ANSIColors.BgWhite + m + ANSIColors.Reset;
     }
     // Decorations: open/close and message-wrapping
     static bold(message) {
-        const inst = ANSIColor.#getInstance();
+        const inst = ANSIColors.#getInstance();
         if (typeof message === 'undefined') {
-            return inst.#nocolor ? '' : ANSIColor.Bold;
+            return inst.#nocolor ? '' : ANSIColors.Bold;
         }
-        return inst.#nocolor ? message : ANSIColor.Bold + message + ANSIColor.Reset;
+        return inst.#nocolor ? message : ANSIColors.Bold + message + ANSIColors.Reset;
     }
     static dim(message) {
-        const inst = ANSIColor.#getInstance();
+        const inst = ANSIColors.#getInstance();
         if (typeof message === 'undefined') {
-            return inst.#nocolor ? '' : ANSIColor.Dim;
+            return inst.#nocolor ? '' : ANSIColors.Dim;
         }
-        return inst.#nocolor ? message : ANSIColor.Dim + message + ANSIColor.Reset;
+        return inst.#nocolor ? message : ANSIColors.Dim + message + ANSIColors.Reset;
     }
     static underline(message) {
-        const inst = ANSIColor.#getInstance();
+        const inst = ANSIColors.#getInstance();
         if (typeof message === 'undefined') {
-            return inst.#nocolor ? '' : ANSIColor.Underline;
+            return inst.#nocolor ? '' : ANSIColors.Underline;
         }
-        return inst.#nocolor ? message : ANSIColor.Underline + message + ANSIColor.Reset;
+        return inst.#nocolor ? message : ANSIColors.Underline + message + ANSIColors.Reset;
     }
     static inverse(message) {
-        const inst = ANSIColor.#getInstance();
+        const inst = ANSIColors.#getInstance();
         if (typeof message === 'undefined') {
-            return inst.#nocolor ? '' : ANSIColor.Inverse;
+            return inst.#nocolor ? '' : ANSIColors.Inverse;
         }
-        return inst.#nocolor ? message : ANSIColor.Inverse + message + ANSIColor.Reset;
+        return inst.#nocolor ? message : ANSIColors.Inverse + message + ANSIColors.Reset;
     }
     static reset() {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? '' : ANSIColor.Reset;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? '' : ANSIColors.Reset;
     }
     // Special quote accessors
     static bq() {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? ANSIColor.BQ_NOCOLOR : ANSIColor.BQ;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? ANSIColors.BQ_NOCOLOR : ANSIColors.BQ;
     }
     static eq() {
-        const inst = ANSIColor.#getInstance();
-        return inst.#nocolor ? ANSIColor.EQ_NOCOLOR : ANSIColor.EQ;
+        const inst = ANSIColors.#getInstance();
+        return inst.#nocolor ? ANSIColors.EQ_NOCOLOR : ANSIColors.EQ;
     }
     // For testing
     static testColors() {
@@ -198,14 +198,17 @@ class ANSIColor {
             'BgBlack','BgRed','BgGreen','BgYellow','BgBlue','BgMagenta','BgCyan','BgWhite',
             'Bold','Dim','Underline','Inverse'
         ];
+        let count = 0;
         names.forEach(name => {
-            if (ANSIColor[name]) {
-                console.log(ANSIColor[name] + name + ANSIColor.Reset);
+            if (ANSIColors[name]) {
+                count++;
+                console.log(ANSIColors[name] + name + ANSIColors.Reset);
             }
         });
+        return count;
     }
 }
 
 
-export { ANSIColor };
+export { ANSIColors };
 

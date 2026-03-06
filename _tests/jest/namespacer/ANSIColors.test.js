@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { ANSIColors } from '../../../bin/namespacer/ANSIColors.js';
+import { ANSIColors } from '@/bin/namespacer/ANSIColors.js';
 
 describe('ANSIColors static tests', () => {
     test('testColors works as expected', () => {
@@ -9,7 +9,7 @@ describe('ANSIColors static tests', () => {
         }).not.toThrow();
         const result = ANSIColors.testColors();
         expect(typeof result).toBe('number');
-        expect(result).toBeGreaterThan(10);
+        expect(result).toBe(20);
     });
 });
 
