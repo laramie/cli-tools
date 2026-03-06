@@ -1,7 +1,7 @@
 
 # namespacer Project Overview
 
-## This document's version: V2
+## This document's version: V1
 
 ## Project Purpose
 
