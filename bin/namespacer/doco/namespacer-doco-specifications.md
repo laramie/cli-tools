@@ -5,7 +5,7 @@ This conversation continues the chat about producing developer milestone and imp
 Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespacer/namespacer-doco-plan-flow-chat.md
 
 1. This current document lives here: 
-    * /home/laramie/infinite-neck/bin/namespacer/doco/namespacer-doco-specifications.md
+    * ~/infinite-neck/bin/namespacer/doco/namespacer-doco-specifications.md
 
 # Basic Definitions and Specifications
 
@@ -37,13 +37,17 @@ Please see the markdown capture of that chat here: ~/infinite-neck/bin/namespace
 2. That target markdown document is herein now simply called: namespacer-overview.generated.md 
     * That document will live in this project in the folder and filename: 
         * ~/infinite-neck/bin/namespacer/doco/ 
-            * Link: [namespacer documentation (doco) director](../doco/) 
+            * Link: [namespacer documentation (doco) directory](../doco/) 
         * ~/infinite-neck/bin/namespacer/doco/namespacer-overview.generated.md
-            * Link: [namespacer-overview.generated.md](../doco/namespacer-overview.generated.md) 
+            * Link: [namespacer-overview.generated.md]( ../doco/namespacer-overview.generated.md ) 
     * That document is checked into version control -- you are welcome to make changes to it.  
 
 3. We have included an example document, with links that work.  You should consult this when making links in your markdown output, especially when calculating relative paths.  The relative paths in this example document work:
     * bin/namespacer/doco/namespacer-overview-example.md  
 
-4. Now please take a pass and summarizing our conversation in ( bin/namespacer/doco/namespacer-doco-plan-flow-chat.md ). Please reproduce the report part of that conversation in clean markdown that you will be able to edit in the future to update as we refine our plan. We especially want to add links to source code and directories as we define what PlanRunner.js will do, and what steps we, as developers, need to do.  We will use the generated markdown document as our roadmap for development, and for running all the tools in namespacer.    
+4. Now please take a pass at summarizing our conversation in ( bin/namespacer/doco/namespacer-doco-plan-flow-chat.md ). Please reproduce the report part of that conversation in clean markdown that you will be able to edit in the future to update as we refine our plan. Your output should overwrite ( ../doco/namespacer-overview.generated.md ).  You don't need to preserve what is there.  It is only there to show what you generated on the last iteration.  It currently just contains a cleaned up copy of ( namespacer-overview-example.md ).  We especially want to add links to source code and directories as we define what PlanRunner.js will do, and what steps we, as developers, need to do.  We will use the generated markdown document as our roadmap for development, and for running all the tools in namespacer.  
+
+5. After reviewing your report produced in ../doco/namespacer-overview.generated.md we will refine the output with future request to you.
+
+6. Thanks!!!!!
 
