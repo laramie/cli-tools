@@ -30,6 +30,7 @@
     "@babel/core": "^7.29.0",
     "@babel/generator": "^7.29.1",
     "@babel/types": "^7.29.0",
+    "pino": "^10.3.1",
     "recast": "^0.23.11"
   }
 }

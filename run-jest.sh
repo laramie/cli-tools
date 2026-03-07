@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Usage: ./run-jest.sh _tests/jest/namespacer/ANSIColors.test.js"
+echo "Usage: ./run-jest.sh bin/namespacer/Logger.test.js"
 echo "Or just ./run-jest.sh to run all tests."
 
 cd "$(dirname "$0")"
