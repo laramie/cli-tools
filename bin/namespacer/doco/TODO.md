@@ -1,6 +1,6 @@
 # TODO
 
-## Outstanding Tasks
+# TODO Item 1
 
-- Move all file I/O operations to Accumulator, which will have an API for all file access.
-- Move all logging to Accumulator, which will have an API for all logging access.
+# TODO Item 2
+
