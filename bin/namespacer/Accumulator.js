@@ -1,5 +1,6 @@
 // Accumulator.js - ES6 Singleton Accumulator for plan logging
 import { ANSIColors } from './ANSIColors.js';
+import { Logger } from './Logger.js';
 
 let _GID = 1;
 
@@ -10,12 +11,26 @@ export class Accumulator {
         }
         this._ID = _GID++;
         this._planAccumulator = [];
+        this.logger = Logger.getInstance();
         Accumulator._instance = this;
     }
 
     accumulate(logline) {
         this._planAccumulator.push(logline);
         return logline;
+    }
+
+    // Minimal logger API wrappers
+    log(message) {
+        this.logger.log(message);
+    }
+
+    logTopic(topic, message) {
+        this.logger.logTopic(topic, message);
+    }
+
+    logLevel(level, topic, message) {
+        this.logger.logLevel(level, topic, message);
     }
 
     getAccumulatorPrintout(options) {
@@ -48,6 +63,16 @@ export class Accumulator {
             Accumulator._instance = new Accumulator();
         }
         return Accumulator._instance;
+    }
+
+    // Clean exit: flush logger, then exit
+    async exit(code = 0) {
+        try {
+            await this.logger.waitForFlush();
+        } catch (e) {
+            // Optionally log or handle flush errors
+        }
+        process.exit(code);
     }
 }
 
