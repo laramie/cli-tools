@@ -22,7 +22,30 @@ export class Logger {
         GENERAL: 'general'
     };
 
+
+    // Set of enabled topics (default: all enabled)
+    static enabledTopics = new Set(Object.values(Logger.TOPICS));
     static _instance;
+
+    // Enable a topic
+    static enableTopic(topic) {
+        Logger.enabledTopics.add(topic);
+    }
+
+    // Disable a topic
+    static disableTopic(topic) {
+        Logger.enabledTopics.delete(topic);
+    }
+
+    // Set enabled topics (replaces all)
+    static setEnabledTopics(topicsArray) {
+        Logger.enabledTopics = new Set(topicsArray);
+    }
+
+    // Check if topic is enabled
+    static isTopicEnabled(topic) {
+        return Logger.enabledTopics.has(topic);
+    }
 
     constructor(options = {}) {
         if (Logger._instance) return Logger._instance;
@@ -35,17 +58,23 @@ export class Logger {
         this.logger.info({ topic: Logger.TOPICS.GENERAL }, message);
     }
 
-    // log(topic, message)
+
+    // log(topic, message) with topic filtering
     logTopic(topic, message) {
-        this.logger.info({ topic }, message);
+        if (Logger.isTopicEnabled(topic)) {
+            this.logger.info({ topic }, message);
+        }
     }
 
-    // log(level, topic, message)
+
+    // log(level, topic, message) with topic filtering
     logLevel(level, topic, message) {
-        if (typeof this.logger[level] === 'function') {
-            this.logger[level]({ topic }, message);
-        } else {
-            this.logger.info({ topic }, message);
+        if (Logger.isTopicEnabled(topic)) {
+            if (typeof this.logger[level] === 'function') {
+                this.logger[level]({ topic }, message);
+            } else {
+                this.logger.info({ topic }, message);
+            }
         }
     }
 

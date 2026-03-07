@@ -1,0 +1,19 @@
+Favorite moments with HAL.
+
+Me: Later, Aligator!
+HAL: In a while, Crocodile!
+
+Me:  OK, I'm going to go work on this class you generated. "Be seeing you!"
+HAL: Just let me know if you need help integrating the class. Be seeing you!
+
+Me:  Could you generate a log output in the cases where the offending classes are throw Errors? 
+HAL:  console.log(`Error.  Offending classes: `${errors.join(",")} `);
+
+Me: 
+HAL: 
+
+Me: 
+HAL: 
+
+Me: 
+HAL: 
