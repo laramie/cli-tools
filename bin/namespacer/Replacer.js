@@ -274,8 +274,10 @@ export class Replacer {
      * Creates masterNamespaceMap, and returns it.
      */
     processAllNamespaces_ReturnMasterNamespaceMap(){
+        // Deep clone namespacerPlan so we can mutate the clone in the loop
+        const clonePlan = JSON.parse(JSON.stringify(this.namespacerPlan));
         let masterNamespaceMap = {};
-        this.namespacerPlan.namespaces.forEach(namespaceObj => {
+        clonePlan.namespaces.forEach(namespaceObj => {
             const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
             if (added === 0) {
                 this.logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
@@ -283,10 +285,15 @@ export class Replacer {
             }
             let gen = new GenerateInterface();
             let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
-                    this.log(Replacer.LOG_FLAGS.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
-                    this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            this.log(Replacer.LOG_FLAGS.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
+            // Attach generated strings to the namespaceObj in the clone
+            namespaceObj.interface_gen = interface_gen;
+            namespaceObj.masterNamespaceMap = JSON.stringify(masterNamespaceMap, null, 2);
         });
+        // Dump the mutated clone to see per-loop changes
+        console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
         this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
         return masterNamespaceMap;
     }
