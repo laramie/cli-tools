@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         
 
 
@@ -54,6 +55,21 @@
             "outputCapture": "std",
             "env": {
                 "NO_COLOR": "1"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug FindMain.js",
+            "program": "${workspaceFolder}/bin/namespacer/FindMain.js",
+            "args": ["--suite=0", "--dir=data/src"],
+            "cwd": "${workspaceFolder}/bin/namespacer",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "runtimeExecutable": "node",
+            "outputCapture": "std",
+            "env": {
+                "NO_COLOR": "0"
             }
         }
     ]
