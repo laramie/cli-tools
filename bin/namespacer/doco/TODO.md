@@ -1,4 +1,6 @@
-# fix StepAccumulator identity
+# TODO
 
-# add ability for StepAccumulator to hand out a child StepAccumulator
+# TODO Item 1
+
+# TODO Item 2
 
