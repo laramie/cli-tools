@@ -18,8 +18,16 @@ export class Accumulator {
     }
 
     accumulate(logline) {
-        this._planAccumulator.push(logline);
-        return logline;
+        //console.log("++++++++++++++++++Accumulator.accumulate:::"+logline+":::");
+        if (arguments.length > 1) {
+            const bigObject = arguments[1];
+            const entry = { logline, bigObject };
+            this._planAccumulator.push(entry);
+            return entry;
+        } else {
+            this._planAccumulator.push(logline);
+            return logline;
+        }
     }
 
     // Minimal logger API wrappers, context-aware
@@ -37,7 +45,33 @@ export class Accumulator {
     }
 
     getAccumulatorPrintout(options) {
-        return this._planAccumulator.join("\n")
+        // Set default options
+        options = options || {};
+        const printObjects = options.printObjects !== false; // default true
+        const prettyObjects = options.prettyObjects !== false; // default true
+        const lines = this._planAccumulator.map(entry => {
+            //console.log( ":::::DUMP::::::"+JSON.stringify(entry));
+            if (printObjects && entry && typeof entry === 'object' && 'logline' in entry && 'bigObject' in entry) {
+                let out = entry.logline;
+                
+                if (entry.bigObject !== undefined) {
+                    if (prettyObjects) {
+                        out += '\n' + JSON.stringify(entry.bigObject, null, 4);
+                    } else {
+                        out += '\n' + JSON.stringify(entry.bigObject);
+                    }
+                }
+                return out;
+            } else if (typeof entry === 'string') {
+                return entry;
+            } else if (entry && typeof entry === 'object' && 'logline' in entry) {
+                // fallback: just print logline
+                return entry.logline;
+            } else {
+                return String(entry);
+            }
+        });
+        return lines.join("\n")
             + "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
             + "\n_ID:"+this._ID
@@ -46,10 +80,6 @@ export class Accumulator {
 
     clear() {
         this._planAccumulator = [];
-    }
-
-    getAll() {
-        return [...this._planAccumulator];
     }
 
     static getTimeStamp(emitSeconds){
@@ -90,11 +120,8 @@ export class Accumulator {
         return existsSync(path);
     }
 
-    appendOutputFile(relPath, data, options = {}, stepAccumulator) {
+    appendOutputFile(relPath, data, stepAccumulator) {
         const logline = `💾  ━━━━━━━━━━━━━━━━━━ File appended: ${relPath} [${this._stepTag(stepAccumulator)}] ━━━━━━━━━━━━━━━━━━`;
-        if (!options.quiet) {
-            console.log("\n" + logline);
-        }
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
         this.accumulate(logline);
     }
@@ -102,12 +129,13 @@ export class Accumulator {
     // Step management for StepAccumulator
     startStep(identity) {
         const step = { identity, actions: [] };
-        this._planAccumulator.push({ type: 'stepStart', identity });
+        //this._planAccumulator.push("stepStart", { type: 'stepStart', identify: identity });
+        this.accumulate("stepStart", { type: 'stepStart', identify: identity });
         return step;
     }
 
     endStep(step) {
-        this._planAccumulator.push({ type: 'stepEnd', identity: step.identity, actions: step.actions });
+        this.accumulate("endStep", { type: 'stepEnd', identity: step.identity, actions: step.actions });
     }
 
     _stepTag(stepAccumulator) {
@@ -119,21 +147,6 @@ export class Accumulator {
     // Factory for StepAccumulator
     static getStepInstance(identity) {
         return new StepAccumulator(identity);
-    }
-
-    /**
-     * Append data to a file, logging the operation. Mirrors FindMain::appendOutputFile.
-     * @param {string} relPath
-     * @param {string|Buffer} data
-     * @param {object} options - expects .quiet boolean
-     */
-    appendOutputFile(relPath, data, options = {}) {
-        const logline = "💾  ━━━━━━━━━━━━━━━━━━ File appended: " + relPath + " ━━━━━━━━━━━━━━━━━━";
-        if (!options.quiet) {
-            console.log("\n" + logline);
-        }
-        writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
-        this.accumulate(logline);
     }
 
     // Clean exit: flush logger, then exit

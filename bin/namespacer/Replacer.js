@@ -58,9 +58,9 @@ export class Replacer {
     
     static ReadSourceStatus = ReadSourceStatus;
     
-    constructor(namespacerPlan) {
+    constructor(namespacerPlan, accumulator) {
         this.namespacerPlan = namespacerPlan;
-        this.accumulator = Accumulator.getInstance();
+        this.accumulator = accumulator;    //will actually be passed a Decorated StepAccumulator.
     }
     logError(message){
         console.error(message);
@@ -294,6 +294,7 @@ export class Replacer {
         });
         // Dump the mutated clone to see per-loop changes
         console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
+        this.accumulator.accumulate("Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump",clonePlan );
         this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
         return masterNamespaceMap;
     }

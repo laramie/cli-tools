@@ -9,7 +9,16 @@ HAL: Just let me know if you need help integrating the class. Be seeing you!
 Me:  Could you generate a log output in the cases where the offending classes are throw Errors? 
 HAL:  console.log(`Error.  Offending classes: `${errors.join(",")} `);
 
-Me: 
+Today, I asked HAL to surgically modify a routine, and somewhere in that routine 
+I had a log call that dumped this out to the terminal so a user could quickly 
+identify the error because I used a UTF8 emoji character:
+    this.logError(`🚫   Skipping ....
+
+So when HAL got around to logging my new object I asked him to create, 
+he came up with his *own* emoji, since he saw that was *my style*!
+    console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
+        
+
 HAL: 
 
 Me: 

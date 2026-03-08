@@ -308,7 +308,8 @@ export class FindMain {
             }
             console.log("");
         }
-        this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(options), options);
+        const printOptions = { printObjects: true, prettyObjects: true };
+        this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(printOptions), options);
         console.log(""); 
     } //END main();
 
@@ -397,10 +398,9 @@ export class FindMain {
         this.accumulator.accumulate(logline);
     }
 
-    //   \uD83D\uDCBE == 💾
     appendOutputFile(relPath, data, options){
         let logline = "💾  ━━━━━━━━━━━━━━━━━━ File appended: "+relPath+" ━━━━━━━━━━━━━━━━━━";
-        if (!options.quiet){
+        if (options && !options.quiet){
             console.log("\n"+logline);
         }
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });

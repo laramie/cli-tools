@@ -72,12 +72,18 @@ export class PlanRunner {
         //Search:
         findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
         
-        const replacer = new Replacer(this.namespacerPlan);
+        const replacerStepAccumulator = Accumulator.getStepInstance("Replacer");
+
+        const replacer = new Replacer(this.namespacerPlan, replacerStepAccumulator);
         //Generate Interfaces:
         let masterNamespaceMap = replacer.processAllNamespaces_ReturnMasterNamespaceMap();
         
         //Replace:
         replacer.processAllSources(masterNamespaceMap);
+
+        const printOptions = { printObjects: true, prettyObjects: true };
+        accumulator.appendOutputFile("PlanRunner-accumulator.plan",accumulator.getAccumulatorPrintout(printOptions), null);
+        
     }
 }
 

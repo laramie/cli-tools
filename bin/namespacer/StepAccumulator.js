@@ -1,6 +1,9 @@
 import { Accumulator } from './Accumulator.js';
 
 class StepAccumulator {
+    getAccumulatorPrintout(options) {
+      return this.acc.getAccumulatorPrintout(options);
+    }
   constructor(identity) {
     this.identity = identity;
     this.acc = Accumulator.getInstance();
@@ -8,7 +11,19 @@ class StepAccumulator {
   }
 
   accumulate(...args) {
-    return this.acc.accumulate(...args, this);
+    //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~accumulate in StepAccumulator~~~~~:"+JSON.stringify(args));
+      
+    if (args.length === 1) {
+      // Only logline provided: decorate with stepID
+      return this.acc.accumulate(args[0], { stepID: this.identity });
+    } else if (args.length === 2) {
+      // logline and bigObject provided: wrap bigObject with stepID
+      return this.acc.accumulate(args[0], { stepID: this.identity, bigObject: args[1] });
+    } else {
+      // Fallback: pass all args as-is
+      //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~FALLBACK in StepAccumulator~~~~~:"+(args));
+      return this.acc.accumulate(...args);
+    }
   }
 
   log(message) {

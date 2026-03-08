@@ -1,5 +1,7 @@
 Handy chart here: https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf
 
+RightArrow+NumPad0 : OVR/INS modes.
+
 Ctrl+Shift+\    : Jump to Matching-Brace
 Ctrl+Alt+D      : Add Selection to Next Find matching
 Ctrl+Shift+L    : Select all occurrences at once.

@@ -37,6 +37,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     const step = new SampleStep();
     step.run();
     realAccumulator.accumulate("ending SampleStep");
-    console.log(realAccumulator.getAccumulatorPrintout());
+    const printOptions = { printObjects: true, prettyObjects: true };
+    console.log(realAccumulator.getAccumulatorPrintout(printOptions));
     realAccumulator.exit(0);
 }
