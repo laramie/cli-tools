@@ -19,11 +19,13 @@ export class Emoji {
         CHEESE_WEDGE: "\uD83E\uDDC0",         // 🧀
         GLOBE_WITH_MERIDIANS: "\uD83C\uDF10", // 🌐
         BACKHAND_INDEX_POINTING_RIGHT: "\uD83D\uDC49", // 👉
-        HEAVY_ROUND_BULLET: "\u25CF"                   // ●
+        HEAVY_ROUND_BULLET: "\u25CF",         // ●
+        LEFTWARDS_ARROW_WITH_HOOK: "\u21A9"        // ↩
     });
 
     static get FILEACCESS() { return Emoji.Chars.FLOPPY_DISK; }
-    static get FILEINFO() { return Emoji.Chars.OPEN_FILE_FOLDER; }
+    static get SUBSTEP() { return Emoji.Chars.OPEN_FILE_FOLDER; }
+    static get LEAVESTEP() { return Emoji.Chars.LEFTWARDS_ARROW_WITH_HOOK; }
     static get CONTENTS() { return Emoji.Chars.PAGE_FACING_UP; }
     static get CONTENTS2() { return Emoji.Chars.NOTEBOOK_WITH_DECORATIVE_COVER; }
     static get OK() { return Emoji.Chars.THUMBS_UP; }

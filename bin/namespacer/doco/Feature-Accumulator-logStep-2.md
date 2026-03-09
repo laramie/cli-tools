@@ -16,7 +16,7 @@ The main output method for presenting views of the `Accumulator._loglinesArray` 
 const printOptions = { printObjects: true, prettyObjects: true };
 ```         
 
-In the past iteration, `accumulate()` was allowed to handle an argument of a logline as a string, with an optional additional arugument of an object to be nested. The new function, `logStep()` will deal with this differently, and eventually we will get ride of `accumulate()`
+In the past iteration, `accumulate()` was allowed to handle an argument of a logline as a string, with an optional additional arugument of an object to be nested. The new function, `logStep()` will deal with this differently, and eventually we will get rid of `accumulate()`
 
 
 We want to add a method `logStep(Step)` so that each call to logStep accumulates a logline that is an object of type Step rather than a string.  Since Step contains a `logline` property, `logStep()` needs only one arg.  See [Step (data model)](#step-data-model) for details
@@ -78,7 +78,8 @@ Allowed values:
 
 This document assumes (at minimum) these Emoji getters exist:
 - `FILEACCESS` (💾)
-- `FILEINFO` (📂)
+- `SUBSTEP` (📂)
+- `LEAVESTEP` (↩)
 - `CONTENTS` (📄)
 - `INFO` (👉)
 - `WARNX` (❌)
@@ -128,12 +129,12 @@ This keeps each `logStep` atomic while allowing many bullet-like actions to be g
 
 ### Proposed API
 
-- `pushStepID(segment)`
+- `pushStepID(substepID)`
   - Push a segment onto the stack.
 - `popStepID()`
   - Pop the most recent segment.
 - `currentStepID()`
-  - Return the current dotted path (dot-join of segments).
+  - Return the current dotted path (dot-join of steps and substeps).
 
 ### Interaction with logStep
 
