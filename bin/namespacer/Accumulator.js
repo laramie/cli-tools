@@ -12,7 +12,7 @@ export class Accumulator {
             return Accumulator._instance;
         }
         this._ID = _GID++;
-        this._planAccumulator = [];
+        this._loglinesArray = [];
         this.logger = Logger.getInstance();
         Accumulator._instance = this;
     }
@@ -22,10 +22,10 @@ export class Accumulator {
         if (arguments.length > 1) {
             const bigObject = arguments[1];
             const entry = { logline, bigObject };
-            this._planAccumulator.push(entry);
+            this._loglinesArray.push(entry);
             return entry;
         } else {
-            this._planAccumulator.push(logline);
+            this._loglinesArray.push(logline);
             return logline;
         }
     }
@@ -33,26 +33,26 @@ export class Accumulator {
     // Minimal logger API wrappers, context-aware
     log(message, stepAccumulator) {
         // Optionally decorate message with step info
-        this.logger.log(`[${this._stepTag(stepAccumulator)}] ${message}`);
+        this.logger.log(`${message}`);
     }
 
     logTopic(topic, message, stepAccumulator) {
-        this.logger.logTopic(topic, `[${this._stepTag(stepAccumulator)}] ${message}`);
+        this.logger.logTopic(topic, `${message}`);
     }
 
     logLevel(level, message, stepAccumulator) {
-        this.logger.logLevel(level, `[${this._stepTag(stepAccumulator)}] ${message}`);
+        this.logger.logLevel(level, `${message}`);
     }
 
-    getAccumulatorPrintout(options) {
+    getAccumulatorPrintout(printOptions) {
 
-        let fullJSON = JSON.stringify(this._planAccumulator,null,4);
+        let fullJSON = JSON.stringify(this._loglinesArray,null,4);
         this.appendOutputFile("fullJSON.json", fullJSON);
         // Set default options
-        options = options || {};
-        const printObjects = options.printObjects !== false; // default true
-        const prettyObjects = options.prettyObjects !== false; // default true
-        const lines = this._planAccumulator.map(entry => {
+        printOptions = printOptions || {};
+        const printObjects = printOptions.printObjects !== false; // default true
+        const prettyObjects = printOptions.prettyObjects !== false; // default true
+        const lines = this._loglinesArray.map(entry => {
             //console.log( ":::::DUMP::::::"+JSON.stringify(entry));
             if (printObjects && entry && typeof entry === 'object' && 'logline' in entry && 'bigObject' in entry) {
                 let out = entry.logline;
@@ -82,7 +82,7 @@ export class Accumulator {
     }
 
     clear() {
-        this._planAccumulator = [];
+        this._loglinesArray = [];
     }
 
     static getTimeStamp(emitSeconds){
@@ -104,49 +104,31 @@ export class Accumulator {
 
     // --- File I/O Wrappers, context-aware ---
     readFileSync(path, options, stepAccumulator) {
-        this.accumulate(`readFileSync: ${path} [${this._stepTag(stepAccumulator)}]`);
+        this.accumulate(`readFileSync: ${path}`);
         return readFileSync(path, options);
     }
 
     writeFileSync(path, data, options, stepAccumulator) {
-        this.accumulate(`writeFileSync: ${path} [${this._stepTag(stepAccumulator)}]`);
+        this.accumulate(`writeFileSync: ${path}`);
         return writeFileSync(path, data, options);
     }
 
     readdirSync(path, options, stepAccumulator) {
-        this.accumulate(`readdirSync: ${path} [${this._stepTag(stepAccumulator)}]`);
+        this.accumulate(`readdirSync: ${path}`);
         return readdirSync(path, options);
     }
 
     existsSync(path, stepAccumulator) {
-        this.accumulate(`existsSync: ${path} [${this._stepTag(stepAccumulator)}]`);
+        this.accumulate(`existsSync: ${path}`);
         return existsSync(path);
     }
 
     appendOutputFile(relPath, data, stepAccumulator) {
-        const logline = `💾  ━━━━━━━━━━━━━━━━━━ File appended: ${relPath} [${this._stepTag(stepAccumulator)}] ━━━━━━━━━━━━━━━━━━`;
+        const logline = `💾  ━━━━━━━━━━━━━━━━━━ File appended: ${relPath} ━━━━━━━━━━━━━━━━━━`;
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
         this.accumulate(logline);
     }
     
-    // Step management for StepAccumulator
-    startStep(identity) {
-        const step = { identity, actions: [] };
-        //this._planAccumulator.push("stepStart", { type: 'stepStart', identify: identity });
-        this.accumulate("stepStart", { type: 'stepStart', identify: identity });
-        return step;
-    }
-
-    endStep(step) {
-        this.accumulate("endStep", { type: 'stepEnd', identity: step.identity, actions: step.actions });
-    }
-
-    _stepTag(stepAccumulator) {
-        if (!stepAccumulator || !stepAccumulator.identity) return 'no-step';
-        const id = stepAccumulator.identity;
-        return `${id.className || ''}:${id.topFile || ''}:${id.step || ''}`;
-    }
-
     // Factory for StepAccumulator
     static getStepInstance(identity) {
         return new StepAccumulator(identity);

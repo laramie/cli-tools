@@ -1,13 +1,12 @@
 import { Accumulator } from './Accumulator.js';
 
 class StepAccumulator {
-    getAccumulatorPrintout(options) {
-      return this.acc.getAccumulatorPrintout(options);
+    getAccumulatorPrintout(printOptions) {
+      return this.acc.getAccumulatorPrintout(printOptions);
     }
   constructor(identity) {
     this.identity = identity;
     this.acc = Accumulator.getInstance();
-    this.step = this.acc.startStep(identity);
   }
 
   accumulate(...args) {
@@ -58,9 +57,6 @@ class StepAccumulator {
     return this.acc.appendOutputFile(filename, data, options, this);
   }
 
-  leave() {
-    this.acc.endStep(this.step);
-  }
 }
 
 export default StepAccumulator;

@@ -2,15 +2,39 @@
 
 ## Purpose
 
-Provide a simple, *atomic* `logStep(step)` call that records a linear stream of steps, while retaining enough structure to mentally (or programmatically) reconstruct a nested "step tree".
+Provide a simple, *atomic* `logStep(Step)` call that records a linear stream of steps, retaining the Step objects in the order they were added with `logStep` calls, so they can be presented as just a list of their `logline` properties, or as a JSON array of full `Step` JSON representations. See [Step (data model)](#step-data-model) for details.
 
-The accumulator may internally maintain a large logical tree of steps, but each `logStep` invocation is treated as a single append-only event.
+## Discussion
+
+Currently, `Accumulator._loglinesArray` is an array of objects, with one object added to the array with `push` per call to `accumulate()`.
+```js
+Accumulator.accumulate(logline);
+```
+
+The main output method for presenting views of the `Accumulator._loglinesArray` is `getAccumulatorPrintout(printOptions)` where printOptions has two properties: 
+```js
+const printOptions = { printObjects: true, prettyObjects: true };
+```         
+
+In the past iteration, `accumulate()` was allowed to handle an argument of a logline as a string, with an optional additional arugument of an object to be nested. The new function, `logStep()` will deal with this differently, and eventually we will get ride of `accumulate()`
+
+
+We want to add a method `logStep(Step)` so that each call to logStep accumulates a logline that is an object of type Step rather than a string.  Since Step contains a `logline` property, `logStep()` needs only one arg.  See [Step (data model)](#step-data-model) for details
+
+```js
+logStep(Step)
+```
+
+Then we will migrate all calls to Accumulator.accumulate() to use Accumulator.logStep() instead.
+
+
 
 ---
 
 ## Step (data model)
 
 A `Step` is a small JSON-serializable record.
+- It is implemented in class Step in file [Step.js](../Step.js)
 
 ### Required fields
 
@@ -108,8 +132,6 @@ This keeps each `logStep` atomic while allowing many bullet-like actions to be g
   - Push a segment onto the stack.
 - `popStepID()`
   - Pop the most recent segment.
-- `withStepID(segment, fn)`
-  - Convenience wrapper: push → run `fn` → pop (ensure pop via `try/finally`).
 - `currentStepID()`
   - Return the current dotted path (dot-join of segments).
 
@@ -121,17 +143,17 @@ When logging through `StepAccumulator`:
 
 ---
 
-## Minimal Step JSON example (updated)
+## Minimal Step JSON example
 
 ```json
 {
   "stepID": "Generator.interfaces.ISong",
   "icon": "FILEACCESS",
   "level": "info",
-  "logline": "read file bin/namespacer/Emoji.js",
+  "logline": "read ISong excludes",
   "obj": {
-    "path": "bin/namespacer/Emoji.js",
-    "bytes": 2004
+    "path": "data/plan/ISong.js.excludes.plan",
+    "excludes": ['clearAll','flashLabel']
   }
 }
 ```
