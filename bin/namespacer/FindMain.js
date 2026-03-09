@@ -213,9 +213,10 @@ export class FindMain {
                         suppressList = suppressList.concat(suite.frameworkFunctions);
                     }
                     /** Load per-file suppressions and add them */
-                    const perFileSuppressions = this.loadFrameworkSuppressionsForFile(file, options.datadir);
+                    const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
+                    const perFileSuppressions = suppressionsResult.lines;
                     if (perFileSuppressions.length > 0) {
-                        console.log("**************************** found suppressions for file<"+file+">: ["+perFileSuppressions+"]");
+                        this.accumulator.accumulate("Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">"," ["+perFileSuppressions+"]");
                         suppressList = suppressList.concat(perFileSuppressions);
                     }
                     //END TODO:suppressList moved ...
@@ -232,12 +233,6 @@ export class FindMain {
                 while ((match = regex.exec(content)) !== null) {
                     let suppress = false;
                     const identifier = match[1];
-
-
-
-                   
-
-
 
                     if (suppressList.length > 0 && identifier) {
                         suppress = suppressList.some(kw => {
@@ -313,19 +308,21 @@ export class FindMain {
         console.log(""); 
     } //END main();
 
-
-
-        
-
     // Helper to load per-file suppressions from a plan file
     loadFrameworkSuppressionsForFile(sourceFilename, datadir = "data") {
-        const planFile = join(datadir, "plans", basename(sourceFilename) + ".frameworks.plan");
-        if (!existsSync(planFile)) return [];
-        const lines = readFileSync(planFile, 'utf8')
+        let result = {};
+        result.sourceFilename = sourceFilename;
+        result.lines = [];
+        result.planFile = join(datadir, "plans", basename(sourceFilename) + ".frameworks.plan");
+        if (!existsSync(result.planFile)) {
+            return result;
+        }
+        const lines = readFileSync(result.planFile, 'utf8')
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && !line.startsWith('#'));
-        return lines;
+        result.lines = lines;
+        return result;
     }
                             
     readConfigIntoFindOptionsObject(configFilename){

@@ -45,6 +45,9 @@ export class Accumulator {
     }
 
     getAccumulatorPrintout(options) {
+
+        let fullJSON = JSON.stringify(this._planAccumulator,null,4);
+        this.appendOutputFile("fullJSON.json", fullJSON);
         // Set default options
         options = options || {};
         const printObjects = options.printObjects !== false; // default true
