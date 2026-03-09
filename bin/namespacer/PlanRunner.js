@@ -84,7 +84,7 @@ export class PlanRunner {
         //Replace:
         replacer.processAllSources(masterNamespaceMap);
 
-        const printOptions = { printObjects: true, prettyObjects: true };
+        const printOptions = { printObjects: true, prettyObjects: true, objectKeysOnly: false, objectSquash: false };
         accumulator.appendOutputFiles(printOptions);
         
     }

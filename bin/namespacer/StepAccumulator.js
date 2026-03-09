@@ -1,7 +1,7 @@
 import { Accumulator } from './Accumulator.js';
 import { Step } from './Step.js';
 // You may need to adjust the import path for Emoji
-import * as Emoji from './Emoji.js';
+import {Emoji} from './Emoji.js';
 
 class StepAccumulator {
     constructor(rootStepID) {
@@ -17,7 +17,7 @@ class StepAccumulator {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline: 'entering substep ' + substepID,
-            icon: Emoji.SUBSTEP ? Emoji.SUBSTEP() : 'SUBSTEP',
+            icon: Emoji.SUBSTEP,
             obj: {}
         }));
     }
@@ -27,7 +27,7 @@ class StepAccumulator {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline: 'leaving substep ' + this.currentStepID(),
-            icon: Emoji.LEAVESTEP ? Emoji.LEAVESTEP() : 'LEAVESTEP',
+            icon: Emoji.LEAVESTEP,
             obj: {}
         }));
         if (this._stepIDStack.length > 1) {
@@ -50,7 +50,7 @@ class StepAccumulator {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline,
-            icon: Emoji.FILEACCESS ? Emoji.FILEACCESS() : 'FILEACCESS',
+            icon: Emoji.FILEACCESS,
             obj: { path: filename }
         }));
     }
@@ -59,7 +59,7 @@ class StepAccumulator {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline,
-            icon: 'BEETLE',
+            icon: Emoji.BEETLE,
             obj: {}
         }));
     }
@@ -68,7 +68,7 @@ class StepAccumulator {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline,
-            icon: 'BEETLE',
+            icon: Emoji.BEETLE,
             obj: bigObject
         }));
     }

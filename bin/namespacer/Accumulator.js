@@ -94,35 +94,53 @@ export class Accumulator {
     }
 
     getStepsPrintout(printOptions) {
+        // Emit a pretty-printed JSON array of all Step objects, respecting printOptions
         printOptions = printOptions || {};
         const printObjects = printOptions.printObjects !== false; // default true
-        const prettyObjects = printOptions.prettyObjects !== false; // default true
-        const lines = this._stepsArray.map(step => {
-            if (!step) return '';
-            let icon = step.icon || '';
-            // If icon is a string key and Emoji has it, use the emoji symbol
-            if (icon && typeof icon === 'string' && Emoji && Object.prototype.hasOwnProperty.call(Emoji, icon)) {
-                icon = Emoji[icon];
-            }
-            const level = step.level || '';
-            let out = '';
-            if (icon) out += icon + ' ';
-            if (level) out += '[' + level + '] ';
-            out += (step.stepID ? step.stepID + ': ' : '') + (step.logline || '');
-            if (printObjects && step.obj && Object.keys(step.obj).length > 0) {
-                if (prettyObjects) {
-                    out += '\n' + JSON.stringify(step.obj, null, 4);
-                } else {
-                    out += '\n' + JSON.stringify(step.obj);
+        const objectKeysOnly = printOptions.objectKeysOnly === true;
+        // Map steps to respect printObjects, objectKeysOnly, and objectSquash
+        const objectSquash = printOptions.objectSquash === true;
+        const steps = this._stepsArray.map(step => {
+            if (!step) return step;
+            let newStep = { ...step };
+            if (!printObjects) {
+                // Omit obj
+                delete newStep.obj;
+            } else if (objectSquash && newStep.obj && typeof newStep.obj === 'object' && !Array.isArray(newStep.obj)) {
+                // Squash all first-level properties into a string
+                const keys = Object.keys(newStep.obj);
+                let parts = [];
+                for (let i = 0; i < keys.length && i < 4; ++i) {
+                    let k = keys[i];
+                    let v = newStep.obj[k];
+                    let vStr = (v === undefined) ? '' : String(v);
+                    // Escape quotes
+                    vStr = vStr.replace(/"/g, '\"');
+                    if (vStr.length > 32) {
+                        vStr = vStr.slice(0, 29) + '...more';
+                    }
+                    parts.push(`${k}:${vStr}`);
                 }
+                if (keys.length > 4) {
+                    parts.push('...moreKeys');
+                }
+                const squashString = parts.join(',');
+                delete newStep.obj;
+                newStep.objectSquash = squashString;
+            } else if (objectKeysOnly && newStep.obj && typeof newStep.obj === 'object' && !Array.isArray(newStep.obj)) {
+                // Replace obj with a single string of comma-separated keys, and rename property
+                const keysString = Object.keys(newStep.obj).join(',');
+                delete newStep.obj;
+                newStep.objectKeysOnly = keysString;
             }
-            return out;
+            return newStep;
         });
-        return lines.join("\n")
-            + "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
-            + "\n_ID:" + this._ID
-            + "\n\n";
+        try {
+            return JSON.stringify(steps, null, 4);
+        } catch (e) {
+            // Fallback: emit an empty array if serialization fails
+            return '[]';
+        }
     }
 
     clear() {
