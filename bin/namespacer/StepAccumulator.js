@@ -1,62 +1,94 @@
 import { Accumulator } from './Accumulator.js';
+import { Step } from './Step.js';
+// You may need to adjust the import path for Emoji
+import * as Emoji from './Emoji.js';
 
 class StepAccumulator {
+    constructor(rootStepID) {
+        if (!rootStepID || typeof rootStepID !== 'string') {
+            throw new Error('StepAccumulator requires a non-empty root stepID');
+        }
+        this._stepIDStack = [rootStepID];
+        this.acc = Accumulator.getInstance();
+    }
+
+    pushSubstep(substepID) {
+        this._stepIDStack.push(substepID);
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline: 'entering substep ' + substepID,
+            icon: Emoji.SUBSTEP ? Emoji.SUBSTEP() : 'SUBSTEP',
+            obj: {}
+        }));
+    }
+
+    popSubstep() {
+        // Log before popping
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline: 'leaving substep ' + this.currentStepID(),
+            icon: Emoji.LEAVESTEP ? Emoji.LEAVESTEP() : 'LEAVESTEP',
+            obj: {}
+        }));
+        if (this._stepIDStack.length > 1) {
+            this._stepIDStack.pop();
+        }
+    }
+
+    currentStepID() {
+        return this._stepIDStack.join('.');
+    }
+
+    logStep(step) {
+        if (!step.stepID) {
+            step.stepID = this.currentStepID();
+        }
+        return this.acc.logStep(step);
+    }
+
+    logFile(logline, filename) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon: Emoji.FILEACCESS ? Emoji.FILEACCESS() : 'FILEACCESS',
+            obj: { path: filename }
+        }));
+    }
+
+    logLine(logline) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon: 'BEETLE',
+            obj: {}
+        }));
+    }
+
+    logObject(logline, bigObject) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon: 'BEETLE',
+            obj: bigObject
+        }));
+    }
+
+    // Pass-through which SHOULD BE DELETED once implementation is done for logStep().
+    accumulate(logline) { return this.acc.accumulate(logline); }
+    
+
+    // Pass-throughs for legacy/utility
     getAccumulatorPrintout(printOptions) {
-      return this.acc.getAccumulatorPrintout(printOptions);
+        return this.acc.getAccumulatorPrintout(printOptions);
     }
-  constructor(identity) {
-    this.identity = identity;
-    this.acc = Accumulator.getInstance();
-  }
-
-  accumulate(...args) {
-    //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~accumulate in StepAccumulator~~~~~:"+JSON.stringify(args));
-      
-    if (args.length === 1) {
-      // Only logline provided: decorate with stepID
-      return this.acc.accumulate(args[0], { stepID: this.identity });
-    } else if (args.length === 2) {
-      // logline and bigObject provided: wrap bigObject with stepID
-      return this.acc.accumulate(args[0], { stepID: this.identity, bigObject: args[1] });
-    } else {
-      // Fallback: pass all args as-is
-      //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~FALLBACK in StepAccumulator~~~~~:"+(args));
-      return this.acc.accumulate(...args);
-    }
-  }
-
-  log(message) {
-    return this.acc.log(message, this);
-  }
-
-  logTopic(topic, message) {
-    return this.acc.logTopic(topic, message, this);
-  }
-
-  logLevel(level, message) {
-    return this.acc.logLevel(level, message, this);
-  }
-
-  readFileSync(filename, options) {
-    return this.acc.readFileSync(filename, options, this);
-  }
-
-  writeFileSync(filename, data, options) {
-    return this.acc.writeFileSync(filename, data, options, this);
-  }
-
-  readdirSync(path, options) {
-    return this.acc.readdirSync(path, options, this);
-  }
-
-  existsSync(path) {
-    return this.acc.existsSync(path, this);
-  }
-
-  appendOutputFile(filename, data, options) {
-    return this.acc.appendOutputFile(filename, data, options, this);
-  }
-
+    log(message) { return this.acc.log(message, this); }
+    logTopic(topic, message) { return this.acc.logTopic(topic, message, this); }
+    logLevel(level, message) { return this.acc.logLevel(level, message, this); }
+    readFileSync(filename, options) { return this.acc.readFileSync(filename, options, this); }
+    writeFileSync(filename, data, options) { return this.acc.writeFileSync(filename, data, options, this); }
+    readdirSync(path, options) { return this.acc.readdirSync(path, options, this); }
+    existsSync(path) { return this.acc.existsSync(path, this); }
+    appendOutputFile(filename, data, options) { return this.acc.appendOutputFile(filename, data, options, this); }
 }
 
 export default StepAccumulator;

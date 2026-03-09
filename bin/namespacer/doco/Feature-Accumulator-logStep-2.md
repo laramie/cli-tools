@@ -153,16 +153,16 @@ Note that since empty strings are invalid stepID values, the whole stepID for st
 
 - `pushSubstep(substepID)`
   - Push a substepID onto the stack.  
-  - then, call logStep() with logline "entering substep"+substepID with Emoji `SUBSTEP`
+  - then, call logStep() with logline "entering substep"+substepID with `Emoji.SUBSTEP()`
 - `popSubstep()`
-  - call logStep() with logline "leaving substep "+getCurrentStepID() and Emoji LEAVESTEP
+  - call logStep() with logline "leaving substep "+getCurrentStepID() and `Emoji.LEAVESTEP()`
   - then, Pop the most recent substepID.  
 - `currentStepID()`
   - Return the current dotted path (dot-join of steps and substeps).
 - `logStep(Step)`
   - call `Accumulator.logStep(Step)` but ensure that the `stepID` of `Step` is filled out using `StepAccumulator.this` knowledge of `currentStepID()`.   
 - `logFile(logline, filename)`
-  - call `Accumulator.logStep(Step)` filling in fields, and attaching Emoji `FILEACCESS`
+  - call `Accumulator.logStep(Step)` filling in fields, and attaching `Emoji.FILEACCESS()`
 - `logLine(logline)`
   - call Accumulator.logStep(Step)` filling in fields
 - `logObject(logline,bigObject)`

@@ -86,8 +86,34 @@ export class Accumulator {
             + "\n\n";
     }
 
-    getStepsPrintout(printOptions){
-        return "Not implemented.";
+    getStepsPrintout(printOptions) {
+        // Print the _stepsArray as a readable log, similar to getAccumulatorPrintout
+        printOptions = printOptions || {};
+        const printObjects = printOptions.printObjects !== false; // default true
+        const prettyObjects = printOptions.prettyObjects !== false; // default true
+        const lines = this._stepsArray.map(step => {
+            if (!step) return '';
+            // If it's a Step instance or plain object
+            const icon = step.icon || '';
+            const level = step.level || '';
+            let out = '';
+            if (icon) out += icon + ' ';
+            if (level) out += '[' + level + '] ';
+            out += (step.stepID ? step.stepID + ': ' : '') + (step.logline || '');
+            if (printObjects && step.obj && Object.keys(step.obj).length > 0) {
+                if (prettyObjects) {
+                    out += '\n' + JSON.stringify(step.obj, null, 4);
+                } else {
+                    out += '\n' + JSON.stringify(step.obj);
+                }
+            }
+            return out;
+        });
+        return lines.join("\n")
+            + "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
+            + "\n_ID:" + this._ID
+            + "\n\n";
     }
 
     clear() {
