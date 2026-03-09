@@ -64,11 +64,14 @@ export class PlanRunner {
 
     main() {
         const accumulator = Accumulator.getInstance();
-        
+        accumulator.hoseAccumulatorOutputFiles();
         const configFilename = "runconfig-example.json";
         const prePlanActions = ["🗒  Running from PlanRunner with ☛  "+ANSIColors.green(configFilename)+" ☚"];
         const regexSuites = new RegexSuites();
-        const findMain = new FindMain(accumulator);
+        
+        
+        const findMainStepAccumulator = Accumulator.getStepInstance("FindMain");
+        const findMain = new FindMain(findMainStepAccumulator);
         //Search:
         findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
         
@@ -82,7 +85,7 @@ export class PlanRunner {
         replacer.processAllSources(masterNamespaceMap);
 
         const printOptions = { printObjects: true, prettyObjects: true };
-        accumulator.appendOutputFile("PlanRunner-accumulator.plan",accumulator.getAccumulatorPrintout(printOptions), null);
+        accumulator.appendOutputFiles(printOptions);
         
     }
 }

@@ -114,7 +114,7 @@ export class Replacer {
 
     
     processFileWithInvocations(fileWithInvocations_Name, outputFilePath, masterNamespaceMap){
-        this.accumulator.accumulate("processFileWithInvocations::file:"+fileWithInvocations_Name+", outputFilePath:"+outputFilePath);
+        this.accumulator.logFile("processFileWithInvocations::file:"+fileWithInvocations_Name, outputFilePath);
         const { status, error, contents } = SourceFile.read(fileWithInvocations_Name);
         if (status !== Replacer.ReadSourceStatus.FOUND) {
             this.logError(`Failed to read file: ${fileWithInvocations_Name} (status: ${status})`);
@@ -294,7 +294,7 @@ export class Replacer {
         });
         // Dump the mutated clone to see per-loop changes
         console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
-        this.accumulator.accumulate("Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump",clonePlan );
+        this.accumulator.logObject("Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump", clonePlan );
         this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
         return masterNamespaceMap;
     }

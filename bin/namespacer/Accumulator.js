@@ -1,10 +1,17 @@
+
 // Accumulator.js - ES6 Singleton Accumulator for plan logging
 import { ANSIColors } from './ANSIColors.js';
+import { Emoji } from './Emoji.js';
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
 import { Logger } from './Logger.js';
 import StepAccumulator from './StepAccumulator.js';
 
 let _GID = 1;
+const ACCUMULATOR_LOGLINES = "_accumulator.loglines.txt";
+const ACCUMULATOR_STEPS    = "_accumulator.steps.json";
+
+
+
 
 export class Accumulator {
     constructor() {
@@ -87,14 +94,16 @@ export class Accumulator {
     }
 
     getStepsPrintout(printOptions) {
-        // Print the _stepsArray as a readable log, similar to getAccumulatorPrintout
         printOptions = printOptions || {};
         const printObjects = printOptions.printObjects !== false; // default true
         const prettyObjects = printOptions.prettyObjects !== false; // default true
         const lines = this._stepsArray.map(step => {
             if (!step) return '';
-            // If it's a Step instance or plain object
-            const icon = step.icon || '';
+            let icon = step.icon || '';
+            // If icon is a string key and Emoji has it, use the emoji symbol
+            if (icon && typeof icon === 'string' && Emoji && Object.prototype.hasOwnProperty.call(Emoji, icon)) {
+                icon = Emoji[icon];
+            }
             const level = step.level || '';
             let out = '';
             if (icon) out += icon + ' ';
@@ -163,6 +172,24 @@ export class Accumulator {
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
         this.accumulate(logline);
     }
+
+    appendOutputFiles(printOptions){
+        this.appendOutputFile(ACCUMULATOR_LOGLINES,this.getAccumulatorPrintout(printOptions), null);
+        this.appendOutputFile(ACCUMULATOR_STEPS,this.getStepsPrintout(printOptions), null);
+    }
+
+    hoseAccumulatorOutputFiles(){
+        this.#hoseOutputFile(ACCUMULATOR_LOGLINES); 
+        this.#hoseOutputFile(ACCUMULATOR_STEPS);   
+    }
+
+    /**
+     * Private helper to truncate file to zero bytes.
+     */
+    #hoseOutputFile(relPath) {
+        writeFileSync(relPath, '', { encoding: 'utf8', flag: 'w' });
+    }
+
     
     // Factory for StepAccumulator
     static getStepInstance(identity) {

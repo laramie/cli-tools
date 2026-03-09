@@ -1,5 +1,14 @@
 # Feature: Accumulator.logStep (v2)
 
+## Status
+
+This design has been implemented in code.
+- on branch f/namespacer as of 20260309
+- planned to be merged to master when feature-complete and tested.
+- commit of the implementation and a version of this document read just prior to implementation:
+- [ 3e1983dce8dbbb6270d3f1f7cdace4fa0136f1f5 ](https://github.com/laramie/infinite-neck/commit/3e1983dce8dbbb6270d3f1f7cdace4fa0136f1f5)
+- Do NOT implement these changes since they have been done: use this document only for understanding the code and applying fixes. 
+
 ## Purpose
 
 Provide a simple, *atomic* `logStep(Step)` call that records a linear stream of steps, retaining the Step objects in the order they were added with `logStep` calls, so they can be presented as just a list of their `logline` properties, or as a JSON array of full `Step` JSON representations. See [Step (data model)](#step-data-model) for details.

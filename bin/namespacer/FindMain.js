@@ -17,6 +17,7 @@ import { SourceLines } from './SourceLines.js';
 import { ANSIColors }  from './ANSIColors.js';
 import { RegexSuites } from './RegexSuites.js';
 import { Accumulator } from './Accumulator.js';
+import { Step } from './Step.js';
 
 /** This class is driven from command-line parameters and files or globs passed to 
  *   process a number of source Javascript files, scanning for functions, exports, and invocations.
@@ -98,7 +99,7 @@ export class FindMain {
         if (options.debug) console.log("options:"+JSON.stringify(options));
         ANSIColors.setColor(options.color);
 
-        this.accumulator.accumulate("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        this.accumulator.logLine("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             +"\nAccumulated Plan. Run: "+ANSIColors.cyan(Accumulator.getTimeStamp(true))
             +(ANSIColors.isColoring() 
                 ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
@@ -106,7 +107,7 @@ export class FindMain {
             )
             +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         if (prePlanActions){
-            prePlanActions.forEach(line => this.accumulator.accumulate(line));
+            prePlanActions.forEach(line => this.accumulator.logLine(line));
         }
 
         if (options.outputLines == false && options.outputFilename == false){
@@ -137,16 +138,18 @@ export class FindMain {
         let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
                         +`:${ANSIColors.bold()+ANSIColors.red(name)} `
                         +`  ${ANSIColors.cyan(description)}`);
-        this.accumulator.accumulate(loglineRunning);
+        this.accumulator.logLine(loglineRunning);
         let loglineDirectory= `Directory: ${options.dir}`;
-        this.accumulator.accumulate(loglineDirectory);
-        let loglineFiles;
+        this.accumulator.logFile(loglineDirectory, options.dir);
+        let loglineFiles, loglineFileNames;
         if(options.singleFile){
             loglineFiles = `Single file: ${options.singleFile}`;
+            loglineFileNames = options.singleFile;
         } else {
             loglineFiles = `Extensions: ${options.extensions.join(', ')}`;
+            loglineFileNames = options.extensions.join(', ');
         }
-        this.accumulator.accumulate(loglineFiles);
+        this.accumulator.logFile(loglineFiles, loglineFileNames);
         let loglineSuite = "Suite:\n" + JSON.stringify(regexSuites.getSuites()[options.suiteIdx], (key, value) =>
                 value instanceof RegExp ? value.toString() : value, 4);
         
@@ -158,8 +161,9 @@ export class FindMain {
             console.log(loglineDirectory);
             console.log(loglineFiles);
             console.log(loglineSuite);
-            this.accumulator.accumulate(loglineSuite);
-            console.log(this.accumulator.accumulate("Options:\n" + JSON.stringify(options,null,4)));
+            this.accumulator.logLine(loglineSuite);
+            console.log("Options:\n" + JSON.stringify(options,null,4));
+            this.accumulator.logObject("Options:",  options);
             this.printHelpDivider(options)
         } else if (options.quiet){
             //do nothing
@@ -202,7 +206,7 @@ export class FindMain {
             }
             targetFiles.forEach(file => {
                 if (options.debug) console.log("********* Processing ******"+file+"************");
-                this.accumulator.accumulate("FindMain processing file: "+ANSIColors.yellow(file));
+                this.accumulator.logFile("FindMain processing file: "+ANSIColors.yellow(file), file);
 
                 //TODO:suppressList moved from inside while match....
                     let suppressList = [];
@@ -216,7 +220,10 @@ export class FindMain {
                     const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
                     const perFileSuppressions = suppressionsResult.lines;
                     if (perFileSuppressions.length > 0) {
-                        this.accumulator.accumulate("Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">"," ["+perFileSuppressions+"]");
+                        const step = new Step();
+                        step.logline = "Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">";
+                        step.obj = {file: suppressionsResult.planFile, suppressions: perFileSuppressions}; 
+                        this.accumulator.logStep(step);
                         suppressList = suppressList.concat(perFileSuppressions);
                     }
                     //END TODO:suppressList moved ...
@@ -281,7 +288,7 @@ export class FindMain {
                     }
                     if (options.outputSummary){
                         console.log("\n👉 Summary: "+theState.printSummary(options));
-                        this.accumulator.accumulate("👉 Summary: "+theState.filename+" :: "+theState.quantifyFound());
+                        this.accumulator.logLine("👉 Summary: "+theState.filename+" :: "+theState.quantifyFound());
                     }
                 }
             });
@@ -291,11 +298,11 @@ export class FindMain {
                     if (!notFoundHeaderPrinted){
                         let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                         console.log(loglineNone);
-                        this.accumulator.accumulate(loglineNone);
+                        this.accumulator.logLine(loglineNone);
                         notFoundHeaderPrinted = true;
                     }
                     console.log(theState.printFilename());
-                    this.accumulator.accumulate("None found in file: "+theState.printFilename());
+                    this.accumulator.logFile("None found in file"+theState.printFilename(), theState.printFilename());
                 }
             });
             if (notFoundHeaderPrinted){
@@ -392,7 +399,7 @@ export class FindMain {
             console.log("\n"+logline);
         }
         writeFileSync(relPath, data, 'utf8');
-        this.accumulator.accumulate(logline);
+        this.accumulator.logFile(logline, relPath);
     }
 
     appendOutputFile(relPath, data, options){
@@ -401,7 +408,7 @@ export class FindMain {
             console.log("\n"+logline);
         }
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
-        this.accumulator.accumulate(logline);
+        this.accumulator.logFile(logline, relPath);
     }
 
 
