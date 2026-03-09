@@ -11,7 +11,7 @@ Use GitHub mobile Copilot chat to make small documentation/TODO/design-note upda
 5. Keep changes small and focused per commit.
 
 ## Where to write things
-- TODO list lives at: `bin/namespacer/doco/TODO.md` (until moved to repo root)
+- TODO list lives at: `TODO.md`
   - New items go under: `## Inbox / Unassigned` directly below `- place new TODOs here...`
 - Design discussions / notes:
   - Save to: `bin/namespacer/doco/`
