@@ -13,6 +13,7 @@ export class Accumulator {
         }
         this._ID = _GID++;
         this._loglinesArray = [];
+        this._stepsArray = [];
         this.logger = Logger.getInstance();
         Accumulator._instance = this;
     }
@@ -28,6 +29,10 @@ export class Accumulator {
             this._loglinesArray.push(logline);
             return logline;
         }
+    }
+
+    logStep(step){
+        this._stepsArray.push(step);   
     }
 
     // Minimal logger API wrappers, context-aware
@@ -79,6 +84,10 @@ export class Accumulator {
             + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
             + "\n_ID:"+this._ID
             + "\n\n";
+    }
+
+    getStepsPrintout(printOptions){
+        return "Not implemented.";
     }
 
     clear() {
