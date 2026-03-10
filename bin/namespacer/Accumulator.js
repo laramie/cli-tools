@@ -7,7 +7,6 @@ import { Logger } from './Logger.js';
 import { Step } from './Step.js';
 import { StepAccumulator } from './StepAccumulator.js';
 
-const ACCUMULATOR_LOGLINES = "_accumulator.loglines.txt";
 const ACCUMULATOR_STEPS    = "_accumulator.steps.json";
 
 
@@ -69,9 +68,23 @@ export class Accumulator {
     getStepsPrintout(printOptions) {
         this.#logAccumulatorFooter();
         printOptions = printOptions || {};
+        // Filter by log level if specified
+        let steps = this._stepsArray;
+        if (printOptions.level) {
+            const minLevel = (typeof Step !== 'undefined' && Step.levelToInt)
+                ? Step.levelToInt(printOptions.level)
+                : 20; // fallback to INFO
+            steps = steps.filter(step => {
+                // If step.level is missing, treat as INFO
+                const stepLevel = (typeof Step !== 'undefined' && Step.levelToInt)
+                    ? Step.levelToInt(step.level)
+                    : 20;
+                return stepLevel >= minLevel;
+            });
+        }
         if (printOptions.oneLiner === true) {
-            // One-liner: icon indent(stepID) currentStepID :: logline path {...} if obj exists
-            return this._stepsArray.map(step => {
+            // One-liner: icon indent(stepID) currentStepID :: logline path {...} or object if showOneLinerObjects
+            return steps.map(step => {
                 if (!step) return '';
                 const icon = step.icon || '';
                 const stepID = step.stepID || '';
@@ -84,7 +97,19 @@ export class Accumulator {
                 }
                 let objStr = '';
                 if (step.obj && typeof step.obj === 'object' && Object.keys(step.obj).length > 0) {
-                    objStr = ' {...}';
+                    if (printOptions.showOneLinerObjects) {
+                        try {
+                            if (printOptions.prettyObjects) {
+                                objStr = ' ' + JSON.stringify(step.obj, null, 4);
+                            } else {
+                                objStr = ' ' + JSON.stringify(step.obj);
+                            }
+                        } catch (e) {
+                            objStr = ' {object}';
+                        }
+                    } else {
+                        objStr = ' {...}';
+                    }
                 }
                 return `${icon}  ${this.indent(stepID)}${stepID} ${ANSIColors.Dim+ANSIColors.cyan("::")} ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${objStr}`.trim();
             }).join('\n');
@@ -92,7 +117,7 @@ export class Accumulator {
         const printObjects = printOptions.printObjects !== false; // default true
         const objectKeysOnly = printOptions.objectKeysOnly === true;
         const objectSquash = printOptions.objectSquash === true;
-        const steps = this._stepsArray.map(step => {
+        const mappedSteps = steps.map(step => {
             if (!step) return step;
             let newStep = { ...step };
             if (!printObjects) {
@@ -128,7 +153,7 @@ export class Accumulator {
             return newStep;
         });
         try {
-            return JSON.stringify(steps, null, 4);
+            return JSON.stringify(mappedSteps, null, 4);
         } catch (e) {
             // Fallback: emit an empty array if serialization fails
             return '[]';
@@ -158,7 +183,7 @@ export class Accumulator {
 
     #logFileIO(opp, path, stepAccumulator){
         //const step = new Step({stepID: "Accumulator."+stepAccumulator.currentStepID(), logline: opp, path: path, icon: Emoji.IO});
-        const step = new Step({stepID: ANSIColors.Dim+ANSIColors.cyan("Accumulator."), logline: ANSIColors.Dim+ANSIColors.cyan(opp), path: ANSIColors.blue(path), icon: Emoji.IO});
+        const step = new Step({stepID: ANSIColors.Dim+ANSIColors.cyan("Accumulator."), logline: ANSIColors.Dim+ANSIColors.cyan(opp), path: ANSIColors.blue(path), icon: Emoji.IO, level: 'debug'});
         this.logStep(step);
     }
 
@@ -194,7 +219,6 @@ export class Accumulator {
     }
 
     hoseAccumulatorOutputFiles(){
-        this.#hoseOutputFile(ACCUMULATOR_LOGLINES); 
         this.#hoseOutputFile(ACCUMULATOR_STEPS);   
     }
 

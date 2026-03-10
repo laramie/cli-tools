@@ -1,7 +1,13 @@
-import './jest-setup.js';
+import './jest-setup-es6.js';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-const fs = require('fs');
-const path = require('path');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+//import './jest-setup.js';
+
 
 const LF = "\n";
 const LFWS = "\n    ";

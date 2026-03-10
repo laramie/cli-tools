@@ -1,7 +1,24 @@
-// Step.js
 // Implements the Step data model as described in the design doc
 
 export class Step {
+
+    // Log level constants
+	static DEBUG = 10;
+	static INFO = 20;
+	static WARN = 30;
+	static ERROR = 40;
+	static LEVELS = {
+		debug: Step.DEBUG,
+		info: Step.INFO,
+		warn: Step.WARN,
+		error: Step.ERROR
+	};
+	static levelToInt(level) {
+		if (!level) return Step.INFO;
+		if (typeof level === 'number') return level;
+		return Step.LEVELS[String(level).toLowerCase()] ?? Step.INFO;
+	}
+
 	/**
 	 * @param {Object} params - Step fields
 	 * @param {string} params.stepID - Dotted path identifier
@@ -15,7 +32,6 @@ export class Step {
 		if (!stepID || typeof stepID !== 'string') {
 			throw new Error('Step requires a string stepID');
 		}
-        console.log("logline:"+logline+",typeof:"+typeof logline);
 		if (!logline || typeof logline !== 'string') {
 			throw new Error('Step requires a string logline');
 		}
@@ -26,6 +42,7 @@ export class Step {
 		this.level = level || 'info'; // Default per spec
 		this.path = path || '';
 	}
+    
 
 	/**
 	 * Returns a plain JSON representation

@@ -1,6 +1,8 @@
 
 import { Accumulator } from '@/bin/namespacer/Accumulator.js';
+
 import StepAccumulator from '@/bin/namespacer/StepAccumulator.js';
+import { logVerbose } from './LogVerboseJest.js';
 
 /** Run this test with the  ENV var INFINITE_NECK_VERBOSE, if not in CI but on the command-line to see dump/debug info.
  *    laramie@penguin:~/infinite-neck$ export INFINITE_NECK_VERBOSE=1
@@ -9,16 +11,6 @@ import StepAccumulator from '@/bin/namespacer/StepAccumulator.js';
  */
 
 const TEST_STEP_ID = "Accumulator-jest-test";
-
-// Minimal verbose logging setup
-const INFINITE_NECK_VERBOSE = process.env.INFINITE_NECK_VERBOSE;
-console.log("****** INFINITE_NECK_VERBOSE = "+INFINITE_NECK_VERBOSE);
-const VERBOSE_MODE_INT = parseInt(INFINITE_NECK_VERBOSE, 10);
-const VERBOSE_MODE = isNaN(VERBOSE_MODE_INT) ? 0 : VERBOSE_MODE_INT;
-function logVerbose(level, msg) {
-    if (VERBOSE_MODE === -1) return;
-    if (VERBOSE_MODE >= level) console.log(msg);
-}
 
 describe('Accumulator.getStepsPrintout', () => {
     beforeEach(() => {

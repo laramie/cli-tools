@@ -193,7 +193,7 @@ class ANSIColors {
         return inst.#nocolor ? ANSIColors.EQ_NOCOLOR : ANSIColors.EQ;
     }
     // For testing
-    static testColors() {
+    static testColors(dumpToConsole = false) {
         const names = [
             'Black','Red','Green','Yellow','Blue','Magenta','Cyan','White',
             'BgBlack','BgRed','BgGreen','BgYellow','BgBlue','BgMagenta','BgCyan','BgWhite',
@@ -216,7 +216,9 @@ class ANSIColors {
             }
         });
 
-        console.log(accum.join('\n'));
+        if (dumpToConsole){
+            console.log(accum.join('\n'));
+        }
 
 
         return count;

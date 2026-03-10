@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { ANSIColors } from '@/bin/namespacer/ANSIColors.js';
+import { logVerbose, logVerboseTrue } from './LogVerboseJest.js';
 
 
 describe('ANSIColors static tests', () => {
@@ -11,7 +12,8 @@ describe('ANSIColors static tests', () => {
 
     test('testColors works as expected', () => {
         expect(() => {
-            const result = ANSIColors.testColors();
+            const dumpToConsole = logVerboseTrue();
+            const result = ANSIColors.testColors(dumpToConsole);
             expect(typeof result).toBe('number');
             expect(result).toBe(20);
         }).not.toThrow();

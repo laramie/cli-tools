@@ -1,3 +1,4 @@
+import EventBus from './event-bus.js';
 import { 
     NUM_FRETS_MAX, 
     clearAndReplaySection,
@@ -161,7 +162,11 @@ export function makeSong(){
             // Expose noteIDToNoteName and noteIDToNoteNameRaw as methods
             noteIDToNoteName: noteIDToNoteName,
             noteIDToNoteNameRaw: noteIDToNoteNameRaw,
-            noteNameToNoteID: noteNameToNoteID
+            noteNameToNoteID: noteNameToNoteID,
+
+            //new method for EventBus:
+            publish_UpdateSectionStatus: publish_UpdateSectionStatus,
+            setHeadless: setHeadless
     }
     obj.make();
     return obj;
@@ -171,6 +176,7 @@ export function makeSong(){
 
 	function construct_gSections(){
         this.constructing = true;
+        this.isHeadless = false;
     	this.sections = [];
     	this.visibleNoteTables = [];
         this.colorDicts = {};
@@ -182,6 +188,10 @@ export function makeSong(){
         //this.sharps = false;
         this.constructing = false;
         delete this.constructing;
+    }
+
+    function setHeadless(value){
+        this.isHeadless = value;
     }
 
     function fixupCurrentIndexForLoadedSong(){
@@ -426,7 +436,7 @@ export function makeSong(){
 	function addSection(section){
 	    var newIndex = this.sections.push(section) - 1;
 	    this.gSectionsCurrentIndex = newIndex;
-	    if (!this.constructing) publish_UpdateSectionStatus(this);
+	    if (!this.constructing) this.publish_UpdateSectionStatus();
 	    return newIndex;
 	    // sections is an array of gNotesPlayed objects. push() returns length.
 	}
@@ -441,7 +451,7 @@ export function makeSong(){
             this.gSectionsCurrentIndex = this.gSectionsCurrentIndex+1;
         }
         fullRepaint();
-	    publish_UpdateSectionStatus();
+	    this.publish_UpdateSectionStatus();
 	    return this.gSectionsCurrentIndex;
 	    // sections is an array of gNotesPlayed objects.
 	}
@@ -553,7 +563,7 @@ export function makeSong(){
 		this.getCurrentSection().recordedNotes = result;
 		this.setBeats(beatCount+1);
         gotoFirstBeat();
-		publish_UpdateSectionStatus();
+		this.publish_UpdateSectionStatus();
         fullRepaint();
         showBeats();
 	}
@@ -584,7 +594,7 @@ export function makeSong(){
          this.setBeats(nBeats-1);
          var currBeat = nStartBeat > this.getBeats() ? this.getBeats() : nStartBeat;
          this.getCurrentSection().currentBeat = currBeat;
-         publish_UpdateSectionStatus();
+         this.publish_UpdateSectionStatus();
          showBeats();
     }
 
@@ -610,7 +620,7 @@ export function makeSong(){
   	               this.decBeat();
   	            }
   	        }
-            publish_UpdateSectionStatus();
+            this.publish_UpdateSectionStatus();
   			showBeats();
     }
 
@@ -618,6 +628,10 @@ export function makeSong(){
     //============== TODO:EventBus keep all new EventBus handling code between these comments, ending in END-TODO:EventBus =====================================
     
     function publish_SectionChanged(){
+        if (this.isHeadless){
+            console.log("Song skipping EventBus because isHeadless()===true");
+            return;
+        }
         console.log("in new EventBus strategy: publish_SectionChanged");
         //sectionChanged(); //TODO:EventBus: call this throught the EventBus
         EventBus.trigger('SectionChanged', { sectionIndex: this.getSectionsCurrentIndex() });
@@ -625,7 +639,12 @@ export function makeSong(){
 
     // replacement for direct calls to infinite-neck.js :: updateSectionsStatus();
     function publish_UpdateSectionStatus(){
-        console.log("in new EventBus strategy: publish_UpdateSectionStatus");
+        console.log("*****publish_UpdateSectionStatus this.isHeadless:"+this.isHeadless);
+        if (this.isHeadless){
+            console.log("Song skipping EventBus because isHeadless()===true");
+            return;
+        }
+        console.log("in new EventBus strategy: this.publish_UpdateSectionStatus");
         //updateSectionsStatus();  // TODO:EventBus:  call this through the EventBus instead.
         EventBus.trigger('UpdateSectionStatus', { sectionIndex: this.getSectionsCurrentIndex() });
     }

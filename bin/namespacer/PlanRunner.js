@@ -88,7 +88,9 @@ export class PlanRunner {
                                 prettyObjects: true, 
                                 objectKeysOnly: false, 
                                 objectSquash: false,
-                                oneLiner: false 
+                                oneLiner: true,
+                                level: 'info',
+                                showOneLinerObjects: true
                             };
         accumulator.appendOutputFiles(printOptions);
         

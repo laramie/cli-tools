@@ -22,7 +22,7 @@ export class Emoji {
         CHEESE_WEDGE: "\uD83E\uDDC0",         // 🧀
         GLOBE_WITH_MERIDIANS: "\uD83C\uDF10", // 🌐
         BACKHAND_INDEX_POINTING_RIGHT: "\uD83D\uDC49", // 👉
-        HEAVY_ROUND_BULLET: "\u25CF",         // ●
+        HEAVY_ROUND_BULLET: "\u25CF\u0020",         // ●
         LEFTWARDS_ARROW_WITH_HOOK: "\u21A9"        // ↩
     });
 

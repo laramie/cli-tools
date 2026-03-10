@@ -220,9 +220,13 @@ export class FindMain {
                         const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
                         const perFileSuppressions = suppressionsResult.lines;
                         if (perFileSuppressions.length > 0) {
-                            const step = new Step();
-                            step.logline = "Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">";
-                            step.obj = {file: suppressionsResult.planFile, suppressions: perFileSuppressions}; 
+                            const step = new Step({
+                                stepID: "FindMain.Suppressions",
+                                logline: "Found suppressions for file<"+file+">",
+                                path: suppressionsResult.planFile, 
+                                obj: {file: suppressionsResult.planFile, suppressions: perFileSuppressions},
+                                icon: Emoji.BULLET
+                            }); 
                             this.accumulator.logStep(step);
                             suppressList = suppressList.concat(perFileSuppressions);
                         }

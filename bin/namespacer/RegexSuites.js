@@ -11,10 +11,12 @@ export class RegexSuites {
         }
         const validationResult = RegexSuites.validateSuites(this.suites);
         if (validationResult.errors.length > 0) {
-            console.log("Suite validation errors:", JSON.stringify(validationResult, null, 4));
+            const validationLog = "Suite validation errors: " + JSON.stringify(validationResult, null, 4);
+            //console.log(validationLog);
             const err = new Error("RegexSuites validation failed");
             err.validationErrors = validationResult.errors;
             err.keyErrorCount = validationResult.keyErrorCount;
+            err.validationLog = validationLog;
             throw err;
         }
     }

@@ -87,14 +87,14 @@ export class Replacer {
     static VERBOSE_INTERFACE_GENS = true;  // used to have GenerateInterface also print out output
 
     static LOG_FLAGS = {
-        PLAN_INFO: true,
-        FILE_WRITES: true,
+        PLAN_INFO: false,
+        FILE_WRITES: false,
         INTERFACE_GENS: false,
         MASTER_NAMESPACE_MAP: false,
         OUTPUT: false,
         OUTPUT_REPLACEMENTS: false,
         OUTPUT_NOOP_REPLACEMENTS: false,
-        OUTPUT_REPLACEMENTS_LINENUM: true
+        OUTPUT_REPLACEMENTS_LINENUM: false
     };
 
 
@@ -290,7 +290,8 @@ export class Replacer {
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
             // Attach generated strings to the namespaceObj in the clone
             namespaceObj.interface_gen = interface_gen;
-            namespaceObj.masterNamespaceMap = JSON.stringify(masterNamespaceMap, null, 2);
+            //namespaceObj.masterNamespaceMap = JSON.stringify(masterNamespaceMap, null, 2);
+            namespaceObj.masterNamespaceMap = masterNamespaceMap;
         });
         // Dump the mutated clone to see per-loop changes
         console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));

@@ -37,13 +37,18 @@ DO do this:
     node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/regex-suites.test.js
     You must run with that flag because jest is all out of date 'nshit.
 
-this worked:
+ANSIColors.test.js worked:
     laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/ANSIColors.test.js
-this worked: 
+RegexSuites.test.js worked: 
      laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/RegexSuites.test.js
-this worked: 
+Accumulator.test.js worked: 
      laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/Accumulator.test.js
+SampleStep.test.js worked: 
+    laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/SampleStep.test.js
 
-     _tests/jest/namespacer/Accumulator.test.js
+
+Therefore, run this to run all tests in this dir:
+    cd ~/infinite-neck$ 
+    node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/
      
     
