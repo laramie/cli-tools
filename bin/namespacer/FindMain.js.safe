@@ -233,7 +233,7 @@ export class FindMain {
                     state.filename = file;
                     state.suite = name;
                     const filePath = join(options.dir, file);
-                    const content = this.accumulator.readFileSync(filePath, 'utf8');
+                    const content = readFileSync(filePath, 'utf8');
                     let match;
                     let found = false;
 
@@ -303,10 +303,11 @@ export class FindMain {
                         if (!notFoundHeaderPrinted){
                             let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                             console.log(loglineNone);
+                            this.accumulator.logStep(headerStep);
                             notFoundHeaderPrinted = true;
                         }
                         console.log(theState.printFilename());
-                        this.accumulator.logFile("file:", theState.printFilename(), Emoji.EMPTYOK);
+                        this.accumulator.logFile("file:", theState.printFilename(), Emoji.EMPTY);
                     }
                 });
                 if (notFoundHeaderPrinted){
@@ -329,7 +330,7 @@ export class FindMain {
         if (!existsSync(result.planFile)) {
             return result;
         }
-        const lines = this.accumulator.readFileSync(result.planFile, 'utf8')
+        const lines = readFileSync(result.planFile, 'utf8')
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && !line.startsWith('#'));
@@ -360,7 +361,7 @@ export class FindMain {
                 this.printError(options, `Config file not found: ${configFilename}`);
                 return null;
             }
-            const data = this.accumulator.readFileSync(configFilename, 'utf8');
+            const data = readFileSync(configFilename, 'utf8');
             return JSON.parse(data);
         } catch (err) {
             this.printError(options, `Error reading config file: ${err}`);

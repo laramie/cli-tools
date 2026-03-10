@@ -7,7 +7,6 @@ import { Logger } from './Logger.js';
 import { Step } from './Step.js';
 import { StepAccumulator } from './StepAccumulator.js';
 
-let _GID = 1;
 const ACCUMULATOR_LOGLINES = "_accumulator.loglines.txt";
 const ACCUMULATOR_STEPS    = "_accumulator.steps.json";
 
@@ -19,7 +18,6 @@ export class Accumulator {
         if (Accumulator._instance) {
             return Accumulator._instance;
         }
-        this._ID = _GID++;
         this._loglinesArray = [];
         this._stepsArray = [];
         this.logger = Logger.getInstance();
@@ -63,8 +61,7 @@ export class Accumulator {
     }
     
     #logAccumulatorFooter() {
-        const logline = ANSIColors.green(Accumulator.getTimeStamp(true))
-            + "  _ID:"+this._ID;
+        const logline = "END. "+ANSIColors.green(Accumulator.getTimeStamp(true));
         const step = new Step({stepID: "Accumulator", logline: logline, icon: Emoji.ACCUMULATOR});
         this.logStep(step);  
     }
@@ -89,7 +86,7 @@ export class Accumulator {
                 if (step.obj && typeof step.obj === 'object' && Object.keys(step.obj).length > 0) {
                     objStr = ' {...}';
                 }
-                return `${icon} ${this.indent(stepID)}${stepID} :: ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${objStr}`.trim();
+                return `${icon}  ${this.indent(stepID)}${stepID} ${ANSIColors.Dim+ANSIColors.cyan("::")} ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${objStr}`.trim();
             }).join('\n');
         }
         const printObjects = printOptions.printObjects !== false; // default true
@@ -159,29 +156,30 @@ export class Accumulator {
         return Accumulator._instance;
     }
 
-    #logFileIO(opp, path){
-        const step = new Step({stepID: "Accumulator", logline: opp, path: path, icon: Emoji.FILEACCESS});
-        this.logStep();
+    #logFileIO(opp, path, stepAccumulator){
+        //const step = new Step({stepID: "Accumulator."+stepAccumulator.currentStepID(), logline: opp, path: path, icon: Emoji.IO});
+        const step = new Step({stepID: ANSIColors.Dim+ANSIColors.cyan("Accumulator."), logline: ANSIColors.Dim+ANSIColors.cyan(opp), path: ANSIColors.blue(path), icon: Emoji.IO});
+        this.logStep(step);
     }
 
     // --- File I/O Wrappers, context-aware ---
     readFileSync(path, options, stepAccumulator) {
-        this.#logFileIO("readFileSync", path);
+        this.#logFileIO("readFileSync", path, stepAccumulator);
         return readFileSync(path, options);
     }
 
     writeFileSync(path, data, options, stepAccumulator) {
-        this.#logFileIO("writeFileSync", path);
+        this.#logFileIO("writeFileSync", path, stepAccumulator);
         return writeFileSync(path, data, options);
     }
 
     readdirSync(path, options, stepAccumulator) {
-        this.#logFileIO("readdirSync", path);
+        this.#logFileIO("readdirSync", path, stepAccumulator);
         return readdirSync(path, options);
     }
 
     existsSync(path, stepAccumulator) {
-        this.#logFileIO("existsSync", path);
+        this.#logFileIO("existsSync", path, stepAccumulator);
         return existsSync(path);
     }
 

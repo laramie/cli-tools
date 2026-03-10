@@ -50,6 +50,10 @@ export class StepAccumulator {
         return this._stepIDStack.join('.');
     }
 
+    indent(){
+      return " ".repeat((this._stepIDStack.length - 1) * 4);
+    }
+
     logStep(step) {
         if (!step.stepID) {
             step.stepID = this.currentStepID();
@@ -57,11 +61,11 @@ export class StepAccumulator {
         return this.acc.logStep(step);
     }
 
-    logFile(logline, filename) {
+    logFile(logline, filename, icon = Emoji.FILEACCESS) {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline,
-            icon: Emoji.FILEACCESS,
+            icon,
             path: filename,
             obj: {}
         }));

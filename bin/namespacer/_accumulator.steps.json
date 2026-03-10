@@ -1,52 +1,640 @@
-💼 Accumulator :: Accumulated Plan. Run: 2026-03-09 21:33:16
-🪲 FindMain :: 🗒  Running from PlanRunner with ☛  runconfig-example.json ☚
-🌐 FindMain :: Running suite[1]:[1m[31mfunctions-no-exports[0m   [36mfunction <function-name>[0m
-💾 FindMain :: Directory: /home/laramie/infinite-neck/bin/namespacer [33m/home/laramie/infinite-neck/bin/namespacer[0m
-💾 FindMain :: Extensions: .js, .txt [33m.js, .txt[0m
-🪲 FindMain :: Suite[1]:functions-no-exports {...}
-🪲 FindMain :: Options: {...}
-📂 FindMain :: entering substep targetFiles
-💾     FindMain.targetFiles :: processing file [33mANSIColors.js[0m
-💾     FindMain.targetFiles :: processing file [33mAccumulator.js[0m
-💾     FindMain.targetFiles :: processing file [33mAccumulator.test.js[0m
-💾     FindMain.targetFiles :: processing file [33mEmoji.js[0m
-💾     FindMain.targetFiles :: processing file [33mFindMain.js[0m
-💾     FindMain.targetFiles :: processing file [33mFindOptions.js[0m
-💾     FindMain.targetFiles :: processing file [33mGenerateInterface.js[0m
-💾     FindMain.targetFiles :: processing file [33mLogger.js[0m
-💾     FindMain.targetFiles :: processing file [33mLogger.test.js[0m
-💾     FindMain.targetFiles :: processing file [33mLoggerCaller.js[0m
-💾     FindMain.targetFiles :: processing file [33mPlanRunner.js[0m
-💾     FindMain.targetFiles :: processing file [33mRegexSuites.js[0m
-💾     FindMain.targetFiles :: processing file [33mReplacer.js[0m
-💾     FindMain.targetFiles :: processing file [33mSourceFile.js[0m
-💾     FindMain.targetFiles :: processing file [33mSourceLines.js[0m
-💾     FindMain.targetFiles :: processing file [33mStep.js[0m
-💾     FindMain.targetFiles :: processing file [33mStepAccumulator.js[0m
-💾     FindMain.targetFiles :: processing file [33m_accumulator.loglines.txt[0m
-↩     FindMain.targetFiles :: leaving substep FindMain.targetFiles
-🪲 FindMain :: 👉 Summary: GenerateInterface.js :: 1
-📂 FindMain :: entering substep Empty: [32m🗍[0m  None found in these files
-🚫     FindMain.Empty :: None found in these files
-💾     FindMain.Empty :: file: [33mANSIColors.js[0m
-💾     FindMain.Empty :: file: [33mAccumulator.js[0m
-💾     FindMain.Empty :: file: [33mAccumulator.test.js[0m
-💾     FindMain.Empty :: file: [33mEmoji.js[0m
-💾     FindMain.Empty :: file: [33mFindMain.js[0m
-💾     FindMain.Empty :: file: [33mFindOptions.js[0m
-💾     FindMain.Empty :: file: [33mLogger.js[0m
-💾     FindMain.Empty :: file: [33mLogger.test.js[0m
-💾     FindMain.Empty :: file: [33mLoggerCaller.js[0m
-💾     FindMain.Empty :: file: [33mPlanRunner.js[0m
-💾     FindMain.Empty :: file: [33mRegexSuites.js[0m
-💾     FindMain.Empty :: file: [33mReplacer.js[0m
-💾     FindMain.Empty :: file: [33mSourceFile.js[0m
-💾     FindMain.Empty :: file: [33mSourceLines.js[0m
-💾     FindMain.Empty :: file: [33mStep.js[0m
-💾     FindMain.Empty :: file: [33mStepAccumulator.js[0m
-💾     FindMain.Empty :: file: [33m_accumulator.loglines.txt[0m
-↩     FindMain.Empty :: leaving substep FindMain.Empty
-🪲 Replacer :: Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump {...}
-💾 Replacer :: processFileWithInvocations::file:./data/src/song.js [33m./data/out/generated-song.js[0m
-💾 Replacer :: processFileWithInvocations::file:./data/src/notetable.js [33m./data/out/generated-notetable.js[0m
-💼 Accumulator :: [32m2026-03-09 21:33:16[0m  _ID:1
+[
+    {
+        "stepID": "Accumulator",
+        "logline": "Accumulated Plan. Run: 2026-03-09 23:29:31",
+        "obj": {},
+        "icon": "💼",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "\u001b[2mAccumulator.",
+        "logline": "\u001b[2mreadFileSync",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "runconfig-example.json"
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "🗒  Running from PlanRunner with ☛  runconfig-example.json ☚",
+        "obj": {},
+        "icon": "🪲 ",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "Running suite[1]:\u001b[1m\u001b[31mfunctions-no-exports\u001b[0m   \u001b[36mfunction <function-name>\u001b[0m",
+        "obj": {},
+        "icon": "🌐",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "Directory: /home/laramie/infinite-neck/bin/namespacer",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "/home/laramie/infinite-neck/bin/namespacer"
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "Extensions: .js, .txt",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": ".js, .txt"
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "Suite[1]:functions-no-exports",
+        "obj": {
+            "name": "functions-no-exports",
+            "regex": {},
+            "description": "function <function-name>",
+            "expression": "${match[1]}${match[2]} ${match[3]}",
+            "bareExpression": "${match[3]}"
+        },
+        "icon": "🪲 ",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "Options:",
+        "obj": {
+            "quiet": false,
+            "color": true,
+            "bareExpressions": false,
+            "outputFilename": true,
+            "outputLines": true,
+            "outputSummary": true,
+            "shortSummary": false,
+            "outputSourceLocation": false,
+            "outputSortedLines": false,
+            "verbose": true,
+            "debug": false,
+            "configSource": "command-line",
+            "writeConfigFilename": null,
+            "suiteIdx": 1,
+            "extensions": [
+                ".js",
+                ".txt"
+            ],
+            "singleFile": null,
+            "configFilename": null,
+            "dir": "/home/laramie/infinite-neck/bin/namespacer",
+            "dirSpecified": false,
+            "datadir": "data",
+            "datadirSpecified": false
+        },
+        "icon": "🪲 ",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "entering substep targetFiles",
+        "obj": {},
+        "icon": "📂",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "ANSIColors.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/ANSIColors.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Accumulator.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Accumulator.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Accumulator.test.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Accumulator.test.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Emoji.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Emoji.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "FindMain.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/FindMain.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "FindOptions.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/FindOptions.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "GenerateInterface.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/GenerateInterface.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Logger.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Logger.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Logger.test.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Logger.test.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "LoggerCaller.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/LoggerCaller.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "PlanRunner.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/PlanRunner.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "RegexSuites.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/RegexSuites.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Replacer.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Replacer.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "SourceFile.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/SourceFile.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "SourceLines.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/SourceLines.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "Step.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/Step.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "StepAccumulator.js"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/StepAccumulator.js\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "processing file",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "_accumulator.loglines.txt"
+    },
+    {
+        "stepID": "\u001b[2m\u001b[36mAccumulator.\u001b[0m",
+        "logline": "\u001b[2m\u001b[36mreadFileSync\u001b[0m",
+        "obj": {},
+        "icon": "‾‾‾‾↳",
+        "level": "info",
+        "path": "\u001b[34m/home/laramie/infinite-neck/bin/namespacer/_accumulator.loglines.txt\u001b[0m"
+    },
+    {
+        "stepID": "FindMain.targetFiles",
+        "logline": "leaving substep FindMain.targetFiles",
+        "obj": {},
+        "icon": "↩",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "👉 Summary: GenerateInterface.js :: 1",
+        "obj": {},
+        "icon": "🪲 ",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain",
+        "logline": "entering substep Empty: \u001b[32m🗍\u001b[0m  None found in these files",
+        "obj": {},
+        "icon": "📂",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "ANSIColors.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Accumulator.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Accumulator.test.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Emoji.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "FindMain.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "FindOptions.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Logger.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Logger.test.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "LoggerCaller.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "PlanRunner.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "RegexSuites.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Replacer.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "SourceFile.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "SourceLines.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "Step.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "StepAccumulator.js"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "file:",
+        "obj": {},
+        "icon": "∅",
+        "level": "info",
+        "path": "_accumulator.loglines.txt"
+    },
+    {
+        "stepID": "FindMain.Empty",
+        "logline": "leaving substep FindMain.Empty",
+        "obj": {},
+        "icon": "↩",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "Replacer",
+        "logline": "Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump",
+        "obj": {
+            "sources": [
+                {
+                    "src": "./data/src/song.js",
+                    "out": "./data/out/generated-song.js"
+                },
+                {
+                    "src": "./data/src/notetable.js",
+                    "out": "./data/out/generated-notetable.js"
+                }
+            ],
+            "namespaces": [
+                {
+                    "namespace": "IInfiniteNeck",
+                    "legacyImpl": "infiniteNeckImpl",
+                    "bareList": "./data/plans/infinite-neck.js.functions.gen",
+                    "excludes": "",
+                    "interface": "./data/plans/infinite-neck.js.functions.gen",
+                    "sourceout": "./data/out/IInfiniteNeck.js",
+                    "interface_gen": "import * as infiniteNeckImpl from \"./data/out/IInfiniteNeck.js\";\nclass IInfiniteNeck {\n  clearAll(...args) {\n    return infiniteNeckImpl.clearAll(...args);\n  }\n  getCurrentSection(...args) {\n    return infiniteNeckImpl.getCurrentSection(...args);\n  }\n}",
+                    "masterNamespaceMap": "{\n  \"clearAll\": \"IInfiniteNeck\",\n  \"getCurrentSection\": \"IInfiniteNeck\"\n}"
+                },
+                {
+                    "namespace": "ISong",
+                    "legacyImpl": "songImpl",
+                    "bareList": "./data/plans/song.js.functions.gen",
+                    "excludes": "./data/plans/ISong.js.excludes.plan",
+                    "interface": "./data/plans/song.js.functions.gen",
+                    "sourceout": "./data/out/ISong.js"
+                },
+                {
+                    "namespace": "INoteTable",
+                    "legacyImpl": "notetableImpl",
+                    "bareList": "./data/plans/notetable.js.functions.gen",
+                    "excludes": "",
+                    "interface": "./data/plans/notetable.js.functions.gen",
+                    "sourceout": "./data/out/INoteTable.js"
+                },
+                {
+                    "namespace": "IColorFunctions",
+                    "legacyImpl": "colorFunctionsImpl",
+                    "bareList": "./data/plans/colorFunctions.js.functions.gen",
+                    "excludes": "",
+                    "interface": "./data/plans/IColorFunctions.js.interface.plan",
+                    "sourceout": "./data/out/IColorFunctions.js"
+                }
+            ]
+        },
+        "icon": "🪲 ",
+        "level": "info",
+        "path": ""
+    },
+    {
+        "stepID": "Replacer",
+        "logline": "processFileWithInvocations::file:./data/src/song.js",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "./data/out/generated-song.js"
+    },
+    {
+        "stepID": "Replacer",
+        "logline": "processFileWithInvocations::file:./data/src/notetable.js",
+        "obj": {},
+        "icon": "💾",
+        "level": "info",
+        "path": "./data/out/generated-notetable.js"
+    },
+    {
+        "stepID": "Accumulator",
+        "logline": "END. \u001b[32m2026-03-09 23:29:31\u001b[0m",
+        "obj": {},
+        "icon": "💼",
+        "level": "info",
+        "path": ""
+    }
+]
