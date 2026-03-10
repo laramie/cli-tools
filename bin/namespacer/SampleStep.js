@@ -7,37 +7,33 @@ const  TESTFILE = "data/src/song.js";
 const  TESTFILEOUT = "data/src/song.js.gen";
 
 export class SampleStep {
-  constructor() {
-    this.identity = { className: "SampleStep", topFile: TESTFILE, step: "demo" };
+  constructor(stepAccumulator) {
+    this.stepAccumulator = stepAccumulator;
   }
 
   
 
   run() {
-    const stepAccumulator = Accumulator.getStepInstance(this.identity);
-    try {
-      stepAccumulator.accumulate("Starting step");
-      stepAccumulator.log("Log message");
-      stepAccumulator.logTopic("topic1", "Topic log message");
-      stepAccumulator.logLevel("info", "Info log message");
-      let contents = stepAccumulator.readFileSync(TESTFILE);
-      stepAccumulator.writeFileSync(TESTFILEOUT, contents);
-      stepAccumulator.readdirSync(".");
-      stepAccumulator.existsSync(TESTFILE);
-      stepAccumulator.appendOutputFile("output.txt", "Appended data");
-    } finally {
-      stepAccumulator.leave();
-    }
+      this.stepAccumulator.logLine("Starting step");
+      this.stepAccumulator.log("Log message");
+      this.stepAccumulator.logTopic("topic1", "Topic log message");
+      this.stepAccumulator.logLevel("info", "Info log message");
+      let contents = this.stepAccumulator.readFileSync(TESTFILE);
+      this.stepAccumulator.writeFileSync(TESTFILEOUT, contents);
+      this.stepAccumulator.readdirSync(".");
+      this.stepAccumulator.existsSync(TESTFILE);
   }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+    const SAMPLESTEP_ID = "SampleStep-test";
     let realAccumulator = Accumulator.getInstance();
-    realAccumulator.accumulate("starting SampleStep");
-    const step = new SampleStep();
+    realAccumulator.log("Starting "+SAMPLESTEP_ID);
+    const stepAccumulator = Accumulator.getStepInstance(SAMPLESTEP_ID);
+    const step = new SampleStep(stepAccumulator);
     step.run();
-    realAccumulator.accumulate("ending SampleStep");
+    realAccumulator.log("Ending "+SAMPLESTEP_ID);
     const printOptions = { printObjects: true, prettyObjects: true };
-    console.log(realAccumulator.getAccumulatorPrintout(printOptions));
+    console.log(realAccumulator.getStepsPrintout(printOptions));
     realAccumulator.exit(0);
 }
