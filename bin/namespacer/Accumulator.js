@@ -24,6 +24,13 @@ export class Accumulator {
         this.logger = Logger.getInstance();
         Accumulator._instance = this;
     }
+        // For polymorphism with StepAccumulator
+        // Accepts stepID, returns indentation based on dot count
+        indent(stepID) {
+            if (!stepID || typeof stepID !== 'string') return '';
+            const dotCount = (stepID.match(/\./g) || []).length;
+            return '    '.repeat(dotCount); // 4 spaces per dot
+        }
 
     accumulate(logline) {
         //console.log("++++++++++++++++++Accumulator.accumulate:::"+logline+":::");
@@ -94,11 +101,29 @@ export class Accumulator {
     }
 
     getStepsPrintout(printOptions) {
-        // Emit a pretty-printed JSON array of all Step objects, respecting printOptions
         printOptions = printOptions || {};
+        if (printOptions.oneLiner === true) {
+            // One-liner: icon indent(stepID) currentStepID :: logline path {...} if obj exists
+            return this._stepsArray.map(step => {
+                if (!step) return '';
+                const icon = step.icon || '';
+                const stepID = step.stepID || '';
+                const logline = step.logline || '';
+                let path = '';
+                if (step.path) {
+                    path = step.path;
+                } else if (step.obj && typeof step.obj === 'object' && step.obj.path) {
+                    path = step.obj.path;
+                }
+                let objStr = '';
+                if (step.obj && typeof step.obj === 'object' && Object.keys(step.obj).length > 0) {
+                    objStr = ' {...}';
+                }
+                return `${icon} ${this.indent(stepID)}${stepID} :: ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${objStr}`.trim();
+            }).join('\n');
+        }
         const printObjects = printOptions.printObjects !== false; // default true
         const objectKeysOnly = printOptions.objectKeysOnly === true;
-        // Map steps to respect printObjects, objectKeysOnly, and objectSquash
         const objectSquash = printOptions.objectSquash === true;
         const steps = this._stepsArray.map(step => {
             if (!step) return step;
@@ -188,7 +213,7 @@ export class Accumulator {
     appendOutputFile(relPath, data, stepAccumulator) {
         const logline = `💾  ━━━━━━━━━━━━━━━━━━ File appended: ${relPath} ━━━━━━━━━━━━━━━━━━`;
         writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
-        this.accumulate(logline);
+        this.log(logline);
     }
 
     appendOutputFiles(printOptions){

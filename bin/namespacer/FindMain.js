@@ -161,7 +161,8 @@ export class FindMain {
             console.log(loglineDirectory);
             console.log(loglineFiles);
             console.log(loglineSuite);
-            this.accumulator.logLine(loglineSuite);
+            const suiteName = regexSuites.getSuites()[options.suiteIdx].name;
+            this.accumulator.logObject("Suite["+options.suiteIdx+"]:"+suiteName , regexSuites.getSuites()[options.suiteIdx]);
             console.log("Options:\n" + JSON.stringify(options,null,4));
             this.accumulator.logObject("Options:",  options);
             this.printHelpDivider(options)
@@ -204,76 +205,81 @@ export class FindMain {
                 console.log("Files:" + targetFiles);
                 this.printHelpDivider(options)
             }
-            targetFiles.forEach(file => {
-                if (options.debug) console.log("********* Processing ******"+file+"************");
-                this.accumulator.logFile("FindMain processing file: "+ANSIColors.yellow(file), file);
+            this.accumulator.pushSubstep("targetFiles");
+            try {
+                targetFiles.forEach(file => {
+                    if (options.debug) console.log("********* Processing ******"+file+"************");
+                    this.accumulator.logFile("processing file", file);
 
-                //TODO:suppressList moved from inside while match....
-                    let suppressList = [];
-                    if (suite.keywords && Array.isArray(suite.keywords)) {
-                        suppressList = suppressList.concat(suite.keywords);
-                    }
-                    if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
-                        suppressList = suppressList.concat(suite.frameworkFunctions);
-                    }
-                    /** Load per-file suppressions and add them */
-                    const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
-                    const perFileSuppressions = suppressionsResult.lines;
-                    if (perFileSuppressions.length > 0) {
-                        const step = new Step();
-                        step.logline = "Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">";
-                        step.obj = {file: suppressionsResult.planFile, suppressions: perFileSuppressions}; 
-                        this.accumulator.logStep(step);
-                        suppressList = suppressList.concat(perFileSuppressions);
-                    }
-                    //END TODO:suppressList moved ...
+                    //TODO:suppressList moved from inside while match....
+                        let suppressList = [];
+                        if (suite.keywords && Array.isArray(suite.keywords)) {
+                            suppressList = suppressList.concat(suite.keywords);
+                        }
+                        if (suite.frameworkFunctions && Array.isArray(suite.frameworkFunctions)) {
+                            suppressList = suppressList.concat(suite.frameworkFunctions);
+                        }
+                        /** Load per-file suppressions and add them */
+                        const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
+                        const perFileSuppressions = suppressionsResult.lines;
+                        if (perFileSuppressions.length > 0) {
+                            const step = new Step();
+                            step.logline = "Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">";
+                            step.obj = {file: suppressionsResult.planFile, suppressions: perFileSuppressions}; 
+                            this.accumulator.logStep(step);
+                            suppressList = suppressList.concat(perFileSuppressions);
+                        }
+                        //END TODO:suppressList moved ...
 
-                let state = new SourceLines();
-                states.push(state);
-                state.filename = file;
-                state.suite = name;
-                const filePath = join(options.dir, file);
-                const content = readFileSync(filePath, 'utf8');
-                let match;
-                let found = false;
+                    let state = new SourceLines();
+                    states.push(state);
+                    state.filename = file;
+                    state.suite = name;
+                    const filePath = join(options.dir, file);
+                    const content = readFileSync(filePath, 'utf8');
+                    let match;
+                    let found = false;
 
-                while ((match = regex.exec(content)) !== null) {
-                    let suppress = false;
-                    const identifier = match[1];
+                    while ((match = regex.exec(content)) !== null) {
+                        let suppress = false;
+                        const identifier = match[1];
 
-                    if (suppressList.length > 0 && identifier) {
-                        suppress = suppressList.some(kw => {
-                            if (typeof kw === 'string' && kw.startsWith('/') && kw.endsWith('/')) {
-                                // Treat as regex
-                                const re = new RegExp(kw.slice(1, -1));
-                                return re.test(identifier);
-                            } else {
-                                return kw === identifier;
+                        if (suppressList.length > 0 && identifier) {
+                            suppress = suppressList.some(kw => {
+                                if (typeof kw === 'string' && kw.startsWith('/') && kw.endsWith('/')) {
+                                    // Treat as regex
+                                    const re = new RegExp(kw.slice(1, -1));
+                                    return re.test(identifier);
+                                } else {
+                                    return kw === identifier;
+                                }
+                            });
+                        }
+                        if (!suppress) {
+                            if (!found) {
+                                state.foundBegin();
+                                found = true;
                             }
-                        });
-                    }
-                    if (!suppress) {
-                        if (!found) {
-                            state.foundBegin();
-                            found = true;
-                        }
-                        let theExpression;
-                        if (options.bareExpressions){
-                            theExpression = bareExpression;
-                        } else {
-                            theExpression = expression;
-                        }
-                        if (theExpression) {
-                            const output = theExpression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
-                            const startIndex = regex.lastIndex - match[0].length;
-                            const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
-                            const lineNumber = upToMatch.split('\n').length;
-                            state.addLine(output.trim(), lineNumber, startIndex, options.outputAll);
+                            let theExpression;
+                            if (options.bareExpressions){
+                                theExpression = bareExpression;
+                            } else {
+                                theExpression = expression;
+                            }
+                            if (theExpression) {
+                                const output = theExpression.replace(/\$\{match\[(\d+)\]\}/g, (m, idx) => match[idx] || '');
+                                const startIndex = regex.lastIndex - match[0].length;
+                                const upToMatch = content.slice(0, startIndex);  // Count lines up to startIndex
+                                const lineNumber = upToMatch.split('\n').length;
+                                state.addLine(output.trim(), lineNumber, startIndex, options.outputAll);
+                            }
                         }
                     }
-                }
-                state.foundEnd();
-            });
+                    state.foundEnd();
+                });
+            } finally {
+                this.accumulator.popSubstep();
+            }
             states.forEach(theState => {
                 if (theState.quantifyFound()>0){
                     if (options.outputLines){
@@ -302,7 +308,7 @@ export class FindMain {
                         notFoundHeaderPrinted = true;
                     }
                     console.log(theState.printFilename());
-                    this.accumulator.logFile("None found in file"+theState.printFilename(), theState.printFilename());
+                    this.accumulator.logFile("None found in file", theState.printFilename());
                 }
             });
             if (notFoundHeaderPrinted){
@@ -310,8 +316,6 @@ export class FindMain {
             }
             console.log("");
         }
-        const printOptions = { printObjects: true, prettyObjects: true };
-        this.appendOutputFile(join(options.datadir+"/plans","accumulator.plan"),this.getAccumulatorPrintout(printOptions), options);
         console.log(""); 
     } //END main();
 
@@ -387,31 +391,6 @@ export class FindMain {
         }
     }
 
-    
-    
-    getAccumulatorPrintout(options){
-        return this.accumulator.getAccumulatorPrintout(options);
-    }
-
-    writeOutputFile(relPath, data, options){
-        let logline = "💾  ━━━━━━━━━━━━━━━━━━ File written: "+relPath+" ━━━━━━━━━━━━━━━━━━";
-        if (!options.quiet){
-            console.log("\n"+logline);
-        }
-        writeFileSync(relPath, data, 'utf8');
-        this.accumulator.logFile(logline, relPath);
-    }
-
-    appendOutputFile(relPath, data, options){
-        let logline = "💾  ━━━━━━━━━━━━━━━━━━ File appended: "+relPath+" ━━━━━━━━━━━━━━━━━━";
-        if (options && !options.quiet){
-            console.log("\n"+logline);
-        }
-        writeFileSync(relPath, data, { encoding: 'utf8', flag: 'a' });
-        this.accumulator.logFile(logline, relPath);
-    }
-
-
     printHelpBox(options, msg){
         ANSIColors.cyan("╔════════════════════════════════════════════════════════════════════════════");
         ANSIColors.cyan("║     "+msg);
@@ -444,5 +423,6 @@ export class FindMain {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // This file is being run directly
-    new FindMain().main();
+    const findMainStepAccumulator = Accumulator.getStepInstance("FindMain-CLI");
+    new FindMain(findMainStepAccumulator).main();
 }

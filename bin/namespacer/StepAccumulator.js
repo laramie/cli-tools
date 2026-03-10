@@ -51,7 +51,8 @@ class StepAccumulator {
             stepID: this.currentStepID(),
             logline,
             icon: Emoji.FILEACCESS,
-            obj: { path: filename }
+            path: filename,
+            obj: {}
         }));
     }
 
