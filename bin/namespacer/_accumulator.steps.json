@@ -1,0 +1,119 @@
+💼  Accumulator [2m[36m::[0m Accumulated Plan. Run: 2026-03-10 02:31:07
+🪲   FindMain [2m[36m::[0m 🗒  Running from PlanRunner with ☛  runconfig-example.json ☚
+🌐  FindMain [2m[36m::[0m Running suite[1]:[1m[31mfunctions-no-exports[0m   [36mfunction <function-name>[0m
+💾  FindMain [2m[36m::[0m Directory: data/src [33mdata/src[0m
+💾  FindMain [2m[36m::[0m Extensions: .js [33m.js[0m
+🪲   FindMain [2m[36m::[0m Suite[1]:functions-no-exports {
+    "name": "functions-no-exports",
+    "regex": {},
+    "description": "function <function-name>",
+    "expression": "${match[1]}${match[2]} ${match[3]}",
+    "bareExpression": "${match[3]}"
+}
+🪲   FindMain [2m[36m::[0m Options: {
+    "quiet": false,
+    "color": true,
+    "bareExpressions": false,
+    "outputFilename": true,
+    "outputLines": false,
+    "outputSummary": true,
+    "shortSummary": false,
+    "outputSourceLocation": false,
+    "outputSortedLines": false,
+    "verbose": true,
+    "debug": false,
+    "configSource": "command-line",
+    "writeConfigFilename": null,
+    "suiteIdx": 1,
+    "extensions": [
+        ".js"
+    ],
+    "singleFile": null,
+    "configFilename": null,
+    "dir": "data/src",
+    "dirSpecified": false,
+    "datadir": "data",
+    "datadirSpecified": false
+}
+📂  FindMain [2m[36m::[0m entering substep targetFiles
+💾      FindMain.targetFiles [2m[36m::[0m processing file [33mIColorFunctions.js[0m
+💾      FindMain.targetFiles [2m[36m::[0m processing file [33mcolorFunctions.js[0m
+💾      FindMain.targetFiles [2m[36m::[0m processing file [33minfinite-neck.js[0m
+💾      FindMain.targetFiles [2m[36m::[0m processing file [33mnotetable.js[0m
+●       FindMain.Suppressions [2m[36m::[0m Found suppressions for file<notetable.js> [33mdata/plans/notetable.js.frameworks.plan[0m {
+    "file": "data/plans/notetable.js.frameworks.plan",
+    "suppressions": [
+        "Copyright",
+        "clearAll"
+    ]
+}
+💾      FindMain.targetFiles [2m[36m::[0m processing file [33msong.js[0m
+●       FindMain.Suppressions [2m[36m::[0m Found suppressions for file<song.js> [33mdata/plans/song.js.frameworks.plan[0m {
+    "file": "data/plans/song.js.frameworks.plan",
+    "suppressions": [
+        "resetNoteNames",
+        "clearAll"
+    ]
+}
+↩      FindMain.targetFiles [2m[36m::[0m leaving substep FindMain.targetFiles
+🪲   FindMain [2m[36m::[0m 👉 Summary: colorFunctions.js :: 3
+🪲   FindMain [2m[36m::[0m 👉 Summary: infinite-neck.js :: 1
+🪲   FindMain [2m[36m::[0m 👉 Summary: notetable.js :: 1
+🪲   FindMain [2m[36m::[0m 👉 Summary: song.js :: 69
+📂  FindMain [2m[36m::[0m entering substep Empty: [32m🗍[0m  None found in these files
+∅      FindMain.Empty [2m[36m::[0m file: [33mIColorFunctions.js[0m
+↩      FindMain.Empty [2m[36m::[0m leaving substep FindMain.Empty
+🪲   Replacer [2m[36m::[0m Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump {
+    "sources": [
+        {
+            "src": "./data/src/song.js",
+            "out": "./data/out/generated-song.js"
+        },
+        {
+            "src": "./data/src/notetable.js",
+            "out": "./data/out/generated-notetable.js"
+        }
+    ],
+    "namespaces": [
+        {
+            "namespace": "IInfiniteNeck",
+            "legacyImpl": "infiniteNeckImpl",
+            "bareList": "./data/plans/infinite-neck.js.functions.gen",
+            "excludes": "",
+            "interface": "./data/plans/infinite-neck.js.functions.gen",
+            "sourceout": "./data/out/IInfiniteNeck.js",
+            "interface_gen": "import * as infiniteNeckImpl from \"./data/out/IInfiniteNeck.js\";\nclass IInfiniteNeck {\n  clearAll(...args) {\n    return infiniteNeckImpl.clearAll(...args);\n  }\n  getCurrentSection(...args) {\n    return infiniteNeckImpl.getCurrentSection(...args);\n  }\n}",
+            "masterNamespaceMap": {
+                "clearAll": "IInfiniteNeck",
+                "getCurrentSection": "IInfiniteNeck"
+            }
+        },
+        {
+            "namespace": "ISong",
+            "legacyImpl": "songImpl",
+            "bareList": "./data/plans/song.js.functions.gen",
+            "excludes": "./data/plans/ISong.js.excludes.plan",
+            "interface": "./data/plans/song.js.functions.gen",
+            "sourceout": "./data/out/ISong.js"
+        },
+        {
+            "namespace": "INoteTable",
+            "legacyImpl": "notetableImpl",
+            "bareList": "./data/plans/notetable.js.functions.gen",
+            "excludes": "",
+            "interface": "./data/plans/notetable.js.functions.gen",
+            "sourceout": "./data/out/INoteTable.js"
+        },
+        {
+            "namespace": "IColorFunctions",
+            "legacyImpl": "colorFunctionsImpl",
+            "bareList": "./data/plans/colorFunctions.js.functions.gen",
+            "excludes": "",
+            "interface": "./data/plans/IColorFunctions.js.interface.plan",
+            "sourceout": "./data/out/IColorFunctions.js"
+        }
+    ]
+}
+💾  Replacer [2m[36m::[0m processFileWithInvocations::file:./data/src/song.js [33m./data/out/generated-song.js[0m
+💾  Replacer [2m[36m::[0m processFileWithInvocations::file:./data/src/notetable.js [33m./data/out/generated-notetable.js[0m
+💼  Accumulator [2m[36m::[0m END. [32m2026-03-10 02:31:07[0m

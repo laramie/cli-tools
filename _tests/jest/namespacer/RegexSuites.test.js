@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
+
 import { RegexSuites } from '../../../bin/namespacer/RegexSuites.js';
+import { logVerbose } from './LogVerboseJest.js';
+
 
 describe('RegexSuites static tests', () => {
     test('testMalformedSuites throws as expected and error count matches', () => {
@@ -15,6 +18,7 @@ describe('RegexSuites static tests', () => {
             // Optionally, check the structure of the errors
             expect(err.validationErrors[0]).toHaveProperty('suiteIdx');
             expect(err.validationErrors[0]).toHaveProperty('errors');
+            logVerbose(1,"err.validationLog:"+err.validationLog);
         }
     });
     test('testDefaultSuites succeeds', () => {

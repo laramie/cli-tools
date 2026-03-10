@@ -1,66 +1,104 @@
 import { Accumulator } from './Accumulator.js';
+import { Step } from './Step.js';
+// You may need to adjust the import path for Emoji
+import {Emoji} from './Emoji.js';
 
-class StepAccumulator {
-    getAccumulatorPrintout(options) {
-      return this.acc.getAccumulatorPrintout(options);
+export class StepAccumulator {
+    constructor(rootStepID) {
+        if (!rootStepID || typeof rootStepID !== 'string') {
+            throw new Error('StepAccumulator requires a non-empty root stepID');
+        }
+        this._stepIDStack = [rootStepID];
+        this.acc = Accumulator.getInstance();
     }
-  constructor(identity) {
-    this.identity = identity;
-    this.acc = Accumulator.getInstance();
-    this.step = this.acc.startStep(identity);
-  }
 
-  accumulate(...args) {
-    //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~accumulate in StepAccumulator~~~~~:"+JSON.stringify(args));
-      
-    if (args.length === 1) {
-      // Only logline provided: decorate with stepID
-      return this.acc.accumulate(args[0], { stepID: this.identity });
-    } else if (args.length === 2) {
-      // logline and bigObject provided: wrap bigObject with stepID
-      return this.acc.accumulate(args[0], { stepID: this.identity, bigObject: args[1] });
-    } else {
-      // Fallback: pass all args as-is
-      //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~FALLBACK in StepAccumulator~~~~~:"+(args));
-      return this.acc.accumulate(...args);
+    newStep(logline, icon){
+      return new Step({
+            logline: logline,
+            stepID: this.currentStepID(),
+            icon: icon,
+            obj: {}
+        });   
     }
-  }
 
-  log(message) {
-    return this.acc.log(message, this);
-  }
+    pushSubstep(substepID, optionalMessage) {
+        const theLogline = `entering substep ${substepID}` + (optionalMessage ? `: ${optionalMessage}` : "");
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline: theLogline,
+            icon: Emoji.SUBSTEP,
+            obj: {}
+        }));
+        this._stepIDStack.push(substepID);
+        
+    }
 
-  logTopic(topic, message) {
-    return this.acc.logTopic(topic, message, this);
-  }
+    popSubstep() {
+        // Log before popping
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline: 'leaving substep ' + this.currentStepID(),
+            icon: Emoji.LEAVESTEP,
+            obj: {}
+        }));
+        if (this._stepIDStack.length > 1) {
+            this._stepIDStack.pop();
+        }
+    }
 
-  logLevel(level, message) {
-    return this.acc.logLevel(level, message, this);
-  }
+    currentStepID() {
+        return this._stepIDStack.join('.');
+    }
 
-  readFileSync(filename, options) {
-    return this.acc.readFileSync(filename, options, this);
-  }
+    indent(){
+      return " ".repeat((this._stepIDStack.length - 1) * 4);
+    }
 
-  writeFileSync(filename, data, options) {
-    return this.acc.writeFileSync(filename, data, options, this);
-  }
+    logStep(step) {
+        if (!step.stepID) {
+            step.stepID = this.currentStepID();
+        }
+        return this.acc.logStep(step);
+    }
 
-  readdirSync(path, options) {
-    return this.acc.readdirSync(path, options, this);
-  }
+    logFile(logline, filename, icon = Emoji.FILEACCESS) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon,
+            path: filename,
+            obj: {}
+        }));
+    }
 
-  existsSync(path) {
-    return this.acc.existsSync(path, this);
-  }
+    logLine(logline) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon: Emoji.BEETLE,
+            obj: {}
+        }));
+    }
 
-  appendOutputFile(filename, data, options) {
-    return this.acc.appendOutputFile(filename, data, options, this);
-  }
+    logObject(logline, bigObject) {
+        this.logStep(new Step({
+            stepID: this.currentStepID(),
+            logline,
+            icon: Emoji.BEETLE,
+            obj: bigObject
+        }));
+    }
 
-  leave() {
-    this.acc.endStep(this.step);
-  }
+
+    // Pass-throughs for legacy/utility
+    log(message) { return this.acc.log(message, this); }
+    logTopic(topic, message) { return this.acc.logTopic(topic, message, this); }
+    logLevel(level, message) { return this.acc.logLevel(level, message, this); }
+    readFileSync(filename, options) { return this.acc.readFileSync(filename, options, this); }
+    writeFileSync(filename, data, options) { return this.acc.writeFileSync(filename, data, options, this); }
+    readdirSync(path, options) { return this.acc.readdirSync(path, options, this); }
+    existsSync(path) { return this.acc.existsSync(path, this); }
+    appendOutputFile(filename, data, options) { return this.acc.appendOutputFile(filename, data, options, this); }
 }
 
 export default StepAccumulator;

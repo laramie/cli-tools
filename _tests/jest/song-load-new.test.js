@@ -2,6 +2,7 @@ import './jest-setup-es6.js';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { setupSongTests, getSong } from '../../infinite-neck.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -317,7 +318,7 @@ function runSongValidation(file, data, songTestOptions = {}) {
             + LF + "    • expectedFailure:" + songTestOptions.expectedFailure
             + LF + "    • summary:" + JSON.stringify({ expectedSections, sectionRootIDs, song_rootID: data.rootID })
             + LF + "    • songTestOptions:" + JSON.stringify(songTestOptions));
-        const gSong = global.makeSong();
+        setupSongTests();
         getSong().addSections(data);
         expect(getSong().getSections().length).toBe(expectedSections);
         expect(data).toHaveProperty('rootID');
@@ -383,9 +384,11 @@ function rootIDsMore(sectionRootIDsArr) {
 
 printVerboseModeMessage();
 
-describe('gSong test_getRelativeSectionWithWrap', () => {
+describe('getSong() test_getRelativeSectionWithWrap', () => {
     test('should run test_getRelativeSectionWithWrap without errors', () => {
-        const gSong = global.makeSong();
+        setupSongTests();
+        getSong().setHeadless(true);
+        console.log("after setHeadless. getSong().isHeadless:"+getSong().isHeadless);
         getSong().addSection(getSong().constructSection());
         getSong().addSection(getSong().constructSection());
         getSong().addSection(getSong().constructSection());
@@ -401,7 +404,7 @@ describe('gSong test_getRelativeSectionWithWrap', () => {
     });
 });
 
-describe('Song file and gSong loading validation', () => {
+describe('Song file and getSong() loading validation', () => {
     let accumFilename = [];
     let data = null;
     logVerbose(2, "🛈  Song Files to be tested with songTestOptions: " + LF + JSON.stringify(songFiles, null, 4));

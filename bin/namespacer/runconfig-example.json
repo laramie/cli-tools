@@ -3,7 +3,7 @@
     "color": true,
     "bareExpressions": false,
     "outputFilename": true,
-    "outputLines": true,
+    "outputLines": false,
     "outputSummary": true,
     "shortSummary": false,
     "outputSourceLocation": false,
@@ -13,8 +13,8 @@
     "configSource": "command-line",
     "suiteIdx": 1,
     "extensions": [
-        ".js",
-        ".txt"
+        ".js"
     ],
+    "dir": "data/src",
     "singleFile": null
 }

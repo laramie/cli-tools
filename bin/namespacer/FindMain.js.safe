@@ -220,13 +220,9 @@ export class FindMain {
                         const suppressionsResult = this.loadFrameworkSuppressionsForFile(file, options.datadir);
                         const perFileSuppressions = suppressionsResult.lines;
                         if (perFileSuppressions.length > 0) {
-                            const step = new Step({
-                                stepID: "FindMain.Suppressions",
-                                logline: "Found suppressions for file<"+file+">",
-                                path: suppressionsResult.planFile, 
-                                obj: {file: suppressionsResult.planFile, suppressions: perFileSuppressions},
-                                icon: Emoji.BULLET
-                            }); 
+                            const step = new Step();
+                            step.logline = "Found suppressions for file<"+file+"> in <"+suppressionsResult.planFile+">";
+                            step.obj = {file: suppressionsResult.planFile, suppressions: perFileSuppressions}; 
                             this.accumulator.logStep(step);
                             suppressList = suppressList.concat(perFileSuppressions);
                         }
@@ -237,7 +233,7 @@ export class FindMain {
                     state.filename = file;
                     state.suite = name;
                     const filePath = join(options.dir, file);
-                    const content = this.accumulator.readFileSync(filePath, 'utf8');
+                    const content = readFileSync(filePath, 'utf8');
                     let match;
                     let found = false;
 
@@ -307,10 +303,11 @@ export class FindMain {
                         if (!notFoundHeaderPrinted){
                             let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
                             console.log(loglineNone);
+                            this.accumulator.logStep(headerStep);
                             notFoundHeaderPrinted = true;
                         }
                         console.log(theState.printFilename());
-                        this.accumulator.logFile("file:", theState.printFilename(), Emoji.EMPTYOK);
+                        this.accumulator.logFile("file:", theState.printFilename(), Emoji.EMPTY);
                     }
                 });
                 if (notFoundHeaderPrinted){
@@ -333,7 +330,7 @@ export class FindMain {
         if (!existsSync(result.planFile)) {
             return result;
         }
-        const lines = this.accumulator.readFileSync(result.planFile, 'utf8')
+        const lines = readFileSync(result.planFile, 'utf8')
             .split('\n')
             .map(line => line.trim())
             .filter(line => line && !line.startsWith('#'));
@@ -364,7 +361,7 @@ export class FindMain {
                 this.printError(options, `Config file not found: ${configFilename}`);
                 return null;
             }
-            const data = this.accumulator.readFileSync(configFilename, 'utf8');
+            const data = readFileSync(configFilename, 'utf8');
             return JSON.parse(data);
         } catch (err) {
             this.printError(options, `Error reading config file: ${err}`);

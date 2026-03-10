@@ -23,27 +23,6 @@ import { gUserColorDict, gUserColorDictRolesDefault, gUserColorDictFingeringsDef
 import { convertRGB_to_HEX, invertColor, padZero, queryNamedNotesSetBGOpacity, scrollToTop, toInt } from '../../utils.js';
 import { setupSongTests, getSong, getCurrentSection, getSectionsCurrentIndex, getSections } from '../../infinite-neck.js';
 
-// Attach globals for test access (if needed)
-global.gColorPickerColors = gColorPickerColors;
-global.makeSong = makeSong;
-global.NoteTableFacade = NoteTableFacade;
-global.TableBuilder = TableBuilder;
-global.allTunings = allTunings;
-global.gUserColorDict = gUserColorDict;
-global.gUserColorDictRolesDefault = gUserColorDictRolesDefault;
-global.gUserColorDictFingeringsDefault = gUserColorDictFingeringsDefault;
-global.gDefault_CycleOfColors = gDefault_CycleOfColors;
-global.gAllClear = gAllClear;
-global.setupSongTests = setupSongTests;
-global.getSong = getSong;
-global.getCurrentSection = getCurrentSection;
-global.getSectionsCurrentIndex = getSectionsCurrentIndex;
-global.getSections = getSections;
-
-// Run setupSongTests to initialize gSong and related globals
-if (typeof setupSongTests === 'function') {
-  setupSongTests();
-}
 
 // Export for ES module consumers (optional)
 export default {
