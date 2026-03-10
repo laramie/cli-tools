@@ -15,6 +15,7 @@ export class Step {
 		if (!stepID || typeof stepID !== 'string') {
 			throw new Error('Step requires a string stepID');
 		}
+        console.log("logline:"+logline+",typeof:"+typeof logline);
 		if (!logline || typeof logline !== 'string') {
 			throw new Error('Step requires a string logline');
 		}

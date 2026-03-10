@@ -4,7 +4,8 @@ import { ANSIColors } from './ANSIColors.js';
 import { Emoji } from './Emoji.js';
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
 import { Logger } from './Logger.js';
-import StepAccumulator from './StepAccumulator.js';
+import { Step } from './Step.js';
+import { StepAccumulator } from './StepAccumulator.js';
 
 let _GID = 1;
 const ACCUMULATOR_LOGLINES = "_accumulator.loglines.txt";
@@ -23,26 +24,13 @@ export class Accumulator {
         this._stepsArray = [];
         this.logger = Logger.getInstance();
         Accumulator._instance = this;
+        this.#logAccumulatorHeader();
     }
-        // For polymorphism with StepAccumulator
-        // Accepts stepID, returns indentation based on dot count
-        indent(stepID) {
-            if (!stepID || typeof stepID !== 'string') return '';
-            const dotCount = (stepID.match(/\./g) || []).length;
-            return '    '.repeat(dotCount); // 4 spaces per dot
-        }
-
-    accumulate(logline) {
-        //console.log("++++++++++++++++++Accumulator.accumulate:::"+logline+":::");
-        if (arguments.length > 1) {
-            const bigObject = arguments[1];
-            const entry = { logline, bigObject };
-            this._loglinesArray.push(entry);
-            return entry;
-        } else {
-            this._loglinesArray.push(logline);
-            return logline;
-        }
+    // Accepts stepID, returns indentation based on dot count
+    indent(stepID) {
+        if (!stepID || typeof stepID !== 'string') return '';
+        const dotCount = (stepID.match(/\./g) || []).length;
+        return '    '.repeat(dotCount); // 4 spaces per dot
     }
 
     logStep(step){
@@ -63,44 +51,26 @@ export class Accumulator {
         this.logger.logLevel(level, `${message}`);
     }
 
-    getAccumulatorPrintout(printOptions) {
-
-        let fullJSON = JSON.stringify(this._loglinesArray,null,4);
-        this.appendOutputFile("fullJSON.json", fullJSON);
-        // Set default options
-        printOptions = printOptions || {};
-        const printObjects = printOptions.printObjects !== false; // default true
-        const prettyObjects = printOptions.prettyObjects !== false; // default true
-        const lines = this._loglinesArray.map(entry => {
-            //console.log( ":::::DUMP::::::"+JSON.stringify(entry));
-            if (printObjects && entry && typeof entry === 'object' && 'logline' in entry && 'bigObject' in entry) {
-                let out = entry.logline;
-                
-                if (entry.bigObject !== undefined) {
-                    if (prettyObjects) {
-                        out += '\n' + JSON.stringify(entry.bigObject, null, 4);
-                    } else {
-                        out += '\n' + JSON.stringify(entry.bigObject);
-                    }
-                }
-                return out;
-            } else if (typeof entry === 'string') {
-                return entry;
-            } else if (entry && typeof entry === 'object' && 'logline' in entry) {
-                // fallback: just print logline
-                return entry.logline;
-            } else {
-                return String(entry);
-            }
-        });
-        return lines.join("\n")
-            + "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            + "\n" + ANSIColors.green(Accumulator.getTimeStamp(true))
-            + "\n_ID:"+this._ID
-            + "\n\n";
+    //called in constructor:
+    #logAccumulatorHeader(){
+        const logline = "Accumulated Plan. Run: "+ANSIColors.cyan(Accumulator.getTimeStamp(true))
+            +(ANSIColors.isColoring() 
+            ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
+            :  ""
+        );
+        const step = new Step({stepID: "Accumulator", logline: logline, icon: Emoji.ACCUMULATOR});
+        this.logStep(step);                
     }
-
+    
+    #logAccumulatorFooter() {
+        const logline = ANSIColors.green(Accumulator.getTimeStamp(true))
+            + "  _ID:"+this._ID;
+        const step = new Step({stepID: "Accumulator", logline: logline, icon: Emoji.ACCUMULATOR});
+        this.logStep(step);  
+    }
+    
     getStepsPrintout(printOptions) {
+        this.#logAccumulatorFooter();
         printOptions = printOptions || {};
         if (printOptions.oneLiner === true) {
             // One-liner: icon indent(stepID) currentStepID :: logline path {...} if obj exists
@@ -170,6 +140,7 @@ export class Accumulator {
 
     clear() {
         this._loglinesArray = [];
+        this._stepsArray = [];
     }
 
     static getTimeStamp(emitSeconds){
@@ -188,25 +159,29 @@ export class Accumulator {
         return Accumulator._instance;
     }
 
+    #logFileIO(opp, path){
+        const step = new Step({stepID: "Accumulator", logline: opp, path: path, icon: Emoji.FILEACCESS});
+        this.logStep();
+    }
 
     // --- File I/O Wrappers, context-aware ---
     readFileSync(path, options, stepAccumulator) {
-        this.accumulate(`readFileSync: ${path}`);
+        this.#logFileIO("readFileSync", path);
         return readFileSync(path, options);
     }
 
     writeFileSync(path, data, options, stepAccumulator) {
-        this.accumulate(`writeFileSync: ${path}`);
+        this.#logFileIO("writeFileSync", path);
         return writeFileSync(path, data, options);
     }
 
     readdirSync(path, options, stepAccumulator) {
-        this.accumulate(`readdirSync: ${path}`);
+        this.#logFileIO("readdirSync", path);
         return readdirSync(path, options);
     }
 
     existsSync(path, stepAccumulator) {
-        this.accumulate(`existsSync: ${path}`);
+        this.#logFileIO("existsSync", path);
         return existsSync(path);
     }
 
@@ -217,7 +192,6 @@ export class Accumulator {
     }
 
     appendOutputFiles(printOptions){
-        this.appendOutputFile(ACCUMULATOR_LOGLINES,this.getAccumulatorPrintout(printOptions), null);
         this.appendOutputFile(ACCUMULATOR_STEPS,this.getStepsPrintout(printOptions), null);
     }
 

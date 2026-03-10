@@ -43,5 +43,7 @@ this worked:
      laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/RegexSuites.test.js
 this worked: 
      laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/Accumulator.test.js
+
+     _tests/jest/namespacer/Accumulator.test.js
      
     

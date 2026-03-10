@@ -18,6 +18,7 @@ import { ANSIColors }  from './ANSIColors.js';
 import { RegexSuites } from './RegexSuites.js';
 import { Accumulator } from './Accumulator.js';
 import { Step } from './Step.js';
+import { Emoji } from './Emoji.js';
 
 /** This class is driven from command-line parameters and files or globs passed to 
  *   process a number of source Javascript files, scanning for functions, exports, and invocations.
@@ -76,7 +77,6 @@ export class FindMain {
             }
             if (options.writeConfigFilename){
                 this.writeConfigFile(options.writeConfigFilename, options);
-                this.accumulatePlan("💾 writeConfigFile: "+options.writeConfigFilename); 
                 prePlanActions.push("💾 writeConfigFile: "+options.writeConfigFilename); 
             }
         }
@@ -99,13 +99,7 @@ export class FindMain {
         if (options.debug) console.log("options:"+JSON.stringify(options));
         ANSIColors.setColor(options.color);
 
-        this.accumulator.logLine("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            +"\nAccumulated Plan. Run: "+ANSIColors.cyan(Accumulator.getTimeStamp(true))
-            +(ANSIColors.isColoring() 
-                ?   "\n  --color :: View as 'cat <filename>' or 'less -R <filename>'"
-                :  ""
-            )
-            +"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        
         if (prePlanActions){
             prePlanActions.forEach(line => this.accumulator.logLine(line));
         }
@@ -135,10 +129,13 @@ export class FindMain {
 
         const suite = regexSuites.getSuites()[options.suiteIdx];
 
-        let loglineRunning = (`🌐  Running suite[${options.suiteIdx}]`
+        let loglineRunning = `Running suite[${options.suiteIdx}]`  // 🌐 
                         +`:${ANSIColors.bold()+ANSIColors.red(name)} `
-                        +`  ${ANSIColors.cyan(description)}`);
-        this.accumulator.logLine(loglineRunning);
+                        +`  ${ANSIColors.cyan(description)}`;
+                        console.log("############## loglineRunning: "+loglineRunning+"####");
+        const stepRunningSuite = this.accumulator.newStep(loglineRunning, Emoji.BIGPLAN);  
+        this.accumulator.logStep(stepRunningSuite);
+
         let loglineDirectory= `Directory: ${options.dir}`;
         this.accumulator.logFile(loglineDirectory, options.dir);
         let loglineFiles, loglineFileNames;
@@ -298,21 +295,27 @@ export class FindMain {
                     }
                 }
             });
-            let notFoundHeaderPrinted = false;
-            states.forEach(theState => {
-                if (theState.quantifyFound()===0 && options.outputFilename){
-                    if (!notFoundHeaderPrinted){
-                        let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
-                        console.log(loglineNone);
-                        this.accumulator.logLine(loglineNone);
-                        notFoundHeaderPrinted = true;
+            let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
+            this.accumulator.pushSubstep("Empty", ANSIColors.green("🗍")+"  None found in these files");            
+            try {
+                let notFoundHeaderPrinted = false;
+                states.forEach(theState => {
+                    if (theState.quantifyFound()===0 && options.outputFilename){
+                        if (!notFoundHeaderPrinted){
+                            let loglineNone = "\n\n━━━━━━━━   "+ANSIColors.green("🗍")+"   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━";
+                            console.log(loglineNone);
+                            this.accumulator.logStep(headerStep);
+                            notFoundHeaderPrinted = true;
+                        }
+                        console.log(theState.printFilename());
+                        this.accumulator.logFile("file:", theState.printFilename(), Emoji.EMPTY);
                     }
-                    console.log(theState.printFilename());
-                    this.accumulator.logFile("None found in file", theState.printFilename());
+                });
+                if (notFoundHeaderPrinted){
+                    console.log(             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 }
-            });
-            if (notFoundHeaderPrinted){
-                console.log(             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            } finally {
+                this.accumulator.popSubstep();
             }
             console.log("");
         }

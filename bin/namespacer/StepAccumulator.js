@@ -3,7 +3,7 @@ import { Step } from './Step.js';
 // You may need to adjust the import path for Emoji
 import {Emoji} from './Emoji.js';
 
-class StepAccumulator {
+export class StepAccumulator {
     constructor(rootStepID) {
         if (!rootStepID || typeof rootStepID !== 'string') {
             throw new Error('StepAccumulator requires a non-empty root stepID');
@@ -12,14 +12,25 @@ class StepAccumulator {
         this.acc = Accumulator.getInstance();
     }
 
-    pushSubstep(substepID) {
-        this._stepIDStack.push(substepID);
+    newStep(logline, icon){
+      return new Step({
+            logline: logline,
+            stepID: this.currentStepID(),
+            icon: icon,
+            obj: {}
+        });   
+    }
+
+    pushSubstep(substepID, optionalMessage) {
+        const theLogline = `entering substep ${substepID}` + (optionalMessage ? `: ${optionalMessage}` : "");
         this.logStep(new Step({
             stepID: this.currentStepID(),
-            logline: 'entering substep ' + substepID,
+            logline: theLogline,
             icon: Emoji.SUBSTEP,
             obj: {}
         }));
+        this._stepIDStack.push(substepID);
+        
     }
 
     popSubstep() {
@@ -74,14 +85,8 @@ class StepAccumulator {
         }));
     }
 
-    // Pass-through which SHOULD BE DELETED once implementation is done for logStep().
-    accumulate(logline) { return this.acc.accumulate(logline); }
-    
 
     // Pass-throughs for legacy/utility
-    getAccumulatorPrintout(printOptions) {
-        return this.acc.getAccumulatorPrintout(printOptions);
-    }
     log(message) { return this.acc.log(message, this); }
     logTopic(topic, message) { return this.acc.logTopic(topic, message, this); }
     logLevel(level, message) { return this.acc.logLevel(level, message, this); }

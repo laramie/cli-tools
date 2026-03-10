@@ -1,15 +1,11 @@
-🪲 FindMain :: 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Accumulated Plan. Run: [36m2026-03-09 18:57:03[0m
-  --color :: View as 'cat <filename>' or 'less -R <filename>'
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💼 Accumulator :: Accumulated Plan. Run: 2026-03-09 21:33:16
 🪲 FindMain :: 🗒  Running from PlanRunner with ☛  runconfig-example.json ☚
-🪲 FindMain :: 🌐  Running suite[1]:[1m[31mfunctions-no-exports[0m   [36mfunction <function-name>[0m
+🌐 FindMain :: Running suite[1]:[1m[31mfunctions-no-exports[0m   [36mfunction <function-name>[0m
 💾 FindMain :: Directory: /home/laramie/infinite-neck/bin/namespacer [33m/home/laramie/infinite-neck/bin/namespacer[0m
 💾 FindMain :: Extensions: .js, .txt [33m.js, .txt[0m
 🪲 FindMain :: Suite[1]:functions-no-exports {...}
 🪲 FindMain :: Options: {...}
-📂     FindMain.targetFiles :: entering substep targetFiles
+📂 FindMain :: entering substep targetFiles
 💾     FindMain.targetFiles :: processing file [33mANSIColors.js[0m
 💾     FindMain.targetFiles :: processing file [33mAccumulator.js[0m
 💾     FindMain.targetFiles :: processing file [33mAccumulator.test.js[0m
@@ -23,7 +19,6 @@ Accumulated Plan. Run: [36m2026-03-09 18:57:03[0m
 💾     FindMain.targetFiles :: processing file [33mPlanRunner.js[0m
 💾     FindMain.targetFiles :: processing file [33mRegexSuites.js[0m
 💾     FindMain.targetFiles :: processing file [33mReplacer.js[0m
-💾     FindMain.targetFiles :: processing file [33mSampleStep.js[0m
 💾     FindMain.targetFiles :: processing file [33mSourceFile.js[0m
 💾     FindMain.targetFiles :: processing file [33mSourceLines.js[0m
 💾     FindMain.targetFiles :: processing file [33mStep.js[0m
@@ -31,27 +26,27 @@ Accumulated Plan. Run: [36m2026-03-09 18:57:03[0m
 💾     FindMain.targetFiles :: processing file [33m_accumulator.loglines.txt[0m
 ↩     FindMain.targetFiles :: leaving substep FindMain.targetFiles
 🪲 FindMain :: 👉 Summary: GenerateInterface.js :: 1
-🪲 FindMain :: 
-
-━━━━━━━━   [32m🗍[0m   None found in these files ━━━━━━━━━━━━━━━━━━━━━━━━
-💾 FindMain :: None found in file [33mANSIColors.js[0m
-💾 FindMain :: None found in file [33mAccumulator.js[0m
-💾 FindMain :: None found in file [33mAccumulator.test.js[0m
-💾 FindMain :: None found in file [33mEmoji.js[0m
-💾 FindMain :: None found in file [33mFindMain.js[0m
-💾 FindMain :: None found in file [33mFindOptions.js[0m
-💾 FindMain :: None found in file [33mLogger.js[0m
-💾 FindMain :: None found in file [33mLogger.test.js[0m
-💾 FindMain :: None found in file [33mLoggerCaller.js[0m
-💾 FindMain :: None found in file [33mPlanRunner.js[0m
-💾 FindMain :: None found in file [33mRegexSuites.js[0m
-💾 FindMain :: None found in file [33mReplacer.js[0m
-💾 FindMain :: None found in file [33mSampleStep.js[0m
-💾 FindMain :: None found in file [33mSourceFile.js[0m
-💾 FindMain :: None found in file [33mSourceLines.js[0m
-💾 FindMain :: None found in file [33mStep.js[0m
-💾 FindMain :: None found in file [33mStepAccumulator.js[0m
-💾 FindMain :: None found in file [33m_accumulator.loglines.txt[0m
+📂 FindMain :: entering substep Empty: [32m🗍[0m  None found in these files
+🚫     FindMain.Empty :: None found in these files
+💾     FindMain.Empty :: file: [33mANSIColors.js[0m
+💾     FindMain.Empty :: file: [33mAccumulator.js[0m
+💾     FindMain.Empty :: file: [33mAccumulator.test.js[0m
+💾     FindMain.Empty :: file: [33mEmoji.js[0m
+💾     FindMain.Empty :: file: [33mFindMain.js[0m
+💾     FindMain.Empty :: file: [33mFindOptions.js[0m
+💾     FindMain.Empty :: file: [33mLogger.js[0m
+💾     FindMain.Empty :: file: [33mLogger.test.js[0m
+💾     FindMain.Empty :: file: [33mLoggerCaller.js[0m
+💾     FindMain.Empty :: file: [33mPlanRunner.js[0m
+💾     FindMain.Empty :: file: [33mRegexSuites.js[0m
+💾     FindMain.Empty :: file: [33mReplacer.js[0m
+💾     FindMain.Empty :: file: [33mSourceFile.js[0m
+💾     FindMain.Empty :: file: [33mSourceLines.js[0m
+💾     FindMain.Empty :: file: [33mStep.js[0m
+💾     FindMain.Empty :: file: [33mStepAccumulator.js[0m
+💾     FindMain.Empty :: file: [33m_accumulator.loglines.txt[0m
+↩     FindMain.Empty :: leaving substep FindMain.Empty
 🪲 Replacer :: Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump {...}
 💾 Replacer :: processFileWithInvocations::file:./data/src/song.js [33m./data/out/generated-song.js[0m
 💾 Replacer :: processFileWithInvocations::file:./data/src/notetable.js [33m./data/out/generated-notetable.js[0m
+💼 Accumulator :: [32m2026-03-09 21:33:16[0m  _ID:1
