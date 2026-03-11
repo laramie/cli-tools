@@ -30,7 +30,7 @@ import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
 import {SourceFile}  from './SourceFile.js';
-import {Accumulator} from './Accumulator.js';
+import {Emoji} from './Emoji.js';
 
 // Enum-like object for readSourceFile status codes
 export const ReadSourceStatus = Object.freeze({
@@ -102,9 +102,10 @@ export class Replacer {
         INTERFACE_GENS: false,
         MASTER_NAMESPACE_MAP: false,
         OUTPUT: false,
+        OUTPUT_REPLACEMENTS_LINEOBJECTS: false,
         OUTPUT_REPLACEMENTS: false,
-        OUTPUT_NOOP_REPLACEMENTS: false,
-        OUTPUT_REPLACEMENTS_LINENUM: false
+        OUTPUT_REPLACEMENTS_LINENUM: false,
+        OUTPUT_NOOP_REPLACEMENTS: true
     };
 
 
@@ -140,29 +141,41 @@ export class Replacer {
         this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
+        //TODO: this baby is a huge collection of line objects:
+        /**
+         {
+            "identifier": "getCurrentSection",
+            "startIndex": 992,
+            "linenum": 28,
+            "rawLine": "    if (this.getCurrentSection().sharps){",
+            "replacedLine": "    if (this.IInfiniteNeck.getCurrentSection().sharps){",
+            "namespace": "IInfiniteNeck",
+            "regexUsed": {},
+            "replacementCount": 1
+          },
+         */
+         // See if you can provide a filter or output strategy method.
         this.log(this.logFlags.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
         this.logStep(this.logFlags.OUTPUT, '🥞', "Output data struct", lineObjectsArray);
         
 
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        this.log(this.logFlags.OUTPUT_REPLACEMENTS, "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-        this.logStep(this.logFlags.OUTPUT_REPLACEMENTS, '👍', "replacements only", replacementsOnly);
+        this.log(this.logFlags.OUTPUT_REPLACEMENTS_LINEOBJECTS, "\n\n👍   replacements only [Line obj]:\n"+JSON.stringify(replacementsOnly, null, 4));
+        this.logStep(this.logFlags.OUTPUT_REPLACEMENTS_LINEOBJECTS, '👍', "replacements only [Line obj]", replacementsOnly);
         
-        if (this.logFlags.OUTPUT_REPLACEMENTS_LINENUM) {
-            const replacementsLinenumReplacer = (key, value) =>
-                Array.isArray(value) ? value.map(o => `${o.linenum}:${o.replacedLine}`) : value;
-
-            //TODO: move arrow function in here.
+        if (this.logFlags.OUTPUT_REPLACEMENTS) {
+            let replacerFn =  (key, value) => Array.isArray(value) ? value.map(o => `${o.replacedLine}`) : value
+            if (this.logFlags.OUTPUT_REPLACEMENTS_LINENUM){
+                replacerFn =  (key, value) => Array.isArray(value) ? value.map(o => `${o.linenum}:${o.replacedLine}`) : value;
+            }
             const stringified = JSON.stringify(
                 replacementsOnly,
-                replacementsLinenumReplacer,
+                replacerFn,
                 4
             );
             this.log(true, "replacements:"+stringified);
             const obj = JSON.parse(stringified);
-
-            this.logStep(this.logFlags.OUTPUT_REPLACEMENTS_LINENUM, Emoji.BULLET, "replacements", obj);
-            
+            this.logStep(this.logFlags.OUTPUT_REPLACEMENTS, Emoji.BULLET, "replacements", obj);
         }
 
 
