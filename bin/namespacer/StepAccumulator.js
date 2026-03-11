@@ -82,11 +82,11 @@ export class StepAccumulator {
         }));
     }
 
-    logLine(logline) {
+    logLine(logline, icon = Emoji.BEETLE) {
         this.logStep(new Step({
             stepID: this.currentStepID(),
             logline,
-            icon: Emoji.BEETLE,
+            icon: icon,
             obj: {}
         }));
     }

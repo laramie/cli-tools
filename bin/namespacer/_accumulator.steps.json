@@ -1,4 +1,4 @@
-💼  Accumulator [2m[36m::[0m Accumulated Plan. Run: 2026-03-11 04:29:22
+💼  Accumulator [2m[36m::[0m Accumulated Plan. Run: 2026-03-11 09:09:05
 🪲   FindMain [2m[36m::[0m 🗒  Running from PlanRunner with ☛  runconfig-example.json ☚
 🌐  FindMain [2m[36m::[0m Running suite[1]:[1m[31mfunctions-no-exports[0m   [36mfunction <function-name>[0m
 💾  FindMain [2m[36m::[0m Directory: data/src [33mdata/src[0m
@@ -56,21 +56,21 @@
     ]
 }
 ↩      FindMain.targetFiles [2m[36m::[0m leaving substep FindMain.targetFiles
-▤  FindMain [2m[36m::[0m functions in colorFunctions.js [
+▤   FindMain [2m[36m::[0m functions in colorFunctions.js [
     "function buildOneColor",
     "function buildOneRadio",
     "function remainingChecked"
 ]
 🪲   FindMain [2m[36m::[0m 👉 Summary: colorFunctions.js :: 3
-▤  FindMain [2m[36m::[0m functions in infinite-neck.js [
+▤   FindMain [2m[36m::[0m functions in infinite-neck.js [
     "function linkButtonToCB"
 ]
 🪲   FindMain [2m[36m::[0m 👉 Summary: infinite-neck.js :: 1
-▤  FindMain [2m[36m::[0m functions in notetable.js [
+▤   FindMain [2m[36m::[0m functions in notetable.js [
     "function handleRecordedNote"
 ]
 🪲   FindMain [2m[36m::[0m 👉 Summary: notetable.js :: 1
-▤  FindMain [2m[36m::[0m functions in song.js [
+▤   FindMain [2m[36m::[0m functions in song.js [
     "function addCloneSection",
     "function addDeepCloneSection",
     "function addSection",
@@ -145,6 +145,13 @@
 📂  FindMain [2m[36m::[0m entering substep Empty: [32m🗍[0m  None found in these files
 ∅      FindMain.Empty [2m[36m::[0m file: [33mIColorFunctions.js[0m
 ↩      FindMain.Empty [2m[36m::[0m leaving substep FindMain.Empty
+💾  Replacer [2m[36m::[0m Writing generated Interface [33m./data/out/IInfiniteNeck.js[0m
+🪲   Replacer [2m[36m::[0m Plan file found and is empty:./data/plans/song.js.functions.gen
+🚫  Replacer [2m[36m::[0m Skipping ISong: no identifiers added.
+🪲   Replacer [2m[36m::[0m Plan file found and is empty:./data/plans/notetable.js.functions.gen
+🚫  Replacer [2m[36m::[0m Skipping INoteTable: no identifiers added.
+🪲   Replacer [2m[36m::[0m Plan file found and is empty:./data/plans/colorFunctions.js.functions.gen
+🚫  Replacer [2m[36m::[0m Skipping IColorFunctions: no identifiers added.
 🪲   Replacer [2m[36m::[0m Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump {
     "sources": [
         {
@@ -198,4 +205,5 @@
 }
 💾  Replacer [2m[36m::[0m processFileWithInvocations::file:./data/src/song.js [33m./data/out/generated-song.js[0m
 💾  Replacer [2m[36m::[0m processFileWithInvocations::file:./data/src/notetable.js [33m./data/out/generated-notetable.js[0m
-💼  Accumulator [2m[36m::[0m END. [32m2026-03-11 04:29:22[0m
+👍  Replacer [2m[36m::[0m Replacer processAllSources DONE
+💼  Accumulator [2m[36m::[0m END. [32m2026-03-11 09:09:05[0m

@@ -61,7 +61,7 @@ const replacerLOG_FLAGS = {
     FILE_WRITES: true,
     INTERFACE_GENS: false,
     MASTER_NAMESPACE_MAP: true,
-    OUTPUT: true,
+    OUTPUT: false,
     OUTPUT_REPLACEMENTS: false,
     OUTPUT_NOOP_REPLACEMENTS: false,
     OUTPUT_REPLACEMENTS_LINENUM: false

@@ -77,12 +77,12 @@ export class Replacer {
     }
     logStep(flag, icon, message, obj){
         if (flag){
-            let theStep = accumulator.newStep({
+            let theStep = this.accumulator.newStep({
                 icon: icon,
                 logline: message,
                 obj: obj
             });
-            accumulator.logStep(theStep);
+            this.accumulator.logStep(theStep);
         }
     }
     /**
@@ -149,17 +149,17 @@ export class Replacer {
         this.logStep(this.logFlags.OUTPUT_REPLACEMENTS, '👍', "replacements only", replacementsOnly);
         
         if (this.logFlags.OUTPUT_REPLACEMENTS_LINENUM) {
-            this.log(true, "replacements:"+JSON.stringify(
+            const replacementsLinenumReplacer = (key, value) =>
+                Array.isArray(value) ? value.map(o => `${o.linenum}:${o.replacedLine}`) : value;
+
+            //TODO: move arrow function in here.
+            const stringified = JSON.stringify(
                 replacementsOnly,
-                ((key, value)=> {
-                    if (Array.isArray(value)) {
-                        return value.map(o => `${o.linenum}:${o.replacedLine}`);
-                    }
-                    return value;
-                }),
+                replacementsLinenumReplacer,
                 4
-            ));
-            const obj = "make value the same as JSON replacer did";
+            );
+            this.log(true, "replacements:"+stringified);
+            const obj = JSON.parse(stringified);
 
             this.logStep(this.logFlags.OUTPUT_REPLACEMENTS_LINENUM, Emoji.BULLET, "replacements", obj);
             
@@ -190,19 +190,27 @@ export class Replacer {
         const { status: planStatus, contents: plan, error: planError } = SourceFile.read(planFilepath);
         switch (planStatus) {
             case Replacer.ReadSourceStatus.NOT_FOUND:
-                this.logError(`🚫  Plan file not found: ${planFilepath}`);
+                const errmsg0 = `Plan file not found: ${planFilepath}`;
+                this.logError("🚫  "+errmsg0);
+                this.accumulator.logLine(errmsg1, '🚫');
                 return { added: 0 };
             case Replacer.ReadSourceStatus.READ_ERROR:
-                this.logError(`🛑  Error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
+                const errmsg1 = `Error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`;
+                this.logError("🛑  "+errmsg1);
+                this.accumulator.logLine(errmsg1, '🛑');
                 return { added: 0 };
             case Replacer.ReadSourceStatus.FOUND:
                 if (!plan) {
                     this.log(this.logFlags.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
+                    if (this.logFlags.PLAN_INFO) this.accumulator.logStep({icon:'🪲 ', logline:"Plan file found and is empty:"+planFilepath,obj:{}});
+  
                     return { added: 0 };
                 }
                 break;
             default:
-                this.logError(`🛑  Unknown error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
+                const errmsg2 =`Unknown error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`;
+                this.logError(`🛑   `+errmsg);
+                this.accumulator.logLine(errmsg, '🛑');
                 return { added: 0 };
         }
 
@@ -214,7 +222,9 @@ export class Replacer {
         let added = 0;
         theIdentifiers.forEach(id => {
             if (masterNamespaceMap[id]) {
-                this.logError(`❌ duplicate key found in map["${id}"]:${this.dump(masterNamespaceMap[id])} when trying to add ${this.dump(theNamespaceString)}.${id}`);
+                let errmsg = `duplicate key found in map["${id}"]:${this.dump(masterNamespaceMap[id])} when trying to add ${this.dump(theNamespaceString)}.${id}`;
+                this.logError("❌ "+errmsg);
+                this.accumulator.logLine(errmsg, '❌');
             } else {
                 masterNamespaceMap[id] = theNamespaceString;
                 added++;
@@ -300,12 +310,16 @@ export class Replacer {
             const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
             if (added === 0) {
                 this.logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
+                this.accumulator.logLine(`Skipping ${namespaceObj.namespace}: no identifiers added.`, '🚫');
                 return;
             }
             let gen = new GenerateInterface();
             let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
-            this.log(this.logFlags.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.log    (this.logFlags.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.logStep(this.logFlags.INTERFACE_GENS, '🎲',"interface_gen",interface_gen);
+  
             this.log(this.logFlags.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            if (this.logFlags.FILE_WRITES) this.accumulator.logFile("Writing generated Interface", namespaceObj.sourceout);
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
             // Attach generated strings to the namespaceObj in the clone
             namespaceObj.interface_gen = interface_gen;
@@ -330,6 +344,7 @@ export class Replacer {
             this.processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
         });
         this.log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+        this.logStep(true, '👍', "Replacer processAllSources DONE", {});
     }
 
 }
