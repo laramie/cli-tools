@@ -9,7 +9,7 @@ export class Emoji {
         NOTEBOOK_WITH_DECORATIVE_COVER: "\uD83D\uDCD2", // 🗒
         SCROLL: "\uD83D\uDCDC",               // 📜
         PAGE_WITH_CURL: "\uD83D\uDCC3",       // 📃
-        SQUARE_WITH_VERTICAL_FILL: "\u25A4",  // ▤
+        SQUARE_WITH_VERTICAL_FILL: "\u25A4\u0020",  // ▤
         EMPTY_SET: "\u2205",                  // ∅
         THUMBS_UP: "\uD83D\uDC4D",            // 👍
         PANCAKES: "\uD83E\uDD5E",             // 🥞
@@ -33,6 +33,7 @@ export class Emoji {
     static get LEAVESTEP() { return Emoji.Chars.LEFTWARDS_ARROW_WITH_HOOK; }
     static get CONTENTS() { return Emoji.Chars.PAGE_FACING_UP; }
     static get CONTENTS2() { return Emoji.Chars.NOTEBOOK_WITH_DECORATIVE_COVER; }
+    static get METHOD() { return Emoji.Chars.SQUARE_WITH_VERTICAL_FILL; }
     static get OK() { return Emoji.Chars.THUMBS_UP; }
     static get PANCAKES() { return Emoji.Chars.PANCAKES; }
     static get NOOP() { return Emoji.Chars.CRESCENT_MOON; }

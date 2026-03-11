@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 
-
 import { Replacer } from './Replacer.js';
 import { FindMain } from './FindMain.js';
 import { RegexSuites } from './RegexSuites.js';
 import { ANSIColors } from './ANSIColors.js';
 import { Accumulator } from './Accumulator.js';
-import { readdir, readFileSync, writeFileSync } from 'fs';
-import { basename, extname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const NamespacerPlan = {
@@ -56,6 +53,48 @@ const NamespacerPlan = {
         }
     ]
 };
+const findMainOptions = {
+        "quiet": false,
+        "color": true,
+        "bareExpressions": false,
+        "outputFilename": false,
+        "outputLines": true,
+        "outputSummary": true,
+        "shortSummary": true,
+        "outputSourceLocation": false,
+        "outputSortedLines": true,
+        "verbose": true,
+        "debug": false,
+        "configSource": "command-line",
+        "suiteIdx": 1,
+        "extensions": [
+            ".js"
+        ],
+        "dir": "data/src",
+        "singleFile": null
+      }
+
+const replacerLOG_FLAGS = {
+    PLAN_INFO: true,
+    FILE_WRITES: true,
+    INTERFACE_GENS: true,
+    MASTER_NAMESPACE_MAP: true,
+    OUTPUT: false,  //these guys are huge and repetative representations of every Replacer::Line object
+    OUTPUT_REPLACEMENTS_LINEOBJECTS: false,  // these are the replacements, in Replacer::Line objects [use for debugging OUTPUT_REPLACEMENTS]
+    OUTPUT_REPLACEMENTS: true, //These are the actual lines of code *WITHOUT* all the Replacer::Line object info
+    OUTPUT_NOOP_REPLACEMENTS: true,
+    OUTPUT_REPLACEMENTS_LINENUM: false //Whether, when spitting out OUTPUT_REPLACEMENTS, to use linenumbers. 
+};
+const printOptions = {  printObjects: true, 
+                        prettyObjects: true, 
+                        objectKeysOnly: false, 
+                        objectSquash: false,
+                        oneLiner: true,
+                        level: 'info',
+                        showOneLinerObjects: true
+                    };
+
+
 
 export class PlanRunner {
     constructor() {
@@ -70,29 +109,27 @@ export class PlanRunner {
         const regexSuites = new RegexSuites();
         
         
-        const findMainStepAccumulator = Accumulator.getStepInstance("FindMain");
-        const findMain = new FindMain(findMainStepAccumulator);
-        //Search:
-        findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
+        // =========== FindMain =================================
+            const findMainStepAccumulator = Accumulator.getStepInstance("FindMain");
+            const findMain = new FindMain(findMainStepAccumulator);
+            //Search:
+            //use a config file from disk with this flavor: findMain.runWithNamedOptionsFile(configFilename, regexSuites, prePlanActions);
+            //use a config file in code (above) with this flavor:
+            findMain.runWithOptions(findMainOptions, regexSuites, prePlanActions);
         
-        const replacerStepAccumulator = Accumulator.getStepInstance("Replacer");
+        // =========== Replacer/Generator =========================
+            const replacerStepAccumulator = Accumulator.getStepInstance("Replacer");
+            const replacer = new Replacer(this.namespacerPlan, replacerStepAccumulator);
+            replacer.setLogFlags(replacerLOG_FLAGS);
 
-        const replacer = new Replacer(this.namespacerPlan, replacerStepAccumulator);
-        //Generate Interfaces:
-        let masterNamespaceMap = replacer.processAllNamespaces_ReturnMasterNamespaceMap();
-        
-        //Replace:
-        replacer.processAllSources(masterNamespaceMap);
+            //Generate Interfaces:
+            let masterNamespaceMap = replacer.processAllNamespaces_ReturnMasterNamespaceMap();
 
-        const printOptions = {  printObjects: true, 
-                                prettyObjects: true, 
-                                objectKeysOnly: false, 
-                                objectSquash: false,
-                                oneLiner: true,
-                                level: 'info',
-                                showOneLinerObjects: true
-                            };
-        accumulator.appendOutputFiles(printOptions);
+            //Replace:
+            replacer.processAllSources(masterNamespaceMap);
+
+        // ============ Make Pretty Output ========================
+            accumulator.appendOutputFiles(printOptions);
         
     }
 }

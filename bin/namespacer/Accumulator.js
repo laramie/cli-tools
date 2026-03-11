@@ -47,7 +47,7 @@ export class Accumulator {
     indent(stepID) {
         if (!stepID || typeof stepID !== 'string') return '';
         const dotCount = (stepID.match(/\./g) || []).length;
-        return '    '.repeat(dotCount); // 4 spaces per dot
+        return '      '.repeat(dotCount); // 6 spaces per dot
     }
 
     logStep(step){
@@ -112,6 +112,7 @@ export class Accumulator {
             // One-liner: icon indent(stepID) currentStepID :: logline path {...} or object if showOneLinerObjects
             return steps.map(step => {
                 if (!step) return '';
+                const stepIndent = this.indent(step.stepID)+'    ';
                 const icon = step.icon || '';
                 const stepID = step.stepID || '';
                 const logline = step.logline || '';
@@ -126,7 +127,7 @@ export class Accumulator {
                     if (printOptions.showOneLinerObjects) {
                         try {
                             if (printOptions.prettyObjects) {
-                                objStr = ' ' + JSON.stringify(step.obj, null, 4);
+                                objStr = ' ' + JSON.stringify(step.obj, null, 4).split('\n').join('\n' + stepIndent);
                             } else {
                                 objStr = ' ' + JSON.stringify(step.obj);
                             }
@@ -137,7 +138,7 @@ export class Accumulator {
                         objStr = ' {...}';
                     }
                 }
-                return `${icon}  ${this.indent(stepID)}${stepID} ${ANSIColors.Dim+ANSIColors.cyan("::")} ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${objStr}`.trim();
+                return `${icon}  ${this.indent(stepID)}${stepID} ${ANSIColors.Dim+ANSIColors.cyan("::")} ${logline}${path ? ' ' + ANSIColors.yellow(path) : ''}${ANSIColors.green(objStr)}`.trim();
             }).join('\n');
         }
         const printObjects = printOptions.printObjects !== false; // default true

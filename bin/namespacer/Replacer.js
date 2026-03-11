@@ -30,7 +30,7 @@ import { readdir, readFileSync, writeFileSync } from 'fs' ;
 import { extname, join } from 'path';
 import {GenerateInterface} from './GenerateInterface.js';
 import {SourceFile}  from './SourceFile.js';
-import {Accumulator} from './Accumulator.js';
+import {Emoji} from './Emoji.js';
 
 // Enum-like object for readSourceFile status codes
 export const ReadSourceStatus = Object.freeze({
@@ -61,18 +61,28 @@ export class Replacer {
     constructor(namespacerPlan, accumulator) {
         this.namespacerPlan = namespacerPlan;
         this.accumulator = accumulator;    //will actually be passed a Decorated StepAccumulator.
+        this.logFlags = Replacer.LOG_FLAGS;
+    }
+
+    setLogFlags(flags) {
+        this.logFlags = flags;
     }
     logError(message){
         console.error(message);
     }
-    log(flag, message, flagObj = Replacer.LOG_FLAGS) {
-        if (typeof flag === 'string') {
-            // Deprecated: string flag usage, prefer direct property access
-            if (flagObj[flag]) {
-                console.log(message);
-            }
-        } else if (flag) {
+    log(flag, message) {
+        if (flag) {
             console.log(message);
+        }
+    }
+    logStep(flag, icon, message, obj){
+        if (flag){
+            let theStep = this.accumulator.newStep({
+                icon: icon,
+                logline: message,
+                obj: obj
+            });
+            this.accumulator.logStep(theStep);
         }
     }
     /**
@@ -92,9 +102,10 @@ export class Replacer {
         INTERFACE_GENS: false,
         MASTER_NAMESPACE_MAP: false,
         OUTPUT: false,
+        OUTPUT_REPLACEMENTS_LINEOBJECTS: false,
         OUTPUT_REPLACEMENTS: false,
-        OUTPUT_NOOP_REPLACEMENTS: false,
-        OUTPUT_REPLACEMENTS_LINENUM: false
+        OUTPUT_REPLACEMENTS_LINENUM: false,
+        OUTPUT_NOOP_REPLACEMENTS: true
     };
 
 
@@ -130,26 +141,47 @@ export class Replacer {
         this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
-        this.log(Replacer.LOG_FLAGS.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        //TODO: this baby is a huge collection of line objects:
+        /**
+         {
+            "identifier": "getCurrentSection",
+            "startIndex": 992,
+            "linenum": 28,
+            "rawLine": "    if (this.getCurrentSection().sharps){",
+            "replacedLine": "    if (this.IInfiniteNeck.getCurrentSection().sharps){",
+            "namespace": "IInfiniteNeck",
+            "regexUsed": {},
+            "replacementCount": 1
+          },
+         */
+         // See if you can provide a filter or output strategy method.
+        this.log(this.logFlags.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        this.logStep(this.logFlags.OUTPUT, '🥞', "Output data struct", lineObjectsArray);
+        
 
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        this.log(Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS, "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-        if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
-            this.log(true, "replacements:"+JSON.stringify(
+        this.log(this.logFlags.OUTPUT_REPLACEMENTS_LINEOBJECTS, "\n\n👍   replacements only [Line obj]:\n"+JSON.stringify(replacementsOnly, null, 4));
+        this.logStep(this.logFlags.OUTPUT_REPLACEMENTS_LINEOBJECTS, '👍', "replacements only [Line obj]", replacementsOnly);
+        
+        if (this.logFlags.OUTPUT_REPLACEMENTS) {
+            let replacerFn =  (key, value) => Array.isArray(value) ? value.map(o => `${o.replacedLine}`) : value
+            if (this.logFlags.OUTPUT_REPLACEMENTS_LINENUM){
+                replacerFn =  (key, value) => Array.isArray(value) ? value.map(o => `${o.linenum}:${o.replacedLine}`) : value;
+            }
+            const stringified = JSON.stringify(
                 replacementsOnly,
-                ((key, value)=> {
-                    if (Array.isArray(value)) {
-                        return value.map(o => `${o.linenum}:${o.replacedLine}`);
-                    }
-                    return value;
-                }),
+                replacerFn,
                 4
-            ));
+            );
+            this.log(true, "replacements:"+stringified);
+            const obj = JSON.parse(stringified);
+            this.logStep(this.logFlags.OUTPUT_REPLACEMENTS, Emoji.BULLET, "replacements", obj);
         }
 
 
         const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-        this.log(Replacer.LOG_FLAGS.OUTPUT_NOOP_REPLACEMENTS, "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.log(this.logFlags.OUTPUT_NOOP_REPLACEMENTS, "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.logStep(this.logFlags.OUTPUT_NOOP_REPLACEMENTS, '🌛', "NO OP replacements", noOpReplacements);
     }
 
     loadPlan(listingFile){
@@ -171,19 +203,27 @@ export class Replacer {
         const { status: planStatus, contents: plan, error: planError } = SourceFile.read(planFilepath);
         switch (planStatus) {
             case Replacer.ReadSourceStatus.NOT_FOUND:
-                this.logError(`🚫  Plan file not found: ${planFilepath}`);
+                const errmsg0 = `Plan file not found: ${planFilepath}`;
+                this.logError("🚫  "+errmsg0);
+                this.accumulator.logLine(errmsg1, '🚫');
                 return { added: 0 };
             case Replacer.ReadSourceStatus.READ_ERROR:
-                this.logError(`🛑  Error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
+                const errmsg1 = `Error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`;
+                this.logError("🛑  "+errmsg1);
+                this.accumulator.logLine(errmsg1, '🛑');
                 return { added: 0 };
             case Replacer.ReadSourceStatus.FOUND:
                 if (!plan) {
-                    this.log(Replacer.LOG_FLAGS.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
+                    this.log(this.logFlags.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
+                    if (this.logFlags.PLAN_INFO) this.accumulator.logStep({icon:'🪲 ', logline:"Plan file found and is empty:"+planFilepath,obj:{}});
+  
                     return { added: 0 };
                 }
                 break;
             default:
-                this.logError(`🛑  Unknown error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`);
+                const errmsg2 =`Unknown error reading plan file: ${planFilepath}\n  Error: ${planError && (planError.stack || planError.message || planError.toString())}`;
+                this.logError(`🛑   `+errmsg);
+                this.accumulator.logLine(errmsg, '🛑');
                 return { added: 0 };
         }
 
@@ -195,7 +235,9 @@ export class Replacer {
         let added = 0;
         theIdentifiers.forEach(id => {
             if (masterNamespaceMap[id]) {
-                this.logError(`❌ duplicate key found in map["${id}"]:${this.dump(masterNamespaceMap[id])} when trying to add ${this.dump(theNamespaceString)}.${id}`);
+                let errmsg = `duplicate key found in map["${id}"]:${this.dump(masterNamespaceMap[id])} when trying to add ${this.dump(theNamespaceString)}.${id}`;
+                this.logError("❌ "+errmsg);
+                this.accumulator.logLine(errmsg, '❌');
             } else {
                 masterNamespaceMap[id] = theNamespaceString;
                 added++;
@@ -281,12 +323,16 @@ export class Replacer {
             const { added } = this.addIdentifiersToMap(namespaceObj.bareList, namespaceObj.excludes, namespaceObj.namespace, masterNamespaceMap);
             if (added === 0) {
                 this.logError(`🚫   Skipping ${namespaceObj.namespace}: no identifiers added.`);
+                this.accumulator.logLine(`Skipping ${namespaceObj.namespace}: no identifiers added.`, '🚫');
                 return;
             }
             let gen = new GenerateInterface();
             let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
-            this.log(Replacer.LOG_FLAGS.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
-            this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            this.log    (this.logFlags.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.logStep(this.logFlags.INTERFACE_GENS, '🎲',"interface_gen",interface_gen);
+  
+            this.log(this.logFlags.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            if (this.logFlags.FILE_WRITES) this.accumulator.logFile("Writing generated Interface", namespaceObj.sourceout);
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
             // Attach generated strings to the namespaceObj in the clone
             namespaceObj.interface_gen = interface_gen;
@@ -296,7 +342,7 @@ export class Replacer {
         // Dump the mutated clone to see per-loop changes
         console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
         this.accumulator.logObject("Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump", clonePlan );
-        this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+        this.log(this.logFlags.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
         return masterNamespaceMap;
     }
 
@@ -311,6 +357,7 @@ export class Replacer {
             this.processFileWithInvocations(sourceObj.src, sourceObj.out, masterNamespaceMap);
         });
         this.log(true, "\n\n👍   Tests complete.  ━━━━━━━━━━━━━━━━━━━━━\n");
+        this.logStep(true, '👍', "Replacer processAllSources DONE", {});
     }
 
 }
