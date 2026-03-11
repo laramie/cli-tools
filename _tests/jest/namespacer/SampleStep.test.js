@@ -19,6 +19,7 @@ describe('SampleStep.run', () => {
 
     test('runs SampleStep and logs output', () => {
         const realAccumulator = Accumulator.getInstance();
+        realAccumulator.setLoggerOptions({ level: 100 }); 
         realAccumulator.log("Starting "+SAMPLESTEP_ID);
         const stepAccumulator = Accumulator.getStepInstance(SAMPLESTEP_ID);
         const step = new SampleStep(stepAccumulator);

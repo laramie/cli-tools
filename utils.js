@@ -1,9 +1,6 @@
-export function toInt(str, def){
-    if (!str) return def;
-    if (str.length==0) return def;
-    var res = parseInt(str);
-    if (isNaN(res)) return def;
-    return res;
+export function toInt(val, def) {
+    var n = parseInt(val, 10);
+    return isNaN(n) ? def : n;
 }
 
 //======= Hex Utils ======

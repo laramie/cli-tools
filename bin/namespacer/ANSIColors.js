@@ -50,11 +50,11 @@ class ANSIColors {
     static #checkColorSupport() {
         if (typeof process !== 'undefined' && process.env) {
             if (process.env.FORCE_COLOR !== undefined) {
-                console.log('>>>>>>>>>>>>>>FORCE_COLOR:'+process.env.FORCE_COLOR+">>>>>>>>>"+(parseInt(process.env.FORCE_COLOR) > 0));
+                //console.log('>>>>>>>>>>>>>>FORCE_COLOR:'+process.env.FORCE_COLOR+">>>>>>>>>"+(parseInt(process.env.FORCE_COLOR) > 0));
                 return parseInt(process.env.FORCE_COLOR) > 0;
             }
             if (process.env.NO_COLOR !== undefined || process.env.NODE_DISABLE_COLORS !== undefined) {
-                console.log('>>>>>>>>>>>>>>>>>>>>>>NO_COLOR:'+process.env.NO_COLOR);
+                //console.log('>>>>>>>>>>>>>>>>>>>>>>NO_COLOR:'+process.env.NO_COLOR);
                 return false;
             }
         }

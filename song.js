@@ -11,6 +11,8 @@ import {
 import {
 	toInt
 } from './utils.js';
+import { ANSIColors } from './bin/namespacer/ANSIColors.js';
+
 
 export const constNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
 
@@ -190,8 +192,12 @@ export function makeSong(){
         delete this.constructing;
     }
 
-    function setHeadless(value){
+    function setHeadless(value, quiet = false){
         this.isHeadless = value;
+         if (this.isHeadless){
+            if (!quiet) console.log(ANSIColors.Bold+ANSIColors.cyan("Song running in Headless mode.  No $ or jQuery calls supported."));
+            return;
+        }
     }
 
     function fixupCurrentIndexForLoadedSong(){
@@ -210,12 +216,33 @@ export function makeSong(){
         return this.sections[this.gSectionsCurrentIndex];
 	}
 
-    function test_getRelativeSectionWithWrap(){
+    function test_getRelativeSectionWithWrap(consoleLog = false){
+        const testResult = {
+            warnings: [],
+            infos: [],
+            terse: []
+        };
+
         const test = (sAmount) => {
-            let currIdx = this.getSectionsCurrentIndex();
-            let section = this.getRelativeSectionWithWrap(sAmount);
-            console.log("test-relative:"+sAmount+" ["+currIdx+"]==> key:"+section.rootID+" caption:"+section.caption);
+            allSections.forEach((section, idx) => {
+                this.gotoSection(idx);
+                let resultSection = this.getRelativeSectionWithWrap(sAmount, testResult.warnings);
+                let resultIdx = this.sections.indexOf(resultSection);
+                let message = "test-relative: sections[" + idx + "] by   "
+                               + String(sAmount).padStart(4, ' ')  
+                               + " ==> sections["+resultIdx+"] ::"
+                               +" key:" + String(this.noteIDToNoteNameRaw(resultSection.rootID)).padEnd(3, ' ') 
+                               + " caption:" + resultSection.caption;
+                let terseMessage = "[" + idx + "] " + String(sAmount).padStart(4, ' ')  + " ==> ["+resultIdx+"]"              
+                if (consoleLog) {
+                    console.log(message);
+                }
+                testResult.terse.push(terseMessage);
+                testResult.infos.push(message);
+            });
         }
+        let allSections = this.getSections();
+        testResult.infos.push("This song has "+allSections.length+" sections.  Tests will be applied to each.");
         test("-2");
         test("-1");
         test("-0");
@@ -223,6 +250,10 @@ export function makeSong(){
         test("1");
         test("2");
         test("3");
+        test("+0");
+        test("+1");
+        test("+2");
+        test("+3");
         test("@2");
         test("@1");
         test("@0");
@@ -232,6 +263,7 @@ export function makeSong(){
         test("^1");
         test("^2");
         test("^-1");
+        test("^+1");
         test("&-1");
         test("&-0");
         test("&0");
@@ -239,12 +271,15 @@ export function makeSong(){
         test("&2");
         test("&3");
         test("&4");
+        test("&-1");
+        test("&+1");
         test("foo");
         test("+foo");
         test("-foo");
         test("+");
         test("-");
         test("");
+        return testResult;
     }
 
     /*   Support
@@ -252,19 +287,26 @@ export function makeSong(){
      *   -3   3 sections back, with wrap
      *   -1   previous section, with wrap
      *   +1   next section, with wrap
+     *   -0   current section
+     *   +0   current section
+     *    0   first section
      *    1   Section 1 absolute (there always must be one section)
      *    2   Section 2 absolute, or last if num too large
      *    @1  Last section played in Random mode
      *    @2  Two sections ago played in Random mode
      *    ^1  previous section, no wrap, just go as early as you can, max is Section 1
+     *    ^-1 ignore sign, just do ^1
+     *    ^+1
      *    ^2  2 sections back, no wrap, just go as early as you can, max is Section 1
      *    &1  1 section ahead, no wrap, max is last Section
      *    &2  2 sections ahead, no wrap, max is last Section
+     *    &-2 ignore sign, just do &2
+     *    &+2 ignore sign, just do &2
      * 
      *    Negative signs after the first character are ignored, so @-1 is the same as @1, and --1 is the same as -1.
      *     So you can go "back" with -1 or ^1 or @1, and --1, ^-1, and @-1 are identical, respectively.
     */
-    function getRelativeSectionWithWrap(sAmount){
+    function getRelativeSectionWithWrap(sAmount, logCollector = null) {
         const Direction = Object.freeze({
             FORWARD:         '+',
             BACKWARD:        '-',
@@ -278,6 +320,13 @@ export function makeSong(){
         var firstChar = Direction.EMPTY; //TODO: fix this.
 
         if (sAmount && sAmount[0]){
+
+            if (sAmount === "0") {
+                return this.sections[0];
+            }
+            if (sAmount === "+0" || sAmount === "-0") {
+                return this.sections[this.gSectionsCurrentIndex];
+            }
             // Extract firstChar if present
             const match = sAmount.match(/^([+\-@^&])([-+]?\d+)/);
             let firstChar = null;
@@ -302,9 +351,16 @@ export function makeSong(){
                     firstChar = Direction.BAD_INPUT;
                     intNum = 0;
                     isnum = false;
-                    console.warn("Malformed section amount: ", sAmount);
+                    const msg = "Malformed section amount: " + sAmount;
+                    if (logCollector) {
+                        logCollector.push(msg);
+                    } else {
+                        console.warn(msg);
+                    }
                 }
             }
+
+            
             var currentIndex = this.gSectionsCurrentIndex;
             function wrap(oneBasedDistance, sectionsArray, currentZeroBasedIndex){
                 const n = sectionsArray.length;
@@ -316,11 +372,19 @@ export function makeSong(){
                 firstChar = Direction.BAD_INPUT;
             }
 
+            if ((firstChar === Direction.FORWARD || firstChar === Direction.BACKWARD) && intNum === 0) {
+                firstChar = Direction.ABSOLUTE;
+                intNum = 1;
+            }
+
             switch (firstChar){
                 case Direction.BAD_INPUT:
                 case Direction.EMPTY:
                     return this.sections[currentIndex];
                 case Direction.ABSOLUTE: //(number only, goto num or max)
+                    if (intNum < 1) {
+                        return this.sections[0];
+                    }
                     if (intNum > this.sections.length){
                         return this.sections[this.sections.length-1];                           
                     }
@@ -629,7 +693,6 @@ export function makeSong(){
     
     function publish_SectionChanged(){
         if (this.isHeadless){
-            console.log("Song skipping EventBus because isHeadless()===true");
             return;
         }
         console.log("in new EventBus strategy: publish_SectionChanged");
@@ -639,9 +702,7 @@ export function makeSong(){
 
     // replacement for direct calls to infinite-neck.js :: updateSectionsStatus();
     function publish_UpdateSectionStatus(){
-        console.log("*****publish_UpdateSectionStatus this.isHeadless:"+this.isHeadless);
         if (this.isHeadless){
-            console.log("Song skipping EventBus because isHeadless()===true");
             return;
         }
         console.log("in new EventBus strategy: this.publish_UpdateSectionStatus");
@@ -686,8 +747,12 @@ export function makeSong(){
         var sectionIdx = toInt(idx, -1);
         if (sectionIdx > -1 && sectionIdx < this.sections.length){
             this.gSectionsCurrentIndex = sectionIdx;
-            clearAndReplaySection();
-            publish_SectionChanged();
+            if (!this.isHeadless){
+                clearAndReplaySection();
+                publish_SectionChanged();
+            }
+        } else {
+            console.warn("############### bad sectionIdx:"+sectionIdx+" gotoSection("+idx+") len:"+this.sections.length);
         }
     }
 

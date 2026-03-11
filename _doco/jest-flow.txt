@@ -50,5 +50,29 @@ SampleStep.test.js worked:
 Therefore, run this to run all tests in this dir:
     cd ~/infinite-neck$ 
     node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/
-     
-    
+
+
+Verbosity in Jest based on running one test, or dirscan:
+
+    Option 1: Command line
+        laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/ --verbose
+
+
+    Option 2: jest.config.js
+        module.exports = {
+            verbose: true,
+            // ...other config
+        };
+
+    Option 3: package.json
+        "jest": {
+            "verbose": true
+        }
+
+WARNING: Jest does cache.
+    jest --clearCache   
+    npx jest --clearCache
+    jest --no-cache     
+
+            
+            

@@ -3,6 +3,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { setupSongTests, getSong } from '../../infinite-neck.js';
+import { logVerbose, INFINITE_NECK_VERBOSE, VERBOSE_MODE, VERBOSE_MODE_INT } from './namespacer/LogVerboseJest.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,18 +15,12 @@ const LFWS2 = "\n        ";
 
 const INFINITE_NECK_SONG = process.env.INFINITE_NECK_SONG || "";
 const INFINITE_NECK_SONGLIST = process.env.INFINITE_NECK_SONGLIST || "";
-const INFINITE_NECK_VERBOSE = process.env.INFINITE_NECK_VERBOSE;
-const VERBOSE_MODE_INT = parseInt(INFINITE_NECK_VERBOSE, 10);
-const VERBOSE_MODE = isNaN(VERBOSE_MODE_INT) ? 0 : VERBOSE_MODE_INT;
+
+
 const INFINITE_NECK_SUITE = process.env.INFINITE_NECK_SUITE;
 const INFINITE_NECK_SUITE_INPUT = parseInt(INFINITE_NECK_SUITE, 10);
 const SUITE = isNaN(INFINITE_NECK_SUITE_INPUT) ? 0 : INFINITE_NECK_SUITE_INPUT;
 const MORE_THRESHOLD = VERBOSE_MODE > 1 ? 100 : 10;
-
-function logVerbose(level, msg) {
-    if (VERBOSE_MODE === -1) return;
-    if (VERBOSE_MODE >= level) console.log(msg);
-}
 
 function printVerboseModeMessage() {
     function getHelpMsg() {
@@ -387,19 +383,30 @@ printVerboseModeMessage();
 describe('getSong() test_getRelativeSectionWithWrap', () => {
     test('should run test_getRelativeSectionWithWrap without errors', () => {
         setupSongTests();
-        getSong().setHeadless(true);
-        console.log("after setHeadless. getSong().isHeadless:"+getSong().isHeadless);
-        getSong().addSection(getSong().constructSection());
-        getSong().addSection(getSong().constructSection());
-        getSong().addSection(getSong().constructSection());
-        getSong().sections[0].caption = 'Section 1';
+        getSong().setHeadless(true, true/*quiet*/);
+        //songs always have the "Miranda" section as sections[0].
+        getSong().sections[0].caption = 'Section 1 (default)';
         getSong().sections[0].rootID = '1';
+        getSong().addSection(getSong().constructSection());
+        getSong().addSection(getSong().constructSection());
+        getSong().addSection(getSong().constructSection());
         getSong().sections[1].caption = 'Section 2';
         getSong().sections[1].rootID = '2';
         getSong().sections[2].caption = 'Section 3';
         getSong().sections[2].rootID = '3';
+        getSong().sections[3].caption = 'Section 4';
+        getSong().sections[3].rootID = '4';
         expect(() => {
-            getSong().test_getRelativeSectionWithWrap();
+            const testResult = getSong().test_getRelativeSectionWithWrap(false);
+            if (testResult.warnings && testResult.warnings.length>0){
+                logVerbose(1, "test_getRelativeSectionWithWrap should kick back some foo/bar (and +/- without digit) validation errors: \n"+testResult.warnings.join("\n"));
+            }
+            if (testResult.infos && testResult.infos.length>0){
+                logVerbose(1, "test_getRelativeSectionWithWrap should kick back some infos which mean 'PASS': \n"+testResult.infos.join("\n"));
+            }
+            if (testResult.terse && testResult.terse.length>0){
+                logVerbose(1, "test_getRelativeSectionWithWrap should kick back some terse results which mean 'PASS': \n"+testResult.terse.join("\n"));
+            }
         }).not.toThrow();
     });
 });

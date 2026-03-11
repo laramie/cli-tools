@@ -23,6 +23,14 @@ export class Accumulator {
         Accumulator._instance = this;
         this.#logAccumulatorHeader();
     }
+
+    static getInstance() {
+        if (!Accumulator._instance) {
+            Accumulator._instance = new Accumulator();
+        }
+        return Accumulator._instance;
+    }
+
     // Accepts stepID, returns indentation based on dot count
     indent(stepID) {
         if (!stepID || typeof stepID !== 'string') return '';
@@ -32,6 +40,12 @@ export class Accumulator {
 
     logStep(step){
         this._stepsArray.push(step);   
+    }
+
+    setLoggerOptions(options){
+        // Re-instantiate the Logger singleton with new options
+        // Logger.getInstance will return a new instance if options are passed
+        this.logger = Logger.getInstance(options);
     }
 
     // Minimal logger API wrappers, context-aware
@@ -174,12 +188,7 @@ export class Accumulator {
         return dateTimeStr;  
     }
 
-    static getInstance() {
-        if (!Accumulator._instance) {
-            Accumulator._instance = new Accumulator();
-        }
-        return Accumulator._instance;
-    }
+    
 
     #logFileIO(opp, path, stepAccumulator){
         //const step = new Step({stepID: "Accumulator."+stepAccumulator.currentStepID(), logline: opp, path: path, icon: Emoji.IO});
