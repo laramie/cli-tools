@@ -41,6 +41,7 @@ export class SampleStep {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     const SAMPLESTEP_ID = "SampleStep-test";
+    Accumulator.resetInstance({ level: 'warn' });
     let realAccumulator = Accumulator.getInstance();
     realAccumulator.log("Starting "+SAMPLESTEP_ID);
     const stepAccumulator = Accumulator.getStepInstance(SAMPLESTEP_ID);

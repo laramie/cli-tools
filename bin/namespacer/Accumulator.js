@@ -31,6 +31,18 @@ export class Accumulator {
         return Accumulator._instance;
     }
 
+    /**
+     * Resets the Accumulator singleton instance. Useful for test isolation or reconfiguration.
+     * Optionally accepts loggerOptions to reconfigure the logger as well.
+     */
+    static resetInstance(loggerOptions) {
+        // Optionally reset Logger singleton as well if loggerOptions provided
+        if (loggerOptions && Logger.resetInstance) {
+            Logger.resetInstance(loggerOptions);
+        }
+        Accumulator._instance = null;
+    }
+
     // Accepts stepID, returns indentation based on dot count
     indent(stepID) {
         if (!stepID || typeof stepID !== 'string') return '';
