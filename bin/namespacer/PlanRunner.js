@@ -56,6 +56,17 @@ const NamespacerPlan = {
         }
     ]
 };
+const replacerLOG_FLAGS = {
+    PLAN_INFO: true,
+    FILE_WRITES: true,
+    INTERFACE_GENS: false,
+    MASTER_NAMESPACE_MAP: true,
+    OUTPUT: true,
+    OUTPUT_REPLACEMENTS: false,
+    OUTPUT_NOOP_REPLACEMENTS: false,
+    OUTPUT_REPLACEMENTS_LINENUM: false
+};
+
 
 export class PlanRunner {
     constructor() {
@@ -78,6 +89,7 @@ export class PlanRunner {
         const replacerStepAccumulator = Accumulator.getStepInstance("Replacer");
 
         const replacer = new Replacer(this.namespacerPlan, replacerStepAccumulator);
+        replacer.setLogFlags(replacerLOG_FLAGS);
         //Generate Interfaces:
         let masterNamespaceMap = replacer.processAllNamespaces_ReturnMasterNamespaceMap();
         

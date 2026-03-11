@@ -61,18 +61,28 @@ export class Replacer {
     constructor(namespacerPlan, accumulator) {
         this.namespacerPlan = namespacerPlan;
         this.accumulator = accumulator;    //will actually be passed a Decorated StepAccumulator.
+        this.logFlags = Replacer.LOG_FLAGS;
+    }
+
+    setLogFlags(flags) {
+        this.logFlags = flags;
     }
     logError(message){
         console.error(message);
     }
-    log(flag, message, flagObj = Replacer.LOG_FLAGS) {
-        if (typeof flag === 'string') {
-            // Deprecated: string flag usage, prefer direct property access
-            if (flagObj[flag]) {
-                console.log(message);
-            }
-        } else if (flag) {
+    log(flag, message) {
+        if (flag) {
             console.log(message);
+        }
+    }
+    logStep(flag, icon, message, obj){
+        if (flag){
+            let theStep = accumulator.newStep({
+                icon: icon,
+                logline: message,
+                obj: obj
+            });
+            accumulator.logStep(theStep);
         }
     }
     /**
@@ -130,11 +140,15 @@ export class Replacer {
         this.writeOutReplacedLines(lineObjectsArray, linesArr, outputFilePath)    //  linesArr will be modified!
 
 
-        this.log(Replacer.LOG_FLAGS.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        this.log(this.logFlags.OUTPUT, "🥞  Output data struct:\n"+JSON.stringify(lineObjectsArray,null,4));
+        this.logStep(this.logFlags.OUTPUT, '🥞', "Output data struct", lineObjectsArray);
+        
 
         const replacementsOnly = lineObjectsArray.filter(lineObj => lineObj.replacementCount > 0);
-        this.log(Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS, "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
-        if (Replacer.LOG_FLAGS.OUTPUT_REPLACEMENTS_LINENUM) {
+        this.log(this.logFlags.OUTPUT_REPLACEMENTS, "\n\n👍   replacements only :\n"+JSON.stringify(replacementsOnly, null, 4));
+        this.logStep(this.logFlags.OUTPUT_REPLACEMENTS, '👍', "replacements only", replacementsOnly);
+        
+        if (this.logFlags.OUTPUT_REPLACEMENTS_LINENUM) {
             this.log(true, "replacements:"+JSON.stringify(
                 replacementsOnly,
                 ((key, value)=> {
@@ -145,11 +159,16 @@ export class Replacer {
                 }),
                 4
             ));
+            const obj = "make value the same as JSON replacer did";
+
+            this.logStep(this.logFlags.OUTPUT_REPLACEMENTS_LINENUM, Emoji.BULLET, "replacements", obj);
+            
         }
 
 
         const noOpReplacements = lineObjectsArray.filter(lineObj => lineObj.replacementCount === 0);
-        this.log(Replacer.LOG_FLAGS.OUTPUT_NOOP_REPLACEMENTS, "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.log(this.logFlags.OUTPUT_NOOP_REPLACEMENTS, "\n\n🌛    NO OP replacements:\n"+JSON.stringify(noOpReplacements, null, 4));
+        this.logStep(this.logFlags.OUTPUT_NOOP_REPLACEMENTS, '🌛', "NO OP replacements", noOpReplacements);
     }
 
     loadPlan(listingFile){
@@ -178,7 +197,7 @@ export class Replacer {
                 return { added: 0 };
             case Replacer.ReadSourceStatus.FOUND:
                 if (!plan) {
-                    this.log(Replacer.LOG_FLAGS.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
+                    this.log(this.logFlags.PLAN_INFO, `🪲  Plan file found and is empty: ${planFilepath}`);
                     return { added: 0 };
                 }
                 break;
@@ -285,8 +304,8 @@ export class Replacer {
             }
             let gen = new GenerateInterface();
             let interface_gen = gen.generateInterfaceFromNamespaceObj(namespaceObj, Replacer.VERBOSE_INTERFACE_GENS);
-            this.log(Replacer.LOG_FLAGS.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
-            this.log(Replacer.LOG_FLAGS.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
+            this.log(this.logFlags.INTERFACE_GENS, "🎲  ---\n"+interface_gen+"\n---  🎲");
+            this.log(this.logFlags.FILE_WRITES, "\n💾  Writing generated Interface --->"+namespaceObj.sourceout+"<---\n");
             writeFileSync(namespaceObj.sourceout, interface_gen, 'utf8');
             // Attach generated strings to the namespaceObj in the clone
             namespaceObj.interface_gen = interface_gen;
@@ -296,7 +315,7 @@ export class Replacer {
         // Dump the mutated clone to see per-loop changes
         console.log("\n🩺 namespacerPlan clone with per-namespace changes:\n" + JSON.stringify(clonePlan, null, 2));
         this.accumulator.logObject("Replacer::processAllNamespaces_ReturnMasterNamespaceMap doing dump", clonePlan );
-        this.log(Replacer.LOG_FLAGS.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
+        this.log(this.logFlags.MASTER_NAMESPACE_MAP, "🧀------------------------- masterNamespaceMap :: \n"+this.dump(masterNamespaceMap)+"\n\n--------------------------------🧀");
         return masterNamespaceMap;
     }
 

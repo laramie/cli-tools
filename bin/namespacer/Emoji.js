@@ -33,6 +33,7 @@ export class Emoji {
     static get LEAVESTEP() { return Emoji.Chars.LEFTWARDS_ARROW_WITH_HOOK; }
     static get CONTENTS() { return Emoji.Chars.PAGE_FACING_UP; }
     static get CONTENTS2() { return Emoji.Chars.NOTEBOOK_WITH_DECORATIVE_COVER; }
+    static get METHOD() { return Emoji.Chars.SQUARE_WITH_VERTICAL_FILL; }
     static get OK() { return Emoji.Chars.THUMBS_UP; }
     static get PANCAKES() { return Emoji.Chars.PANCAKES; }
     static get NOOP() { return Emoji.Chars.CRESCENT_MOON; }

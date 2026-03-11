@@ -133,7 +133,7 @@ export class FindMain {
                         +`:${ANSIColors.bold()+ANSIColors.red(name)} `
                         +`  ${ANSIColors.cyan(description)}`;
                         console.log("############## loglineRunning: "+loglineRunning+"####");
-        const stepRunningSuite = this.accumulator.newStep(loglineRunning, Emoji.BIGPLAN);  
+        const stepRunningSuite = this.accumulator.newStepLogline(loglineRunning, Emoji.BIGPLAN);  
         this.accumulator.logStep(stepRunningSuite);
 
         let loglineDirectory= `Directory: ${options.dir}`;
@@ -289,6 +289,20 @@ export class FindMain {
                         }
                         if (options.outputSortedLines){
                             console.log(theState.printLinesSorted(options));
+                            
+                            
+                            
+                            
+                            let sortedLinesStep = this.accumulator.newStep({
+                                logline: "functions in "+theState.filename,
+                                obj: theState.printLinesSorted(options, true),
+                                icon: Emoji.METHOD
+                            });
+                            this.accumulator.logStep(sortedLinesStep);
+
+
+
+
                         } else {
                             console.log(theState.printLines(options));
                         }

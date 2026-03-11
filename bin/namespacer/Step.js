@@ -38,7 +38,7 @@ export class Step {
 		this.stepID = stepID;
 		this.logline = logline;
 		this.obj = obj || {};
-		this.icon = icon || 'BEETLE'; // Default per spec
+		this.icon = icon || Emoji.BEETLE; // Default per spec
 		this.level = level || 'info'; // Default per spec
 		this.path = path || '';
 	}

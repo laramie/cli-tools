@@ -1,1 +1,1 @@
-less -R data/plans/accumulator.plan
+less -R _accumulator.steps.json

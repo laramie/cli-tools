@@ -12,13 +12,24 @@ export class StepAccumulator {
         this.acc = Accumulator.getInstance();
     }
 
-    newStep(logline, icon){
-      return new Step({
-            logline: logline,
-            stepID: this.currentStepID(),
-            icon: icon,
-            obj: {}
-        });   
+    newStepLogline(logline, icon){
+        return this.newStep({ logline, icon });
+    }
+
+    newStep(stepProps){
+        const params = { ...(stepProps || {}) };
+
+        if (!params.stepID) {
+            params.stepID = this.currentStepID();
+        }
+        if (!params.icon) {
+            params.icon = Emoji.BULLET;
+        }
+        if (!Object.prototype.hasOwnProperty.call(params, 'obj')) {
+            params.obj = {};
+        }
+
+        return new Step(params);
     }
 
     pushSubstep(substepID, optionalMessage) {
