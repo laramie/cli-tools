@@ -8,6 +8,10 @@ import { logVerbose } from './LogVerboseJest.js';
  *    laramie@penguin:~/infinite-neck$ export INFINITE_NECK_VERBOSE=1
  *    laramie@penguin:~/infinite-neck$ node --experimental-vm-modules node_modules/.bin/jest _tests/jest/namespacer/Accumulator.test.js
  *  unset, or set it to 0 to suppress debug info.  
+ * 
+ * If you add new tests, just keep this pattern: 
+ *     reset Accumulator in beforeEach, 
+ *     and only create StepAccumulator after that reset, and only in test methods.
  */
 
 const TEST_STEP_ID = "Accumulator-jest-test";
@@ -15,6 +19,7 @@ const TEST_STEP_ID = "Accumulator-jest-test";
 describe('Accumulator.getStepsPrintout', () => {
     beforeEach(() => {
         // Clear singleton state before each test
+        Accumulator.resetInstance({ level: 'warn' });
         const accumulator = Accumulator.getInstance();
         accumulator.clear();
     });

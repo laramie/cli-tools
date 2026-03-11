@@ -91,4 +91,15 @@ export class Logger {
         }
         return Logger._instance;
     }
+
+    /**
+     * Resets the Logger singleton instance. Useful for test isolation or reconfiguration.
+     * Optionally accepts options to reconfigure the logger.
+     */
+    static resetInstance(options = {}) {
+        Logger._instance = null;
+        if (Object.keys(options).length > 0) {
+            Logger._instance = new Logger(options);
+        }
+    }
 }

@@ -18,7 +18,7 @@ describe('RegexSuites static tests', () => {
             // Optionally, check the structure of the errors
             expect(err.validationErrors[0]).toHaveProperty('suiteIdx');
             expect(err.validationErrors[0]).toHaveProperty('errors');
-            logVerbose(1,"err.validationLog:"+err.validationLog);
+            logVerbose(1,"err.validationLogFOO:"+err.validationLog);
         }
     });
     test('testDefaultSuites succeeds', () => {

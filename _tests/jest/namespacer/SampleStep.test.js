@@ -1,7 +1,11 @@
-// SampleStep.test.js
-// This file is a Jest test for SampleStep, with logging setup copied from Accumulator.test.js
+/** This file is a Jest test for SampleStep, with logging setup 
+ *  copied from Accumulator.test.js
+ * 
+ * If you add new tests, just keep this pattern: 
+ *     reset Accumulator in beforeEach, 
+ *     and only create StepAccumulator after that reset, and only in test methods.
+ */
 
-import { fileURLToPath } from 'url';
 import { Accumulator } from '../../../bin/namespacer/Accumulator.js';
 import { SampleStep } from './SampleStep.js';
 
@@ -12,9 +16,10 @@ const SAMPLESTEP_ID = "SampleStep-jest-test";
 
 describe('SampleStep.run', () => {
     beforeEach(() => {
-        // Clear singleton state before each test
-        const accumulator = Accumulator.getInstance();
-        accumulator.clear();
+        // Reset singletons for test isolation and logger config
+        // Optionally set logger level here
+        // Note: Logger.resetInstance is called by Accumulator.resetInstance if options provided
+        Accumulator.resetInstance({ level: 'warn' });
     });
 
     test('runs SampleStep and logs output', () => {
