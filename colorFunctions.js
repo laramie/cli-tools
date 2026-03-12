@@ -260,12 +260,12 @@ function fullRepaint() {
 			}
 		}
 		if (doChuseLink){
-			var A = $('<a href="javascript:chuseStylesheet(\''+dictkey+'\');">').html(dictkey);
+			var A = $('<a href="#" class="choose-stylesheet" data-dictkey="'+dictkey+'">').html(dictkey);
 			var nobr = $('<nobr>');
 			nobr.append(checky);
 			nobr.append(A);
 			if (!schemeObj.readOnly && !schemeObj.computed){
-				var rightX = $('<span style="width: 2em;">&nbsp;&nbsp;&nbsp;<a href="javascript:deleteUserStylesheet(\''+dictkey+'\');">&#x232B;</a></span>');
+				var rightX = $('<span style="width: 2em;">&nbsp;&nbsp;&nbsp;<a href="#" class="delete-stylesheet" data-dictkey="'+dictkey+'">&#x232B;</a></span>');
 				nobr.append(rightX);
 			}
 			linkTD.append(nobr);
@@ -526,7 +526,7 @@ function fullRepaint() {
 
 //================== Pickers ===================================================
 	export function buildColorPicker(){
-		var CELL = '<td onclick="colorPickerClicked(this)" colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
+		var CELL = '<td colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
 		var result = [];
 		var groups = gColorPickerColors.groups;
 		Object.entries(groups).forEach(([ig, row]) => {
@@ -539,7 +539,7 @@ function fullRepaint() {
 			});
 			if (row) result.push("</tr>");
 		});
-		var noneRow = "<tr><td colspan='100%' colorClass='' class='noteBlue6' onclick=\"colorPickerClicked(this)\">none</td></tr>";
+		var noneRow = "<tr><td colspan='100%' colorClass='' class='colorPickerCell noteBlue6'>none</td></tr>";
 		result.push(noneRow);
 		return result.join(''); //Return just TRs not TABLE.
 	}
@@ -553,8 +553,8 @@ function fullRepaint() {
 			  var captionClass = (obj.captionClass) ? obj.captionClass : userColorClass;
 			  var lookedup = lookupUserColorClassByClass(captionClass);
 			  var editingBox = "<td id='colorDestRole"+role+"'>&nbsp;</td>"
-			                  +"<td><span class='pickerButton' onclick=\"showColorPicker(this,'#colorDestRole"+role+"')\">color</span>&nbsp;</td>"
-							  +"<td><span class='pickerButton' onclick=\"showHatchPicker(this,'#colorDestRole"+role+"')\">hatch</span></td>";
+			                  +"<td><span class='pickerButton choose-color-picker' data-target='#colorDestRole"+role+"'>color</span>&nbsp;</td>"
+							  +"<td><span class='pickerButton choose-hatch-picker' data-target='#colorDestRole"+role+"'>hatch</span></td>";
 
 			  var row = $('<tr><td>'+role+'</td>'
 			                 +'<td class="'+captionClass+'">'+captionClass+'</td>'

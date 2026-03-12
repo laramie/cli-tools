@@ -150,8 +150,8 @@ export function makeGraveyard(flatObj){
         var result = [];
         var resultBody = [];
         var SEP = "</td><td>";
-        var closeBtn = '<button type="button" onclick="showGraveyard();">Refresh</button>'
-                      +'&nbsp;&nbsp;<button type="button" onclick="hideGraveyard();">Close</button>';
+        var closeBtn = '<button type="button" data-action="showGraveyard">Refresh</button>'
+                      +'&nbsp;&nbsp;<button type="button" data-action="hideGraveyard">Close</button>';
 
 
         Object.keys(this.records).forEach(k => {
@@ -161,8 +161,8 @@ export function makeGraveyard(flatObj){
                 theContext = theContext.substring(0,60)+"...";
             }
             var lastRevived = record.lastRevived ? record.lastRevived : "";
-            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:getSong().graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
-            var row2 = "<tr><td><span onclick='$(\"#grave"+record.timestamp+"\").toggle();'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
+            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='#' class='graveyard-raise-link' data-grave-index='"+k+"'>raise "+k+"</a></td></tr>";
+            var row2 = "<tr><td><span class='graveyard-toggle-json' data-target='#grave"+record.timestamp+"'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
             resultBody.unshift(row2);
             resultBody.unshift(row);
         });

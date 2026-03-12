@@ -2,6 +2,11 @@
 
 import {
 	chuseStylesheet,
+	deleteUserStylesheet,
+	showColorPicker,
+	showHatchPicker,
+	colorPickerClicked,
+	hatchPickerClicked,
 	recordUserColors,
 	recordUserColorsFromSection,
 	applyStylesheetsTo_gUserColorDict,
@@ -842,10 +847,33 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			$.get( "songs/song-list.json", function(data){
 				var result = "";
 				Object.values(data.songs).forEach(song => {
-					result = result + "<a href='javascript:loadSong(\""+song+"\")'>"+song+"</a><br />";
+					result = result + "<a href='#' data-action='loadSong' data-action-arg='"+song+"'>"+song+"</a><br />";
 				});
 				$('#divSongList').html(result).show();
 			});
+		}
+	}
+
+	export function showGraveyard(){
+		hideAllMenuDivs();
+		showMessages(getSong().graveyard.buildNoteTable());
+	}
+
+	export function increaseUIFont(){
+		setUIFontSize(getUIFontSize() + 1);
+	}
+
+	export function decreaseUIFont(){
+		setUIFontSize(getUIFontSize() - 1);
+	}
+
+	export function increaseNoteFont(){
+		setNoteFontSize(getNoteFontSize() + 0.5);
+	}
+
+	export function decreaseNoteFont(){
+		if (getNoteFontSize() > 0.5){
+			setNoteFontSize(getNoteFontSize() - 0.5);
 		}
 	}
 
@@ -1049,7 +1077,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				specialNotes = (section.noteTables && Object.keys(section.noteTables).length > 0) ? "<br />SpecialNotes: " + printTablesStats(section.noteTables) : "";
 				const SEP = "</td><td>";
 				result += "<tr><td>"
-					+ "<a href=\"javascript:linkToSection('" + idx + "');\">" + (toInt(idx, 0) + 1) + "</a>" + SEP
+					+ "<a href='#' data-action='linkToSection' data-action-arg='" + idx + "'>" + (toInt(idx, 0) + 1) + "</a>" + SEP
 					+ section.beats + SEP
 					+ "<B style='font-size: 130%;'>" + getSong().noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + getSong().noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
 					+ (section.sharps ? " &sharp; " : " &flat; ") + SEP
@@ -1372,6 +1400,77 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	//==================== 4) UI event binding and control wiring =============
 
 	export function bindDesktopEvents(){
+
+		// Event delegation for stylesheet selection and deletion links
+		$(document).on('click', 'a.choose-stylesheet', function(e) {
+			e.preventDefault();
+			const dictkey = $(this).data('dictkey');
+			chuseStylesheet(dictkey);
+		});
+
+		$(document).on('click', 'a.delete-stylesheet', function(e) {
+			e.preventDefault();
+			const dictkey = $(this).data('dictkey');
+			deleteUserStylesheet(dictkey);
+		});
+
+		$(document).on('click', 'span.choose-color-picker', function(e) {
+			e.preventDefault();
+			const target = $(this).data('target');
+			showColorPicker(this, target);
+		});
+
+		$(document).on('click', 'span.choose-hatch-picker', function(e) {
+			e.preventDefault();
+			const target = $(this).data('target');
+			showHatchPicker(this, target);
+		});
+
+		$(document).on('click', 'td.colorPickerCell', function(e) {
+			e.preventDefault();
+			colorPickerClicked(this);
+		});
+
+		$(document).on('click', 'td.hatchPickerCell', function(e) {
+			e.preventDefault();
+			hatchPickerClicked(this);
+		});
+
+		$(document).on('click', 'button.exportButton', function(e) {
+			e.preventDefault();
+			const tableId = $(this).data('export-tableid');
+			if (tableId) {
+				exportFromTable(tableId);
+			}
+		});
+
+		$(document).on('click', '.graveyard-raise-link', function(e) {
+			e.preventDefault();
+			const index = toInt($(this).data('grave-index'), -1);
+			if (index >= 0) {
+				getSong().graveyard.raise(index);
+			}
+		});
+
+		$(document).on('click', '.graveyard-toggle-json', function(e) {
+			e.preventDefault();
+			const target = $(this).data('target');
+			if (target) {
+				$(target).toggle();
+			}
+		});
+
+		$(document).on('input change', '#rangeNamedNoteOpacity, #rangeSingleNoteOpacity, #rangeTinyNoteOpacity', function() {
+			const id = this.id;
+			const value = this.value;
+			if (id === 'rangeNamedNoteOpacity') {
+				rangeNamedNoteSlide(id, value);
+			} else if (id === 'rangeSingleNoteOpacity') {
+				rangeSingleNoteOpacitySlide(id, value);
+			} else if (id === 'rangeTinyNoteOpacity') {
+				rangeTinyNoteOpacitySlide(id, value);
+			}
+		});
 
 		$("#btnPalette").click(function() {
 			showOneMenu("#palette");
@@ -1829,14 +1928,20 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 					throw new TypeError("Last NoteFunction is empty");
 				}
 			} catch (error){
-				getSong().noteNamesFuncArr = getSong().noteNamesFuncArrDEFAULT;
+				const fallback = Array.isArray(getSong().noteNamesFuncArrDEFAULT)
+					? [...getSong().noteNamesFuncArrDEFAULT]
+					: JSON.parse($('#dropDownFunctionSymbols').val());
+				getSong().noteNamesFuncArr = fallback;
 				alert("Error setting NoteFunction names: "+error);
 			}
 			fullRepaint();
 		});
 		// CODE-EXAMPLE("TextAreaWButtonWidget", "FunctionSymbols")
 		$("#btnFunctionSymbolsReset").click(function() {
-			getSong().noteNamesFuncArr = getSong().noteNamesFuncArrDEFAULT;
+			const fallback = Array.isArray(getSong().noteNamesFuncArrDEFAULT)
+				? [...getSong().noteNamesFuncArrDEFAULT]
+				: JSON.parse($('#dropDownFunctionSymbols').val());
+			getSong().noteNamesFuncArr = fallback;
 			$('#textareaFunctionSymbols').val(JSON.stringify(getSong().noteNamesFuncArr));
 			fullRepaint();
 		});
@@ -1902,22 +2007,41 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	}
 
 	export function bindDataActionHandlers(){
-		// Generate code here for all the Event Handlers:
+		const dataActionHandlers = {
+			help: () => window.open(getHelpTopic(), 'infinitehelp'),
+			songLibrary,
+			showGraveyard,
+			increaseUIFont,
+			decreaseUIFont,
+			increaseNoteFont,
+			decreaseNoteFont,
+			ChromeFullscreen,
+			enterFullscreen,
+			leaveFullscreen,
+			toggleCaption,
+			toggleInstrumentCaptionRow,
+			hideAllMenuDivs,
+			saveScalingPrefs,
+			applyScalingPrefs,
+			clearScalingPrefs,
+				loadSong,
+				linkToSection,
+				hideGraveyard
+		};
+
 		$(document).on('click', '[data-action]', function(e) {
+			e.preventDefault();
 			const action = $(this).data('action');
 			const arg = $(this).data('action-arg');
-			if (action === 'help') {
-				window.open(getHelpTopic(), 'infinitehelp');
-				return;
-			}
-			if (typeof window[action] === 'function') {
+			const handler = dataActionHandlers[action];
+			if (typeof handler === 'function') {
 				if (arg !== undefined) {
-					window[action](arg);
+					handler(arg);
 				} else {
-					window[action]();
+					handler();
 				}
-			} else if (typeof window[action] === 'object' && typeof window[action].call === 'function') {
-				window[action].call(this, e);
+			} else {
+				console.warn('No data-action handler registered for:', action);
 			}
 		});
 
@@ -1992,12 +2116,14 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	// File-level appInit for browser startup
 	export function appInit() {
 		window.onerror = function (message, url, lineNo, colno, error){
-			alert('window.onerror: ' + message
+			let logString = 'window.onerror: ' + message
 				+ '\r\n URL:'+url
 				+'\r\n Line Number: ' + lineNo
 				+'\r\n Col Number: '+colno
 				+'\r\n Stack: '+error.stack
-			);
+			;
+			console.warn(logString);
+			alert(logString);
 			return true;
 		}
 

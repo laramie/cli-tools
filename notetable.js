@@ -57,6 +57,8 @@ function setNoteClickedCaption(...args) { return notetableProviders.setNoteClick
 function showBeats() { return notetableProviders.showBeats(); }
 function turnOffHiding() { return notetableProviders.turnOffHiding(); }
 
+const LOCAL_FALLBACK_NOTE_FUNCTIONS = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
+
 export function isRecording(){
     var btn = $("#btnRecord");
     var recording = btn.attr("recording");
@@ -65,8 +67,11 @@ export function isRecording(){
 
 
 export function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
+    var song = getSong() || {};
     var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
-    var noteFnBase = getSong().noteNamesFuncArr[relNoteNum];
+    var fnArr = Array.isArray(song.noteNamesFuncArr) ? song.noteNamesFuncArr : [];
+    var importFallback = Array.isArray(constNoteNamesArr) ? constNoteNamesArr : LOCAL_FALLBACK_NOTE_FUNCTIONS;
+    var noteFnBase = fnArr[relNoteNum] || importFallback[relNoteNum] || "";
     var noteFn = noteFnBase;
     var displayPitch = relNoteNum + 1; //1-based: 1==first note of scale.
     var enharmonicName = "<span class='enharmonicName'>"+noteNameBase + "<small>" + sharpFlat + "</small></span>"
@@ -108,7 +113,7 @@ export function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinu
 	var noteFnForHighlight = noteFn;
 	if (options.rootIDLead > -1){ //-1 is select option value for "follow rootID".
 		var relNoteNumLead = (12 + noteNum - options.rootIDLead) % 12; //0-based: 0==first note of scale
-	 	noteFnForHighlight = getSong().noteNamesFuncArr[relNoteNumLead];
+     	noteFnForHighlight = fnArr[relNoteNumLead] || importFallback[relNoteNumLead] || "";
 	}
 
 	result = "<div class='NoteDisplay'>"
