@@ -88,7 +88,58 @@ function requestUiClearAndReplaySection() {
 /**
  * @returns {Song}
  */
-export function makeSong(){
+export class Song {
+    constructor() {
+        Object.assign(this, makeSongLegacy());
+    }
+
+    getCurrentSection(){
+        return this.sections[this.gSectionsCurrentIndex];
+    }
+
+    getSectionsCurrentIndex(){
+        return this.gSectionsCurrentIndex;
+    }
+
+    gotoNextSection(orGotoFirst){
+        var isRandom = this.randomLoop == true;
+        if (isRandom) {
+            var rand = Math.random();
+            var randSection = Math.floor(rand*this.sections.length);
+            if (randSection == this.gSectionsCurrentIndex){
+                for (var r = 0; r<10; r++){
+                    rand = Math.random();
+                    randSection = Math.floor(rand*this.sections.length);
+                    if (randSection != this.gSectionsCurrentIndex){
+                        break;
+                    }
+                }
+            }
+            this.gSectionsCurrentIndex = randSection;
+            console.log("Random:"+(rand*this.sections.length)+" section:"+randSection);
+        } else if (this.getSectionsCurrentIndex()+1 >= this.sections.length){
+            if( orGotoFirst ) this.firstSection();
+        } else {
+            this.nextSection();
+        }
+        requestUiClearAndReplaySection();
+    }
+
+    gotoPrevSection(orGotoLast){
+        if (this.getSectionsCurrentIndex()==0){
+            if( orGotoLast ) this.lastSection();
+        } else {
+            this.prevSection();
+        }
+        requestUiClearAndReplaySection();
+    }
+}
+
+export function makeSong() {
+    return new Song();
+}
+
+function makeSongLegacy(){
     const DEFAULT_BEATS = 4;
     const noteNamesFuncArrDEFAULT = [
 	    "I", // 1 - I    I
@@ -138,8 +189,6 @@ export function makeSong(){
             make: construct_gSections,
 
             fixupCurrentIndexForLoadedSong: fixupCurrentIndexForLoadedSong,
-            getCurrentSection: getCurrentSection,
-            getSectionsCurrentIndex: getSectionsCurrentIndex,
             getRelativeSectionWithWrap: getRelativeSectionWithWrap,
             test_getRelativeSectionWithWrap: test_getRelativeSectionWithWrap,
             constructSection: constructSection,
@@ -168,8 +217,6 @@ export function makeSong(){
             prevSection: prevSection,
             nextSection: nextSection,
             gotoSection: gotoSection,
-            gotoNextSection: gotoNextSection,
-            gotoPrevSection: gotoPrevSection,
 
             insertSectionAtDest: insertSectionAtDest,
             newSection: newSection,
@@ -601,8 +648,8 @@ export function makeSong(){
 	    return beat;
 	}
 	function incBeat(){
-	    var beat = getBeat();
-	    var beats = getBeats();
+        var beat = this.getBeat();
+        var beats = this.getBeats();
 	    if (beat >= beats){
 	        beat = beats;
 	        return beat;
@@ -658,7 +705,7 @@ export function makeSong(){
 
 	function moveBeatsLater(){
 		var result = {};
-		var beatCount = getBeats();
+        var beatCount = this.getBeats();
 		var notes = getRecordedNotesForSection();
 		for (var i=1; i<=beatCount; i++){
 			result[""+(i+1)] = notes[""+i];
@@ -666,7 +713,7 @@ export function makeSong(){
 		result["1"] = [];
 		this.getCurrentSection().recordedNotes = result;
 		this.setBeats(beatCount+1);
-        gotoFirstBeat();
+        this.gotoFirstBeat();
 		this.publish_UpdateSectionStatus();
 		requestUiFullRepaint();
         requestUiShowBeats();
