@@ -13,6 +13,7 @@ import {
 	generateSelect,
 	generateSelectStringDividerHt,
 	getTunings,
+	 setSongProvider,
 	showDefaultTuning,
 	showHideTunings,
 	hideTuning,
@@ -70,6 +71,10 @@ class TableBuilder {
 
 	static getTunings(tableNamesArr) {
 		return getTunings(tableNamesArr);
+	}
+
+	static setSongProvider(providerFn) {
+		return setSongProvider(providerFn);
 	}
 
 	static showDefaultTuning() {

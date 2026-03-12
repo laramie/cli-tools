@@ -1,46 +1,37 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
+import EventBus from './event-bus.js';
 import {
-	NUM_FRETS_MAX,
-	getSong,
-	reinstallAllTuningsTables,
-	reloadAllTuningsDisplay
-} from './infinite-neck.js';
-import {
-	constNoteNamesArr
+    constNoteNamesArr
 } from './song.js';
 import {
 	allTunings
 } from './tunings.js';
 
 
-/* TODO: refactor imports of 
-	reloadAllTuningsDisplay,
-  and 
-  	reinstallAllTuningsTables
-  into 
-    event-bus.js calls to decouple this file from infinite-neck.js
+const NUM_FRETS_MAX = 108;
+let getSongProvider = function () {
+    return null;
+};
 
-	From CoPilot: 
-					For functions like reloadAllTuningsDisplay and reinstallAllTuningsTables, which are imported from infinite-neck.js and affect global UI or app state, it's best to decouple them from direct imports and instead trigger them via your new event-bus.js interface.
+export function setSongProvider(providerFn) {
+    if (typeof providerFn === 'function') {
+        getSongProvider = providerFn;
+    }
+}
 
-				This means:
+function getSong() {
+    return getSongProvider();
+}
 
-				TableBuilder should not directly import or call infinite-neck.js functions.
-				Instead, TableBuilder (or any module) can emit events (e.g., "ReloadTunings", "ReinstallTuningsTables") on the EventBus.
-				infinite-neck.js (or other listeners) will subscribe to these events and handle the UI updates or state changes.
-				This approach keeps TableBuilder modular and stateless, and centralizes app-wide actions through EventBus, improving maintainability and testability.
+function requestReinstallAllTuningsTables() {
+    EventBus.trigger('ReinstallAllTuningsTables');
+}
 
-				GPT-4.1 • 0x
-*/
+function requestReloadAllTuningsDisplay() {
+    EventBus.trigger('ReloadAllTuningsDisplay');
+}
 
-
-// From one revision back, 
-//        then added back imports, 
-//        and re-replaced resinstallAllTuningsTables 
-//            with correctly spelled reinstallAllTuningsTables 
-
-// constNoteNamesArr is defined in infinite-neck.js
 export const TABLE_ID_PREFIX = "tbl";
 export const TABLEDIV_ID_PREFIX = "div";
 
@@ -541,7 +532,7 @@ export function showTuningsForTablesInFile() {
 		} else {
 			console.log("tuning not found for basekey: " + visbasekey);
 		}
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 		showTuning(visbasekey);
 		numFound++;
 	});
@@ -602,7 +593,7 @@ export function bindFormTuningsEvents() {
 		} else {
 			console.log("tuning not found for basekey: " + basekey);
 		}
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 		showHideTuning(show, basekey);
 		showHideTunings();
 	});
@@ -610,31 +601,31 @@ export function bindFormTuningsEvents() {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.reverse = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .selectFrets').change(function () {
 		var tuningID = this.id.substring(SELECT_FRETS_PFX.length);
 		var tuning = findTuningForID(tuningID);
 		tuning.frets = parseInt(this.value);
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .selectStringDividerHt').change(function () {
 		var tuningID = this.id.substring(SELECT_STRINGDIVIDER_PFX.length);
 		var tuning = findTuningForID(tuningID);
 		tuning.stringDividerHeight = this.value;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .checkboxPN').change(function () {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.pianoNamesRow = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .checkboxNut').change(function () {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.nut = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#btnShowHideEditUserTuning').off('click').click(function () {
 		$('#divEditUserTuning').toggle();
@@ -669,8 +660,8 @@ export function bindFormTuningsEvents() {
 
 			tun.baseInstrument = $('#dropDownBaseInstrument  option:selected').val();
 
-			reloadAllTuningsDisplay();
-			reinstallAllTuningsTables();
+			requestReloadAllTuningsDisplay();
+			requestReinstallAllTuningsTables();
 		}
 	});
 
@@ -695,6 +686,6 @@ export function bindFormTuningsEvents() {
 		cloned.baseID = newBaseID;
 		cloned.instance = true;
 		allTunings.tunings.push(cloned);
-		reloadAllTuningsDisplay();
+		requestReloadAllTuningsDisplay();
 	});
 }

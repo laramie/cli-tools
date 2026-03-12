@@ -1,9 +1,17 @@
-import {
-    getMillisForBeatClock,
-    getSong,
-    showBeats,
-    showBPM
-} from './infinite-neck.js';
+let looperProviders = {
+	getMillisForBeatClock: function () { return 0; },
+	getSong: function () { return null; },
+	showBeats: function () {},
+	showBPM: function () {}
+};
+
+export function setLooperProviders(providers){
+	if (!providers) return;
+	looperProviders = {
+		...looperProviders,
+		...providers
+	};
+}
 
     var showBeatsIntervalPointer = null;
 
@@ -23,20 +31,20 @@ import {
 	}
 
 	function startLoopSections(){
-		showBPM();
+		looperProviders.showBPM();
 		var caption = LOOPING_FRAMES_CAPTION;
-		if (getSong().randomLoop){
+		if (looperProviders.getSong().randomLoop){
 			caption = LOOPING_FRAMES_CAPTION_RANDOM;
 		}
 		$("#btnLoopSections").html(caption).addClass("ButtonOn");    //.css({"background": "magenta"});
-		var millisNextBeat = getMillisForBeatClock();
+		var millisNextBeat = looperProviders.getMillisForBeatClock();
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
 	function startLoopBeats(){
 		$("#btnLoopBeats").html(LOOPING_BEATS_CAPTION).addClass("ButtonOn");    //.css({"background": "magenta"});
 		$("#btnLoopBeatsTransport").addClass("ButtonOn");                       //.css({"background": "magenta"});
 
-		var millisNextBeat = getMillisForBeatClock();
+		var millisNextBeat = looperProviders.getMillisForBeatClock();
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
 
@@ -80,17 +88,18 @@ import {
 	}
 
 	function showBeatsIntervalHandler(){
-		var beat = getSong().getBeat();
-		var beats = getSong().getBeats();
+		var song = looperProviders.getSong();
+		var beat = song.getBeat();
+		var beats = song.getBeats();
 	    if (beat >= beats){
 			if (sectionsLooping()){
-				getSong().gotoNextSection(true);  //calls showBeats()
+				song.gotoNextSection(true);  //calls showBeats()
 			} else {
-				getSong().incBeatLoop();
-				showBeats();
+				song.incBeatLoop();
+				looperProviders.showBeats();
 			}
 		} else {
-			getSong().incBeatLoop();
-			showBeats();
+			song.incBeatLoop();
+			looperProviders.showBeats();
 		}
 	}

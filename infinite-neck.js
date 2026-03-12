@@ -16,12 +16,15 @@ import {
 	toggleCmdLine,
 	txtCmdLine_keypress 
 } from './command-line.js';
-import './display-options.js';
+import {
+	setDisplayOptionsProviders
+} from './display-options.js';
 import {
 	draggable
 } from './drag.js';
 import {
-	makeGraveyard
+	makeGraveyard,
+	setGraveyardProviders
 } from './graveyard.js';
 import {
 	getFontSize,
@@ -32,11 +35,13 @@ import {
 	setNoteFontSize,
 	setSectionKeysFlats,
 	setSectionKeysSharps,
+	setKeyHandlerProviders,
 	showMessages,
 	document_keypress,
 	document_keyup
 } from './key-handlers.js';
 import {
+	setLooperProviders,
 	restartLoopSections,
 	sectionsLooping,
 	toggleLoopBeats,
@@ -124,6 +129,56 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	export function getSong(){
 		return gSong;
 	}
+	TableBuilder.setSongProvider(getSong);
+	setDisplayOptionsProviders({
+		getSong,
+		controlsToDisplayOptions
+	});
+	setGraveyardProviders({
+		getSong,
+		applyStylesheet: chuseStylesheet
+	});
+	setLooperProviders({
+		getSong,
+		getMillisForBeatClock,
+		showBeats,
+		showBPM
+	});
+	setKeyHandlerProviders({
+		addBeat,
+		checkRB,
+		clearAndReplaySection,
+		cycleThruKeys,
+		cycleThruNutWidths: (...args) => cycleThruNutWidths(...args),
+		downloadBackupThenClearGraveyard,
+		downloadPlayedNotes,
+		enterFullscreen,
+		getBPM,
+		getCurrentSection,
+		getSectionsCurrentIndex,
+		getSong,
+		hideAllMenuDivs,
+		leaveFullscreen,
+		printSections,
+		resetNoteNames,
+		sectionChanged,
+		setBPM,
+		setNamedNoteOpacity,
+		setSingleNoteOpacity,
+		setTinyNoteOpacity,
+		showOneMenu,
+		skipColorDictsReplacer,
+		toggleCaption,
+		toggleFullscreen,
+		toggleInstrumentCaptionRow,
+		toggleTransport,
+		transpose,
+		transposeSong,
+		transposeSongKeys,
+		updateFontLabel,
+		updateMemoryModelPreFileSave,
+		updateSectionsStatus
+	});
 
 	export function getCurrentSection(){
 	    return getSong().getCurrentSection();
@@ -2021,6 +2076,36 @@ EventBus.on('SectionChanged', function(data) {
 EventBus.on('SectionMoved', function(data) {
   updateSectionsStatus();
   NoteTableFacade.fullRepaint();
+});
+EventBus.on('SongUiClearAll', function() {
+	NoteTableFacade.clearAll();
+});
+EventBus.on('SongUiReplay', function() {
+	NoteTableFacade.replay();
+});
+EventBus.on('SongUiFullRepaint', function() {
+	NoteTableFacade.fullRepaint();
+});
+EventBus.on('SongUiClearHighlights', function() {
+	clearHighlights();
+});
+EventBus.on('SongUiResetNoteNames', function() {
+	resetNoteNames();
+});
+EventBus.on('SongUiShowBeats', function() {
+	showBeats();
+});
+EventBus.on('SongUiClearAndReplaySection', function() {
+	clearAndReplaySection();
+});
+EventBus.on('ShowMessages', function(data) {
+	showMessages(data && data.html ? data.html : '');
+});
+EventBus.on('ReinstallAllTuningsTables', function() {
+	reinstallAllTuningsTables();
+});
+EventBus.on('ReloadAllTuningsDisplay', function() {
+	reloadAllTuningsDisplay();
 });
 
 

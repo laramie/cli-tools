@@ -1,11 +1,24 @@
-import {
-    controlsToDisplayOptions,
-    getSong
-} from './infinite-neck.js';
+let getSongProvider = function () {
+    return null;
+};
+
+let controlsToDisplayOptionsProvider = function () {
+    return {};
+};
+
+export function setDisplayOptionsProviders(providers){
+    if (!providers) return;
+    if (typeof providers.getSong === 'function') {
+        getSongProvider = providers.getSong;
+    }
+    if (typeof providers.controlsToDisplayOptions === 'function') {
+        controlsToDisplayOptionsProvider = providers.controlsToDisplayOptions;
+    }
+}
 
 
 export function displayOptionsTable(){
-    var optionsPrototype = controlsToDisplayOptions();
+    var optionsPrototype = controlsToDisplayOptionsProvider();
     var res = [];
     res.push("<table border='1' class='tblDisplayOptions'><caption>All Sections with Display Options</caption>");
     var prevDisplayOptions = null;
@@ -14,7 +27,11 @@ export function displayOptionsTable(){
     var rowc = displayOptionsCaptionRow(optionsPrototype);
     res.push("<tr><td style='vertical-align: bottom;'>Section&nbsp;#</td>"+rowc+"</tr>");
 
-    var sections = getSong().getSections();
+    var song = getSongProvider();
+    if (!song) {
+        return "";
+    }
+    var sections = song.getSections();
     sections.forEach((section, sectionIdx) => {
         var displayOptions = section.displayOptions;
         if (displayOptions){

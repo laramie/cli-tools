@@ -1,15 +1,17 @@
-import {
-    getSong
-} from './infinite-neck.js';
-import {
-    chuseStylesheet
-} from './colorFunctions.js';
-import {
-    fullRepaint
-} from './notetable.js';
-import {
-    showMessages
-} from './key-handlers.js';
+import EventBus from './event-bus.js';
+
+let graveyardProviders = {
+    getSong: function () { return null; },
+    applyStylesheet: function () {}
+};
+
+export function setGraveyardProviders(providers){
+    if (!providers) return;
+    graveyardProviders = {
+        ...graveyardProviders,
+        ...providers
+    };
+}
 
 
 export const GraveType = Object.freeze({
@@ -104,7 +106,7 @@ export function makeGraveyard(flatObj){
                 break;
             case GraveType.SECTION:
                 record.caption = record.caption + " raised from: "+record.context.SectionIndex +" at "+record.time;
-                getSong().addSection(JSON.parse(record.json));
+                graveyardProviders.getSong().addSection(JSON.parse(record.json));
                 break;
             case GraveType.DISPLAY:
             case GraveType.BEAT:
@@ -113,11 +115,11 @@ export function makeGraveyard(flatObj){
                 if (dictkey){
                     var base = dictkey;
                     var i = 1;
-                    while (getSong().colorDicts[dictkey]){
+                    while (graveyardProviders.getSong().colorDicts[dictkey]){
                         dictkey = base+'R'+(i++);
                     }
-                    getSong().colorDicts[dictkey] = JSON.parse(record.json);
-                    chuseStylesheet(dictkey);
+                    graveyardProviders.getSong().colorDicts[dictkey] = JSON.parse(record.json);
+                    graveyardProviders.applyStylesheet(dictkey);
                 }
                 break;
             case GraveType.THEME:
@@ -130,8 +132,8 @@ export function makeGraveyard(flatObj){
                  return;
         }
         record.lastRevived = Date.now();
-        showMessages(getSong().graveyard.buildNoteTable());
-        fullRepaint();
+        EventBus.trigger('ShowMessages', { html: graveyardProviders.getSong().graveyard.buildNoteTable() });
+        EventBus.trigger('SongUiFullRepaint');
     }
 
     /* Hose the records, emptying the graveyard.  
