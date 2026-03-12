@@ -1,7 +1,0 @@
-AST (Abstract Syntax Trees)
-   https://astexplorer.net/
-   See: Babel, Acorn/Espree
-   See: ast-grep run --pattern 
-       https://ast-grep.github.io/guide/pattern-syntax.html#pattern-matching
-          
- 
