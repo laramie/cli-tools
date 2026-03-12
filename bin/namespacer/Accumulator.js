@@ -8,6 +8,7 @@ import { Step } from './Step.js';
 import { StepAccumulator } from './StepAccumulator.js';
 
 const ACCUMULATOR_STEPS    = "_accumulator.steps.json";
+const ACCUMULATOR_STEPS_ANSI    = "_accumulator.steps.ansi";
 
 
 
@@ -89,6 +90,11 @@ export class Accumulator {
         const logline = "END. "+ANSIColors.green(Accumulator.getTimeStamp(true));
         const step = new Step({stepID: "Accumulator", logline: logline, icon: Emoji.ACCUMULATOR});
         this.logStep(step);  
+    }
+
+    getSteps_json(){
+        let steps = this._stepsArray;
+        return JSON.stringify(steps, null, 4);
     }
     
     getStepsPrintout(printOptions) {
@@ -237,11 +243,13 @@ export class Accumulator {
     }
 
     appendOutputFiles(printOptions){
-        this.appendOutputFile(ACCUMULATOR_STEPS,this.getStepsPrintout(printOptions), null);
+        this.appendOutputFile(ACCUMULATOR_STEPS,this.getSteps_json(), null);
+        this.appendOutputFile(ACCUMULATOR_STEPS_ANSI,this.getStepsPrintout(printOptions), null);
     }
 
     hoseAccumulatorOutputFiles(){
         this.#hoseOutputFile(ACCUMULATOR_STEPS);   
+        this.#hoseOutputFile(ACCUMULATOR_STEPS_ANSI);   
     }
 
     /**
