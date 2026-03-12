@@ -12,7 +12,6 @@ import { getFontSize, getNoteFontSize, setSectionKeysFlats, setSectionKeysSharps
 import '../../looper.js';
 import '../../menu.js';
 import { Note } from '../../note.js';
-import { NoteTableFacade } from '../../NoteTableFacade.js';
 import { makeSong } from '../../song.js';
 import '../../section-recorder.js';
 import '../../svgLines.js';

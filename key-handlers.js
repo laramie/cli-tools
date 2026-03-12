@@ -12,9 +12,6 @@ import {
 	displayOptionsTable
 } from './display-options.js';
 import {
-	highlightOneNote
-} from './notetable.js';
-import {
 	beatsLooping,
 	restartLoopSections,
 	sectionsLooping,
@@ -65,6 +62,7 @@ function getCurrentSection(...args) { return requireProvider('getCurrentSection'
 function getSectionsCurrentIndex(...args) { return requireProvider('getSectionsCurrentIndex')(...args); }
 function getSong(...args) { return requireProvider('getSong')(...args); }
 function hideAllMenuDivs(...args) { return requireProvider('hideAllMenuDivs')(...args); }
+function highlightOneNote(...args) { return requireProvider('highlightOneNote')(...args); }
 function leaveFullscreen(...args) { return requireProvider('leaveFullscreen')(...args); }
 function printSections(...args) { return requireProvider('printSections')(...args); }
 function resetNoteNames(...args) { return requireProvider('resetNoteNames')(...args); }

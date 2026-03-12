@@ -3,15 +3,25 @@
 //Static functions handling recorded notes in a Section.  Kept out of song.js to keep the recording logic in one place.
 //Of course, this picks up the gSong reference from infinite-neck.js via getCurrentSection().
 import {
-	getSong,
-	getCurrentSection
-} from './infinite-neck.js';
-import {
     Note
 } from './note.js';
-import {
-	clearHighlights
-} from './notetable.js';
+
+var sectionRecorderProviders = {
+    getCurrentSection: function () { return null; },
+    clearHighlights: function () { }
+};
+
+export function setSectionRecorderProviders(nextProviders = {}) {
+    sectionRecorderProviders = { ...sectionRecorderProviders, ...nextProviders };
+}
+
+function getCurrentSection() {
+    return sectionRecorderProviders.getCurrentSection();
+}
+
+function clearHighlights() {
+    return sectionRecorderProviders.clearHighlights();
+}
 
 
 

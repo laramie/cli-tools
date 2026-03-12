@@ -6,12 +6,10 @@ import {
 	recordUserColorsFromSection,
 	applyStylesheetsTo_gUserColorDict,
 	buildColorDicts,
-	buildUserColors
+	buildUserColors,
+	setColorFunctionsProviders
 } from './colorFunctions.js';
 import {
-	gColorPickerColors
-} from './colorPickerColors.js';
-import { 
 	hideCmdLine,
 	toggleCmdLine,
 	txtCmdLine_keypress 
@@ -49,23 +47,28 @@ import {
 } from './looper.js';
 import './menu.js';
 import {
+	buildCellsFromSelector,
+	clearAll,
 	clearHighlights,
+	colorNote,
 	colorSingleNotes,
 	fillChord,
 	highlightOneNote,
-	showMidiNotesInTable
+	replay,
+	setNotetableProviders,
+	showHighlightsForBeat,
+	showMidiNotesInTable,
+	fullRepaint
 } from './notetable.js';
 import {
 	Note
 } from './note.js'; 
-import { 
-	NoteTableFacade 
-} from './NoteTableFacade.js';
 import {
 	makeSong
 } from './song.js';
 import {
-	clearRecordedNotes
+	clearRecordedNotes,
+	setSectionRecorderProviders
 } from './section-recorder.js';
 import './svgLines.js';
 import {
@@ -97,8 +100,6 @@ import {
 import {
 	convertRGB_to_HEX,
 	invertColor,
-	padZero,
-	queryNamedNotesSetBGOpacity,
 	scrollToTop,
 	toInt
 } from './utils.js';
@@ -114,7 +115,6 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	const SHARP = "&#9839;";
 	const FLAT = "&#9837;";
 	const NATURAL = "&nbsp;";
-	const TUNINGS_PFX = "tunings-";
 	const DEFAULT_BEATS_PER = 4;
 	const DEFAULT_BPM = 80;
 
@@ -123,62 +123,95 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	const gBEND_CLASSES = "semitone1 semitone2 semitone3 prebend1 prebend2 prebend3 updown1 updown2 updown3"
 						  +" semitone1LH semitone2LH semitone3LH prebend1LH prebend2LH prebend3LH updown1LH updown2LH updown3LH";
 
-	//==========================================================================
+	// Section Index (high-level)
+	// 1) Core providers and accessors
+	// 2) Section/song state helpers
+	// 3) File open/save and persistence
+	// 4) UI event binding and control wiring
+	// 5) App init and EventBus integration
+
+	//==================== 1) Core providers and accessors ====================
 
 	var gSong = null;  //constructed in document ready.
 	export function getSong(){
 		return gSong;
 	}
-	TableBuilder.setSongProvider(getSong);
-	setDisplayOptionsProviders({
-		getSong,
-		controlsToDisplayOptions
-	});
-	setGraveyardProviders({
-		getSong,
-		applyStylesheet: chuseStylesheet
-	});
-	setLooperProviders({
-		getSong,
-		getMillisForBeatClock,
-		showBeats,
-		showBPM
-	});
-	setKeyHandlerProviders({
-		addBeat,
-		checkRB,
-		clearAndReplaySection,
-		cycleThruKeys,
-		cycleThruNutWidths: (...args) => cycleThruNutWidths(...args),
-		downloadBackupThenClearGraveyard,
-		downloadPlayedNotes,
-		enterFullscreen,
-		getBPM,
-		getCurrentSection,
-		getSectionsCurrentIndex,
-		getSong,
-		hideAllMenuDivs,
-		leaveFullscreen,
-		printSections,
-		resetNoteNames,
-		sectionChanged,
-		setBPM,
-		setNamedNoteOpacity,
-		setSingleNoteOpacity,
-		setTinyNoteOpacity,
-		showOneMenu,
-		skipColorDictsReplacer,
-		toggleCaption,
-		toggleFullscreen,
-		toggleInstrumentCaptionRow,
-		toggleTransport,
-		transpose,
-		transposeSong,
-		transposeSongKeys,
-		updateFontLabel,
-		updateMemoryModelPreFileSave,
-		updateSectionsStatus
-	});
+
+	function installModuleProviders(){
+		TableBuilder.setSongProvider(getSong);
+		setDisplayOptionsProviders({
+			getSong,
+			controlsToDisplayOptions
+		});
+		setGraveyardProviders({
+			getSong,
+			applyStylesheet: chuseStylesheet
+		});
+		setLooperProviders({
+			getSong,
+			getMillisForBeatClock,
+			showBeats,
+			showBPM
+		});
+		setNotetableProviders({
+			getBeatNumber,
+			getCurrentSection,
+			getSong,
+			hideNoteClickedCaption,
+			resetNoteNames,
+			setNoteClickedCaption,
+			showBeats,
+			turnOffHiding
+		});
+		setSectionRecorderProviders({
+			getCurrentSection,
+			clearHighlights
+		});
+		setKeyHandlerProviders({
+			addBeat,
+			checkRB,
+			clearAndReplaySection,
+			cycleThruKeys,
+			cycleThruNutWidths: (...args) => cycleThruNutWidths(...args),
+			downloadBackupThenClearGraveyard,
+			downloadPlayedNotes,
+			enterFullscreen,
+			getBPM,
+			getCurrentSection,
+			getSectionsCurrentIndex,
+			getSong,
+			hideAllMenuDivs,
+			highlightOneNote,
+			leaveFullscreen,
+			printSections,
+			resetNoteNames,
+			sectionChanged,
+			setBPM,
+			setNamedNoteOpacity,
+			setSingleNoteOpacity,
+			setTinyNoteOpacity,
+			showOneMenu,
+			skipColorDictsReplacer,
+			toggleCaption,
+			toggleFullscreen,
+			toggleInstrumentCaptionRow,
+			toggleTransport,
+			transpose,
+			transposeSong,
+			transposeSongKeys,
+			updateFontLabel,
+			updateMemoryModelPreFileSave,
+			updateSectionsStatus
+		});
+		setColorFunctionsProviders({
+			getSong,
+			getCurrentSection,
+			doingAutomaticColor: (...args) => doingAutomaticColor(...args),
+			fullRepaint
+		});
+	}
+
+	installModuleProviders();
 
 	export function getCurrentSection(){
 	    return getSong().getCurrentSection();
@@ -191,7 +224,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	export function getSections(){
 	    return getSong().getSections();
 	}
-	//==========================================================================
+	//==================== 2) Section/song state helpers ======================
 
 	export function checkRB(id){
 		$(id).prop("checked", true);
@@ -232,7 +265,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		}
 		showHideDisplayOptionsPresent();
 	    getSong().gotoFirstBeat();
-	    NoteTableFacade.showHighlightsForBeat(getSong().getBeat());
+	    showHighlightsForBeat(getSong().getBeat());
 	    updateSectionsStatus();
 	}
 
@@ -279,8 +312,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	export function clearAndReplaySection(){
 		getSong().gotoFirstBeat();
-		NoteTableFacade.clearAll();
-		resetNoteNames(); //calls NoteTableFacade.replay()
+		clearAll();
+		resetNoteNames(); //calls replay()
 		updateSectionsStatus();
 		showBeats();
 		//prevSection calls this: updateSectionsStatus();
@@ -291,7 +324,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		var beat = getSong().getBeat();
 		$("#lblBeat").html(""+beat);
 		$("#lblCurrentBeat").text(""+beat);
-		NoteTableFacade.showHighlightsForBeat(beat);
+		showHighlightsForBeat(beat);
 	}
 
 	export function getMillisForCurrentSection(){
@@ -408,33 +441,33 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			$('#btnFuncV').addClass("BtnPunchedIn").removeClass("BtnPunchedOut");
 			$('#btnNoteV').addClass("BtnPunchedOut").removeClass("BtnPunchedIn");
 		}
-		NoteTableFacade.replay();
+		replay();
 	}
 
 	export function buildCells(sharps, options) {
 		if (sharps) {
-			NoteTableFacade.buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
+			buildCellsFromSelector("td.noteAb", "G", SHARP, 11, options);
+			buildCellsFromSelector("td.noteBb", "A", SHARP, 1, options);
+			buildCellsFromSelector("td.noteDb", "C", SHARP, 4, options);
+			buildCellsFromSelector("td.noteEb", "D", SHARP, 6, options);
+			buildCellsFromSelector("td.noteGb", "F", SHARP, 9, options);
 		} else {
-			NoteTableFacade.buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
-			NoteTableFacade.buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
+			buildCellsFromSelector("td.noteAb","A", FLAT, 11, options);
+			buildCellsFromSelector("td.noteBb","B", FLAT, 1, options);
+			buildCellsFromSelector("td.noteDb","D", FLAT, 4, options);
+			buildCellsFromSelector("td.noteEb","E", FLAT, 6, options);
+			buildCellsFromSelector("td.noteGb","G", FLAT, 9, options);
 		}
-		NoteTableFacade.buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
-		NoteTableFacade.buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
+		buildCellsFromSelector("td.noteA","A", NATURAL, 0, options);
+		buildCellsFromSelector("td.noteB","B", NATURAL, 2, options);
+		buildCellsFromSelector("td.noteC","C", NATURAL, 3, options);
+		buildCellsFromSelector("td.noteD","D", NATURAL, 5, options);
+		buildCellsFromSelector("td.noteE","E", NATURAL, 7, options);
+		buildCellsFromSelector("td.noteF","F", NATURAL, 8, options);
+		buildCellsFromSelector("td.noteG","G", NATURAL, 10, options);
 	}
 
-	//list of menu divs, accessed through .entries(), and associated button names,
+	// List of menu divs, accessed through .entries(), and associated button names,
 	//  accessed through selectors stored in values with menu as key: AllMenuDivs[strMenuDiv]
 	const AllMenuDivs = {
 		"#palette": "#btnPalette",
@@ -508,7 +541,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 
 
-  export function turnOnKeep(){
+	export function turnOnKeep(){
       $("#idKeep").prop("checked", true);
   }
 
@@ -553,8 +586,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	    $("#cbHideFingering").prop("checked", false);
 	    $("#lblHideWarning").hide();
 	    if (hideNamedNotes || hideTinyNotes || hideSingleNotes || hideFingering){
-	        NoteTableFacade.clearAll();
-	        NoteTableFacade.replay();
+	        clearAll();
+	        replay();
 	    }
   	}
 
@@ -580,6 +613,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		getSong().graveyard.clear();
 		showMessages(getSong().graveyard.buildNoteTable()); // No change: buildNoteTable is not a TableBuilder method here
 	}
+
+	//==================== 3) File open/save and persistence ==================
 
 	//Use this function to skip saving the ColorDics, because they get generated anyway.
 	// Ultimately, only user-customized dicts should be saved, but right now it is doing 
@@ -774,7 +809,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			TableBuilder.showDefaultTuning();
 		}
 
-		NoteTableFacade.replay();
+		replay();
 		sectionChanged();
 	}
 
@@ -847,14 +882,14 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			installAllTuningsTables();
 			installTDNoteClick();
 			installBtnHamburgerClicks();
-			NoteTableFacade.clearAll();
+			clearAll();
 			resetNoteNames();
 			TableBuilder.showHideTunings();
 	}
 
 	export function installTDNoteClick(){
 		$('td.note').off('click').click(function(event) {
-			NoteTableFacade.colorNote($(this));
+			colorNote($(this));
 			event.stopPropagation();
 		});
 	}
@@ -969,9 +1004,9 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		cycleThruKeys(amount);
 		var namedNoteName = getSong().moveNamedNotes(amount);
 
-		//NoteTableFacade.fullRepaint();//Don't do this, it is a bit slow because it rebuilds.
-		NoteTableFacade.clearAll();
-		NoteTableFacade.replay();
+		//fullRepaint();//Don't do this, it is a bit slow because it rebuilds.
+		clearAll();
+		replay();
 		showBeats();
 
 		highlightOneNote(namedNoteName);
@@ -980,9 +1015,9 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	export function transposeSong(amount){
 		getSong().cycleThruKeysAllSections(amount);
 		var namedNoteName = getSong().moveNamedNotesAllSections(amount);
-		NoteTableFacade.fullRepaint();
-		/*NoteTableFacade.clearAll();
-		NoteTableFacade.replay();
+		fullRepaint();
+		/*clearAll();
+		replay();
 		showBeats();
 
 		highlightOneNote(namedNoteName);
@@ -991,7 +1026,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	export function transposeSongKeys(amount){
 		getSong().cycleThruKeysAllSections(amount);
-		NoteTableFacade.fullRepaint();
+		fullRepaint();
 		showBeats();
 	}
 
@@ -1039,8 +1074,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		export function setNamedNoteOpacity_inner(element_id, newValue){
 			getSong().namedNoteOpacity = newValue;
 			//console.log("setNamedNoteOpacity_inner element_id:"+element_id+" value: "+newValue);
-			NoteTableFacade.clearAll();
-		    NoteTableFacade.replay();
+			clearAll();
+		    replay();
 		    updateSectionsStatus();
 		}
 
@@ -1066,8 +1101,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		export function setSingleNoteOpacity_inner(element_id, newValue){
 			getSong().singleNoteOpacity = newValue;
-			NoteTableFacade.clearAll();
-		    NoteTableFacade.replay();
+			clearAll();
+		    replay();
 		    updateSectionsStatus();
 		}
 
@@ -1088,8 +1123,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		export function setTinyNoteOpacity_inner(element_id, newValue){
 			getSong().tinyNoteOpacity = newValue;
-			NoteTableFacade.clearAll();
-			NoteTableFacade.replay();
+			clearAll();
+			replay();
 			updateSectionsStatus();
 		}
 
@@ -1334,7 +1369,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 
 
-	//=============== document.ready event Binding ==========================
+	//==================== 4) UI event binding and control wiring =============
 
 	export function bindDesktopEvents(){
 
@@ -1474,13 +1509,13 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		$("#btnClear").click(function() {
 		    resetNoteNames();
-		    NoteTableFacade.clearAll();
+		    clearAll();
 		});
 		$("#btnDownload").click(function() {
 		    downloadPlayedNotes();
 		});
 		$("#btnReplay").click(function() {
-		    NoteTableFacade.replay();
+		    replay();
 		});
 		$("#btnPrevSection, #btnPrevSection2").click(function() {
 		    getSong().gotoPrevSection(false);
@@ -1520,7 +1555,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				getSong().moveSectionTo(newIndex);
 			}
 			updateSectionsStatus();
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#btnLoopSections").click(function() {
 		    toggleLoopSections();
@@ -1574,7 +1609,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		$("#btnPrevBeat").click(function() {
 		    getSong().prevBeat();
-		    NoteTableFacade.showHighlightsForBeat(getSong().getBeat());
+		    showHighlightsForBeat(getSong().getBeat());
 		});
 		$("#btnNextBeat").click(function() {
 		    getSong().nextBeat();
@@ -1633,69 +1668,69 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		// CODE-EXAMPLE("SelectWidget", "Root")
 	    $('#dropDownRoot').change(function() {
 	        getCurrentSection().rootID = $(this).val();
-	        NoteTableFacade.fullRepaint();
+	        fullRepaint();
 	        updateSectionsStatus();
 	    });
 		// END CODE-EXAMPLE("SelectWidget", "Root")
 		$('#dropDownRootLead').change(function() {
             getCurrentSection().rootIDLead = $('#dropDownRootLead').val();
-            NoteTableFacade.fullRepaint();
+            fullRepaint();
 	        updateSectionsStatus();
 	    });
 
 		$("#btnRowRangeReset").click(function() {
 			//$('#textareaRowRange').val(JSON.stringify(noteNamesRowRangeArr));
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 
 		$('#dropDownBaseInstrument').change(function() {
 			var baseInstrumentID = $(this).val();
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 			updateSectionsStatus();
 		});
 
 		$('#dropDownCellHeight').change(function() {
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 	    });
 		$('#dropDownCellWidth').change(function() {
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#cbNaturalFretWidths,#selNaturaFontScaling").change(function(){
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selNoteFont").change(function(){
 			setOneCssVar("--td-note-font-family", $("#selNoteFont").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selLeftSubscriptFontSize").change(function(){
 			setOneCssVar("--left-subscript-font-size", $("#selLeftSubscriptFontSize").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selRightSubscriptFontSize").change(function(){
 			setOneCssVar("--right-subscript-font-size", $("#selRightSubscriptFontSize").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selTinyNoteMaxHeight").change(function(){
 			setOneCssVar("--tiny-note-max-height", $("#selTinyNoteMaxHeight").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selTinyNoteFontSize").change(function(){
 			setOneCssVar("--tiny-note-font-size", $("#selTinyNoteFontSize").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 
 
 		$("#selMidiFontSize").change(function(){
 			setOneCssVar("--midi-font-size", $("#selMidiFontSize").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selFingeringFontSize").change(function(){
 			setOneCssVar("--fingering-font-size", $("#selFingeringFontSize").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$("#selFingeringPosition").change(function(){
 			setOneCssVar("--fingering-position", $("#selFingeringPosition").val());
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		$('#dropDownInstrumentMargins').change(function() {
 			//short-circuit and set it now, it is in mem for next time.
@@ -1736,7 +1771,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				$('#manualColors').show();
 				$('#btnAutoColor,#btnAutoColor2').addClass("BtnPunchedOut").removeClass("BtnPunchedIn");
 			}
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 
 		$('#cbHideNamedNotes, #cbHideSingleNotes, #cbHideTinyNotes, #cbHideFingering').change(function() {
@@ -1751,8 +1786,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				} else {
 					$("#lblHideWarning").hide();
 				}
-				NoteTableFacade.clearAll();
-				NoteTableFacade.replay();
+				clearAll();
+				replay();
 	    });
 
 		$('#cbShowCellNotes').change(function() {
@@ -1782,36 +1817,35 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		$("#textareaFunctionSymbols" ).on( "change", function() {
 			var txtVal = $('#textareaFunctionSymbols').val();
 		    try {
-				//Since we are allowing the user to put somthing in, let's validate a bit before accepting.
-				 getSong().noteNamesFuncArr = JSON.parse(txtVal);
-				 if (!getSong().noteNamesFuncArr.length){
-					 throw new TypeError("NoteFunction array is empty -- check commas and quotes.");
-				 }
-				 if (!getSong().noteNamesFuncArr[0]){
-					 throw new TypeError("First NoteFunction is empty");
-				 }
-				 if (!getSong().noteNamesFuncArr[11]){
-					 throw new TypeError("Last NoteFunction is empty");
-				 }
-			 	 getSong().noteNamesFuncArr = txtVal;
-			} catch (error) {
+				//Since we are allowing the user to put something in, validate before accepting.
+				getSong().noteNamesFuncArr = JSON.parse(txtVal);
+				if (!getSong().noteNamesFuncArr.length){
+					throw new TypeError("NoteFunction array is empty -- check commas and quotes.");
+				}
+				if (!getSong().noteNamesFuncArr[0]){
+					throw new TypeError("First NoteFunction is empty");
+				}
+				if (!getSong().noteNamesFuncArr[11]){
+					throw new TypeError("Last NoteFunction is empty");
+				}
+			} catch (error){
 				getSong().noteNamesFuncArr = getSong().noteNamesFuncArrDEFAULT;
 				alert("Error setting NoteFunction names: "+error);
 			}
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		// CODE-EXAMPLE("TextAreaWButtonWidget", "FunctionSymbols")
 		$("#btnFunctionSymbolsReset").click(function() {
 			getSong().noteNamesFuncArr = getSong().noteNamesFuncArrDEFAULT;
 			$('#textareaFunctionSymbols').val(JSON.stringify(getSong().noteNamesFuncArr));
-			NoteTableFacade.fullRepaint();
+			fullRepaint();
 		});
 		// END-CODE-EXAMPLE("TextAreaWButtonWidget") 
 		$('#dropDownFunctionSymbols').change(function() {
             var value = $('#dropDownFunctionSymbols').val();
 			getSong().noteNamesFuncArr = JSON.parse(value);  //this one is safe--comes from our built SELECT.
 			$('#textareaFunctionSymbols').val(JSON.stringify(getSong().noteNamesFuncArr));
-            NoteTableFacade.fullRepaint();
+            fullRepaint();
 	    });
 
 
@@ -1889,7 +1923,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 	}
 
-	//=============== document.ready HELPER functions ==========================
+	//==================== document.ready helper functions =====================
 
 	export function ChromeFullscreen() {
 	  document.documentElement.webkitRequestFullScreen();
@@ -1940,9 +1974,12 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		$('#themeTableResults').hide();
 	}
 
-	//=============== Headless replacement for document.ready for testing ===========================================
+	//==================== 5) App init and EventBus integration ===============
+
+	// Headless replacement for document.ready for testing
 	export function setupSongTests() {
 		gSong = makeSong();  //var song global in this file (at top).
+		installModuleProviders();
 		
 		getSong().graveyard = makeGraveyard();
 		installDefaultColorDicts();
@@ -1951,7 +1988,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 		//TODO: in each test be sure to set this somehow: getSong().songName = currentFilename;
 	}
 	
-	//=============== new appInit() called by document.ready ===========================================
+	// appInit() called by document.ready
 	// File-level appInit for browser startup
 	export function appInit() {
 		window.onerror = function (message, url, lineNo, colno, error){
@@ -2052,7 +2089,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 
 		scrollToTop();
 	}
-	//=============== end of new appInit() with document ready call ===========
+	// End of appInit() with document ready call
 
 	//========================================================================= 
 	//  $(document).ready(appInit)                                      =======
@@ -2075,16 +2112,16 @@ EventBus.on('SectionChanged', function(data) {
 });
 EventBus.on('SectionMoved', function(data) {
   updateSectionsStatus();
-  NoteTableFacade.fullRepaint();
+  fullRepaint();
 });
 EventBus.on('SongUiClearAll', function() {
-	NoteTableFacade.clearAll();
+	clearAll();
 });
 EventBus.on('SongUiReplay', function() {
-	NoteTableFacade.replay();
+	replay();
 });
 EventBus.on('SongUiFullRepaint', function() {
-	NoteTableFacade.fullRepaint();
+	fullRepaint();
 });
 EventBus.on('SongUiClearHighlights', function() {
 	clearHighlights();

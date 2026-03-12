@@ -3,20 +3,12 @@ import {
 	gColorPickerColors
 } from './colorPickerColors.js';
 import {
-	getSong,
-	getCurrentSection,
-	doingAutomaticColor
-} from './infinite-neck.js';
-import {
 	Note
 } from './note.js';
 import {
 	constNoteNamesArr,
 	noteNameToNoteID
 } from './song.js';
-import {
-	fullRepaint
-} from './notetable.js';
 import {
 	GraveType
 } from './graveyard.js';
@@ -30,6 +22,37 @@ import {
 import {
 	toInt
 } from './utils.js';
+
+var colorFunctionsProviders = {
+	getSong: function () { return null; },
+	getCurrentSection: function () { return null; },
+	doingAutomaticColor: function () { return false; },
+	fullRepaint: function () { }
+};
+
+export function setColorFunctionsProviders(providers) {
+	if (!providers) return;
+	colorFunctionsProviders = {
+		...colorFunctionsProviders,
+		...providers
+	};
+}
+
+function getSong() {
+	return colorFunctionsProviders.getSong();
+}
+
+function getCurrentSection() {
+	return colorFunctionsProviders.getCurrentSection();
+}
+
+function doingAutomaticColor() {
+	return colorFunctionsProviders.doingAutomaticColor();
+}
+
+function fullRepaint() {
+	return colorFunctionsProviders.fullRepaint();
+}
 
 
 //================== colorDicts ================================================

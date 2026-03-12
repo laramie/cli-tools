@@ -2,22 +2,29 @@
 
 import EventBus from './event-bus.js';
 import {
-    constNoteNamesArr
-} from './song.js';
-import {
 	allTunings
 } from './tunings.js';
 
 
 const NUM_FRETS_MAX = 108;
+const DEFAULT_NOTE_NAMES = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
 let getSongProvider = function () {
     return null;
+};
+let getNoteNamesProvider = function () {
+	return DEFAULT_NOTE_NAMES;
 };
 
 export function setSongProvider(providerFn) {
     if (typeof providerFn === 'function') {
         getSongProvider = providerFn;
     }
+}
+
+export function setNoteNamesProvider(providerFn) {
+	if (typeof providerFn === 'function') {
+		getNoteNamesProvider = providerFn;
+	}
 }
 
 function getSong() {
@@ -278,7 +285,7 @@ export function midinumToNoteName(midinum) {
 		midinum += 12;
 	}
 	var index = (midinum - 9) % 12;
-	return constNoteNamesArr[index];
+	return getNoteNamesProvider()[index];
 	// 21 == A0
 	// 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
 }

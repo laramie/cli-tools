@@ -13,17 +13,6 @@ import {
     lookupClassForNote,
     lookupUserColorClass
 } from './colorFunctions.js';
-
-import {
-    getBeatNumber,
-    getCurrentSection,
-    getSong,
-    hideNoteClickedCaption,
-    resetNoteNames,
-    setNoteClickedCaption,
-    showBeats,
-    turnOffHiding,
-} from './infinite-neck.js';
 import {
     Note
 } from './note.js';
@@ -43,6 +32,30 @@ import {
 import {
 	toInt
 } from './utils.js';
+
+var notetableProviders = {
+    getBeatNumber: function () { return 0; },
+    getCurrentSection: function () { return null; },
+    getSong: function () { return null; },
+    hideNoteClickedCaption: function () { },
+    resetNoteNames: function () { },
+    setNoteClickedCaption: function () { },
+    showBeats: function () { },
+    turnOffHiding: function () { }
+};
+
+export function setNotetableProviders(nextProviders = {}) {
+    notetableProviders = { ...notetableProviders, ...nextProviders };
+}
+
+function getBeatNumber() { return notetableProviders.getBeatNumber(); }
+function getCurrentSection() { return notetableProviders.getCurrentSection(); }
+function getSong() { return notetableProviders.getSong(); }
+function hideNoteClickedCaption() { return notetableProviders.hideNoteClickedCaption(); }
+function resetNoteNames() { return notetableProviders.resetNoteNames(); }
+function setNoteClickedCaption(...args) { return notetableProviders.setNoteClickedCaption(...args); }
+function showBeats() { return notetableProviders.showBeats(); }
+function turnOffHiding() { return notetableProviders.turnOffHiding(); }
 
 export function isRecording(){
     var btn = $("#btnRecord");
