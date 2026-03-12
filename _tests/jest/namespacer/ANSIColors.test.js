@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { ANSIColors } from '@/bin/namespacer/ANSIColors.js';
-import { logVerbose, logVerboseTrue } from './LogVerboseJest.js';
+import { logVerbose, logVerboseTrue } from '../LogVerboseJest.js';
 
 
 describe('ANSIColors static tests', () => {

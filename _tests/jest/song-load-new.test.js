@@ -1,9 +1,8 @@
-import './jest-setup-es6.js';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { setupSongTests, getSong } from '../../infinite-neck.js';
-import { logVerbose, INFINITE_NECK_VERBOSE, VERBOSE_MODE, VERBOSE_MODE_INT } from './namespacer/LogVerboseJest.js';
+import { logVerbose, INFINITE_NECK_VERBOSE, VERBOSE_MODE, VERBOSE_MODE_INT } from './LogVerboseJest.js';
 
 
 const __filename = fileURLToPath(import.meta.url);

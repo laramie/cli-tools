@@ -2,7 +2,7 @@
 
 
 import { RegexSuites } from '../../../bin/namespacer/RegexSuites.js';
-import { logVerbose } from './LogVerboseJest.js';
+import { logVerbose } from '../LogVerboseJest.js';
 
 
 describe('RegexSuites static tests', () => {
