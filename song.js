@@ -1,18 +1,27 @@
 import EventBus from './event-bus.js';
-import { 
-    NUM_FRETS_MAX, 
-    clearAndReplaySection,
-    resetNoteNames,
-    showBeats
-} from './infinite-neck.js';
 import {
 	allTunings
 } from './tunings.js';
+import {
+    Note
+} from './note.js';
+import {
+    GraveType
+} from './graveyard.js';
+import {
+    getRecordedNotesForSection
+} from './section-recorder.js';
+import {
+    TABLEDIV_ID_PREFIX,
+    TABLE_ID_PREFIX,
+    getTunings
+} from './table-builder.js';
 import {
 	toInt
 } from './utils.js';
 import { ANSIColors } from './bin/namespacer/ANSIColors.js';
 
+const NUM_FRETS_MAX = 108;
 
 export const constNoteNamesArr       = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
 
@@ -35,9 +44,37 @@ function noteIDToNoteNameRaw(noteIndex){
     return constNoteNamesArr[noteIndex];
 }
 
-function noteNameToNoteID(noteName){
+export function noteNameToNoteID(noteName){
 		return constNoteNamesArr.indexOf(noteName);
 	}
+
+function requestUiClearAll() {
+    EventBus.trigger('SongUiClearAll');
+}
+
+function requestUiReplay() {
+    EventBus.trigger('SongUiReplay');
+}
+
+function requestUiFullRepaint() {
+    EventBus.trigger('SongUiFullRepaint');
+}
+
+function requestUiClearHighlights() {
+    EventBus.trigger('SongUiClearHighlights');
+}
+
+function requestUiResetNoteNames() {
+    EventBus.trigger('SongUiResetNoteNames');
+}
+
+function requestUiShowBeats() {
+    EventBus.trigger('SongUiShowBeats');
+}
+
+function requestUiClearAndReplaySection() {
+    EventBus.trigger('SongUiClearAndReplaySection');
+}
 
 
 /**
@@ -51,7 +88,58 @@ function noteNameToNoteID(noteName){
 /**
  * @returns {Song}
  */
-export function makeSong(){
+export class Song {
+    constructor() {
+        Object.assign(this, makeSongLegacy());
+    }
+
+    getCurrentSection(){
+        return this.sections[this.gSectionsCurrentIndex];
+    }
+
+    getSectionsCurrentIndex(){
+        return this.gSectionsCurrentIndex;
+    }
+
+    gotoNextSection(orGotoFirst){
+        var isRandom = this.randomLoop == true;
+        if (isRandom) {
+            var rand = Math.random();
+            var randSection = Math.floor(rand*this.sections.length);
+            if (randSection == this.gSectionsCurrentIndex){
+                for (var r = 0; r<10; r++){
+                    rand = Math.random();
+                    randSection = Math.floor(rand*this.sections.length);
+                    if (randSection != this.gSectionsCurrentIndex){
+                        break;
+                    }
+                }
+            }
+            this.gSectionsCurrentIndex = randSection;
+            console.log("Random:"+(rand*this.sections.length)+" section:"+randSection);
+        } else if (this.getSectionsCurrentIndex()+1 >= this.sections.length){
+            if( orGotoFirst ) this.firstSection();
+        } else {
+            this.nextSection();
+        }
+        requestUiClearAndReplaySection();
+    }
+
+    gotoPrevSection(orGotoLast){
+        if (this.getSectionsCurrentIndex()==0){
+            if( orGotoLast ) this.lastSection();
+        } else {
+            this.prevSection();
+        }
+        requestUiClearAndReplaySection();
+    }
+}
+
+export function makeSong() {
+    return new Song();
+}
+
+function makeSongLegacy(){
     const DEFAULT_BEATS = 4;
     const noteNamesFuncArrDEFAULT = [
 	    "I", // 1 - I    I
@@ -90,7 +178,8 @@ export function makeSong(){
             gFirstBeatSeen: false,
             userInstrumentTuning: null,
             gSongModelListener: null,
-            noteNamesFuncArr: noteNamesFuncArrDEFAULT,
+            noteNamesFuncArrDEFAULT: [...noteNamesFuncArrDEFAULT],
+            noteNamesFuncArr: [...noteNamesFuncArrDEFAULT],
             sharps: false,
             captionsRowShowing: false,
             fretLengths: FRET_LENGTHS_ARRAY,
@@ -100,8 +189,6 @@ export function makeSong(){
             make: construct_gSections,
 
             fixupCurrentIndexForLoadedSong: fixupCurrentIndexForLoadedSong,
-            getCurrentSection: getCurrentSection,
-            getSectionsCurrentIndex: getSectionsCurrentIndex,
             getRelativeSectionWithWrap: getRelativeSectionWithWrap,
             test_getRelativeSectionWithWrap: test_getRelativeSectionWithWrap,
             constructSection: constructSection,
@@ -130,8 +217,6 @@ export function makeSong(){
             prevSection: prevSection,
             nextSection: nextSection,
             gotoSection: gotoSection,
-            gotoNextSection: gotoNextSection,
-            gotoPrevSection: gotoPrevSection,
 
             insertSectionAtDest: insertSectionAtDest,
             newSection: newSection,
@@ -167,7 +252,9 @@ export function makeSong(){
             noteNameToNoteID: noteNameToNoteID,
 
             //new method for EventBus:
+                publish_SectionChanged: publish_SectionChanged,
             publish_UpdateSectionStatus: publish_UpdateSectionStatus,
+                publish_SectionMoved: publish_SectionMoved,
             setHeadless: setHeadless
     }
     obj.make();
@@ -514,7 +601,7 @@ export function makeSong(){
     	    var newIndex = this.sections.splice(start, deleteCount, section);
             this.gSectionsCurrentIndex = this.gSectionsCurrentIndex+1;
         }
-        fullRepaint();
+        requestUiFullRepaint();
 	    this.publish_UpdateSectionStatus();
 	    return this.gSectionsCurrentIndex;
 	    // sections is an array of gNotesPlayed objects.
@@ -561,8 +648,8 @@ export function makeSong(){
 	    return beat;
 	}
 	function incBeat(){
-	    var beat = getBeat();
-	    var beats = getBeats();
+        var beat = this.getBeat();
+        var beats = this.getBeats();
 	    if (beat >= beats){
 	        beat = beats;
 	        return beat;
@@ -618,7 +705,7 @@ export function makeSong(){
 
 	function moveBeatsLater(){
 		var result = {};
-		var beatCount = getBeats();
+        var beatCount = this.getBeats();
 		var notes = getRecordedNotesForSection();
 		for (var i=1; i<=beatCount; i++){
 			result[""+(i+1)] = notes[""+i];
@@ -626,10 +713,10 @@ export function makeSong(){
 		result["1"] = [];
 		this.getCurrentSection().recordedNotes = result;
 		this.setBeats(beatCount+1);
-        gotoFirstBeat();
+        this.gotoFirstBeat();
 		this.publish_UpdateSectionStatus();
-        fullRepaint();
-        showBeats();
+		requestUiFullRepaint();
+        requestUiShowBeats();
 	}
 
     function shuffleRecordedBeatsDown(recordedBeats, nBeats, nStartBeat){
@@ -659,7 +746,7 @@ export function makeSong(){
          var currBeat = nStartBeat > this.getBeats() ? this.getBeats() : nStartBeat;
          this.getCurrentSection().currentBeat = currBeat;
          this.publish_UpdateSectionStatus();
-         showBeats();
+    		 requestUiShowBeats();
     }
 
     function prevBeat(){
@@ -671,7 +758,7 @@ export function makeSong(){
     }
 
     function prevNextBeat(isNext){
-            clearHighlights();
+			requestUiClearHighlights();
   	        var beat  = this.getBeat();
   	        var beats = this.getBeats();
 
@@ -685,34 +772,37 @@ export function makeSong(){
   	            }
   	        }
             this.publish_UpdateSectionStatus();
-  			showBeats();
+    			requestUiShowBeats();
     }
 
 
     //============== TODO:EventBus keep all new EventBus handling code between these comments, ending in END-TODO:EventBus =====================================
     
     function publish_SectionChanged(){
-        if (this.isHeadless){
+        var song = this || obj;
+        if (song.isHeadless){
             return;
         }
         console.log("in new EventBus strategy: publish_SectionChanged");
         //sectionChanged(); //TODO:EventBus: call this throught the EventBus
-        EventBus.trigger('SectionChanged', { sectionIndex: this.getSectionsCurrentIndex() });
+        EventBus.trigger('SectionChanged', { sectionIndex: song.getSectionsCurrentIndex() });
     }      
 
     // replacement for direct calls to infinite-neck.js :: updateSectionsStatus();
     function publish_UpdateSectionStatus(){
-        if (this.isHeadless){
+        var song = this || obj;
+        if (song.isHeadless){
             return;
         }
         console.log("in new EventBus strategy: this.publish_UpdateSectionStatus");
         //updateSectionsStatus();  // TODO:EventBus:  call this through the EventBus instead.
-        EventBus.trigger('UpdateSectionStatus', { sectionIndex: this.getSectionsCurrentIndex() });
+        EventBus.trigger('UpdateSectionStatus', { sectionIndex: song.getSectionsCurrentIndex() });
     }
 
     //Not handled at all yet:
     function publish_SectionMoved(){
-        EventBus.trigger('SectionMoved', { sectionIndex: this.getSectionsCurrentIndex() });
+        var song = this || obj;
+        EventBus.trigger('SectionMoved', { sectionIndex: song.getSectionsCurrentIndex() });
     }
 
     //============== END-TODO:EventBus =====================================
@@ -723,32 +813,32 @@ export function makeSong(){
 
 	function firstSection(){
 	    this.gSectionsCurrentIndex = 0;
-	    publish_SectionChanged();
+        this.publish_SectionChanged();
 	}
 
 	function lastSection() {
 		 this.gSectionsCurrentIndex = this.sections.length-1;
-		 publish_SectionChanged();
+         this.publish_SectionChanged();
 	}
 
 	function prevSection(){
 	    if (this.gSectionsCurrentIndex > 0){
 	        this.gSectionsCurrentIndex--;
 	    }
-	    publish_SectionChanged();
+        this.publish_SectionChanged();
 	}
 	function nextSection(){
 	    if (this.gSectionsCurrentIndex < (this.sections.length-1)){
 	        this.gSectionsCurrentIndex++;
 	    }
-	    publish_SectionChanged();
+        this.publish_SectionChanged();
 	}
     function gotoSection(idx){
         var sectionIdx = toInt(idx, -1);
         if (sectionIdx > -1 && sectionIdx < this.sections.length){
             this.gSectionsCurrentIndex = sectionIdx;
             if (!this.isHeadless){
-                clearAndReplaySection();
+				requestUiClearAndReplaySection();
                 publish_SectionChanged();
             }
         } else {
@@ -777,7 +867,7 @@ export function makeSong(){
 		} else {
 			this.nextSection();
 		}
-		clearAndReplaySection();
+        requestUiClearAndReplaySection();
 	}
 
 	function gotoPrevSection(orGotoLast){
@@ -786,7 +876,7 @@ export function makeSong(){
 		} else {
 			this.prevSection();
 		}
-		clearAndReplaySection();
+        requestUiClearAndReplaySection();
 	}
 
     function insertSectionAtDest(aSection, destIndex){
@@ -820,9 +910,9 @@ export function makeSong(){
         } else {
             this.addSectionAfterCurrent(aSection);
         }
-        clearAll();
+        requestUiClearAll();
 	    this.gotoFirstBeat();
-	    publish_SectionChanged();//updateSectionsStatus();
+	    this.publish_SectionChanged();//updateSectionsStatus();
 	}
 
 	function addShallowCloneSection(destIndex){
@@ -848,10 +938,10 @@ export function makeSong(){
         } else {
     		this.addSectionAfterCurrent(aSection);
         }
-		clearAll();
-	    resetNoteNames();//calls replay
+        requestUiClearAll();
+        requestUiResetNoteNames();//calls replay
 	    //updateSectionsStatus();
-	    publish_SectionChanged();//calls updateSectionsStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
+        this.publish_SectionChanged();//calls updateSectionsStatus...TODO might be one too many calls in this chain--could cleanup for efficiency
 	    return aSection;
 	}
 
@@ -872,9 +962,9 @@ export function makeSong(){
 
         this.sections.splice(this.gSectionsCurrentIndex, 1);
 	    this.prevSection();
-	    clearAll();
-	    replay();
-        publish_SectionChanged();
+        requestUiClearAll();
+        requestUiReplay();
+        this.publish_SectionChanged();
         //fullRepaint();
 		return true;
 	}
@@ -1018,7 +1108,7 @@ export function makeSong(){
             var transposedNoteName = constNoteNamesArr[index];
             var otherNote = namedNotes[noteName];
             if (otherNote.colorClass){
-                var clonedNote = cloneNote(otherNote);
+                var clonedNote = Note.cloneNote(otherNote);
                 clonedNote.noteName = transposedNoteName;
                 namedNotesClone[transposedNoteName] = clonedNote;
             }

@@ -1,24 +1,49 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-function showCmdLine(){
+import {
+    buildChildMenuCaptionsRow,
+    diveMenu,
+    gMenuPointer,
+    hasNoChildMenus,
+    peekParentMenu,
+    printMenuStack,
+    printMenuStackBreadcrumbs,
+    setMenuAtRoot,
+    surfaceOneMenu
+} from './menu.js';
+
+let gCmdActionRunner = function () {
+    throw new Error('Command action runner not configured');
+};
+
+export function setCmdActionRunner(actionRunner){
+    if (typeof actionRunner === 'function') {
+        gCmdActionRunner = actionRunner;
+    }
+}
+
+export function showCmdLine(){
     $("#CmdMenu").show();
     $("#txtCmdLine").focus();
 }
-function hideCmdLine(){
+
+export function hideCmdLine(){
     $("#CmdMenu").hide();
 }
-function toggleCmdLine(){
+
+export function toggleCmdLine(){
     var cmdmenu = $("#CmdMenu");
     cmdmenu.toggle();
     if ( cmdmenu.is(":visible") ){
         $("#txtCmdLine").focus();
     }
 }
+
 function clearCmdLine(){
     $("#txtCmdLine").val('');
 }
 
-function updateCmdLineView(addedCrumb){
+export function updateCmdLineView(addedCrumb){
     $("#CmdMenuStack").html(printMenuStack());
     $("#CmdMenuBreadcrumbs").html(printMenuStackBreadcrumbs(addedCrumb));
     $("#CmdMenuResults").html(buildChildMenuCaptionsRow(gMenuPointer));
@@ -33,11 +58,11 @@ function addCmdResults(newResultsLine){
     $("#dropDownCmdResults").val($("#dropDownCmdResults option:first").val());
 }
 
-function clearCmdResults(){
+export function clearCmdResults(){
     $("#dropDownCmdResults").empty();
 }
 
-function stringifyMenuItem(menuItem){
+export function stringifyMenuItem(menuItem){
     function rep(key,val){
         if (key=="parent"){
             return undefined;
@@ -98,7 +123,7 @@ export function txtCmdLine_keypress(e) {
         if (doingInput) {
             var args = {};
             args[targetMenu.input.id] = inputval;
-            performCmdAction(targetMenu, args);
+            gCmdActionRunner(targetMenu, args);
             addCmdResults(targetMenu.input.caption+": "+inputval);
             clearCmdLine();
             updateCmdLineView(inputval);
@@ -131,11 +156,10 @@ export function txtCmdLine_keypress(e) {
             if (child.action && hasNoChildMenus(child)){
                 diveMenu(child,"showing-list-menu");
                 if(child.input){
-                    gMenuPointer = child;
                     addCmdResults(printMenuStackBreadcrumbs()+"==>"+child.action+" :: "+child.input.caption+" : ");
                     diveMenu(child.input,"");
                 } else {
-                    var actionResult = performCmdAction(child);
+                    var actionResult = gCmdActionRunner(child);
                     child.bang = true;
                     surfaceOneMenu();
                     if (actionResult.popOnBang){
@@ -164,7 +188,7 @@ export function txtCmdLine_keypress(e) {
                     //  we execute the action of the parent, i.e. our current menu
                     var args = {};
                     args["key"] = e.key;
-                    performCmdAction(menu, args);
+                    gCmdActionRunner(menu, args);
                     addCmdResults("! "+menu.caption+"(<b>"+e.key+"</b>)===>"+menu.action);
                     child.bang = true;
                     e.preventDefault();

@@ -1,9 +1,17 @@
-import {
-    getMillisForBeatClock,
-    getSong,
-    showBeats,
-    showBPM
-} from './infinite-neck.js';
+let looperProviders = {
+	getMillisForBeatClock: function () { return 0; },
+	getSong: function () { return null; },
+	showBeats: function () {},
+	showBPM: function () {}
+};
+
+export function setLooperProviders(providers){
+	if (!providers) return;
+	looperProviders = {
+		...looperProviders,
+		...providers
+	};
+}
 
     var showBeatsIntervalPointer = null;
 
@@ -23,25 +31,24 @@ import {
 	}
 
 	function startLoopSections(){
-		showBPM();
-		if (getSong().randomLoop){
-			CAPTION = LOOPING_FRAMES_CAPTION_RANDOM;
-		} else {
-			CAPTION = LOOPING_FRAMES_CAPTION;
+		looperProviders.showBPM();
+		var caption = LOOPING_FRAMES_CAPTION;
+		if (looperProviders.getSong().randomLoop){
+			caption = LOOPING_FRAMES_CAPTION_RANDOM;
 		}
-		$("#btnLoopSections").html(CAPTION).addClass("ButtonOn");    //.css({"background": "magenta"});
-		var millisNextBeat = getMillisForBeatClock();
+		$("#btnLoopSections").html(caption).addClass("ButtonOn");    //.css({"background": "magenta"});
+		var millisNextBeat = looperProviders.getMillisForBeatClock();
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
 	function startLoopBeats(){
 		$("#btnLoopBeats").html(LOOPING_BEATS_CAPTION).addClass("ButtonOn");    //.css({"background": "magenta"});
 		$("#btnLoopBeatsTransport").addClass("ButtonOn");                       //.css({"background": "magenta"});
 
-		var millisNextBeat = getMillisForBeatClock();
+		var millisNextBeat = looperProviders.getMillisForBeatClock();
 		showBeatsIntervalPointer = window.setInterval(showBeatsIntervalHandler, millisNextBeat);
 	}
 
-	function toggleLoopSections(){
+	export function toggleLoopSections(){
 		var sectionsLoopingBool = sectionsLooping();
 	    if(showBeatsIntervalPointer){
 			clearBeatAndSectionLooping();
@@ -51,7 +58,7 @@ import {
 		}
 	}
 
-	function restartLoopSections(){
+	export function restartLoopSections(){
 		if (sectionsLooping()){
 			clearBeatAndSectionLooping();
 			startLoopSections();
@@ -60,7 +67,7 @@ import {
 		}
 	}
 
-	function toggleLoopBeats(){
+	export function toggleLoopBeats(){
 	    var beatsLoopingBool = beatsLooping();
 	    if(showBeatsIntervalPointer){
 			clearBeatAndSectionLooping();
@@ -69,29 +76,30 @@ import {
 			startLoopBeats()
 		}
 	}
-	function sectionsLooping(){
+	export function sectionsLooping(){
 		return (
 			$("#btnLoopSections").text() === LOOPING_FRAMES_CAPTION
 		) || (
 			$("#btnLoopSections").text() === LOOPING_FRAMES_CAPTION_RANDOM
 		);
 	}
-	function beatsLooping(){
+	export function beatsLooping(){
 		return $("#btnLoopBeats").text() === LOOPING_BEATS_CAPTION;
 	}
 
 	function showBeatsIntervalHandler(){
-		var beat = getSong().getBeat();
-		var beats = getSong().getBeats();
+		var song = looperProviders.getSong();
+		var beat = song.getBeat();
+		var beats = song.getBeats();
 	    if (beat >= beats){
 			if (sectionsLooping()){
-				getSong().gotoNextSection(true);  //calls showBeats()
+				song.gotoNextSection(true);  //calls showBeats()
 			} else {
-				getSong().incBeatLoop();
-				showBeats();
+				song.incBeatLoop();
+				looperProviders.showBeats();
 			}
 		} else {
-			getSong().incBeatLoop();
-			showBeats();
+			song.incBeatLoop();
+			looperProviders.showBeats();
 		}
 	}

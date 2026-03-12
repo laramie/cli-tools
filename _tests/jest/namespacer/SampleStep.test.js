@@ -10,7 +10,7 @@ import { Accumulator } from '../../../bin/namespacer/Accumulator.js';
 import { SampleStep } from './SampleStep.js';
 
 
-import { logVerbose } from './LogVerboseJest.js';
+import { logVerbose } from '../LogVerboseJest.js';
 
 const SAMPLESTEP_ID = "SampleStep-jest-test";
 

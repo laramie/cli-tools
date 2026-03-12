@@ -1,12 +1,20 @@
-import {
-    getSong
-} from './infinite-neck.js';
-import {
-    chuseStylesheet
-} from './colorFunctions.js';
+import EventBus from './event-bus.js';
+
+let graveyardProviders = {
+    getSong: function () { return null; },
+    applyStylesheet: function () {}
+};
+
+export function setGraveyardProviders(providers){
+    if (!providers) return;
+    graveyardProviders = {
+        ...graveyardProviders,
+        ...providers
+    };
+}
 
 
-const GraveType = Object.freeze({
+export const GraveType = Object.freeze({
         UNKNOWN: "UNKNOWN",
         SONG: "SONG",
         SECTION: "SECTION",
@@ -98,7 +106,7 @@ export function makeGraveyard(flatObj){
                 break;
             case GraveType.SECTION:
                 record.caption = record.caption + " raised from: "+record.context.SectionIndex +" at "+record.time;
-                getSong().addSection(JSON.parse(record.json));
+                graveyardProviders.getSong().addSection(JSON.parse(record.json));
                 break;
             case GraveType.DISPLAY:
             case GraveType.BEAT:
@@ -107,11 +115,11 @@ export function makeGraveyard(flatObj){
                 if (dictkey){
                     var base = dictkey;
                     var i = 1;
-                    while (getSong().colorDicts[dictkey]){
+                    while (graveyardProviders.getSong().colorDicts[dictkey]){
                         dictkey = base+'R'+(i++);
                     }
-                    getSong().colorDicts[dictkey] = JSON.parse(record.json);
-                    chuseStylesheet(dictkey);
+                    graveyardProviders.getSong().colorDicts[dictkey] = JSON.parse(record.json);
+                    graveyardProviders.applyStylesheet(dictkey);
                 }
                 break;
             case GraveType.THEME:
@@ -124,8 +132,8 @@ export function makeGraveyard(flatObj){
                  return;
         }
         record.lastRevived = Date.now();
-        showMessages(getSong().graveyard.buildNoteTable());
-        fullRepaint();
+        EventBus.trigger('ShowMessages', { html: graveyardProviders.getSong().graveyard.buildNoteTable() });
+        EventBus.trigger('SongUiFullRepaint');
     }
 
     /* Hose the records, emptying the graveyard.  
@@ -142,8 +150,8 @@ export function makeGraveyard(flatObj){
         var result = [];
         var resultBody = [];
         var SEP = "</td><td>";
-        var closeBtn = '<button type="button" onclick="showGraveyard();">Refresh</button>'
-                      +'&nbsp;&nbsp;<button type="button" onclick="hideGraveyard();">Close</button>';
+        var closeBtn = '<button type="button" data-action="showGraveyard">Refresh</button>'
+                      +'&nbsp;&nbsp;<button type="button" data-action="hideGraveyard">Close</button>';
 
 
         Object.keys(this.records).forEach(k => {
@@ -153,8 +161,8 @@ export function makeGraveyard(flatObj){
                 theContext = theContext.substring(0,60)+"...";
             }
             var lastRevived = record.lastRevived ? record.lastRevived : "";
-            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='javascript:getSong().graveyard.raise("+k+");'>raise "+k+"</a></td></tr>";
-            var row2 = "<tr><td><span onclick='$(\"#grave"+record.timestamp+"\").toggle();'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
+            var row = "<tr><td>"+k+SEP+record.type+SEP+record.timestamp+SEP+record.date+SEP+record.time+SEP+theContext+SEP+lastRevived+SEP+"<a href='#' class='graveyard-raise-link' data-grave-index='"+k+"'>raise "+k+"</a></td></tr>";
+            var row2 = "<tr><td><span class='graveyard-toggle-json' data-target='#grave"+record.timestamp+"'><u>show/hide</u></span></td><td colspan='6'><div id='grave"+record.timestamp+"' style='display:none;'>"+record.json+"</div></td></tr>";
             resultBody.unshift(row2);
             resultBody.unshift(row);
         });

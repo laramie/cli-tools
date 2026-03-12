@@ -1,5 +1,14 @@
+let gMenuValueResolver = function () {
+  return undefined;
+};
 
-var gMenuFile =    {
+export function setMenuValueResolver(resolverFn) {
+  if (typeof resolverFn === 'function') {
+    gMenuValueResolver = resolverFn;
+  }
+}
+
+export var gMenuFile =    {
   "name": "root",
   "parent": null,
   "tall": true,
@@ -907,7 +916,7 @@ var gMenuFile =    {
   *****/
 
 
-var gMenuPointer = gMenuFile;
+export var gMenuPointer = gMenuFile;
 var gCurrentMenuStack = [];
 
 
@@ -916,19 +925,19 @@ export function setMenuAtRoot(){
     gCurrentMenuStack = [gMenuPointer];
 }
 
-function diveMenu(menu, childIdx){
+export function diveMenu(menu, childIdx){
     menu.parent = gMenuPointer;
     gMenuPointer = menu;
     gCurrentMenuStack.push(menu);
 }
-function peekParentMenu(){
+export function peekParentMenu(){
     var parentMenu = gCurrentMenuStack[gCurrentMenuStack.length-2];
     if (parentMenu){
         return parentMenu;
     }
     return null;
 }
-function surfaceOneMenu(){
+export function surfaceOneMenu(){
     var parent = gMenuPointer.parent;
     if (parent){
         gMenuPointer = parent;
@@ -944,7 +953,7 @@ function surfaceOneMenu(){
     }
 }
 
-function buildChildMenuCaptionsRow(menu){
+export function buildChildMenuCaptionsRow(menu){
     var children = menu.children;
     if (!children){
         return "";
@@ -989,13 +998,13 @@ function buildChildMenuCaptionsRow(menu){
     return result;
 }
 
-function printMenuStack(){
+export function printMenuStack(){
     var result = "";
     var defaultValue = "";
     var doLargeItem = false;
     if (gMenuPointer.type && gMenuPointer.type == "input"){
         doLargeItem = true;
-        defaultValue = "["+getValue(gMenuPointer.default)+"]";
+      defaultValue = "["+gMenuValueResolver(gMenuPointer.default)+"]";
     }
     var menuCaption = expandCaption(gMenuPointer);
     result = "<div class='cmdPrompt'>"+menuCaption+defaultValue+":</div>";
@@ -1027,7 +1036,7 @@ function printMenuStackByStackWalk(){
     return result;
 }
 
-function printMenuStackBreadcrumbs(addedCrumb){
+export function printMenuStackBreadcrumbs(addedCrumb){
     function triggerOrCaption(menuPointer){
         var result = "";
         var trigger = menuPointer.trigger;
@@ -1076,7 +1085,7 @@ function printMenuStackBreadcrumbCaptions(sep){
     return result;
 }
 
-function dumpMenus(){
+export function dumpMenus(){
     var menu = gMenuFile;
     var result = showChildMenusRecursively(menu, 0);
     //l("result:"+result);
@@ -1098,7 +1107,7 @@ function showChildMenusRecursively(menu, level){
     return result;
 }
 
-function hasNoChildMenus(menu){
+export function hasNoChildMenus(menu){
 	var noChildren = true;
 	if (menu.children){
 		noChildren = false;
@@ -1116,7 +1125,7 @@ function expandCaption(menuItem){
     var vars = menuItem.vars;
     if (vars && caption){
       vars.forEach(str => {
-        var strValue = getValue(str);
+        var strValue = gMenuValueResolver(str);
         if ((strValue != undefined) && (""+strValue).length>0){
           caption = caption.replaceAll("$"+str, ""+strValue);
         }

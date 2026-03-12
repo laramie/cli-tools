@@ -3,17 +3,56 @@ import {
 	gColorPickerColors
 } from './colorPickerColors.js';
 import {
-	getSong,
-	getCurrentSection,
-	doingAutomaticColor
-} from './infinite-neck.js';
-import {
 	Note
 } from './note.js';
 import {
-	constNoteNamesArr
+	constNoteNamesArr,
+	noteNameToNoteID
 } from './song.js';
-import {gUserColorDict} from './userColors.js';
+import {
+	GraveType
+} from './graveyard.js';
+import {
+	midinumToNoteName
+} from './table-builder.js';
+import {
+	gUserColorDict,
+	gUserColorDictOEM
+} from './userColors.js';
+import {
+	toInt
+} from './utils.js';
+
+var colorFunctionsProviders = {
+	getSong: function () { return null; },
+	getCurrentSection: function () { return null; },
+	doingAutomaticColor: function () { return false; },
+	fullRepaint: function () { }
+};
+
+export function setColorFunctionsProviders(providers) {
+	if (!providers) return;
+	colorFunctionsProviders = {
+		...colorFunctionsProviders,
+		...providers
+	};
+}
+
+function getSong() {
+	return colorFunctionsProviders.getSong();
+}
+
+function getCurrentSection() {
+	return colorFunctionsProviders.getCurrentSection();
+}
+
+function doingAutomaticColor() {
+	return colorFunctionsProviders.doingAutomaticColor();
+}
+
+function fullRepaint() {
+	return colorFunctionsProviders.fullRepaint();
+}
 
 
 //================== colorDicts ================================================
@@ -221,12 +260,12 @@ import {gUserColorDict} from './userColors.js';
 			}
 		}
 		if (doChuseLink){
-			var A = $('<a href="javascript:chuseStylesheet(\''+dictkey+'\');">').html(dictkey);
+			var A = $('<a href="#" class="choose-stylesheet" data-dictkey="'+dictkey+'">').html(dictkey);
 			var nobr = $('<nobr>');
 			nobr.append(checky);
 			nobr.append(A);
 			if (!schemeObj.readOnly && !schemeObj.computed){
-				var rightX = $('<span style="width: 2em;">&nbsp;&nbsp;&nbsp;<a href="javascript:deleteUserStylesheet(\''+dictkey+'\');">&#x232B;</a></span>');
+				var rightX = $('<span style="width: 2em;">&nbsp;&nbsp;&nbsp;<a href="#" class="delete-stylesheet" data-dictkey="'+dictkey+'">&#x232B;</a></span>');
 				nobr.append(rightX);
 			}
 			linkTD.append(nobr);
@@ -405,7 +444,7 @@ import {gUserColorDict} from './userColors.js';
 
 	export function deleteUserStylesheet(dictkey){
 		var obj = getSong().colorDicts[dictkey];
-		context = {"dictkey": dictkey, "which": "UserStylesheet"};
+		var context = {"dictkey": dictkey, "which": "UserStylesheet"};
         getSong().graveyard.bury(GraveType.STYLESHEET, obj, context);
 
 		delete getSong().colorDicts[dictkey];
@@ -487,7 +526,7 @@ import {gUserColorDict} from './userColors.js';
 
 //================== Pickers ===================================================
 	export function buildColorPicker(){
-		var CELL = '<td onclick="colorPickerClicked(this)" colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
+		var CELL = '<td colorClass="NOTE_COLOR_CLASS" class="colorPickerCell NOTE_COLOR_CLASS" >&nbsp;&nbsp;</td>'
 		var result = [];
 		var groups = gColorPickerColors.groups;
 		Object.entries(groups).forEach(([ig, row]) => {
@@ -500,7 +539,7 @@ import {gUserColorDict} from './userColors.js';
 			});
 			if (row) result.push("</tr>");
 		});
-		var noneRow = "<tr><td colspan='100%' colorClass='' class='noteBlue6' onclick=\"colorPickerClicked(this)\">none</td></tr>";
+		var noneRow = "<tr><td colspan='100%' colorClass='' class='colorPickerCell noteBlue6'>none</td></tr>";
 		result.push(noneRow);
 		return result.join(''); //Return just TRs not TABLE.
 	}
@@ -514,8 +553,8 @@ import {gUserColorDict} from './userColors.js';
 			  var captionClass = (obj.captionClass) ? obj.captionClass : userColorClass;
 			  var lookedup = lookupUserColorClassByClass(captionClass);
 			  var editingBox = "<td id='colorDestRole"+role+"'>&nbsp;</td>"
-			                  +"<td><span class='pickerButton' onclick=\"showColorPicker(this,'#colorDestRole"+role+"')\">color</span>&nbsp;</td>"
-							  +"<td><span class='pickerButton' onclick=\"showHatchPicker(this,'#colorDestRole"+role+"')\">hatch</span></td>";
+			                  +"<td><span class='pickerButton choose-color-picker' data-target='#colorDestRole"+role+"'>color</span>&nbsp;</td>"
+							  +"<td><span class='pickerButton choose-hatch-picker' data-target='#colorDestRole"+role+"'>hatch</span></td>";
 
 			  var row = $('<tr><td>'+role+'</td>'
 			                 +'<td class="'+captionClass+'">'+captionClass+'</td>'

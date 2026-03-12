@@ -13,26 +13,51 @@ import {
     lookupClassForNote,
     lookupUserColorClass
 } from './colorFunctions.js';
-
-import {
-    getBeatNumber,
-    getCurrentSection,
-    getSong,
-    hideNoteClickedCaption,
-    resetNoteNames,
-    setNoteClickedCaption,
-    showBeats,
-    turnOffHiding,
-} from './infinite-neck.js';
 import {
     Note
 } from './note.js';
+import {
+    constNoteNamesArr
+} from './song.js';
+import {
+    recordHighlight,
+    recordHighlightSingle,
+    recordPlayedNote,
+    recordingHasPlayedNote,
+    unRecordPlayedNote
+} from './section-recorder.js';
 import {
     TableBuilder
 } from './TableBuilder.js';
 import {
 	toInt
 } from './utils.js';
+
+var notetableProviders = {
+    getBeatNumber: function () { return 0; },
+    getCurrentSection: function () { return null; },
+    getSong: function () { return null; },
+    hideNoteClickedCaption: function () { },
+    resetNoteNames: function () { },
+    setNoteClickedCaption: function () { },
+    showBeats: function () { },
+    turnOffHiding: function () { }
+};
+
+export function setNotetableProviders(nextProviders = {}) {
+    notetableProviders = { ...notetableProviders, ...nextProviders };
+}
+
+function getBeatNumber() { return notetableProviders.getBeatNumber(); }
+function getCurrentSection() { return notetableProviders.getCurrentSection(); }
+function getSong() { return notetableProviders.getSong(); }
+function hideNoteClickedCaption() { return notetableProviders.hideNoteClickedCaption(); }
+function resetNoteNames() { return notetableProviders.resetNoteNames(); }
+function setNoteClickedCaption(...args) { return notetableProviders.setNoteClickedCaption(...args); }
+function showBeats() { return notetableProviders.showBeats(); }
+function turnOffHiding() { return notetableProviders.turnOffHiding(); }
+
+const LOCAL_FALLBACK_NOTE_FUNCTIONS = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
 
 export function isRecording(){
     var btn = $("#btnRecord");
@@ -42,8 +67,11 @@ export function isRecording(){
 
 
 export function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinum) {
+    var song = getSong() || {};
     var relNoteNum = (12 + noteNum - options.rootID) % 12; //0-based: 0==first note of scale
-    var noteFnBase = getSong().noteNamesFuncArr[relNoteNum];
+    var fnArr = Array.isArray(song.noteNamesFuncArr) ? song.noteNamesFuncArr : [];
+    var importFallback = Array.isArray(constNoteNamesArr) ? constNoteNamesArr : LOCAL_FALLBACK_NOTE_FUNCTIONS;
+    var noteFnBase = fnArr[relNoteNum] || importFallback[relNoteNum] || "";
     var noteFn = noteFnBase;
     var displayPitch = relNoteNum + 1; //1-based: 1==first note of scale.
     var enharmonicName = "<span class='enharmonicName'>"+noteNameBase + "<small>" + sharpFlat + "</small></span>"
@@ -85,7 +113,7 @@ export function cellBuilder(noteNameBase, sharpFlat, noteNum, options, theMidinu
 	var noteFnForHighlight = noteFn;
 	if (options.rootIDLead > -1){ //-1 is select option value for "follow rootID".
 		var relNoteNumLead = (12 + noteNum - options.rootIDLead) % 12; //0-based: 0==first note of scale
-	 	noteFnForHighlight = getSong().noteNamesFuncArr[relNoteNumLead];
+     	noteFnForHighlight = fnArr[relNoteNumLead] || importFallback[relNoteNumLead] || "";
 	}
 
 	result = "<div class='NoteDisplay'>"
@@ -107,9 +135,7 @@ export function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFun
                 + "</div>"
                 +"<span class='tinyscriptL'>"
                     +   subright
-        NoteNames.forEach(noteName => {
-            currSection.namedNotes[noteName] = {"noteName": noteName, "colorClass": Color};
-        });
+                +"</span>"
         +"</div></div>";
 }
 
@@ -426,6 +452,7 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
     var clear = (theColorClass == "noteClear");
     var jCell = $(cell);
     var parentTableID = "";
+    var reversed = "";
     var parentTable = jCell.closest("table");
     if (parentTable){
         var jParentTable =  $(parentTable);

@@ -1,48 +1,46 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
 
-import {
-	NUM_FRETS_MAX,
-	getSong,
-	reinstallAllTuningsTables,
-	reloadAllTuningsDisplay
-} from './infinite-neck.js';
-import {
-	constNoteNamesArr
-} from './song.js';
+import EventBus from './event-bus.js';
 import {
 	allTunings
 } from './tunings.js';
 
 
-/* TODO: refactor imports of 
-	reloadAllTuningsDisplay,
-  and 
-  	reinstallAllTuningsTables
-  into 
-    event-bus.js calls to decouple this file from infinite-neck.js
+const NUM_FRETS_MAX = 108;
+const DEFAULT_NOTE_NAMES = "A,Bb,B,C,Db,D,Eb,E,F,Gb,G,Ab".split(',');
+let getSongProvider = function () {
+    return null;
+};
+let getNoteNamesProvider = function () {
+	return DEFAULT_NOTE_NAMES;
+};
 
-	From CoPilot: 
-					For functions like reloadAllTuningsDisplay and reinstallAllTuningsTables, which are imported from infinite-neck.js and affect global UI or app state, it's best to decouple them from direct imports and instead trigger them via your new event-bus.js interface.
+export function setSongProvider(providerFn) {
+    if (typeof providerFn === 'function') {
+        getSongProvider = providerFn;
+    }
+}
 
-				This means:
+export function setNoteNamesProvider(providerFn) {
+	if (typeof providerFn === 'function') {
+		getNoteNamesProvider = providerFn;
+	}
+}
 
-				TableBuilder should not directly import or call infinite-neck.js functions.
-				Instead, TableBuilder (or any module) can emit events (e.g., "ReloadTunings", "ReinstallTuningsTables") on the EventBus.
-				infinite-neck.js (or other listeners) will subscribe to these events and handle the UI updates or state changes.
-				This approach keeps TableBuilder modular and stateless, and centralizes app-wide actions through EventBus, improving maintainability and testability.
+function getSong() {
+    return getSongProvider();
+}
 
-				GPT-4.1 • 0x
-*/
+function requestReinstallAllTuningsTables() {
+    EventBus.trigger('ReinstallAllTuningsTables');
+}
 
+function requestReloadAllTuningsDisplay() {
+    EventBus.trigger('ReloadAllTuningsDisplay');
+}
 
-// From one revision back, 
-//        then added back imports, 
-//        and re-replaced resinstallAllTuningsTables 
-//            with correctly spelled reinstallAllTuningsTables 
-
-// constNoteNamesArr is defined in infinite-neck.js
-const TABLE_ID_PREFIX = "tbl";
-const TABLEDIV_ID_PREFIX = "div";
+export const TABLE_ID_PREFIX = "tbl";
+export const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
 export function buildNoteTable(options) {
@@ -179,7 +177,7 @@ export function buildNoteTable(options) {
 	var div = $('<div>');
 	div.addClass("instrumentBackground");
 	div.attr("id", TABLEDIV_ID_PREFIX + options.baseID);
-	var exportButton = "&nbsp;&nbsp;<button class='exportButton moveyButton' tabindex='-1' onclick='exportFromTable(\"" + TABLE_ID_PREFIX + options.baseID + "\")'>Export Highlights</button>";
+	var exportButton = "&nbsp;&nbsp;<button class='exportButton moveyButton' tabindex='-1' data-export-tableid='" + TABLE_ID_PREFIX + options.baseID + "'>Export Highlights</button>";
 	var hamburger = "<button id='btnHamburger" + options.baseID + "' class='HamburgerInstrumentClass showsubcaption moveyButton' type='button' tabindex='-1'>&equiv;</button>";
 	var hamburgerColorDict = "<button id='btnHamburgerColorDict" + options.baseID + "' class='showcolordict moveyButton' type='button' tabindex='-1'><img src='img/colordictThumbnail.png' style='width:35px;height:15px;'></button>";
 
@@ -287,7 +285,7 @@ export function midinumToNoteName(midinum) {
 		midinum += 12;
 	}
 	var index = (midinum - 9) % 12;
-	return constNoteNamesArr[index];
+	return getNoteNamesProvider()[index];
 	// 21 == A0
 	// 9 == A, 8 Ab, 7 G, 6 Gb, 5 F, 4 E, 3 Eb, 2 D, 1 Db, 0 C
 }
@@ -541,7 +539,7 @@ export function showTuningsForTablesInFile() {
 		} else {
 			console.log("tuning not found for basekey: " + visbasekey);
 		}
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 		showTuning(visbasekey);
 		numFound++;
 	});
@@ -602,7 +600,7 @@ export function bindFormTuningsEvents() {
 		} else {
 			console.log("tuning not found for basekey: " + basekey);
 		}
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 		showHideTuning(show, basekey);
 		showHideTunings();
 	});
@@ -610,31 +608,31 @@ export function bindFormTuningsEvents() {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.reverse = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .selectFrets').change(function () {
 		var tuningID = this.id.substring(SELECT_FRETS_PFX.length);
 		var tuning = findTuningForID(tuningID);
 		tuning.frets = parseInt(this.value);
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .selectStringDividerHt').change(function () {
 		var tuningID = this.id.substring(SELECT_STRINGDIVIDER_PFX.length);
 		var tuning = findTuningForID(tuningID);
 		tuning.stringDividerHeight = this.value;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .checkboxPN').change(function () {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.pianoNamesRow = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#frmTunings .checkboxNut').change(function () {
 		var tuningID = this.value;
 		var tuning = findTuningForID(tuningID);
 		tuning.nut = this.checked;
-		reinstallAllTuningsTables();
+		requestReinstallAllTuningsTables();
 	});
 	$('#btnShowHideEditUserTuning').off('click').click(function () {
 		$('#divEditUserTuning').toggle();
@@ -669,8 +667,8 @@ export function bindFormTuningsEvents() {
 
 			tun.baseInstrument = $('#dropDownBaseInstrument  option:selected').val();
 
-			reloadAllTuningsDisplay();
-			reinstallAllTuningsTables();
+			requestReloadAllTuningsDisplay();
+			requestReinstallAllTuningsTables();
 		}
 	});
 
@@ -695,6 +693,6 @@ export function bindFormTuningsEvents() {
 		cloned.baseID = newBaseID;
 		cloned.instance = true;
 		allTunings.tunings.push(cloned);
-		reloadAllTuningsDisplay();
+		requestReloadAllTuningsDisplay();
 	});
 }

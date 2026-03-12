@@ -2,7 +2,7 @@
 import { makeSong } from '../../song.js';
 import { setupSongTests, getSong } from '../../infinite-neck.js';
 
-import { logVerbose, logVerboseTrue } from './namespacer/LogVerboseJest.js';
+import { logVerbose, logVerboseTrue } from './LogVerboseJest.js';
 
 
 

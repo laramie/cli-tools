@@ -1,42 +1,88 @@
 /*  Copyright (c) 2023, 2024 Laramie Crocker http://LaramieCrocker.com  */
-import {
-	addBeat,
-	checkRB,
-	clearAndReplaySection,
-	cycleThruKeys,
-	cycleThruNutWidths,
-	downloadBackupThenClearGraveyard,
-	downloadPlayedNotes,
-	enterFullscreen,
-	getBPM,
-	getCurrentSection,
-	getSectionsCurrentIndex,
-	getSong,
-	hideAllMenuDivs,
-	leaveFullscreen,
-	printSections,
-	resetNoteNames,
-	sectionChanged,
-	setBPM,
-	setNamedNoteOpacity,
-	setSingleNoteOpacity,
-	setTinyNoteOpacity,
-	showOneMenu,
-	skipColorDictsReplacer,
-	toggleCaption,
-	toggleFullscreen,
-	toggleInstrumentCaptionRow,
-	toggleTransport,
-	transpose,
-	transposeSong,
-	transposeSongKeys,
-	updateFontLabel,
-	updateMemoryModelPreFileSave,
-	updateSectionsStatus
-} from './infinite-neck.js';
 import { setOneCssVar } from './themeFunctions.js';
+import {
+	clearCmdResults,
+	hideCmdLine,
+	setCmdActionRunner,
+	showCmdLine,
+	stringifyMenuItem,
+	updateCmdLineView
+} from './command-line.js';
+import {
+	displayOptionsTable
+} from './display-options.js';
+import {
+	beatsLooping,
+	restartLoopSections,
+	sectionsLooping,
+	toggleLoopBeats,
+	toggleLoopSections
+} from './looper.js';
+import {
+	buildChildMenuCaptionsRow,
+	dumpMenus,
+	gMenuFile,
+	gMenuPointer,
+	setMenuValueResolver,
+	setMenuAtRoot
+} from './menu.js';
+import {
+	gUserColorDict
+} from './userColors.js';
+import {
+	toInt
+} from './utils.js';
 
 export { document_keypress, document_keyup };
+
+let keyHandlerProviders = {};
+
+export function setKeyHandlerProviders(nextProviders = {}) {
+	keyHandlerProviders = { ...keyHandlerProviders, ...nextProviders };
+}
+
+function requireProvider(name) {
+	const fn = keyHandlerProviders[name];
+	if (typeof fn !== 'function') {
+		throw new Error('key-handlers missing provider: ' + name);
+	}
+	return fn;
+}
+
+function addBeat(...args) { return requireProvider('addBeat')(...args); }
+function checkRB(...args) { return requireProvider('checkRB')(...args); }
+function clearAndReplaySection(...args) { return requireProvider('clearAndReplaySection')(...args); }
+function cycleThruKeys(...args) { return requireProvider('cycleThruKeys')(...args); }
+function cycleThruNutWidths(...args) { return requireProvider('cycleThruNutWidths')(...args); }
+function downloadBackupThenClearGraveyard(...args) { return requireProvider('downloadBackupThenClearGraveyard')(...args); }
+function downloadPlayedNotes(...args) { return requireProvider('downloadPlayedNotes')(...args); }
+function enterFullscreen(...args) { return requireProvider('enterFullscreen')(...args); }
+function getBPM(...args) { return requireProvider('getBPM')(...args); }
+function getCurrentSection(...args) { return requireProvider('getCurrentSection')(...args); }
+function getSectionsCurrentIndex(...args) { return requireProvider('getSectionsCurrentIndex')(...args); }
+function getSong(...args) { return requireProvider('getSong')(...args); }
+function hideAllMenuDivs(...args) { return requireProvider('hideAllMenuDivs')(...args); }
+function highlightOneNote(...args) { return requireProvider('highlightOneNote')(...args); }
+function leaveFullscreen(...args) { return requireProvider('leaveFullscreen')(...args); }
+function printSections(...args) { return requireProvider('printSections')(...args); }
+function resetNoteNames(...args) { return requireProvider('resetNoteNames')(...args); }
+function sectionChanged(...args) { return requireProvider('sectionChanged')(...args); }
+function setBPM(...args) { return requireProvider('setBPM')(...args); }
+function setNamedNoteOpacity(...args) { return requireProvider('setNamedNoteOpacity')(...args); }
+function setSingleNoteOpacity(...args) { return requireProvider('setSingleNoteOpacity')(...args); }
+function setTinyNoteOpacity(...args) { return requireProvider('setTinyNoteOpacity')(...args); }
+function showOneMenu(...args) { return requireProvider('showOneMenu')(...args); }
+function skipColorDictsReplacer(...args) { return requireProvider('skipColorDictsReplacer')(...args); }
+function toggleCaption(...args) { return requireProvider('toggleCaption')(...args); }
+function toggleFullscreen(...args) { return requireProvider('toggleFullscreen')(...args); }
+function toggleInstrumentCaptionRow(...args) { return requireProvider('toggleInstrumentCaptionRow')(...args); }
+function toggleTransport(...args) { return requireProvider('toggleTransport')(...args); }
+function transpose(...args) { return requireProvider('transpose')(...args); }
+function transposeSong(...args) { return requireProvider('transposeSong')(...args); }
+function transposeSongKeys(...args) { return requireProvider('transposeSongKeys')(...args); }
+function updateFontLabel(...args) { return requireProvider('updateFontLabel')(...args); }
+function updateMemoryModelPreFileSave(...args) { return requireProvider('updateMemoryModelPreFileSave')(...args); }
+function updateSectionsStatus(...args) { return requireProvider('updateSectionsStatus')(...args); }
 
 
 const FONT_INCREMENT = 1;
@@ -263,7 +309,7 @@ function document_keypress(e) {
 
 
 // Called by the CmdMenu whenever someone has a string that identifies an "action".
-function performCmdAction(menuItem, args){
+export function performCmdAction(menuItem, args){
 	var actionResult = {};
 	actionResult.result = "";
 	actionResult.menuItem = menuItem;
@@ -535,11 +581,11 @@ function performCmdAction(menuItem, args){
 			actionResult.result = "added";
 			break;
 		case "sectionAddShallowClone":
-			addShallowCloneSection();
+			getSong().addShallowCloneSection();
 			actionResult.result = "added-shallow";
 			break;
 		case "sectionAddDeepClone":
-			addDeepCloneSection();
+			getSong().addDeepCloneSection();
 			actionResult.result = "added-deep";
 			break;
 		case "sectionKeep":
@@ -665,7 +711,7 @@ function scrollToMessages(){
     var scrollDiv = document.getElementById("divMessages").offsetTop;
     window.scrollTo({ top: scrollDiv, behavior: 'smooth'});
 }
-function showMessages(html){
+export function showMessages(html){
     $("#divMessages").show();
     $("#divMessages").html(html);
     hideCmdLine();
@@ -678,7 +724,7 @@ function showGraveyard(){
     hideAllMenuDivs();
     showMessages(getSong().graveyard.buildNoteTable());
 }
-function hideGraveyard(){
+export function hideGraveyard(){
     $("#divMessages").hide();
 }
 
@@ -694,10 +740,10 @@ function updateUIFont(){
     $("body").css({"font-size": (m_FontSize)+"pt"});
     updateFontLabel();
 }
-function getUIFontSize(){
+export function getUIFontSize(){
     return m_FontSize;
 }
-function setUIFontSize(newValue){
+export function setUIFontSize(newValue){
     m_FontSize = newValue;
     updateUIFont();
 }
@@ -746,7 +792,7 @@ export function setSectionKeysSharps(){
 }
 
 
-function getValue(what){
+export function getValue(what){
 	switch (what){
 		case "currentSectionNumber":
 		case "currentSectionIndex":
@@ -791,3 +837,6 @@ function getValue(what){
 			return what;
 	}
 }
+
+setMenuValueResolver(getValue);
+setCmdActionRunner(performCmdAction);

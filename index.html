@@ -345,11 +345,11 @@
                             <table id="colorPicker" style="display: none; background-color: black;"><!-- content will be generated --></table>
 
                             <table id="hatchPicker" style="display: none;">
-                                <tr><td onclick="hatchPickerClicked(this)" colorClass="noteHatched"  class="hatchPickerCell noteHatched">noteHatched</td> </tr>
-                                <tr><td onclick="hatchPickerClicked(this)" colorClass="noteHatched2" class="hatchPickerCell noteHatched2">noteHatched2</td> </tr>
-                                <tr><td onclick="hatchPickerClicked(this)" colorClass="noteHatched3" class="hatchPickerCell noteHatched3">noteHatched3</td> </tr>
-                                <tr><td onclick="hatchPickerClicked(this)" colorClass="noteHatched4" class="hatchPickerCell noteHatched4">noteHatched4</td> </tr>
-                                <tr><td onclick="hatchPickerClicked(this)" colorClass="" class="noteBlue2">none</td> </tr>
+                                <tr><td colorClass="noteHatched"  class="hatchPickerCell noteHatched">noteHatched</td> </tr>
+                                <tr><td colorClass="noteHatched2" class="hatchPickerCell noteHatched2">noteHatched2</td> </tr>
+                                <tr><td colorClass="noteHatched3" class="hatchPickerCell noteHatched3">noteHatched3</td> </tr>
+                                <tr><td colorClass="noteHatched4" class="hatchPickerCell noteHatched4">noteHatched4</td> </tr>
+                                <tr><td colorClass="" class="hatchPickerCell noteBlue2">none</td> </tr>
                             </table>
                         </div>
 
@@ -427,7 +427,7 @@
                                 <button id="btnDeleteBeat"  type="button" tabindex="-1" title="Delete Current Beat" >-</button>
                                 &nbsp;<button id="btnPrevBeat"  type="button" tabindex="-1">&laquo;</button>
                                 CurrentBeat:  <span id="lblCurrentBeat">1</span>
-                                    <button id="btnNextBeat" type="button" tabindex="-1">&raquo;</button>
+                                    <button id="btnNextBeat" type="button" tabindex="-1">»</button>
                                     <button id="btnRecord2" class="RecordButton ArmedButton" type="button" tabindex="-1">REC</button>
                                 <button id="btnLoopBeats" class="ArmedButton" type="button" tabindex="-1">LOOP BEATS</button>
                             </span>
@@ -732,30 +732,24 @@
                                                         <td>NamedNote Opacity:
                                                         </td>
                                                         <td>
-                                                            <input id='rangeNamedNoteOpacity'
-                                                                 type="range" min="0" max="1.0" value="1.0"  step="0.01"
-                												 class="slider"
-                												 id="rangeNamedNoteOpacity"
-                												 onChange="rangeNamedNoteSlide(this.id,this.value); " >
+                                                            <input id="rangeNamedNoteOpacity"
+                                                                 type="range" min="0" max="1.0" value="1.0" step="0.01"
+											 class="slider">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>SingleNote Opacity:
                                                         </td>
                                                         <td>
-                                                            <input id='rangeSingleNoteOpacity' type="range" min="0" max="1.0" value="1.0"  step="0.01"
-                                                                 class="slider"
-                                                                 id="rangeSingleNoteOpacity"
-                                                                 onChange="rangeSingleNoteOpacitySlide(this.id,this.value); " >
+                                                            <input id="rangeSingleNoteOpacity" type="range" min="0" max="1.0" value="1.0" step="0.01"
+                                                                 class="slider">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>TinyNote Opacity:
                                                         </td>
-                                                        <td><input id='rangeTinyNoteOpacity' type="range" min="0" max="1.0" value="1.0"  step="0.01"
-                                                             class="slider"
-                                                             id="rangeTinyNoteOpacity"
-                                                             onChange="rangeTinyNoteOpacitySlide(this.id,this.value); ">
+                                                        <td><input id="rangeTinyNoteOpacity" type="range" min="0" max="1.0" value="1.0" step="0.01"
+                                                             class="slider">
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -1292,7 +1286,7 @@
                                         <option value="60em">60em</option>
                                         <option value="80em">80em</option>
                                     </select>
-                                    <a href="javascript:hideAllMenuDivs();"><small>live</small></a>
+                                    <a href="#" data-action="hideAllMenuDivs"><small>live</small></a>
                                 </td>
                             </tr>
                             <tr>

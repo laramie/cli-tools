@@ -2,7 +2,7 @@
 import { Accumulator } from '@/bin/namespacer/Accumulator.js';
 
 import StepAccumulator from '@/bin/namespacer/StepAccumulator.js';
-import { logVerbose } from './LogVerboseJest.js';
+import { logVerbose } from '../LogVerboseJest.js';
 
 /** Run this test with the  ENV var INFINITE_NECK_VERBOSE, if not in CI but on the command-line to see dump/debug info.
  *    laramie@penguin:~/infinite-neck$ export INFINITE_NECK_VERBOSE=1
