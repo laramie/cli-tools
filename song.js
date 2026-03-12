@@ -9,6 +9,26 @@ import {
 	allTunings
 } from './tunings.js';
 import {
+    Note
+} from './note.js';
+import {
+    GraveType
+} from './graveyard.js';
+import {
+    clearAll,
+    clearHighlights,
+    fullRepaint,
+    replay
+} from './notetable.js';
+import {
+    getRecordedNotesForSection
+} from './section-recorder.js';
+import {
+    TABLEDIV_ID_PREFIX,
+    TABLE_ID_PREFIX,
+    getTunings
+} from './table-builder.js';
+import {
 	toInt
 } from './utils.js';
 import { ANSIColors } from './bin/namespacer/ANSIColors.js';
@@ -35,7 +55,7 @@ function noteIDToNoteNameRaw(noteIndex){
     return constNoteNamesArr[noteIndex];
 }
 
-function noteNameToNoteID(noteName){
+export function noteNameToNoteID(noteName){
 		return constNoteNamesArr.indexOf(noteName);
 	}
 
@@ -1018,7 +1038,7 @@ export function makeSong(){
             var transposedNoteName = constNoteNamesArr[index];
             var otherNote = namedNotes[noteName];
             if (otherNote.colorClass){
-                var clonedNote = cloneNote(otherNote);
+                var clonedNote = Note.cloneNote(otherNote);
                 clonedNote.noteName = transposedNoteName;
                 namedNotesClone[transposedNoteName] = clonedNote;
             }

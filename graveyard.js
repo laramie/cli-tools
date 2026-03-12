@@ -4,9 +4,15 @@ import {
 import {
     chuseStylesheet
 } from './colorFunctions.js';
+import {
+    fullRepaint
+} from './notetable.js';
+import {
+    showMessages
+} from './key-handlers.js';
 
 
-const GraveType = Object.freeze({
+export const GraveType = Object.freeze({
         UNKNOWN: "UNKNOWN",
         SONG: "SONG",
         SECTION: "SECTION",

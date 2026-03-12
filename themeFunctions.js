@@ -106,7 +106,7 @@ import { gThemes } from './themes.js';
 		setThemeControlValues();
 	}
 
-	function controlsToTheme(){
+	export function controlsToTheme(){
 		var defaultOptions = JSON.parse(JSON.stringify(getDefaultTheme()));
 		var options = JSON.parse(JSON.stringify(defaultOptions));
 		var origThemeOptions = getThemes()[$('#selThemes option:selected').val()];
@@ -259,7 +259,7 @@ import { gThemes } from './themes.js';
 	function WARN(message){
 		warny("WARNING: "+message, true);
 	}
-	function INFO(message){
+	export function INFO(message){
 		warny("INFO: "+message, false);
 	}
 	function warny(message, logToConsole){

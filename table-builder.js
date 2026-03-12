@@ -41,8 +41,8 @@ import {
 //            with correctly spelled reinstallAllTuningsTables 
 
 // constNoteNamesArr is defined in infinite-neck.js
-const TABLE_ID_PREFIX = "tbl";
-const TABLEDIV_ID_PREFIX = "div";
+export const TABLE_ID_PREFIX = "tbl";
+export const TABLEDIV_ID_PREFIX = "div";
 
 //the "table" is the instrument NoteTable, i.e. the neck, not the tunings html table on the Tunings page.
 export function buildNoteTable(options) {

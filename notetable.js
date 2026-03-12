@@ -28,6 +28,16 @@ import {
     Note
 } from './note.js';
 import {
+    constNoteNamesArr
+} from './song.js';
+import {
+    recordHighlight,
+    recordHighlightSingle,
+    recordPlayedNote,
+    recordingHasPlayedNote,
+    unRecordPlayedNote
+} from './section-recorder.js';
+import {
     TableBuilder
 } from './TableBuilder.js';
 import {
@@ -107,9 +117,7 @@ export function buildNamedNote(cell, subright, subleft, noteFn, midinum, noteFun
                 + "</div>"
                 +"<span class='tinyscriptL'>"
                     +   subright
-        NoteNames.forEach(noteName => {
-            currSection.namedNotes[noteName] = {"noteName": noteName, "colorClass": Color};
-        });
+                +"</span>"
         +"</div></div>";
 }
 
@@ -426,6 +434,7 @@ export function colorSingleNotes(cell, theColorClass, styleNum, dontAddToTableAr
     var clear = (theColorClass == "noteClear");
     var jCell = $(cell);
     var parentTableID = "";
+    var reversed = "";
     var parentTable = jCell.closest("table");
     if (parentTable){
         var jParentTable =  $(parentTable);

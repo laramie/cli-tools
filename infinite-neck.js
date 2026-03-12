@@ -12,6 +12,8 @@ import {
 	gColorPickerColors
 } from './colorPickerColors.js';
 import { 
+	hideCmdLine,
+	toggleCmdLine,
 	txtCmdLine_keypress 
 } from './command-line.js';
 import './display-options.js';
@@ -23,14 +25,31 @@ import {
 } from './graveyard.js';
 import {
 	getFontSize,
+	getUIFontSize,
+	hideGraveyard,
 	getNoteFontSize,
+	setUIFontSize,
+	setNoteFontSize,
 	setSectionKeysFlats,
 	setSectionKeysSharps,
+	showMessages,
 	document_keypress,
 	document_keyup
 } from './key-handlers.js';
-import './looper.js';
+import {
+	restartLoopSections,
+	sectionsLooping,
+	toggleLoopBeats,
+	toggleLoopSections
+} from './looper.js';
 import './menu.js';
+import {
+	clearHighlights,
+	colorSingleNotes,
+	fillChord,
+	highlightOneNote,
+	showMidiNotesInTable
+} from './notetable.js';
 import {
 	Note
 } from './note.js'; 
@@ -40,14 +59,18 @@ import {
 import {
 	makeSong
 } from './song.js';
-import './section-recorder.js';
+import {
+	clearRecordedNotes
+} from './section-recorder.js';
 import './svgLines.js';
 import {
+	controlsToTheme,
 	auditThemes,
 	clearThemeDiffResults,
 	getDefaultTheme,
 	getThemes,
 	getWidget_SelectThemes,
+	INFO,
 	setOneCssVar,
 	theme,
 	themeToControls
@@ -87,6 +110,8 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 	const FLAT = "&#9837;";
 	const NATURAL = "&nbsp;";
 	const TUNINGS_PFX = "tunings-";
+	const DEFAULT_BEATS_PER = 4;
+	const DEFAULT_BPM = 80;
 
 	export const NUM_FRETS_MAX = 108;
 
@@ -547,31 +572,36 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 			var textType = /json.*/;
 			if (file.type.match(textType)) {
 				var reader = new FileReader();
-				var frs = [];
-				Object.values(jsonObj.sections).forEach(section => {
-					var replacementSection = getSong().constructSection();
-					section = Object.assign(replacementSection, section);
-					frs.push(section);
-				});
-				jsonObj.sections = frs;
-				if (!getSong().isEmpty(getSong().getCurrentSection())){
-					var yes = $("#cbAppendSections").prop("checked");
-					if (!yes){
-						getSong().removeAllSections();
+				reader.onload = function() {
+					var jsonObj = JSON.parse(reader.result);
+					var frs = [];
+					Object.values(jsonObj.sections).forEach(section => {
+						var replacementSection = getSong().constructSection();
+						section = Object.assign(replacementSection, section);
+						frs.push(section);
+					});
+					jsonObj.sections = frs;
+					if (!getSong().isEmpty(getSong().getCurrentSection())){
+						var yes = $("#cbAppendSections").prop("checked");
+						if (!yes){
+							getSong().removeAllSections();
+						}
 					}
-				}
-				getSong().addSections(jsonObj);
-				getSong().graveyard = makeGraveyard(getSong().graveyard);
+					getSong().addSections(jsonObj);
+					getSong().graveyard = makeGraveyard(getSong().graveyard);
 
-				var userTheme = getSong().userTheme;
-				if (userTheme){
-					userTheme["id"] = "USER";
-					getThemes()["USER"] = userTheme;
-					getSong().theme = "USER";
-				}
-				rebuildThemesDropdown();
+					var userTheme = getSong().userTheme;
+					if (userTheme){
+						userTheme["id"] = "USER";
+						getThemes()["USER"] = userTheme;
+						getSong().theme = "USER";
+					}
+					rebuildThemesDropdown();
 
-				updateAfterOpenSong();
+					updateAfterOpenSong();
+				};
+				hideAllMenuDivs();
+				reader.readAsText(file);
 			}
 		});
 	}
@@ -931,7 +961,7 @@ if (typeof window !== 'undefined' && typeof $ !== 'undefined') {
 				result += "<tr><td>"
 					+ "<a href=\"javascript:linkToSection('" + idx + "');\">" + (toInt(idx, 0) + 1) + "</a>" + SEP
 					+ section.beats + SEP
-					+ "<B style='font-size: 130%;'>" + getSong().noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
+					+ "<B style='font-size: 130%;'>" + getSong().noteIDToNoteName(section.rootID) + (section.rootIDLead != -1 ? "/" + getSong().noteIDToNoteName(section.rootIDLead) : "") + "</B>" + SEP
 					+ (section.sharps ? " &sharp; " : " &flat; ") + SEP
 					+ "<b style='font-size: 130%;'>" + section.caption + "</b>" + SEP
 					+ namedNotes

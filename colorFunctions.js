@@ -11,9 +11,25 @@ import {
 	Note
 } from './note.js';
 import {
-	constNoteNamesArr
+	constNoteNamesArr,
+	noteNameToNoteID
 } from './song.js';
-import {gUserColorDict} from './userColors.js';
+import {
+	fullRepaint
+} from './notetable.js';
+import {
+	GraveType
+} from './graveyard.js';
+import {
+	midinumToNoteName
+} from './table-builder.js';
+import {
+	gUserColorDict,
+	gUserColorDictOEM
+} from './userColors.js';
+import {
+	toInt
+} from './utils.js';
 
 
 //================== colorDicts ================================================
@@ -405,7 +421,7 @@ import {gUserColorDict} from './userColors.js';
 
 	export function deleteUserStylesheet(dictkey){
 		var obj = getSong().colorDicts[dictkey];
-		context = {"dictkey": dictkey, "which": "UserStylesheet"};
+		var context = {"dictkey": dictkey, "which": "UserStylesheet"};
         getSong().graveyard.bury(GraveType.STYLESHEET, obj, context);
 
 		delete getSong().colorDicts[dictkey];

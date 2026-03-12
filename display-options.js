@@ -4,14 +4,14 @@ import {
 } from './infinite-neck.js';
 
 
-function displayOptionsTable(){
+export function displayOptionsTable(){
     var optionsPrototype = controlsToDisplayOptions();
     var res = [];
     res.push("<table border='1' class='tblDisplayOptions'><caption>All Sections with Display Options</caption>");
     var prevDisplayOptions = null;
     var skippedRow = false;
 
-    var rowc = displayOptionsCaptionRow(optionsPrototype, displayOptions);
+    var rowc = displayOptionsCaptionRow(optionsPrototype);
     res.push("<tr><td style='vertical-align: bottom;'>Section&nbsp;#</td>"+rowc+"</tr>");
 
     var sections = getSong().getSections();

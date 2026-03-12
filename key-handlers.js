@@ -35,6 +35,41 @@ import {
 	updateSectionsStatus
 } from './infinite-neck.js';
 import { setOneCssVar } from './themeFunctions.js';
+import {
+	clearCmdResults,
+	hideCmdLine,
+	setCmdActionRunner,
+	showCmdLine,
+	stringifyMenuItem,
+	updateCmdLineView
+} from './command-line.js';
+import {
+	displayOptionsTable
+} from './display-options.js';
+import {
+	highlightOneNote
+} from './notetable.js';
+import {
+	beatsLooping,
+	restartLoopSections,
+	sectionsLooping,
+	toggleLoopBeats,
+	toggleLoopSections
+} from './looper.js';
+import {
+	buildChildMenuCaptionsRow,
+	dumpMenus,
+	gMenuFile,
+	gMenuPointer,
+	setMenuValueResolver,
+	setMenuAtRoot
+} from './menu.js';
+import {
+	gUserColorDict
+} from './userColors.js';
+import {
+	toInt
+} from './utils.js';
 
 export { document_keypress, document_keyup };
 
@@ -263,7 +298,7 @@ function document_keypress(e) {
 
 
 // Called by the CmdMenu whenever someone has a string that identifies an "action".
-function performCmdAction(menuItem, args){
+export function performCmdAction(menuItem, args){
 	var actionResult = {};
 	actionResult.result = "";
 	actionResult.menuItem = menuItem;
@@ -535,11 +570,11 @@ function performCmdAction(menuItem, args){
 			actionResult.result = "added";
 			break;
 		case "sectionAddShallowClone":
-			addShallowCloneSection();
+			getSong().addShallowCloneSection();
 			actionResult.result = "added-shallow";
 			break;
 		case "sectionAddDeepClone":
-			addDeepCloneSection();
+			getSong().addDeepCloneSection();
 			actionResult.result = "added-deep";
 			break;
 		case "sectionKeep":
@@ -665,7 +700,7 @@ function scrollToMessages(){
     var scrollDiv = document.getElementById("divMessages").offsetTop;
     window.scrollTo({ top: scrollDiv, behavior: 'smooth'});
 }
-function showMessages(html){
+export function showMessages(html){
     $("#divMessages").show();
     $("#divMessages").html(html);
     hideCmdLine();
@@ -678,7 +713,7 @@ function showGraveyard(){
     hideAllMenuDivs();
     showMessages(getSong().graveyard.buildNoteTable());
 }
-function hideGraveyard(){
+export function hideGraveyard(){
     $("#divMessages").hide();
 }
 
@@ -694,10 +729,10 @@ function updateUIFont(){
     $("body").css({"font-size": (m_FontSize)+"pt"});
     updateFontLabel();
 }
-function getUIFontSize(){
+export function getUIFontSize(){
     return m_FontSize;
 }
-function setUIFontSize(newValue){
+export function setUIFontSize(newValue){
     m_FontSize = newValue;
     updateUIFont();
 }
@@ -746,7 +781,7 @@ export function setSectionKeysSharps(){
 }
 
 
-function getValue(what){
+export function getValue(what){
 	switch (what){
 		case "currentSectionNumber":
 		case "currentSectionIndex":
@@ -791,3 +826,6 @@ function getValue(what){
 			return what;
 	}
 }
+
+setMenuValueResolver(getValue);
+setCmdActionRunner(performCmdAction);
